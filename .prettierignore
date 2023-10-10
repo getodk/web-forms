@@ -1,0 +1,9 @@
+# Deep Directories
+**/node_modules
+**/dist
+**/fixtures
+**/vendor
+
+# Directories
+.github
+.changeset

@@ -1,0 +1,25 @@
+# Package management
+node_modules/
+
+# Environment detritus
+.DS_Store
+
+# Editor detritus
+## IntelliJ/WebStorm
+.idea
+
+# Ephemera
+*.log
+
+# Tooling artifacts
+.eslintcache
+.turbo/
+*.tsbuildinfo
+
+# Build artifacts
+dist/
+examples/**/dist
+packages/**/dist
+
+# Generated fixtures/etc
+packages/**/test/**/fixtures/generated/**

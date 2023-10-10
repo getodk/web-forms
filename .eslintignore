@@ -1,0 +1,10 @@
+.changeset
+.github
+examples/**/*
+packages/**/*.min.js
+packages/**/dist/**/*
+packages/**/fixtures/**/*
+**/vendor
+
+# TEMP REMOVEME
+known-successful-monorepo-inspiration
