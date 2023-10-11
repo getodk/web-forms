@@ -3,39 +3,13 @@
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
-      "inputs": [
-        "**/*",
-        "!e2e/**/*",
-        "!test/**/*",
-        "!performance/**/*",
-        "!.cache/**/*",
-        "!mod.js",
-        "!mod.js.map"
-      ],
-      "outputs": ["dist/**/*", "!vendor/**", "mod.js", "mod.js.map"],
       "outputMode": "new-only"
     },
-    "build:ci": {
-      "dependsOn": ["^build:ci"],
-      "inputs": [
-        "**/*",
-        "!test/**/*",
-        "!e2e/**/*",
-        "!performance/**/*",
-        "!.cache/**/*",
-        "!mod.js",
-        "!mod.js.map"
-      ],
-      "outputs": ["dist/**/*", "!vendor/**", "mod.js", "mod.js.map"],
-      "outputMode": "new-only"
-    },
-    "dev": {
-      "cache": false,
-      "persistent": true
+    "odk-web-forms#build": {
+      "outputs": ["dist/**"]
     },
     "test": {
-      "env": ["RUNNER_OS", "NODE_VERSION"],
-      "outputMode": "new-only"
+      "outputs": []
     }
   }
 }
