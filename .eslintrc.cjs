@@ -82,7 +82,6 @@ module.exports = {
       files: ['scripts/**/*.js'],
       env: {
         node: true,
-        cjs: true,
       },
       rules: {
         'no-restricted-imports': 'off',
