@@ -37,5 +37,9 @@ packages/tree-sitter-xpath/grammar.js
 packages/tree-sitter-xpath/grammar.js.map
 packages/tree-sitter-xpath/tree-sitter-xpath.wasm
 
+# Test artifcats
+## Playwright, apparently
+packages/*/test-results
+
 # Generated fixtures/etc
 packages/**/test/**/fixtures/generated/**
