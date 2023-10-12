@@ -28,6 +28,7 @@ jobs:
     outputs:
       root: ${{ steps.changes.outputs.root }}
       odk-web-forms: ${{ steps.changes.outputs.odk-web-forms }}
+      tree-sitter-xpath: ${{ steps.changes.outputs.tree-sitter-xpath }}
 
     steps:
       - uses: 'actions/checkout@v3'
@@ -41,6 +42,14 @@ jobs:
 
             odk-web-forms:
               - 'packages/odk-web-forms/**'
+
+            tree-sitter-xpath:
+              - 'packages/tree-sitter-xpath/grammar.ts'
+              - 'packages/tree-sitter-xpath/scripts/**'
+              - 'packages/tree-sitter-xpath/test/**'
+
+          # So the `paths-filter` action doesn't attempt to use the GitHub API
+          # when run on pull requests
           token: ''
 
   install-and-build:
@@ -158,3 +167,41 @@ jobs:
           fail-on-cache-miss: true
 
       - run: 'yarn workspace @odk/web-forms test'
+
+  test-tree-sitter-xpath:
+    needs: ['install-and-build', 'changes']
+    if: needs.changes.outputs.root == 'true' || needs.changes.outputs.tree-sitter-xpath == 'true'
+    runs-on: 'ubuntu-latest'
+
+    strategy:
+      matrix:
+        node-version: ['18.18.1', '20.8.0']
+
+    steps:
+      - uses: 'actions/checkout@v3'
+
+      - uses: 'volta-cli/action@v4'
+        with:
+          node-version: '${{ matrix.node-version }}'
+          yarn-version: '1.22.19'
+
+      - uses: 'actions/cache@v3'
+        id: cache-install
+        with:
+          path: |
+            ~/.cache/ms-playwright
+            node_modules
+            **/node_modules
+          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', 'examples/*/yarn.lock', 'packages/*/yarn.lock') }}
+          fail-on-cache-miss: true
+
+      - uses: 'actions/cache@v3'
+        id: cache-build
+        with:
+          path: |
+            examples/*/dist
+            packages/*/dist
+          key: build-${{ matrix.node-version }}-${{ github.sha }}
+          fail-on-cache-miss: true
+
+      - run: 'yarn workspace tree-sitter-xpath test'

@@ -27,6 +27,9 @@ const configs = [
 			'packages/**/*.min.js',
 			'packages/**/dist/**/*',
 			'packages/**/fixtures/**/*',
+			'packages/tree-sitter-xpath/grammar.js',
+			'packages/tree-sitter-xpath/bindings/**/*',
+			'packages/tree-sitter-xpath/types/**/*',
 			'**/vendor',
 		],
 
