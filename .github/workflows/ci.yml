@@ -4,8 +4,6 @@ run-name: 'ODK Web Forms CI'
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main
   merge_group:
   pull_request:
     paths-ignore:
@@ -79,9 +77,19 @@ jobs:
       - uses: 'actions/cache@v3'
         id: cache-build
         with:
+          # Note: the tree-sitter-xpath .js and .wasm paths are standard for
+          # tree-sitter's build output. They also litter a bunch of other files
+          # in various build phases, several under `src` (which is why the
+          # grammar's TypeScript source is not there).
           path: |
             examples/*/dist
             packages/*/dist
+            packages/tree-sitter-xpath/grammar.js
+            packages/tree-sitter-xpath/src/grammar.json
+            packages/tree-sitter-xpath/src/parser.c
+            packages/tree-sitter-xpath/src/tree_sitter/parser.h
+            packages/tree-sitter-xpath/tree-sitter-xpath.wasm
+            packages/tree-sitter-xpath/types
           key: build-${{ matrix.node-version }}-${{ github.sha }}
 
       - if: steps.cache-install.outputs.cache-hit != 'true' && matrix.node-version != '20.8.0'
@@ -90,8 +98,7 @@ jobs:
       - if: steps.cache-install.outputs.cache-hit != 'true' && matrix.node-version == '20.8.0'
         run: 'yarn install --frozen-lockfile && yarn playwright install chromium firefox webkit'
 
-      - if: steps.cache-install.outputs.cache-hit == 'true'
-        run: 'yarn build'
+      - run: 'yarn build'
 
   lint:
     needs: ['install-and-build', 'changes']
@@ -125,6 +132,12 @@ jobs:
           path: |
             examples/*/dist
             packages/*/dist
+            packages/tree-sitter-xpath/grammar.js
+            packages/tree-sitter-xpath/src/grammar.json
+            packages/tree-sitter-xpath/src/parser.c
+            packages/tree-sitter-xpath/src/tree_sitter/parser.h
+            packages/tree-sitter-xpath/tree-sitter-xpath.wasm
+            packages/tree-sitter-xpath/types
           key: build-${{ matrix.node-version }}-${{ github.sha }}
           fail-on-cache-miss: true
 
@@ -163,6 +176,12 @@ jobs:
           path: |
             examples/*/dist
             packages/*/dist
+            packages/tree-sitter-xpath/grammar.js
+            packages/tree-sitter-xpath/src/grammar.json
+            packages/tree-sitter-xpath/src/parser.c
+            packages/tree-sitter-xpath/src/tree_sitter/parser.h
+            packages/tree-sitter-xpath/tree-sitter-xpath.wasm
+            packages/tree-sitter-xpath/types
           key: build-${{ matrix.node-version }}-${{ github.sha }}
           fail-on-cache-miss: true
 
@@ -201,6 +220,12 @@ jobs:
           path: |
             examples/*/dist
             packages/*/dist
+            packages/tree-sitter-xpath/grammar.js
+            packages/tree-sitter-xpath/src/grammar.json
+            packages/tree-sitter-xpath/src/parser.c
+            packages/tree-sitter-xpath/src/tree_sitter/parser.h
+            packages/tree-sitter-xpath/tree-sitter-xpath.wasm
+            packages/tree-sitter-xpath/types
           key: build-${{ matrix.node-version }}-${{ github.sha }}
           fail-on-cache-miss: true
 
