@@ -5,7 +5,12 @@
       "dependsOn": ["^build"],
       "outputMode": "new-only"
     },
-    "odk-web-forms#build": {
+    "@odk/xpath#build": {
+      "dependsOn": ["tree-sitter-xpath#build"],
+      "outputMode": "new-only"
+    },
+    "@odk/web-forms#build": {
+      "dependsOn": ["@odk/xpath#build"],
       "outputs": ["dist/**"]
     },
     "test": {
