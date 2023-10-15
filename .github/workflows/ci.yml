@@ -96,56 +96,53 @@ jobs:
             packages/tree-sitter-xpath/types
           key: build-${{ matrix.node-version }}-${{ github.sha }}
 
-      - if: steps.cache-install.outputs.cache-hit != 'true' && matrix.node-version != '20.8.0'
-        run: 'yarn install --frozen-lockfile'
-
-      - if: steps.cache-install.outputs.cache-hit != 'true' && matrix.node-version == '20.8.0'
+      - if: steps.cache-install.outputs.cache-hit != 'true'
         run: 'yarn install --frozen-lockfile && yarn playwright install chromium firefox webkit'
 
       - run: 'yarn build'
 
-  # lint:
-  #   needs: ['install-and-build', 'changes']
-  #   runs-on: 'ubuntu-latest'
+  lint:
+    needs: ['install-and-build', 'changes']
+    runs-on: 'ubuntu-latest'
 
-  #   strategy:
-  #     matrix:
-  #       node-version: ['20.8.0']
+    strategy:
+      matrix:
+        node-version: ['20.8.0']
 
-  #   steps:
-  #     - uses: 'actions/checkout@v3'
+    steps:
+      - uses: 'actions/checkout@v3'
 
-  #     - uses: 'volta-cli/action@v4'
-  #       with:
-  #         node-version: '${{ matrix.node-version }}'
-  #         yarn-version: '1.22.19'
+      - uses: 'volta-cli/action@v4'
+        with:
+          node-version: '${{ matrix.node-version }}'
+          yarn-version: '1.22.19'
 
-  #     - uses: 'actions/cache@v3'
-  #       id: cache-install
-  #       with:
-  #         path: |
-  #           ~/.cache/ms-playwright
-  #           node_modules
-  #           **/node_modules
-  #         key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', 'examples/*/yarn.lock', 'packages/*/yarn.lock') }}
-  #         fail-on-cache-miss: true
+      - uses: 'actions/cache@v3'
+        id: cache-install
+        with:
+          path: |
+            ~/.cache/ms-playwright
+            node_modules
+            **/node_modules
+          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', 'examples/*/yarn.lock', 'packages/*/yarn.lock') }}
+          fail-on-cache-miss: true
 
-  #     - uses: 'actions/cache@v3'
-  #       id: cache-build
-  #       with:
-  #         path: |
-  #           examples/*/dist
-  #           packages/*/dist
-  #           packages/tree-sitter-xpath/grammar.js
-  #           packages/tree-sitter-xpath/src/grammar.json
-  #           packages/tree-sitter-xpath/src/parser.c
-  #           packages/tree-sitter-xpath/src/tree_sitter/parser.h
-  #           packages/tree-sitter-xpath/tree-sitter-xpath.wasm
-  #           packages/tree-sitter-xpath/types
-  #         key: build-${{ matrix.node-version }}-${{ github.sha }}
-  #         fail-on-cache-miss: true
+      - uses: 'actions/cache@v3'
+        id: cache-build
+        with:
+          path: |
+            examples/*/dist
+            packages/*/dist
+            packages/tree-sitter-xpath/grammar.js
+            packages/tree-sitter-xpath/src/grammar.json
+            packages/tree-sitter-xpath/src/parser.c
+            packages/tree-sitter-xpath/src/tree_sitter/parser.h
+            packages/tree-sitter-xpath/tree-sitter-xpath.wasm
+            packages/tree-sitter-xpath/types
+          key: build-${{ matrix.node-version }}-${{ github.sha }}
+          fail-on-cache-miss: true
 
-  #     - run: 'yarn lint'
+      - run: 'yarn lint'
 
   test-odk-web-forms:
     needs: ['install-and-build', 'changes']
