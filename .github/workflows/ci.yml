@@ -256,7 +256,7 @@ jobs:
 
       - if: ${{ matrix.target == 'Web' }}
         run: |
-          yarn playwright install ${{ matrix.browser }} --include-deps
+          yarn playwright install ${{ matrix.browser }} --with-deps
           yarn workspace @odk/xpath test-browser:${{ matrix.browser }}
 
   test-tree-sitter-xpath:
