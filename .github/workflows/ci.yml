@@ -19,6 +19,9 @@ defaults:
   run:
     shell: bash
 
+env:
+  TZ: 'America/Phoenix'
+
 jobs:
   changes:
     runs-on: 'ubuntu-latest'
@@ -95,9 +98,14 @@ jobs:
             packages/tree-sitter-xpath/types
           key: build-${{ matrix.node-version }}-${{ github.sha }}
 
-      - if: steps.cache-install.outputs.cache-hit != 'true'
-        run: 'yarn install --frozen-lockfile'
+      # `@odk/xpath` tests (currently) expect this time zone
+      - uses: szenius/set-timezone@v1.2
+        with:
+          timezoneLinux: ${{ env.TZ }}
+          timezoneMacos: ${{ env.TZ }}
+          timezoneWindows: ${{ env.TZ }}
 
+      - run: 'yarn install --frozen-lockfile'
       - run: 'yarn build --force'
 
   lint:
@@ -225,6 +233,12 @@ jobs:
             packages/tree-sitter-xpath/types
           key: build-${{ matrix.node-version }}-${{ github.sha }}
           fail-on-cache-miss: true
+
+      - uses: szenius/set-timezone@v1.2
+        with:
+          timezoneLinux: ${{ env.TZ }}
+          timezoneMacos: ${{ env.TZ }}
+          timezoneWindows: ${{ env.TZ }}
 
       - run: 'yarn playwright install chromium firefox webkit && yarn playwright install-deps'
       # TODO: Browser/Node matrix
