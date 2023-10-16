@@ -198,6 +198,8 @@ jobs:
     if: needs.changes.outputs.root == 'true' || needs.changes.outputs.tree-sitter-xpath == 'true' || needs.changes.outputs.odk-xpath == 'true'
     runs-on: 'ubuntu-latest'
 
+    container: mcr.microsoft.com/playwright:v1.39.0-jammy
+
     strategy:
       matrix:
         node-version: ['18.18.1', '20.8.0']
@@ -240,7 +242,6 @@ jobs:
           timezoneMacos: ${{ env.TZ }}
           timezoneWindows: ${{ env.TZ }}
 
-      - run: 'yarn playwright install chromium firefox webkit && yarn playwright install-deps'
       # TODO: Browser/Node matrix
       - run: 'yarn workspace @odk/xpath test'
 
