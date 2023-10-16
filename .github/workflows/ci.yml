@@ -73,7 +73,6 @@ jobs:
         id: cache-install
         with:
           path: |
-            ~/.cache/ms-playwright
             node_modules
             **/node_modules
           key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', 'examples/*/yarn.lock', 'packages/*/yarn.lock') }}
@@ -97,7 +96,7 @@ jobs:
           key: build-${{ matrix.node-version }}-${{ github.sha }}
 
       - if: steps.cache-install.outputs.cache-hit != 'true'
-        run: 'yarn install --frozen-lockfile && yarn playwright install chromium firefox webkit && yarn playwright install-deps'
+        run: 'yarn install --frozen-lockfile'
 
       - run: 'yarn build --force'
 
@@ -121,7 +120,6 @@ jobs:
         id: cache-install
         with:
           path: |
-            ~/.cache/ms-playwright
             node_modules
             **/node_modules
           key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', 'examples/*/yarn.lock', 'packages/*/yarn.lock') }}
@@ -165,7 +163,6 @@ jobs:
         id: cache-install
         with:
           path: |
-            ~/.cache/ms-playwright
             node_modules
             **/node_modules
           key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', 'examples/*/yarn.lock', 'packages/*/yarn.lock') }}
@@ -190,7 +187,7 @@ jobs:
 
   test-odk-xpath:
     needs: ['install-and-build', 'changes']
-    if: needs.changes.outputs.root == 'true' || needs.changes.outputs.odk-xpath == 'true'
+    if: needs.changes.outputs.root == 'true' || needs.changes.outputs.tree-sitter-xpath == 'true' || needs.changes.outputs.odk-xpath == 'true'
     runs-on: 'ubuntu-latest'
 
     strategy:
@@ -209,7 +206,6 @@ jobs:
         id: cache-install
         with:
           path: |
-            ~/.cache/ms-playwright
             node_modules
             **/node_modules
           key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', 'examples/*/yarn.lock', 'packages/*/yarn.lock') }}
@@ -230,6 +226,8 @@ jobs:
           key: build-${{ matrix.node-version }}-${{ github.sha }}
           fail-on-cache-miss: true
 
+      - run: 'yarn playwright install chromium firefox webkit && yarn playwright install-deps'
+      # TODO: Browser/Node matrix
       - run: 'yarn workspace @odk/xpath test'
 
   test-tree-sitter-xpath:
@@ -253,7 +251,6 @@ jobs:
         id: cache-install
         with:
           path: |
-            ~/.cache/ms-playwright
             node_modules
             **/node_modules
           key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', 'examples/*/yarn.lock', 'packages/*/yarn.lock') }}
