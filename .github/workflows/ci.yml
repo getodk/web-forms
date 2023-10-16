@@ -97,7 +97,7 @@ jobs:
           key: build-${{ matrix.node-version }}-${{ github.sha }}
 
       - if: steps.cache-install.outputs.cache-hit != 'true'
-        run: 'yarn install --frozen-lockfile && yarn playwright install chromium firefox webkit'
+        run: 'yarn install --frozen-lockfile && yarn playwright install chromium firefox webkit && yarn playwright install-deps'
 
       - run: 'yarn build --force'
 
