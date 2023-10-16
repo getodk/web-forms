@@ -62,7 +62,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ['18.18.1', '20.8.0']
+        node-version: ['18.18.2', '20.8.1']
 
     steps:
       - uses: 'actions/checkout@v3'
@@ -114,7 +114,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ['20.8.0']
+        node-version: ['20.8.1']
 
     steps:
       - uses: 'actions/checkout@v3'
@@ -157,7 +157,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ['18.18.1', '20.8.0']
+        node-version: ['18.18.2', '20.8.1']
 
     steps:
       - uses: 'actions/checkout@v3'
@@ -200,7 +200,18 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ['18.18.1', '20.8.0']
+        target: ['Node']
+        node-version: ['18.18.2', '20.8.1']
+        include:
+          - target: 'Web'
+            node-version: '20.8.1'
+            browser: chromium
+          - target: 'Web'
+            node-version: '20.8.1'
+            browser: firefox
+          - target: 'Web'
+            node-version: '20.8.1'
+            browser: webkit
 
     steps:
       - uses: 'actions/checkout@v3'
@@ -240,9 +251,13 @@ jobs:
           timezoneMacos: ${{ env.TZ }}
           timezoneWindows: ${{ env.TZ }}
 
-      - run: 'yarn playwright install chromium firefox webkit && yarn playwright install-deps'
-      # TODO: Browser/Node matrix
-      - run: 'yarn workspace @odk/xpath test'
+      - if: ${{ matrix.target == 'Node' }}
+        run: 'yarn workspace @odk/xpath test-node:jsdom'
+
+      - if: ${{ matrix.target == 'Web' }}
+        run: |
+          yarn playwright install ${{ matrix.browser }} --include-deps
+          yarn workspace @odk/xpath test-browser:${{ matrix.browser }}
 
   test-tree-sitter-xpath:
     needs: ['install-and-build', 'changes']
@@ -251,7 +266,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ['18.18.1', '20.8.0']
+        node-version: ['18.18.2', '20.8.1']
 
     steps:
       - uses: 'actions/checkout@v3'
