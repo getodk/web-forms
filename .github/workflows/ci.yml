@@ -99,7 +99,7 @@ jobs:
       - if: steps.cache-install.outputs.cache-hit != 'true'
         run: 'yarn install --frozen-lockfile && yarn playwright install chromium firefox webkit'
 
-      - run: 'yarn build'
+      - run: 'yarn build --force'
 
   lint:
     needs: ['install-and-build', 'changes']
