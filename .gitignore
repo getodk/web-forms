@@ -21,5 +21,25 @@ dist/
 examples/**/dist
 packages/**/dist
 
+## Specific to tree-sitter and/or tree-sitter-xpath
+packages/tree-sitter-xpath/bindings/
+packages/tree-sitter-xpath/build/
+packages/tree-sitter-xpath/src/tree_sitter
+packages/tree-sitter-xpath/src/grammar.json
+packages/tree-sitter-xpath/src/node-types.json
+packages/tree-sitter-xpath/src/parser.c
+packages/tree-sitter-xpath/target/
+packages/tree-sitter-xpath/types/tree-sitter-xpath-parser.d.ts
+packages/tree-sitter-xpath/binding.gyp
+packages/tree-sitter-xpath/Cargo.lock
+packages/tree-sitter-xpath/Cargo.toml
+packages/tree-sitter-xpath/grammar.js
+packages/tree-sitter-xpath/grammar.js.map
+packages/tree-sitter-xpath/tree-sitter-xpath.wasm
+
+# Test artifcats
+## Playwright, apparently
+packages/*/test-results
+
 # Generated fixtures/etc
 packages/**/test/**/fixtures/generated/**

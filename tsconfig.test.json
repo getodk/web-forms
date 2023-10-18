@@ -14,6 +14,6 @@
     "packages/**/*.test.mjs",
     "packages/**/*.test.mts",
     "packages/**/*.test.ts",
-    "packages/**/*.test.tsx",
+    "packages/**/*.test.tsx"
   ]
 }

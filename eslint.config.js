@@ -27,6 +27,9 @@ const configs = [
 			'packages/**/*.min.js',
 			'packages/**/dist/**/*',
 			'packages/**/fixtures/**/*',
+			'packages/tree-sitter-xpath/grammar.js',
+			'packages/tree-sitter-xpath/bindings/**/*',
+			'packages/tree-sitter-xpath/types/**/*',
 			'**/vendor',
 		],
 
@@ -106,6 +109,14 @@ const configs = [
 					'eslint.config.js',
 					'scripts/**/*.js',
 					'packages/*/playwright.config.ts',
+					// TODO: in theory, all e2e tests (if they continue to be run with
+					// Playwright) are technically run in a "Node" environment, although
+					// they will likely exercise non-Node code when calling into the
+					// Playwright-managed browser process. I'm adding this special case
+					// mainly to make note of this because it's unclear what the best
+					// solution will be for mixed Node-/browser-API code in terms of type
+					// safety and linting.
+					'packages/tree-sitter-xpath/e2e/sub-expression-queries.test.ts',
 				],
 				env: {
 					node: true,
