@@ -252,7 +252,9 @@ jobs:
           timezoneWindows: ${{ env.TZ }}
 
       - if: ${{ matrix.target == 'Node' }}
-        run: 'yarn workspace @odk/xpath test-node:jsdom'
+        run: |
+          yarn workspace @odk/xpath test:types
+          yarn workspace @odk/xpath test-node:jsdom
 
       - if: ${{ matrix.target == 'Web' }}
         run: |
