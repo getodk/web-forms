@@ -1,0 +1,56 @@
+{
+  "name": "root",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eyelidlessness/odk-web-forms"
+  },
+  "type": "module",
+  "version": "0.0.0",
+  "engines": {
+    "node": ">=18 <21",
+    "yarn": "1.22.19"
+  },
+  "volta": {
+    "node": "20.8.0",
+    "yarn": "1.22.19"
+  },
+  "workspaces": [
+    "packages/*",
+    "scripts"
+  ],
+  "scripts": {
+    "preinstall": "npx only-allow yarn",
+    "test": "turbo run test",
+    "build": "turbo run build",
+    "types": "turbo run types",
+    "bump": "changeset add",
+    "format": "prettier -w \"**/*\" --ignore-unknown --cache",
+    "lint": "eslint . --report-unused-disable-directives"
+  },
+  "dependencies": {
+    "@changesets/changelog-github": "^0.4.8",
+    "@changesets/cli": "^2.26.2",
+    "@eslint/js": "^8.51.0",
+    "@eslint/eslintrc": "^2.1.2",
+    "@types/chai": "^4.3.7",
+    "@types/eslint__js": "^8.42.1",
+    "@types/eslint": "^8.44.4",
+    "@types/node": "^20.8.4",
+    "@typescript-eslint/eslint-plugin": "^6.7.5",
+    "@typescript-eslint/parser": "^6.7.5",
+    "chai": "^4.3.10",
+    "eslint": "^8.51.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-no-only-tests": "^3.1.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "npm-run-all": "^4.1.5",
+    "only-allow": "^1.2.1",
+    "organize-imports-cli": "^0.10.0",
+    "prettier": "^3.0.3",
+    "rimraf": "^5.0.5",
+    "turbo": "^1.10.15",
+    "typescript": "~5.2.2",
+    "vite": "^4.4.11"
+  }
+}

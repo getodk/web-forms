@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "allowJs": true
+  },
+  "extends": "./tsconfig.base.json",
+  "include": ["eslint.config.js", "prettier.config.js"],
+  "files": ["./vendor-types/@eslint/eslintrc.d.ts"]
+}
