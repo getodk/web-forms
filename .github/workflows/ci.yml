@@ -19,6 +19,9 @@ defaults:
   run:
     shell: bash
 
+env:
+  TZ: 'America/Phoenix'
+
 jobs:
   changes:
     runs-on: 'ubuntu-latest'
@@ -26,6 +29,7 @@ jobs:
     outputs:
       root: ${{ steps.changes.outputs.root }}
       odk-web-forms: ${{ steps.changes.outputs.odk-web-forms }}
+      odk-xpath: ${{ steps.changes.outputs.odk-xpath }}
       tree-sitter-xpath: ${{ steps.changes.outputs.tree-sitter-xpath }}
 
     steps:
@@ -41,6 +45,9 @@ jobs:
             odk-web-forms:
               - 'packages/odk-web-forms/**'
 
+            odk-xpath:
+              - 'packages/odk-xpath/**'
+
             tree-sitter-xpath:
               - 'packages/tree-sitter-xpath/grammar.ts'
               - 'packages/tree-sitter-xpath/scripts/**'
@@ -55,7 +62,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ['18.18.1', '20.8.0']
+        node-version: ['18.18.2', '20.8.1']
 
     steps:
       - uses: 'actions/checkout@v3'
@@ -69,7 +76,6 @@ jobs:
         id: cache-install
         with:
           path: |
-            ~/.cache/ms-playwright
             node_modules
             **/node_modules
           key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', 'examples/*/yarn.lock', 'packages/*/yarn.lock') }}
@@ -92,13 +98,15 @@ jobs:
             packages/tree-sitter-xpath/types
           key: build-${{ matrix.node-version }}-${{ github.sha }}
 
-      - if: steps.cache-install.outputs.cache-hit != 'true' && matrix.node-version != '20.8.0'
-        run: 'yarn install --frozen-lockfile'
+      # `@odk/xpath` tests (currently) expect this time zone
+      - uses: szenius/set-timezone@v1.2
+        with:
+          timezoneLinux: ${{ env.TZ }}
+          timezoneMacos: ${{ env.TZ }}
+          timezoneWindows: ${{ env.TZ }}
 
-      - if: steps.cache-install.outputs.cache-hit != 'true' && matrix.node-version == '20.8.0'
-        run: 'yarn install --frozen-lockfile && yarn playwright install chromium firefox webkit'
-
-      - run: 'yarn build'
+      - run: 'yarn install --frozen-lockfile'
+      - run: 'yarn build --force'
 
   lint:
     needs: ['install-and-build', 'changes']
@@ -106,7 +114,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ['20.8.0']
+        node-version: ['20.8.1']
 
     steps:
       - uses: 'actions/checkout@v3'
@@ -120,7 +128,6 @@ jobs:
         id: cache-install
         with:
           path: |
-            ~/.cache/ms-playwright
             node_modules
             **/node_modules
           key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', 'examples/*/yarn.lock', 'packages/*/yarn.lock') }}
@@ -150,7 +157,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ['18.18.1', '20.8.0']
+        node-version: ['18.18.2', '20.8.1']
 
     steps:
       - uses: 'actions/checkout@v3'
@@ -164,7 +171,6 @@ jobs:
         id: cache-install
         with:
           path: |
-            ~/.cache/ms-playwright
             node_modules
             **/node_modules
           key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', 'examples/*/yarn.lock', 'packages/*/yarn.lock') }}
@@ -187,14 +193,25 @@ jobs:
 
       - run: 'yarn workspace @odk/web-forms test'
 
-  test-tree-sitter-xpath:
+  test-odk-xpath:
     needs: ['install-and-build', 'changes']
-    if: needs.changes.outputs.root == 'true' || needs.changes.outputs.tree-sitter-xpath == 'true'
+    if: needs.changes.outputs.root == 'true' || needs.changes.outputs.tree-sitter-xpath == 'true' || needs.changes.outputs.odk-xpath == 'true'
     runs-on: 'ubuntu-latest'
 
     strategy:
       matrix:
-        node-version: ['18.18.1', '20.8.0']
+        target: ['Node']
+        node-version: ['18.18.2', '20.8.1']
+        include:
+          - target: 'Web'
+            node-version: '20.8.1'
+            browser: chromium
+          - target: 'Web'
+            node-version: '20.8.1'
+            browser: firefox
+          - target: 'Web'
+            node-version: '20.8.1'
+            browser: webkit
 
     steps:
       - uses: 'actions/checkout@v3'
@@ -208,7 +225,63 @@ jobs:
         id: cache-install
         with:
           path: |
-            ~/.cache/ms-playwright
+            node_modules
+            **/node_modules
+          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', 'examples/*/yarn.lock', 'packages/*/yarn.lock') }}
+          fail-on-cache-miss: true
+
+      - uses: 'actions/cache@v3'
+        id: cache-build
+        with:
+          path: |
+            examples/*/dist
+            packages/*/dist
+            packages/tree-sitter-xpath/grammar.js
+            packages/tree-sitter-xpath/src/grammar.json
+            packages/tree-sitter-xpath/src/parser.c
+            packages/tree-sitter-xpath/src/tree_sitter/parser.h
+            packages/tree-sitter-xpath/tree-sitter-xpath.wasm
+            packages/tree-sitter-xpath/types
+          key: build-${{ matrix.node-version }}-${{ github.sha }}
+          fail-on-cache-miss: true
+
+      - uses: szenius/set-timezone@v1.2
+        with:
+          timezoneLinux: ${{ env.TZ }}
+          timezoneMacos: ${{ env.TZ }}
+          timezoneWindows: ${{ env.TZ }}
+
+      - if: ${{ matrix.target == 'Node' }}
+        run: |
+          yarn workspace @odk/xpath test:types
+          yarn workspace @odk/xpath test-node:jsdom
+
+      - if: ${{ matrix.target == 'Web' }}
+        run: |
+          yarn playwright install ${{ matrix.browser }} --with-deps
+          yarn workspace @odk/xpath test-browser:${{ matrix.browser }}
+
+  test-tree-sitter-xpath:
+    needs: ['install-and-build', 'changes']
+    if: needs.changes.outputs.root == 'true' || needs.changes.outputs.tree-sitter-xpath == 'true'
+    runs-on: 'ubuntu-latest'
+
+    strategy:
+      matrix:
+        node-version: ['18.18.2', '20.8.1']
+
+    steps:
+      - uses: 'actions/checkout@v3'
+
+      - uses: 'volta-cli/action@v4'
+        with:
+          node-version: '${{ matrix.node-version }}'
+          yarn-version: '1.22.19'
+
+      - uses: 'actions/cache@v3'
+        id: cache-install
+        with:
+          path: |
             node_modules
             **/node_modules
           key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', 'examples/*/yarn.lock', 'packages/*/yarn.lock') }}
