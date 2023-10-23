@@ -157,7 +157,18 @@ jobs:
 
     strategy:
       matrix:
+        target: ['Node']
         node-version: ['18.18.2', '20.8.1']
+        include:
+          - target: 'Web'
+            node-version: '20.8.1'
+            browser: chromium
+          - target: 'Web'
+            node-version: '20.8.1'
+            browser: firefox
+          - target: 'Web'
+            node-version: '20.8.1'
+            browser: webkit
 
     steps:
       - uses: 'actions/checkout@v3'
@@ -191,7 +202,17 @@ jobs:
           key: build-${{ matrix.node-version }}-${{ github.sha }}
           fail-on-cache-miss: true
 
-      - run: 'yarn workspace @odk/web-forms test'
+      - if: ${{ matrix.target == 'Node' }}
+        run: 'yarn workspace @odk/xpath test:types'
+
+      - if: ${{ matrix.target == 'Node' }}
+        run: 'yarn workspace @odk/xpath test-node:jsdom'
+
+      - if: ${{ matrix.target == 'Web' }}
+        run: 'yarn playwright install ${{ matrix.browser }} --with-deps'
+
+      - if: ${{ matrix.target == 'Web' }}
+        run: 'yarn workspace @odk/xpath test-browser:${{ matrix.browser }}'
 
   test-odk-xpath:
     needs: ['install-and-build', 'changes']
@@ -252,14 +273,16 @@ jobs:
           timezoneWindows: ${{ env.TZ }}
 
       - if: ${{ matrix.target == 'Node' }}
-        run: |
-          yarn workspace @odk/xpath test:types
-          yarn workspace @odk/xpath test-node:jsdom
+        run: 'yarn workspace @odk/xpath test:types'
+
+      - if: ${{ matrix.target == 'Node' }}
+        run: 'yarn workspace @odk/xpath test-node:jsdom'
 
       - if: ${{ matrix.target == 'Web' }}
-        run: |
-          yarn playwright install ${{ matrix.browser }} --with-deps
-          yarn workspace @odk/xpath test-browser:${{ matrix.browser }}
+        run: 'yarn playwright install ${{ matrix.browser }} --with-deps'
+
+      - if: ${{ matrix.target == 'Web' }}
+        run: 'yarn workspace @odk/xpath test-browser:${{ matrix.browser }}'
 
   test-tree-sitter-xpath:
     needs: ['install-and-build', 'changes']
