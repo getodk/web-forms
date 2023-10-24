@@ -73,6 +73,7 @@ const configs = [
 					'./tsconfig.vendor-types.json',
 					'./examples/*/tsconfig.json',
 					'./packages/**/tsconfig.json',
+					'./vendor-packages/**/tsconfig.json',
 					'./scripts/tsconfig.json',
 				],
 				tsconfigRootDir: __dirname,
@@ -176,6 +177,7 @@ const configs = [
 			'packages/*/playwright.config.ts',
 			'packages/*/vite.config.ts',
 			'packages/*/tools/**/*',
+			'vendor-packages/*/vite.config.ts',
 
 			// TODO: in theory, all e2e tests (if they continue to be run with
 			// Playwright) are technically run in a "Node" environment, although

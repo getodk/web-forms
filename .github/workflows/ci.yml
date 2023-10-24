@@ -90,6 +90,7 @@ jobs:
           path: |
             examples/*/dist
             packages/*/dist
+            vendor-packages/*/dist
             packages/tree-sitter-xpath/grammar.js
             packages/tree-sitter-xpath/src/grammar.json
             packages/tree-sitter-xpath/src/parser.c
@@ -139,6 +140,7 @@ jobs:
           path: |
             examples/*/dist
             packages/*/dist
+            vendor-packages/*/dist
             packages/tree-sitter-xpath/grammar.js
             packages/tree-sitter-xpath/src/grammar.json
             packages/tree-sitter-xpath/src/parser.c
@@ -193,6 +195,7 @@ jobs:
           path: |
             examples/*/dist
             packages/*/dist
+            vendor-packages/*/dist
             packages/tree-sitter-xpath/grammar.js
             packages/tree-sitter-xpath/src/grammar.json
             packages/tree-sitter-xpath/src/parser.c
@@ -257,6 +260,7 @@ jobs:
           path: |
             examples/*/dist
             packages/*/dist
+            vendor-packages/*/dist
             packages/tree-sitter-xpath/grammar.js
             packages/tree-sitter-xpath/src/grammar.json
             packages/tree-sitter-xpath/src/parser.c
@@ -316,6 +320,7 @@ jobs:
           path: |
             examples/*/dist
             packages/*/dist
+            vendor-packages/*/dist
             packages/tree-sitter-xpath/grammar.js
             packages/tree-sitter-xpath/src/grammar.json
             packages/tree-sitter-xpath/src/parser.c

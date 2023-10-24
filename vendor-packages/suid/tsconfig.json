@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": ["src"],
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": false,
+    "declarationDir": "./dist",
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js",
+    "outDir": "./dist"
+  }
+}
