@@ -55,6 +55,7 @@ const configs = [
 			'packages/tree-sitter-xpath/grammar.js',
 			'packages/tree-sitter-xpath/bindings/**/*',
 			'packages/tree-sitter-xpath/types/**/*',
+			'vendor-packages/**/dist/**/*',
 			'**/vendor',
 		],
 	},
