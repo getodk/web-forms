@@ -206,16 +206,16 @@ jobs:
           fail-on-cache-miss: true
 
       - if: ${{ matrix.target == 'Node' }}
-        run: 'yarn workspace @odk/xpath test:types'
+        run: 'yarn workspace @odk/web-forms test:types'
 
       - if: ${{ matrix.target == 'Node' }}
-        run: 'yarn workspace @odk/xpath test-node:jsdom'
+        run: 'yarn workspace @odk/web-forms test-node:jsdom'
 
       - if: ${{ matrix.target == 'Web' }}
         run: 'yarn playwright install ${{ matrix.browser }} --with-deps'
 
       - if: ${{ matrix.target == 'Web' }}
-        run: 'yarn workspace @odk/xpath test-browser:${{ matrix.browser }}'
+        run: 'yarn workspace @odk/web-forms test-browser:${{ matrix.browser }}'
 
   test-odk-xpath:
     needs: ['install-and-build', 'changes']
