@@ -51,6 +51,6 @@ export class UpsertableMap<K, V> extends Map<K, V> {
 			return value;
 		}
 
-		return current;
+		return fromSentinelValue(current);
 	}
 }

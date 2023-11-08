@@ -157,20 +157,22 @@ describe('UpsertableMap', () => {
 		it('preserves an existing null value', () => {
 			const unassignedValue = new Value('not set');
 
-			nullishTestMap?.upsert(initialNullValueKey, () => unassignedValue);
+			const upserted = nullishTestMap?.upsert(initialNullValueKey, () => unassignedValue);
 
 			const actual = nullishTestMap?.get(initialNullValueKey);
 
+			expect(upserted).to.be.null;
 			expect(actual).to.be.null;
 		});
 
 		it('preserves an existing undefined value', () => {
 			const unassignedValue = new Value('not set');
 
-			nullishTestMap?.upsert(initialUndefinedValueKey, () => unassignedValue);
+			const upserted = nullishTestMap?.upsert(initialUndefinedValueKey, () => unassignedValue);
 
 			const actual = nullishTestMap?.get(initialUndefinedValueKey);
 
+			expect(upserted).to.be.undefined;
 			expect(actual).to.be.undefined;
 		});
 	});

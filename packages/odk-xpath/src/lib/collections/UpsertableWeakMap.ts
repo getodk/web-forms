@@ -56,6 +56,6 @@ export class UpsertableWeakMap<K extends object, V> extends WeakMap<K, V> {
 			return value;
 		}
 
-		return current;
+		return fromSentinelValue(current);
 	}
 }
