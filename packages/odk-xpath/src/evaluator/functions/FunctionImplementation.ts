@@ -7,12 +7,12 @@
 // - Type hints -> anything?
 // - TS types for arity -> expression nullishness?
 
-import { UnreachableError } from '../../lib/error/UnreachableError.ts';
+import type { Context } from '../../context/Context.ts';
 import type { Evaluation } from '../../evaluations/Evaluation.ts';
+import type { EvaluationType } from '../../evaluations/EvaluationType.ts';
 import { LocationPathEvaluation } from '../../evaluations/LocationPathEvaluation.ts';
 import type { IterableReadonlyTuple } from '../../lib/collections/types';
-import type { Context } from '../../context/Context.ts';
-import type { EvaluationType } from '../../evaluations/EvaluationType.ts';
+import { UnreachableError } from '../../lib/error/UnreachableError.ts';
 
 export class UnknownFunctionError extends Error {
 	constructor(functionName: string) {
@@ -102,9 +102,12 @@ export class FunctionImplementation<Length extends number> {
 	readonly arity: FunctionArity;
 	readonly localName: string | null;
 
+	protected readonly callable: FunctionCallable;
+
 	constructor(
 		readonly signature: FunctionSignature<Length>,
-		readonly call: FunctionCallable,
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		runtimeImplementation: FunctionCallable | FunctionImplementation<any>,
 		options: FunctionImplementationOptions = {}
 	) {
 		// TODO: *validate signature order!*
@@ -142,11 +145,21 @@ export class FunctionImplementation<Length extends number> {
 		);
 
 		this.arity = arity;
-
 		this.localName = options.localName ?? null;
+
+		this.callable =
+			runtimeImplementation instanceof FunctionImplementation
+				? runtimeImplementation.callable
+				: runtimeImplementation;
 	}
 
-	validateArguments<Arguments extends readonly EvaluableArgument[]>(
+	call(context: LocationPathEvaluation, args: readonly EvaluableArgument[]): Evaluation {
+		this.validateArguments(args);
+
+		return this.callable(context, args);
+	}
+
+	protected validateArguments<Arguments extends readonly EvaluableArgument[]>(
 		args: Arguments
 	): asserts args is ValidArguments<Arguments, true> {
 		const { arity, signature } = this;

@@ -10,6 +10,9 @@ describe.skip('custom XPath functions', () => {
 		};
 	}
 
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore - unless/until we explicitly support custom functions and test
+	// the functionality directly
 	interface CustomFunctionEvaluatorTestContext extends TestContext {
 		readonly evaluator: CustomFunctionEvaluator;
 	}

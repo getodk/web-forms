@@ -1,6 +1,7 @@
 import { expect } from 'vitest';
 import { Evaluator } from '../src/index.ts';
-import type { AnyXPathEvaluator, XPathResultType } from '../src/shared/interface.ts';
+import type { AnyParentNode } from '../src/lib/dom/types.ts';
+import type { XPathResultType } from '../src/shared/interface.ts';
 import { xpathParser } from './parser.ts';
 
 declare global {
@@ -38,29 +39,36 @@ interface EvaluationAssertionOptions {
 
 interface TestContextOptions {
 	readonly namespaceResolver?: Nullish<XPathNSResolver>;
+	readonly rootNode?: (document: XMLDocument) => AnyParentNode;
 }
 
 export class TestContext {
 	readonly document: XMLDocument;
-	readonly evaluator: AnyXPathEvaluator;
-	readonly namespaceResolver: XPathNSResolver;
+	readonly defaultContextNode: AnyParentNode;
+	readonly evaluator: Evaluator;
+	readonly namespaceResolver: XPathNSResolver | null = null;
 
 	constructor(
 		readonly sourceXML?: string,
 		options: TestContextOptions = {}
 	) {
 		const xml = sourceXML ?? '<root/>';
+		const document: XMLDocument = domParser.parseFromString(xml, 'text/xml');
+		const rootNode = options.rootNode?.(document);
+
+		this.defaultContextNode = rootNode ?? document;
 
 		const evaluator = new Evaluator(xpathParser, {
 			parseOptions: {
 				attemptErrorRecovery: true,
 			},
+			rootNode,
 			timeZoneId: TZ,
 		});
 
-		this.document = domParser.parseFromString(xml, 'text/xml');
+		this.document = document;
 		this.evaluator = evaluator;
-		this.namespaceResolver = options.namespaceResolver ?? namespaceResolver;
+		this.namespaceResolver = options.namespaceResolver ?? null;
 	}
 
 	evaluate(
@@ -70,7 +78,7 @@ export class TestContext {
 		// eslint-disable-next-line @typescript-eslint/no-shadow
 		namespaceResolver?: Nullish<XPathNSResolver>
 	): XPathResult {
-		const context = contextNode ?? this.document;
+		const context = contextNode ?? this.defaultContextNode;
 
 		return this.evaluator.evaluate(
 			expression,
@@ -83,12 +91,7 @@ export class TestContext {
 	evaluateNodeSet(expression: string, contextNode?: Nullish<Node>): readonly Node[] {
 		const nodes: Node[] = [];
 
-		const result = this.evaluate(
-			expression,
-			contextNode,
-			XPathResult.ORDERED_NODE_ITERATOR_TYPE,
-			namespaceResolver
-		);
+		const result = this.evaluate(expression, contextNode, XPathResult.ORDERED_NODE_ITERATOR_TYPE);
 
 		let node: Node | null;
 
@@ -102,12 +105,7 @@ export class TestContext {
 	evaluateUnorderedNodeSet(expression: string, contextNode?: Nullish<Node>): readonly Node[] {
 		const nodes: Node[] = [];
 
-		const result = this.evaluate(
-			expression,
-			contextNode,
-			XPathResult.UNORDERED_NODE_ITERATOR_TYPE,
-			namespaceResolver
-		);
+		const result = this.evaluate(expression, contextNode, XPathResult.UNORDERED_NODE_ITERATOR_TYPE);
 
 		let node: Node | null;
 

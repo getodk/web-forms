@@ -4,11 +4,12 @@ import type {
 	EvaluationContext,
 	EvaluationContextTreeWalkers,
 } from '../context/EvaluationContext.ts';
+import type { XFormsContext } from '../context/xforms/XFormsContext.ts';
 import type { Evaluator } from '../evaluator/Evaluator.ts';
 import type { FilterPathExpressionEvaluator } from '../evaluator/expression/FilterPathExpressionEvaluator.ts';
 import type { LocationPathEvaluator } from '../evaluator/expression/LocationPathEvaluator.ts';
 import type { LocationPathExpressionEvaluator } from '../evaluator/expression/LocationPathExpressionEvaluator.ts';
-import type { FunctionLibrary } from '../evaluator/functions/FunctionLibrary.ts';
+import type { FunctionLibraryCollection } from '../evaluator/functions/FunctionLibraryCollection.ts';
 import type { NodeSetFunction } from '../evaluator/functions/NodeSetFunction.ts';
 import type { AnyStep } from '../evaluator/step/Step.ts';
 import { isAttributeNode, isElementNode, isNamespaceAttribute } from '../lib/dom/predicates.ts';
@@ -138,7 +139,7 @@ type ArbitraryNodesTemporaryCallee =
 // sub-structures to satisfy the various interfaces expecting some or all of
 // this behavior/structure.
 export class LocationPathEvaluation
-	implements Evaluation<'NODE'>, Context, Iterable<LocationPathEvaluation>
+	implements Context, Evaluation<'NODE'>, Iterable<LocationPathEvaluation>
 {
 	// --- Evaluation ---
 	readonly type = 'NODE';
@@ -147,9 +148,15 @@ export class LocationPathEvaluation
 
 	// --- Context ---
 	readonly evaluator: Evaluator;
+	readonly evaluationContextNode: ContextNode;
 	readonly context: LocationPathEvaluation = this;
 	readonly contextDocument: ContextDocument;
 	readonly rootNode: ContextParentNode;
+	readonly xformsContext: XFormsContext | null;
+
+	get currentLanguage(): string | null {
+		return this.evaluator.getCurrentLanguage();
+	}
 
 	nodes: Iterable<ContextNode>;
 
@@ -166,7 +173,7 @@ export class LocationPathEvaluation
 	protected readonly optionsContextSize?: () => number;
 	protected readonly initializedContextPosition: number;
 
-	readonly functionLibrary: FunctionLibrary;
+	readonly functions: FunctionLibraryCollection;
 	readonly namespaceResolver: XPathNamespaceResolverObject;
 
 	readonly treeWalkers: EvaluationContextTreeWalkers;
@@ -217,23 +224,27 @@ export class LocationPathEvaluation
 		contextNodes: Iterable<ContextNode>,
 		options: LocationPathEvaluationOptions = {}
 	) {
+		this.evaluationContextNode = parentContext.evaluationContextNode;
+
 		const {
 			evaluator,
 			contextDocument,
-			functionLibrary,
+			functions,
 			namespaceResolver,
 			rootNode,
 			timeZone,
 			treeWalkers,
+			xformsContext,
 		} = parentContext;
 
 		this.evaluator = evaluator;
 		this.contextDocument = contextDocument;
-		this.functionLibrary = functionLibrary;
+		this.functions = functions;
 		this.namespaceResolver = namespaceResolver;
 		this.rootNode = rootNode;
 		this.timeZone = timeZone;
 		this.treeWalkers = treeWalkers;
+		this.xformsContext = xformsContext;
 
 		const [nodes] = tee(distinct(contextNodes));
 

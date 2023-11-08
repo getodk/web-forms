@@ -4,6 +4,8 @@ import { UnreachableError } from '../../src/lib/error/UnreachableError.ts';
 import { xml } from '../../src/test-factories.ts';
 import { xpathParser } from '../parser.ts';
 
+// TODO: createTestContext now supports passing `rootNode` option. Not sure why I
+// didn't do that for these tests in the first place...
 describe("Specifying an Evaluator's root node", () => {
 	const DEPTH_3_TEXT = 'text node in element at depth 3, in the first nested root';
 	const DEPTH_2_TEXT = 'text node in an element at depth 2, in the second nested root';

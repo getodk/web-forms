@@ -6,6 +6,6 @@ export class FunctionAlias<Length extends number> extends FunctionImplementation
 		baseImplementation: FunctionImplementation<Length>,
 		options: FunctionImplementationOptions = {}
 	) {
-		super(baseImplementation.signature, baseImplementation.call, options);
+		super(baseImplementation.signature, baseImplementation, options);
 	}
 }

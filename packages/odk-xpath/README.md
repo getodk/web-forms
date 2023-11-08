@@ -91,11 +91,16 @@ Likewise, `result` is API-compatible with the standard DOM [`XPathResult`](https
 
 We intend to support the full ODK XForms function library, but support is currently incomplete. The following functions are not yet supported:
 
-- `current`
 - `indexed-repeat`
-- `instance`
 - `pulldata`
-- `version`
+
+The following JavaRosa namespaced functions (prefixed `jr:` by convention) are also not yet supported:
+
+- `jr:choice-name`
+
+### Enketo
+
+Enketo Express supports a `version` function, but intent for its inclusion is not clear. This function is also not described in any known spec. As such, the function is also not currently supported.
 
 ### Non-browser environments
 

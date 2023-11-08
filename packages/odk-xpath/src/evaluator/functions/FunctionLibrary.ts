@@ -68,10 +68,6 @@ export class FunctionLibrary {
 			throw new UnknownFunctionError(localName);
 		}
 
-		const fn: FunctionImplementation<number> = implementation;
-
-		fn.validateArguments(args);
-
 		return implementation.call(context, args);
 	}
 

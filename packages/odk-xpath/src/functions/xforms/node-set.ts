@@ -27,8 +27,38 @@ export const countNonEmpty = new NumberFunction(
 	{ localName: 'count-non-empty' }
 );
 
+export const current = new NodeSetFunction([], (context) => {
+	return [context.evaluationContextNode];
+});
+
+// TODO: This bypasses the `Evaluator` option to specify `rootNode`. This
+// results in **correct** behavior (for the function itself), but raises
+// concerns about other ways that option might fail to meet isolation
+// expectations. This is probably fine insofar as the option is used for XForms
+// purposes where this mechanism to break isolation has known consequences (none
+// in this case), but probably warrants a warning in the more general case.
+export const instance = new NodeSetFunction(
+	[{ arityType: 'required' }],
+	(context, [idExpression]) => {
+		const { xformsContext } = context;
+
+		if (xformsContext == null) {
+			throw new Error('instance not available: not an XForm');
+		}
+
+		const id = idExpression!.evaluate(context).toString();
+		const instanceElement = xformsContext.secondaryInstances.get(id);
+
+		if (instanceElement == null) {
+			return [];
+		}
+
+		return [instanceElement];
+	}
+);
+
 // TODO: Only kinda sorta a node-set fn. Not a boolean fn either though! Returns
-// a string... where // does this belong?
+// a string... where does this belong?
 export const once = new StringFunction(
 	[{ arityType: 'required' }],
 	(context, [expression]): string => {
