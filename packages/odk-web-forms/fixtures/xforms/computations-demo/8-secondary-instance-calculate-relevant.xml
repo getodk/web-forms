@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<h:html xmlns="http://www.w3.org/2002/xforms"
+  xmlns:ev="http://www.w3.org/2001/xml-events"
+  xmlns:h="http://www.w3.org/1999/xhtml"
+  xmlns:jr="http://openrosa.org/javarosa"
+  xmlns:orx="http://openrosa.org/xforms/"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <h:head>
+    <h:title>Secondary instance (calculate &amp; relevant)</h:title>
+    <model>
+      <instance>
+        <root id="calculate-secondary-instance">
+          <index />
+          <calculate-from-secondary />
+          <relevant-from-secondary-1></relevant-from-secondary-1>
+          <relevant-from-secondary-2></relevant-from-secondary-2>
+          <meta>
+            <instanceID/>
+          </meta>
+        </root>
+      </instance>
+      <instance id="other">
+        <root>
+          <item>
+            <a>a1</a>
+          </item>
+          <item>
+            <a>a2</a>
+          </item>
+          <item>
+            <a>a3</a>
+          </item>
+          <item>
+            <a>a4</a>
+          </item>
+          <item>
+            <a>a5</a>
+          </item>
+        </root>
+      </instance>
+      <bind nodeset="/root/index"/>
+      <bind nodeset="/root/calculate-from-secondary" calculate="instance('other')/root/item[position() = /root/index]/a"/>
+      <bind nodeset="/root/relevant-from-secondary-1" relevant="instance('other')/root/item/a = 'a2'"/>
+      <bind nodeset="/root/relevant-from-secondary-2" relevant="count(instance('other')/root/item/a) &lt; 2"/>
+      <bind nodeset="/root/meta/instanceID" type="string"/>
+    </model>
+  </h:head>
+  <h:body>
+    <input ref="/root/index">
+      <label>1. Choose index (1-5) for an item in the secondary instance</label>
+    </input>
+    <input ref="/root/calculate-from-secondary">
+      <label>2. Calculates value from secondary instance</label>
+    </input>
+    <input ref="/root/relevant-from-secondary-1">
+      <label>3. Relevant if secondary has an item with a2</label>
+    </input>
+    <input ref="/root/relevant-from-secondary-2">
+      <label>4. Relevant if secondary has &lt; 2 items (i.e. false currently)</label>
+    </input>
+  </h:body>
+</h:html>

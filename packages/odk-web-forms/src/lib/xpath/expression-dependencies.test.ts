@@ -52,4 +52,18 @@ describe('XPath expression dependencies', () => {
 			expect(dependencies).toEqual(expected);
 		}
 	);
+
+	it('resolves dependencies with predicates', () => {
+		const expression = '/root/foo[true()]';
+		const dependencies = getNodesetDependencies(expression);
+
+		expect(dependencies).toEqual(['/root/foo']);
+	});
+
+	it('resolves dependencies from predicates', () => {
+		const expression = '/root/foo[/root/bar = "quux"]';
+		const dependencies = getNodesetDependencies(expression);
+
+		expect(dependencies).toEqual(['/root/foo', '/root/bar']);
+	});
 });
