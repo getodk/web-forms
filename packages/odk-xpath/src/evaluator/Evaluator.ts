@@ -116,9 +116,7 @@ export class Evaluator implements AnyXPathEvaluator {
 				  }
 				: namespaceResolver;
 
-		const xformsContext = this.inferXFormsContext
-			? XFormsContext.from(contextNode, this.currentLanguage)
-			: null;
+		const xformsContext = this.inferXFormsContext ? XFormsContext.from(contextNode) : null;
 		const contextOptions = partialOmitNullish({
 			...this.sharedContextOptions,
 			namespaceResolver: evaluationContextNamespaceResolver,

@@ -1,26 +1,21 @@
-import { Show, Suspense, createEffect, createResource, createSignal, on } from 'solid-js';
+import {
+	Show,
+	Suspense,
+	createEffect,
+	createMemo,
+	createResource,
+	createSignal,
+	on,
+	untrack,
+} from 'solid-js';
 import { Divider, Stack } from 'suid/material';
 import { DemoFixturesList, type SelectedDemoFixture } from './components/Demo/DemoFixturesList.tsx';
-import { LocalizationProvider } from './components/LocalizationProvider.tsx';
 import { Page } from './components/Page/Page.tsx';
 import { ThemeProvider } from './components/ThemeProvider.tsx';
 import { XFormDetails } from './components/XForm/XFormDetails.tsx';
 import { XFormView } from './components/XForm/XFormView.tsx';
-import type { Localization } from './lib/i18n-l10n/types.ts';
 import { XFormDefinition } from './lib/xform/XFormDefinition.ts';
 import { XFormEntry } from './lib/xform/XFormEntry.ts';
-
-// TODO: this is just to populate the menu for now
-const localizations: readonly Localization[] = [
-	{
-		locale: 'en-us',
-		name: 'English (US)',
-	},
-	{
-		locale: 'es',
-		name: 'Spanish',
-	},
-];
 
 export const App = () => {
 	const [fixture, setFixture] = createSignal<SelectedDemoFixture | null>(null);
@@ -31,8 +26,23 @@ export const App = () => {
 	// TODO: more fixtures are likely incoming rather soon, it'll make sense to have
 	// an app entry to correspond to that, and allow selection of particular fixtures,
 	// perhaps arbitrary forms as well.
-	const [fixtureSourceXML, { refetch }] = createResource(async () => {
-		return await Promise.resolve(fixture()?.xml);
+	const [fixtureSourceXML, { refetch }] = createResource(() => {
+		return fixture()?.xml ?? null;
+	});
+	const formInit = createMemo(() => {
+		const sourceXML = fixtureSourceXML();
+
+		if (sourceXML == null) {
+			return null;
+		}
+
+		const definition = new XFormDefinition(sourceXML);
+		const entry = untrack(() => new XFormEntry(definition));
+
+		return {
+			definition,
+			entry,
+		};
 	});
 
 	createEffect(
@@ -43,30 +53,25 @@ export const App = () => {
 
 	return (
 		<ThemeProvider>
-			<LocalizationProvider localizations={localizations}>
-				<Page>
-					<DemoFixturesList setDemoFixture={setFixture} />
-					<Suspense fallback={<p>Loading…</p>}>
-						<Show when={fixtureSourceXML()} keyed={true}>
-							{(sourceXML) => {
-								const definition = new XFormDefinition(sourceXML);
-								const entry = new XFormEntry(definition);
-
-								return (
-									<Stack spacing={4}>
+			<Page entry={formInit()?.entry ?? null}>
+				<DemoFixturesList setDemoFixture={setFixture} />
+				<Suspense fallback={<p>Loading…</p>}>
+					<Show when={formInit()} keyed={true}>
+						{({ definition, entry }) => {
+							return (
+								<Stack spacing={4}>
+									<Divider />
+									<Stack spacing={7}>
+										<XFormView entry={entry} />
 										<Divider />
-										<Stack spacing={7}>
-											<XFormView entry={entry} />
-											<Divider />
-											<XFormDetails definition={definition} entry={entry} />
-										</Stack>
+										<XFormDetails definition={definition} entry={entry} />
 									</Stack>
-								);
-							}}
-						</Show>
-					</Suspense>
-				</Page>
-			</LocalizationProvider>
+								</Stack>
+							);
+						}}
+					</Show>
+				</Suspense>
+			</Page>
 		</ThemeProvider>
 	);
 };

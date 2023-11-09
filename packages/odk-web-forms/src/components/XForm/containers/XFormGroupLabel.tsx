@@ -47,7 +47,13 @@ export const XFormGroupLabel = (props: XFormGroupLabelProps) => {
 					</Switch>
 				</ClippedGroupToggleIconContainer>
 
-				<XFormLabel as="span" id={props.id} binding={props.binding} label={props.label} />
+				<XFormLabel
+					as="span"
+					id={props.id}
+					binding={props.binding}
+					entry={props.entry}
+					label={props.label}
+				/>
 			</GroupLabelStack>
 		</PlainTextButton>
 	);

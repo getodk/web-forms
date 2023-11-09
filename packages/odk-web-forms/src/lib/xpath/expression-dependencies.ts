@@ -13,7 +13,7 @@ import { xpathParser } from './parser.ts';
 
 // TODO: this should probably be derived from the function definitions themselves.
 // They don't actually support that (yet), and some are not yet implemented.
-const nodesetReturningFunctionNames = ['id', 'instance', 'current', 'randomize'] as const;
+const nodesetReturningFunctionNames = ['id', 'current', 'randomize'] as const;
 
 type NodesetReturningFunctionName = CollectionValues<typeof nodesetReturningFunctionNames>;
 

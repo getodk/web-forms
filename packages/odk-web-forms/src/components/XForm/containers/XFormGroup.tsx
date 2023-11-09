@@ -27,31 +27,34 @@ export const XFormGroup = (props: XFormGroupProps) => {
 	const id = createUniqueId();
 
 	return (
-		<NestedGroupBox as="section">
-			<Show when={groupBinding()} keyed={true}>
-				{(binding) => (
-					<Show when={props.viewControl.label} keyed={true}>
-						{(label) => (
-							<XFormGroupLabel
-								id={id}
-								binding={binding}
-								label={label}
-								isGroupVisible={isGroupVisible()}
-								setGroupVisible={setGroupVisible}
-							/>
-						)}
-					</Show>
-				)}
-			</Show>
-			<Show when={isGroupVisible()}>
-				<XFormControlStack>
-					<For each={props.viewControl.children}>
-						{(child) => {
-							return <XFormControl entry={props.entry} viewControl={child} />;
-						}}
-					</For>
-				</XFormControlStack>
-			</Show>
-		</NestedGroupBox>
+		<Show when={groupBinding()} keyed={true}>
+			{(binding) => {
+				return (
+					<NestedGroupBox as="section">
+						<Show when={props.viewControl.label} keyed={true}>
+							{(label) => (
+								<XFormGroupLabel
+									id={id}
+									binding={binding}
+									entry={props.entry}
+									label={label}
+									isGroupVisible={isGroupVisible()}
+									setGroupVisible={setGroupVisible}
+								/>
+							)}
+						</Show>
+						<Show when={isGroupVisible()}>
+							<XFormControlStack>
+								<For each={props.viewControl.children}>
+									{(child) => {
+										return <XFormControl entry={props.entry} viewControl={child} />;
+									}}
+								</For>
+							</XFormControlStack>
+						</Show>
+					</NestedGroupBox>
+				);
+			}}
+		</Show>
 	);
 };

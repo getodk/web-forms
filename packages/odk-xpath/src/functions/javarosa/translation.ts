@@ -11,7 +11,7 @@ export const itext = new StringFunction(
 
 		const id = idExpression!.evaluate(context).toString();
 
-		return xformsContext.translations.itext(id);
+		return xformsContext.translations.itext(context, id);
 	},
 	{ localName: 'itext' }
 );

@@ -1,6 +1,6 @@
 // TODO: lots of this should get broken out
 
-import { createSignal, useContext } from 'solid-js';
+import { createSignal } from 'solid-js';
 import { For, Show } from 'solid-js/web';
 import Check from 'suid/icons-material/Check';
 import ExpandMore from 'suid/icons-material/ExpandMore';
@@ -14,7 +14,7 @@ import {
 	Typography,
 	styled,
 } from 'suid/material';
-import { localizationContext } from './LocalizationProvider.tsx';
+import type { XFormEntry } from '../lib/xform/XFormEntry.ts';
 import { PageMenuButton } from './styled/PageMenuButton.tsx';
 
 const FormLanguageMenuButtonIcon = styled(Language)(({ theme }) => ({
@@ -29,19 +29,23 @@ const MenuItemSmallTypography = styled(Typography)({
 	fontSize: '0.875rem',
 });
 
-export const FormLanguageMenu = () => {
+interface FormLanguageMenuProps {
+	readonly entry: XFormEntry | null;
+}
+
+export const FormLanguageMenu = (props: FormLanguageMenuProps) => {
 	let buttonRef: HTMLButtonElement;
 
-	const context = useContext(localizationContext);
 	const [isOpen, setIsOpen] = createSignal(false);
-	const [selected, setSelected] = createSignal(context.localizations[0] ?? null);
 	const closeMenu = () => {
 		setIsOpen(false);
 	};
 
 	return (
-		<Show when={selected()} keyed={true}>
-			{(currentLocalization) => {
+		<Show when={props.entry?.isTranslated && props.entry} keyed={true}>
+			{(entry) => {
+				const currentLanguage = () => entry.getCurrentLanguage();
+
 				return (
 					<div>
 						<PageMenuButton
@@ -57,7 +61,7 @@ export const FormLanguageMenu = () => {
 						>
 							<Stack alignItems="center" direction="row">
 								<FormLanguageMenuButtonIcon fontSize="small" />
-								<span style={{ 'line-height': 1 }}>{currentLocalization.name}</span>
+								<span style={{ 'line-height': 1 }}>{currentLanguage()}</span>
 								<FormLanguageMenuExpandMoreIcon fontSize="small" />
 							</Stack>
 						</PageMenuButton>
@@ -82,16 +86,16 @@ export const FormLanguageMenu = () => {
 								horizontal: 'right',
 							}}
 						>
-							<For each={context.localizations}>
-								{(localization) => {
-									const isSelected = () => localization === selected();
+							<For each={entry.getLanguages()}>
+								{(language) => {
+									const isSelected = () => language === currentLanguage();
 
 									return (
 										<MenuItem
 											dense={true}
 											selected={isSelected()}
 											onClick={() => {
-												setSelected(localization);
+												entry.setCurrentLanguage(language);
 												closeMenu();
 											}}
 										>
@@ -102,7 +106,7 @@ export const FormLanguageMenu = () => {
 											</Show>
 
 											<ListItemText inset={!isSelected()} disableTypography={true}>
-												<MenuItemSmallTypography>{localization.name}</MenuItemSmallTypography>
+												<MenuItemSmallTypography>{language}</MenuItemSmallTypography>
 											</ListItemText>
 										</MenuItem>
 									);

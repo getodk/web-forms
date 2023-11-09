@@ -1,4 +1,5 @@
 import { UpsertableWeakMap } from '../../lib/collections/UpsertableWeakMap.ts';
+import type { Context } from '../Context.ts';
 
 type ItextForm = string;
 
@@ -139,17 +140,12 @@ class NotFoundTranslation implements Translation {
 const xformsTranslations = new UpsertableWeakMap<Element, XFormsTranslations>();
 
 export class XFormsTranslations {
-	static from(model: Element, currentLanguage: string | null): XFormsTranslations {
-		const translations = xformsTranslations.upsert(model, () => new this(model));
-		translations.setLanguage(currentLanguage);
-
-		return translations;
+	static from(model: Element): XFormsTranslations {
+		return xformsTranslations.upsert(model, () => new this(model));
 	}
 
 	protected readonly byLanguage: ReadonlyMap<TranslationLanguage, Translation>;
-	protected readonly defaultLanguage: Translation;
-
-	protected currentLanguage: Translation;
+	protected readonly defaultTranslation: Translation;
 
 	protected constructor(model: Element) {
 		const translations = Array.from(
@@ -173,23 +169,19 @@ export class XFormsTranslations {
 
 		const defaultLanguage = defaultTranslations[0] ?? translations[0] ?? new NotFoundTranslation();
 
-		this.defaultLanguage = defaultLanguage;
-		this.currentLanguage = defaultLanguage;
+		this.defaultTranslation = defaultLanguage;
 	}
 
-	itext(id: string): string {
-		return this.currentLanguage.textValues.get(id)?.primaryvalue ?? '';
-	}
+	itext(context: Context, id: string): string {
+		const { defaultTranslation } = this;
+		const { currentLanguage } = context;
+		const fallbackResult = `[itext: ${id}]`;
 
-	setLanguage(language: TranslationLanguage | null): Translation {
-		const translation = language == null ? this.defaultLanguage : this.byLanguage.get(language);
+		const translation =
+			currentLanguage == null
+				? defaultTranslation
+				: this.byLanguage.get(currentLanguage) ?? defaultTranslation;
 
-		if (translation == null) {
-			throw new Error(`Language not supported: ${language}`);
-		}
-
-		this.currentLanguage = translation;
-
-		return translation;
+		return translation.textValues.get(id)?.primaryvalue ?? fallbackResult;
 	}
 }

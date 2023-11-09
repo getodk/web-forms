@@ -1,21 +1,35 @@
-import type { XFormViewChild } from './XFormViewChild';
+import type { XFormEntryBinding } from './XFormEntryBinding.ts';
+import type { XFormViewChild } from './XFormViewChild.ts';
 
 interface BaseXFormViewLabelPart {
+	readonly type: 'dynamic' | 'static';
 	readonly expression: string | null;
 	readonly textContent: string | null;
+
+	evaluate(binding: XFormEntryBinding): string;
 }
 
 // Supports `<label ref="expr">`, also anticipating `<output>`
 class XFormViewLabelDynamicPart implements BaseXFormViewLabelPart {
+	readonly type = 'dynamic';
 	readonly textContent: null = null;
 
 	constructor(readonly expression: string) {}
+
+	evaluate(binding: XFormEntryBinding): string {
+		return binding.evaluateTranslatedExpression(this.expression);
+	}
 }
 
 class XFormViewLabelStaticPart implements BaseXFormViewLabelPart {
+	readonly type = 'static';
 	readonly expression: null = null;
 
 	constructor(readonly textContent: string) {}
+
+	evaluate(): string {
+		return this.textContent;
+	}
 }
 
 type XFormViewLabelPart = XFormViewLabelDynamicPart | XFormViewLabelStaticPart;
@@ -32,25 +46,6 @@ export class XFormViewLabel {
 	}
 
 	readonly parts: readonly XFormViewLabelPart[];
-
-	// TODO: not sure if this makes sense here. The idea is there's a single
-	// canonical way to resolve a label's entire text, either by its combined text
-	// and evaluated outputs, or by its evaluated ref. If implemented here, it
-	// would be expected that any re-evaluation would be reactive based on its
-	// dependencies (implementation of that also pending).
-	//
-	// It may just make more sense for this to be fully a view responsibility.
-	get labelText(): string {
-		const textParts = this.parts.map((part) => {
-			if (part.textContent == null) {
-				throw new Error('todo');
-			}
-
-			return part.textContent;
-		});
-
-		return textParts.join('');
-	}
 
 	// TODO: if `labelText` does stay above, the `XFormViewChild` will be a likely
 	// way to establish context for evaluating expressions defined by `<label

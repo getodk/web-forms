@@ -6,7 +6,7 @@ import { XFormsTranslations } from './XFormsTranslations.ts';
 const xformsContexts = new UpsertableWeakMap<Node, XFormsContext | null>();
 
 export class XFormsContext {
-	static from(node: Node, currentLanguage: string | null): XFormsContext | null {
+	static from(node: Node): XFormsContext | null {
 		return xformsContexts.upsert(node, () => {
 			const document =
 				node.nodeType === Node.DOCUMENT_NODE
@@ -26,15 +26,15 @@ export class XFormsContext {
 				return null;
 			}
 
-			return new this(model, currentLanguage);
+			return new this(model);
 		});
 	}
 
 	readonly secondaryInstances: XFormsSecondaryInstanceMap;
 	readonly translations: XFormsTranslations;
 
-	protected constructor(model: Element, currentLanguage: string | null) {
+	protected constructor(model: Element) {
 		this.secondaryInstances = XFormsSecondaryInstanceMap.from(model);
-		this.translations = XFormsTranslations.from(model, currentLanguage);
+		this.translations = XFormsTranslations.from(model);
 	}
 }

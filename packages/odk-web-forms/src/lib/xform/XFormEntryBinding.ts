@@ -1,4 +1,5 @@
-import { createBindingState, type BindingState } from '../reactivity/model-state.ts';
+import type { BindingState } from '../reactivity/model-state.ts';
+import { createBindingState } from '../reactivity/model-state.ts';
 import type { XFormDefinition } from './XFormDefinition.ts';
 import type { XFormDOM } from './XFormDOM.ts';
 import type { XFormEntry } from './XFormEntry.ts';
@@ -56,6 +57,20 @@ export class XFormEntryBinding {
 		this.state = createBindingState(entry, this);
 	}
 
+	evaluateTranslatedExpression(expression: string): string {
+		// TODO: lol such a hack, obviously temp and needs to be handled somewhere else.
+		// Will very likely look like binding computations.
+		this.entry.getCurrentLanguage();
+
+		return this.entry.instanceDOM.primaryInstanceEvaluator.evaluateString(expression, {
+			contextNode: this.getElement(),
+		});
+	}
+
+	getCurrentLanguage(): string | null {
+		return this.entry.getCurrentLanguage();
+	}
+
 	getElement(): Element {
 		return this.modelNode;
 	}
@@ -72,19 +87,10 @@ export class XFormEntryBinding {
 		const { parent } = this;
 
 		if (parent != null && !parent.isRelevant()) {
-			console.log('skip self relevant check, parent is non-relevant');
-			console.log('self:', this.bind.nodeset);
-			console.log('parent:', parent.bind.nodeset);
 			return false;
 		}
 
-		const result = this.state.isRelevant();
-
-		if (!result) {
-			console.log('self non-relevant', this.bind.nodeset);
-		}
-
-		return result;
+		return this.state.isRelevant();
 	}
 
 	isRequired(): boolean {

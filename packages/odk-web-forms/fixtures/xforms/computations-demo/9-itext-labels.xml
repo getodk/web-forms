@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<h:html xmlns="http://www.w3.org/2002/xforms"
+  xmlns:ev="http://www.w3.org/2001/xml-events"
+  xmlns:h="http://www.w3.org/1999/xhtml"
+  xmlns:jr="http://openrosa.org/javarosa"
+  xmlns:orx="http://openrosa.org/xforms/"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <h:head>
+    <h:title>Itext labels</h:title>
+    <model>
+      <itext>
+        <translation lang="English">
+          <text id="f1">
+            <value>1. Field one</value>
+          </text>
+          <text id="g1">
+            <value>2. Group one</value>
+          </text>
+          <text id="g1f">
+            <value>2.1. First field in group one</value>
+          </text>
+        </translation>
+        <translation lang="French">
+          <text id="f1">
+            <value>1. Champ un</value>
+          </text>
+          <text id="g1">
+            <value>2. Groupe un</value>
+          </text>
+          <text id="g1f">
+            <value>2.1. Premier champ du groupe un</value>
+          </text>
+        </translation>
+      </itext>
+      <instance>
+        <root id="itext-labels">
+          <field-1 />
+          <group-1>
+            <group-1-field-1 />
+          </group-1>
+        </root>
+      </instance>
+      <bind nodeset="/root/field-1" />
+      <bind nodeset="/root/group-1" />
+      <bind nodeset="/root/group-1/group-1-field-1" />
+    </model>
+  </h:head>
+  <h:body>
+    <input ref="/root/field-1">
+      <label ref="jr:itext('f1')" />
+    </input>
+    <group ref="/root/group-1">
+      <label ref="jr:itext('g1')" />
+
+      <input ref="/root/group-1/group-1-field-1">
+        <label ref="jr:itext('g1f')" />
+      </input>
+    </group>
+  </h:body>
+</h:html>

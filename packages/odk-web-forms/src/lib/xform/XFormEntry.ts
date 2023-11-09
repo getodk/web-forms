@@ -3,10 +3,14 @@ import { createEffect, createSignal, on } from 'solid-js';
 import type { XFormDOM } from './XFormDOM.ts';
 import type { XFormDefinition } from './XFormDefinition.ts';
 import { XFormEntryBinding } from './XFormEntryBinding.ts';
+import { XFormEntryTranslations } from './XFormEntryTranslations.ts';
 import type { XFormViewChild } from './XFormViewChild.ts';
 
 export class XFormEntry {
 	protected readonly bindings: Map<string, XFormEntryBinding>;
+	protected readonly translations: XFormEntryTranslations | null;
+
+	readonly isTranslated: boolean;
 
 	readonly instanceDOM: XFormDOM;
 
@@ -79,10 +83,23 @@ export class XFormEntry {
 		);
 
 		this.serializedSubmission = serializedSubmission;
+
+		const translations = XFormEntryTranslations.forEntry(this);
+
+		this.isTranslated = Boolean(translations?.isTranslated);
+		this.translations = translations;
 	}
 
 	getBinding(ref: string): XFormEntryBinding | null {
 		return this.bindings.get(ref) ?? null;
+	}
+
+	getCurrentLanguage(): string | null {
+		return this.translations?.getLanguage() ?? null;
+	}
+
+	getLanguages(): readonly string[] {
+		return this.translations?.getLanguages() ?? [];
 	}
 
 	getViewBinding(viewChild: XFormViewChild): XFormEntryBinding | null {
@@ -93,6 +110,10 @@ export class XFormEntry {
 		}
 
 		return this.getBinding(ref);
+	}
+
+	setCurrentLanguage(language: string) {
+		return this.translations?.setLanguage(language) ?? null;
 	}
 
 	toJSON() {
