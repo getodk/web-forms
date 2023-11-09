@@ -20,6 +20,7 @@ node_modules/
 dist/
 examples/**/dist
 packages/**/dist
+vendor-packages/**/dist
 
 ## Specific to tree-sitter and/or tree-sitter-xpath
 packages/tree-sitter-xpath/bindings/

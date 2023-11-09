@@ -2,6 +2,7 @@
 **/node_modules
 **/dist
 **/fixtures
+!packages/odk-web-forms/src/test/fixtures
 **/vendor
 
 # Directories

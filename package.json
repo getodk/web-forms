@@ -17,6 +17,7 @@
   },
   "workspaces": [
     "packages/*",
+    "vendor-packages/*",
     "scripts"
   ],
   "scripts": {
@@ -51,8 +52,7 @@
     "prettier": "^3.0.3",
     "rimraf": "^5.0.5",
     "turbo": "^1.10.15",
-    "typescript": "~5.2.2",
-    "vite": "^4.4.11"
+    "typescript": "~5.2.2"
   },
   "resolutions": {
     "**/tree-sitter": "^0.20.5"

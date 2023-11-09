@@ -6,11 +6,11 @@
 import { FlatCompat } from '@eslint/eslintrc';
 import js from '@eslint/js';
 import typeScriptESLintParser from '@typescript-eslint/parser';
+import eslintConfigPrettier from 'eslint-config-prettier';
 import noOnlyTestsPlugin from 'eslint-plugin-no-only-tests';
 import { builtinModules } from 'node:module';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import eslintConfigPrettier from 'eslint-config-prettier';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -55,6 +55,7 @@ const configs = [
 			'packages/tree-sitter-xpath/grammar.js',
 			'packages/tree-sitter-xpath/bindings/**/*',
 			'packages/tree-sitter-xpath/types/**/*',
+			'vendor-packages/**/dist/**/*',
 			'**/vendor',
 		],
 	},
@@ -73,6 +74,7 @@ const configs = [
 					'./tsconfig.vendor-types.json',
 					'./examples/*/tsconfig.json',
 					'./packages/**/tsconfig.json',
+					'./vendor-packages/**/tsconfig.json',
 					'./scripts/tsconfig.json',
 				],
 				tsconfigRootDir: __dirname,
@@ -163,7 +165,7 @@ const configs = [
 	},
 
 	{
-		files: ['eslint.config.js'],
+		files: ['eslint.config.js', 'packages/**/*.d.ts'],
 		rules: {
 			'@typescript-eslint/triple-slash-reference': 'off',
 		},
@@ -175,6 +177,8 @@ const configs = [
 			'scripts/**/*.js',
 			'packages/*/playwright.config.ts',
 			'packages/*/vite.config.ts',
+			'packages/*/tools/**/*',
+			'vendor-packages/*/vite.config.ts',
 
 			// TODO: in theory, all e2e tests (if they continue to be run with
 			// Playwright) are technically run in a "Node" environment, although
