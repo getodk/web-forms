@@ -24,6 +24,7 @@ env:
 
 jobs:
   changes:
+    name: 'Determine package changes'
     runs-on: 'ubuntu-latest'
 
     outputs:
@@ -62,6 +63,7 @@ jobs:
           token: ''
 
   install-and-build:
+    name: 'Install dependencies and build packages'
     runs-on: 'ubuntu-latest'
 
     strategy:
@@ -114,6 +116,7 @@ jobs:
       - run: 'yarn build --force'
 
   lint:
+    name: 'Lint (global)'
     needs: ['install-and-build', 'changes']
     runs-on: 'ubuntu-latest'
 
@@ -156,7 +159,8 @@ jobs:
 
       - run: 'yarn lint'
 
-  test-odk-common:
+  odk-common:
+    name: '@odk/common'
     needs: ['install-and-build', 'changes']
     if: needs.changes.outputs.root == 'true' || needs.changes.outputs.odk-common == 'true'
     runs-on: 'ubuntu-latest'
@@ -221,7 +225,8 @@ jobs:
       - if: ${{ matrix.target == 'Web' }}
         run: 'yarn workspace @odk/common test-browser:${{ matrix.browser }}'
 
-  test-odk-web-forms:
+  odk-web-forms:
+    name: '@odk/web-forms'
     needs: ['install-and-build', 'changes']
     if: needs.changes.outputs.root == 'true' || needs.changes.outputs.odk-web-forms == 'true'
     runs-on: 'ubuntu-latest'
@@ -286,7 +291,8 @@ jobs:
       - if: ${{ matrix.target == 'Web' }}
         run: 'yarn workspace @odk/web-forms test-browser:${{ matrix.browser }}'
 
-  test-odk-xpath:
+  odk-xpath:
+    name: '@odk/xpath'
     needs: ['install-and-build', 'changes']
     if: needs.changes.outputs.root == 'true' || needs.changes.outputs.tree-sitter-xpath == 'true' || needs.changes.outputs.odk-xpath == 'true'
     runs-on: 'ubuntu-latest'
@@ -357,7 +363,8 @@ jobs:
       - if: ${{ matrix.target == 'Web' }}
         run: 'yarn workspace @odk/xpath test-browser:${{ matrix.browser }}'
 
-  test-tree-sitter-xpath:
+  tree-sitter-xpath:
+    name: 'tree-sitter-xpath'
     needs: ['install-and-build', 'changes']
     if: needs.changes.outputs.root == 'true' || needs.changes.outputs.tree-sitter-xpath == 'true'
     runs-on: 'ubuntu-latest'
