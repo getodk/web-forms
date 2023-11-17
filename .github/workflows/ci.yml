@@ -24,10 +24,12 @@ env:
 
 jobs:
   changes:
+    name: 'Determine package changes'
     runs-on: 'ubuntu-latest'
 
     outputs:
       root: ${{ steps.changes.outputs.root }}
+      odk-common: ${{ steps.changes.outputs.odk-common }}
       odk-web-forms: ${{ steps.changes.outputs.odk-web-forms }}
       odk-xpath: ${{ steps.changes.outputs.odk-xpath }}
       tree-sitter-xpath: ${{ steps.changes.outputs.tree-sitter-xpath }}
@@ -41,6 +43,9 @@ jobs:
             root:
               - '*'
               - '.github/workflows/*'
+
+            odk-common:
+              - 'packages/common/**'
 
             odk-web-forms:
               - 'packages/odk-web-forms/**'
@@ -58,6 +63,7 @@ jobs:
           token: ''
 
   install-and-build:
+    name: 'Install dependencies and build packages'
     runs-on: 'ubuntu-latest'
 
     strategy:
@@ -110,6 +116,7 @@ jobs:
       - run: 'yarn build --force'
 
   lint:
+    name: 'Lint (global)'
     needs: ['install-and-build', 'changes']
     runs-on: 'ubuntu-latest'
 
@@ -152,7 +159,74 @@ jobs:
 
       - run: 'yarn lint'
 
-  test-odk-web-forms:
+  odk-common:
+    name: '@odk/common'
+    needs: ['install-and-build', 'changes']
+    if: needs.changes.outputs.root == 'true' || needs.changes.outputs.odk-common == 'true'
+    runs-on: 'ubuntu-latest'
+
+    strategy:
+      matrix:
+        target: ['Node']
+        node-version: ['18.18.2', '20.8.1']
+        include:
+          - target: 'Web'
+            node-version: '20.8.1'
+            browser: chromium
+          - target: 'Web'
+            node-version: '20.8.1'
+            browser: firefox
+          - target: 'Web'
+            node-version: '20.8.1'
+            browser: webkit
+
+    steps:
+      - uses: 'actions/checkout@v3'
+
+      - uses: 'volta-cli/action@v4'
+        with:
+          node-version: '${{ matrix.node-version }}'
+          yarn-version: '1.22.19'
+
+      - uses: 'actions/cache@v3'
+        id: cache-install
+        with:
+          path: |
+            node_modules
+            **/node_modules
+          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', 'examples/*/yarn.lock', 'packages/*/yarn.lock') }}
+          fail-on-cache-miss: true
+
+      - uses: 'actions/cache@v3'
+        id: cache-build
+        with:
+          path: |
+            examples/*/dist
+            packages/*/dist
+            vendor-packages/*/dist
+            packages/tree-sitter-xpath/grammar.js
+            packages/tree-sitter-xpath/src/grammar.json
+            packages/tree-sitter-xpath/src/parser.c
+            packages/tree-sitter-xpath/src/tree_sitter/parser.h
+            packages/tree-sitter-xpath/tree-sitter-xpath.wasm
+            packages/tree-sitter-xpath/types
+          key: build-${{ matrix.node-version }}-${{ github.sha }}
+          fail-on-cache-miss: true
+
+      - if: ${{ matrix.target == 'Node' }}
+        run: 'yarn workspace @odk/common test:types'
+
+      - if: ${{ matrix.target == 'Node' }}
+        run: 'yarn workspace @odk/common test-node:jsdom'
+
+      - if: ${{ matrix.target == 'Web' }}
+        run: 'yarn playwright install ${{ matrix.browser }} --with-deps'
+
+      - if: ${{ matrix.target == 'Web' }}
+        run: 'yarn workspace @odk/common test-browser:${{ matrix.browser }}'
+
+  odk-web-forms:
+    name: '@odk/web-forms'
     needs: ['install-and-build', 'changes']
     if: needs.changes.outputs.root == 'true' || needs.changes.outputs.odk-web-forms == 'true'
     runs-on: 'ubuntu-latest'
@@ -217,7 +291,8 @@ jobs:
       - if: ${{ matrix.target == 'Web' }}
         run: 'yarn workspace @odk/web-forms test-browser:${{ matrix.browser }}'
 
-  test-odk-xpath:
+  odk-xpath:
+    name: '@odk/xpath'
     needs: ['install-and-build', 'changes']
     if: needs.changes.outputs.root == 'true' || needs.changes.outputs.tree-sitter-xpath == 'true' || needs.changes.outputs.odk-xpath == 'true'
     runs-on: 'ubuntu-latest'
@@ -288,7 +363,8 @@ jobs:
       - if: ${{ matrix.target == 'Web' }}
         run: 'yarn workspace @odk/xpath test-browser:${{ matrix.browser }}'
 
-  test-tree-sitter-xpath:
+  tree-sitter-xpath:
+    name: 'tree-sitter-xpath'
     needs: ['install-and-build', 'changes']
     if: needs.changes.outputs.root == 'true' || needs.changes.outputs.tree-sitter-xpath == 'true'
     runs-on: 'ubuntu-latest'
