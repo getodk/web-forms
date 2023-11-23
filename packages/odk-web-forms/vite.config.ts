@@ -7,6 +7,7 @@ import type { CollectionValues } from '@odk/common/types/collections/CollectionV
 import suidPlugin from '@suid/vite-plugin';
 import { createRequire } from 'node:module';
 import { resolve as resolvePath } from 'node:path';
+import solidDevtools from 'solid-devtools/vite';
 import unpluginFonts from 'unplugin-fonts/vite';
 import { defineConfig } from 'vite';
 import dts from 'vite-plugin-dts';
@@ -115,6 +116,11 @@ export default defineConfig(({ mode }) => {
 					],
 				},
 			}),
+
+			solidDevtools({
+				autoname: true,
+			}),
+
 			// SUID = Solid MUI component library
 			suidPlugin(),
 
