@@ -1,12 +1,17 @@
-import type { JSX } from 'solid-js';
-import { GlobalStyles, Stack, useTheme } from 'suid/material';
+import { type JSX } from 'solid-js';
+import { GlobalStyles, Stack, styled, useTheme } from 'suid/material';
 import { PageContainer } from '../styled/PageContainer.tsx';
 import { PageFooter } from './PageFooter.tsx';
 import { PageHeader } from './PageHeader.tsx';
 import { PageMain } from './PageMain.tsx';
 
+const PageStack = styled(Stack)(({ theme }) => ({
+	paddingBlock: theme.spacing(2),
+}));
+
 interface PageProps {
 	readonly children?: JSX.Element;
+	readonly details?: JSX.Element;
 }
 
 export const Page = (props: PageProps) => {
@@ -35,11 +40,12 @@ export const Page = (props: PageProps) => {
 				}}
 			/>
 			<PageContainer>
-				<Stack spacing={2}>
+				<PageStack spacing={2}>
 					<PageHeader />
 					<PageMain elevation={2}>{props.children}</PageMain>
 					<PageFooter />
-				</Stack>
+					{props.details}
+				</PageStack>
 			</PageContainer>
 		</>
 	);

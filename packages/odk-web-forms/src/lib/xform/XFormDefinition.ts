@@ -31,4 +31,15 @@ export class XFormDefinition {
 		this.body = new BodyDefinition(this);
 		this.model = new ModelDefinition(this);
 	}
+
+	toJSON() {
+		const { title, id, body, model } = this;
+
+		return {
+			title,
+			id,
+			body: body.toJSON(),
+			model: model.toJSON(),
+		};
+	}
 }

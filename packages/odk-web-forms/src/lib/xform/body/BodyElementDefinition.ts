@@ -2,6 +2,14 @@ import type { XFormDefinition } from '../XFormDefinition.ts';
 import type { HintDefinition } from './text/HintDefinition.ts';
 import type { LabelDefinition } from './text/LabelDefinition.ts';
 
+export interface BodyElementSerialization {
+	readonly category: string;
+	readonly type: string;
+	readonly reference: string | null;
+	readonly hint: boolean;
+	readonly label: boolean;
+}
+
 /**
  * These category names roughly correspond to each of the ODK XForms spec's
  * {@link https://getodk.github.io/xforms-spec/#body-elements | Body Elements}
@@ -28,10 +36,16 @@ export abstract class BodyElementDefinition<Type extends string> {
 		protected readonly element: Element
 	) {}
 
-	toJSON(): object {
-		const { form, ...rest } = this;
+	toJSON(): BodyElementSerialization {
+		const { category, type, reference, hint, label } = this;
 
-		return rest;
+		return {
+			category,
+			type,
+			reference,
+			hint: hint != null,
+			label: label != null,
+		};
 	}
 }
 

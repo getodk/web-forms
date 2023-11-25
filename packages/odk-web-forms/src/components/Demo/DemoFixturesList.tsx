@@ -1,5 +1,5 @@
 import { XHTML_NAMESPACE_URI } from '@odk/common/constants/xmlns';
-import { For, Show, createComputed, createMemo, createSignal } from 'solid-js';
+import { For, Show, createComputed, createEffect, createMemo, createSignal, on } from 'solid-js';
 import Assignment from 'suid/icons-material/Assignment';
 import ChevronLeft from 'suid/icons-material/ChevronLeft';
 import {
@@ -85,6 +85,16 @@ export const DemoFixturesList = (props: DemoFixturesListProps) => {
 
 		props.setDemoFixture(fixture ?? null);
 	});
+
+	// TODO(?): the more this feels like navigation, the more it also feels like
+	// it should interact with browser history. I've held off on that because this
+	// really is intended for demo purposes only, but it probably will eventually
+	// dovetail with app responsibilities.
+	createEffect(
+		on(selectedFixtureKey, () => {
+			window.scrollTo(0, 0);
+		})
+	);
 
 	return (
 		<Show

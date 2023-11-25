@@ -12,8 +12,11 @@ export class ModelDefinition {
 	}
 
 	toJSON() {
-		const { form, ...rest } = this;
+		const { binds, root } = this;
 
-		return rest;
+		return {
+			binds: binds.toJSON(),
+			root: root.toJSON(),
+		};
 	}
 }

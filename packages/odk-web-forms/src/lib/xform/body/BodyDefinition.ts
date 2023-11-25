@@ -169,8 +169,10 @@ export class BodyDefinition {
 	}
 
 	toJSON() {
-		const { form, ...rest } = this;
+		const { elements } = this;
 
-		return rest;
+		return {
+			elements: elements.map((element) => element.toJSON()),
+		};
 	}
 }
