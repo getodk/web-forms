@@ -37,13 +37,4 @@ export class OutputDefintion
 	evaluate(evaluator: XFormXPathEvaluator, contextNode: Node): string {
 		return evaluator.evaluateString(this.expression, { contextNode });
 	}
-
-	override toJSON() {
-		const { form, parts, ...rest } = this;
-
-		return {
-			...rest,
-			parts: ['OutputDefinition (self)'],
-		};
-	}
 }

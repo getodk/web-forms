@@ -45,10 +45,4 @@ export class RepeatDefinition extends BodyElementDefinition<'repeat'> {
 		// TODO: **probably** safe to disregard anything else?
 		this.isFixedCount = noAddRemove === 'true()';
 	}
-
-	override toJSON() {
-		const { form, groupDefinition, ...rest } = this;
-
-		return rest;
-	}
 }
