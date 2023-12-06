@@ -962,6 +962,25 @@
   resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.27.8.tgz#6667fac16c436b5434a387a34dedb013198f6e6e"
   integrity sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==
 
+"@solid-primitives/set@^0.4.8":
+  version "0.4.8"
+  resolved "https://registry.yarnpkg.com/@solid-primitives/set/-/set-0.4.8.tgz#08943376153c90bcc71a84be7486d8254bde8b63"
+  integrity sha512-kYZ5o4w2oeaDBvQyBeBB7gmGWeR4MWIP36SuMqRwOPzOWyxA2QFlwQr+iL4zo8lNJVssvBhSdm5HwFzWbob/hA==
+  dependencies:
+    "@solid-primitives/trigger" "^1.0.8"
+
+"@solid-primitives/trigger@^1.0.8":
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/@solid-primitives/trigger/-/trigger-1.0.8.tgz#71a6e92172f9ab638d681848c0bd2afe00e9e07f"
+  integrity sha512-p9e3FGhCk8sRPxDiCT8vnTE+DOEtrAnJZP4zV0NAV6YGnpV50JATVXNiLjKgyiI/mTIRkWB0+9c5SUbRlqFx6A==
+  dependencies:
+    "@solid-primitives/utils" "^6.2.1"
+
+"@solid-primitives/utils@^6.2.1":
+  version "6.2.1"
+  resolved "https://registry.yarnpkg.com/@solid-primitives/utils/-/utils-6.2.1.tgz#320fb2180743031622b40fc43b0e63bf55686cfb"
+  integrity sha512-TsecNzxiO5bLfzqb4OOuzfUmdOROcssuGqgh5rXMMaasoFZ3GoveUgdY1wcf17frMJM7kCNGNuK34EjErneZkg==
+
 "@solidjs/router@^0.8.3":
   version "0.8.3"
   resolved "https://registry.yarnpkg.com/@solidjs/router/-/router-0.8.3.tgz#4623cda699c4f47b3520222529b72e3cb77ec415"
