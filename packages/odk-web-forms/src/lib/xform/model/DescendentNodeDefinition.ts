@@ -2,14 +2,12 @@ import type { AnyBodyElementDefinition } from '../body/BodyDefinition.ts';
 import type { RepeatDefinition } from '../body/RepeatDefinition.ts';
 import type { BindDefinition } from './BindDefinition.ts';
 import type {
-	ModelNode,
-	NodeChildren,
-	NodeDefaultValue,
+	ChildNodeDefinition,
 	NodeDefinition,
 	NodeDefinitionType,
-	NodeInstances,
-	NodeParent,
+	ParentNodeDefinition,
 } from './NodeDefinition.ts';
+import type { RepeatInstanceDefinition } from './RepeatInstanceDefinition.ts';
 import type { RootDefinition } from './RootDefinition.ts';
 
 export type DescendentNodeType = Exclude<NodeDefinitionType, 'root'>;
@@ -22,10 +20,10 @@ export abstract class DescendentNodeDefinition<
 > implements NodeDefinition<Type>
 {
 	abstract readonly type: Type;
-	abstract readonly children: NodeChildren<Type>;
-	abstract readonly instances: NodeInstances<Type>;
-	abstract readonly defaultValue: NodeDefaultValue<Type>;
-	abstract readonly node: ModelNode<Type>;
+	abstract readonly children: readonly ChildNodeDefinition[] | null;
+	abstract readonly instances: readonly RepeatInstanceDefinition[] | null;
+	abstract readonly defaultValue: string | null;
+	abstract readonly node: Element | null;
 	abstract readonly nodeName: string;
 
 	readonly root: RootDefinition;
@@ -34,7 +32,7 @@ export abstract class DescendentNodeDefinition<
 	readonly isTranslated: boolean = false;
 
 	constructor(
-		readonly parent: NodeParent<Type>,
+		readonly parent: ParentNodeDefinition,
 		readonly bind: BindDefinition,
 		readonly bodyElement: BodyElement
 	) {
