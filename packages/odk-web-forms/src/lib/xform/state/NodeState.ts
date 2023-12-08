@@ -5,7 +5,7 @@ import type { BindDefinition } from '../model/BindDefinition.ts';
 import type { EntryState } from './EntryState.ts';
 import type { RepeatInstanceState } from './RepeatInstanceState.ts';
 import type { RepeatSequenceAnchorComment, RepeatSequenceState } from './RepeatSequenceState.ts';
-import type { SubtreeState } from './SubtreeState.ts';
+import type { AnySubtreeState } from './subtree/SubtreeState.ts';
 import type { ValueNodeState } from './ValueNodeState.ts';
 
 export type NodeStateType = Exclude<NodeDefinitionType, 'repeat-template'>;
@@ -16,7 +16,7 @@ export type AnyNodeState =
 	| EntryState
 	| RepeatSequenceState
 	| RepeatInstanceState
-	| SubtreeState
+	| AnySubtreeState
 	| ValueNodeState;
 
 type ParentStateType = Exclude<NodeStateType, 'repeat-sequence' | 'value-node'>;

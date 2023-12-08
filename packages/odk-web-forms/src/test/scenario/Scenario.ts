@@ -4,17 +4,14 @@ import type { CollectionValues } from '@odk/common/types/collections/CollectionV
 import { createMemo, createSignal, type Accessor, type Signal } from 'solid-js';
 import { afterEach, expect } from 'vitest';
 import { XFormDefinition } from '../../lib/xform/XFormDefinition.ts';
-import type {
-	AnyBodyElementDefinition,
-	NonRepeatGroupElementDefinition,
-} from '../../lib/xform/body/BodyDefinition.ts';
+import type { AnyBodyElementDefinition } from '../../lib/xform/body/BodyDefinition.ts';
 import type { AnyControlDefinition } from '../../lib/xform/body/control/ControlDefinition.ts';
 import { EntryState } from '../../lib/xform/state/EntryState.ts';
 import type { AnyNodeState } from '../../lib/xform/state/NodeState.ts';
 import type { RepeatInstanceState } from '../../lib/xform/state/RepeatInstanceState.ts';
 import type { RepeatSequenceState } from '../../lib/xform/state/RepeatSequenceState.ts';
-import type { SubtreeState } from '../../lib/xform/state/SubtreeState.ts';
 import { ValueNodeState } from '../../lib/xform/state/ValueNodeState.ts';
+import type { SubtreeState } from '../../lib/xform/state/subtree/SubtreeState.ts';
 import type { XFormsElement } from '../fixtures/xform-dsl/XFormsElement.ts';
 import { castToString } from './cast.ts';
 
@@ -24,9 +21,7 @@ interface BodyElementSpecifier<
 	readonly bodyElement: Element;
 }
 
-interface GroupQuestionState
-	extends SubtreeState,
-		BodyElementSpecifier<NonRepeatGroupElementDefinition> {}
+interface GroupQuestionState extends SubtreeState<'group'> {}
 
 interface ControlQuestionState extends ValueNodeState, BodyElementSpecifier<AnyControlDefinition> {}
 

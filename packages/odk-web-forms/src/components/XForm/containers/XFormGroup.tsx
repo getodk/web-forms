@@ -1,17 +1,19 @@
 import { Match, Show, Switch, createMemo, createSignal } from 'solid-js';
 import type { RepeatSequenceState } from '../../../lib/xform/state/RepeatSequenceState.ts';
-import type { SubtreeState } from '../../../lib/xform/state/SubtreeState.ts';
+import type { GroupSubtreeState } from '../../../lib/xform/state/subtree/GroupSubtreeState.ts';
 import { NestedGroupBox } from '../../styled/NestedGroupBox.tsx';
 import { XFormQuestionList } from '../XFormQuestionList.tsx';
 import { XFormRelevanceGuard } from '../XFormRelevanceGuard.tsx';
 import { XFormGroupLabel } from './XFormGroupLabel.tsx';
 import { XFormRepeatList } from './XFormRepeatList.tsx';
 
+export type GroupLikeState = GroupSubtreeState | RepeatSequenceState;
+
 export interface XFormGroupProps {
-	readonly state: RepeatSequenceState | SubtreeState;
+	readonly state: GroupLikeState;
 }
 
-const repeatState = (state: RepeatSequenceState | SubtreeState): RepeatSequenceState | null => {
+const repeatState = (state: GroupLikeState): RepeatSequenceState | null => {
 	if (state.type === 'repeat-sequence') {
 		return state;
 	}
@@ -19,7 +21,7 @@ const repeatState = (state: RepeatSequenceState | SubtreeState): RepeatSequenceS
 	return null;
 };
 
-const nonRepeatState = (state: RepeatSequenceState | SubtreeState): SubtreeState | null => {
+const nonRepeatState = (state: GroupLikeState): GroupSubtreeState | null => {
 	if (state.type === 'repeat-sequence') {
 		return null;
 	}

@@ -1,5 +1,4 @@
 import type { XFormDefinition } from '../XFormDefinition.ts';
-import type { RepeatGroupDefinition } from '../body/group/RepeatGroupDefinition.ts';
 import type { BindDefinition } from './BindDefinition.ts';
 import type { ModelDefinition } from './ModelDefinition.ts';
 import type {
@@ -8,8 +7,9 @@ import type {
 	ParentNodeDefinition,
 } from './NodeDefinition.ts';
 import { RepeatSequenceDefinition } from './RepeatSequenceDefinition.ts';
-import { SubtreeDefinition } from './SubtreeDefinition.ts';
 import { ValueNodeDefinition } from './ValueNodeDefinition.ts';
+import { GroupSubtreeDefinition } from './subtree/GroupSubtreeDefinition.ts';
+import { ModelSubtreeDefinition } from './subtree/ModelSubtreeDefinition.ts';
 
 export class RootDefinition implements NodeDefinition<'root'> {
 	readonly type = 'root';
@@ -86,16 +86,15 @@ export class RootDefinition implements NodeDefinition<'root'> {
 			const bind = binds.getOrCreateBindDefinition(nodeset);
 			const bodyElement = body.getBodyElement(nodeset);
 			const [firstChild, ...restChildren] = children;
-			const repeatGroup = body.getRepeatGroup(nodeset);
 
-			if (repeatGroup != null) {
-				const repeatDefinition = (bodyElement as RepeatGroupDefinition).repeat;
+			if (bodyElement?.type === 'repeat-group') {
+				const repeatDefinition = bodyElement.repeat;
 
 				if (repeatDefinition == null) {
 					throw 'TODO: this is why I have hesitated to pick an "is repeat" predicate direction';
 				}
 
-				return new RepeatSequenceDefinition(parent, bind, repeatGroup, children);
+				return new RepeatSequenceDefinition(parent, bind, bodyElement, children);
 			}
 
 			if (restChildren.length) {
@@ -105,11 +104,19 @@ export class RootDefinition implements NodeDefinition<'root'> {
 			const element = firstChild;
 			const isLeafNode = element.childElementCount === 0;
 
-			if (isLeafNode) {
+			if (bodyElement == null) {
+				if (isLeafNode) {
+					return new ValueNodeDefinition(parent, bind, null, element);
+				}
+
+				return new ModelSubtreeDefinition(parent, bind, element);
+			}
+
+			if (bodyElement.category === 'control' || bodyElement.category === 'UNSUPPORTED') {
 				return new ValueNodeDefinition(parent, bind, bodyElement, element);
 			}
 
-			return new SubtreeDefinition(parent, bind, bodyElement, element);
+			return new GroupSubtreeDefinition(parent, bind, bodyElement, element);
 		});
 	}
 

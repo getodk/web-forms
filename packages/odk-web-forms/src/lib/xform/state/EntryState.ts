@@ -9,9 +9,10 @@ import type { RootDefinition } from '../model/RootDefinition.ts';
 import type { AnyDescandantNodeState } from './DescendantNodeState.ts';
 import type { AnyChildState, AnyNodeState, AnyParentState, NodeState } from './NodeState.ts';
 import { RepeatSequenceState } from './RepeatSequenceState.ts';
-import { SubtreeState } from './SubtreeState.ts';
 import { TranslationState } from './TranslationState.ts';
 import { ValueNodeState } from './ValueNodeState.ts';
+import { GroupSubtreeState } from './subtree/GroupSubtreeState.ts';
+import { ModelSubtreeState } from './subtree/ModelSubtreeState.ts';
 
 export const buildChildStates = (
 	entry: EntryState,
@@ -24,7 +25,13 @@ export const buildChildStates = (
 			return parent.definition.children.map((childDefinition) => {
 				switch (childDefinition.type) {
 					case 'subtree': {
-						return new SubtreeState(entry, parent, childDefinition);
+						switch (childDefinition.subtreeType) {
+							case 'group':
+								return new GroupSubtreeState(entry, parent, childDefinition);
+
+							case 'model':
+								return new ModelSubtreeState(entry, parent, childDefinition);
+						}
 					}
 
 					case 'repeat-sequence': {

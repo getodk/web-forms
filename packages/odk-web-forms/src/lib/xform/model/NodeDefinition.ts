@@ -5,7 +5,7 @@ import type { RepeatInstanceDefinition } from './RepeatInstanceDefinition.ts';
 import type { RepeatSequenceDefinition } from './RepeatSequenceDefinition.ts';
 import type { RepeatTemplateDefinition } from './RepeatTemplateDefinition.ts';
 import type { RootDefinition } from './RootDefinition.ts';
-import type { SubtreeDefinition } from './SubtreeDefinition.ts';
+import type { AnySubtreeDefinition } from './subtree/SubtreeDefinition.ts';
 import type { ValueNodeDefinition } from './ValueNodeDefinition.ts';
 
 /**
@@ -67,12 +67,13 @@ export type ParentNodeDefinition =
 	| RootDefinition
 	| RepeatTemplateDefinition
 	| RepeatInstanceDefinition
-	| SubtreeDefinition;
+	| AnySubtreeDefinition;
 
 // prettier-ignore
 export type ChildNodeDefinition =
+	// eslint-disable-next-line @typescript-eslint/sort-type-constituents
 	| RepeatSequenceDefinition
-	| SubtreeDefinition
+	| AnySubtreeDefinition
 	| ValueNodeDefinition;
 
 // prettier-ignore
@@ -80,7 +81,7 @@ export type ChildNodeInstanceDefinition =
 	// eslint-disable-next-line @typescript-eslint/sort-type-constituents
 	| RepeatTemplateDefinition
 	| RepeatInstanceDefinition
-	| SubtreeDefinition
+	| AnySubtreeDefinition
 	| ValueNodeDefinition;
 
 // prettier-ignore
@@ -116,7 +117,7 @@ export type AnyNodeDefinition =
 	| RepeatSequenceDefinition
 	| RepeatTemplateDefinition
 	| RepeatInstanceDefinition
-	| SubtreeDefinition
+	| AnySubtreeDefinition
 	| ValueNodeDefinition;
 
 export type TypedNodeDefinition<Type> = Extract<AnyNodeDefinition, { readonly type: Type }>;

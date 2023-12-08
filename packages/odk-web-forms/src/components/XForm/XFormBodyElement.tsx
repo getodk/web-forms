@@ -1,10 +1,8 @@
 import { Match, Switch } from 'solid-js';
 import { type AnyBodyElementDefinition } from '../../lib/xform/body/BodyDefinition.ts';
 import type { AnyChildState } from '../../lib/xform/state/NodeState.ts';
-import type { RepeatSequenceState } from '../../lib/xform/state/RepeatSequenceState.ts';
-import type { SubtreeState } from '../../lib/xform/state/SubtreeState.ts';
 import type { ValueNodeState } from '../../lib/xform/state/ValueNodeState.ts';
-import { XFormGroup } from './containers/XFormGroup.tsx';
+import { XFormGroup, type GroupLikeState } from './containers/XFormGroup.tsx';
 import { XFormControl } from './controls/XFormControl.tsx';
 
 interface XFormUnknownElementProps {
@@ -17,16 +15,17 @@ const XFormUnknownElement = (props: XFormUnknownElementProps) => {
 	return <></>;
 };
 
-type GroupState = RepeatSequenceState | SubtreeState;
-
-const groupState = (props: XFormBodyElementProps): GroupState | null => {
+const groupState = (props: XFormBodyElementProps): GroupLikeState | null => {
 	const { state } = props;
 
-	if (state.type === 'value-node') {
-		return null;
+	if (
+		state.type === 'repeat-sequence' ||
+		(state.type === 'subtree' && state.subtreeType === 'group')
+	) {
+		return state;
 	}
 
-	return state;
+	return null;
 };
 
 const controlState = (props: XFormBodyElementProps): ValueNodeState | null => {
