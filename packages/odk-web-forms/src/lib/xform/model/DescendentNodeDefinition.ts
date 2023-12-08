@@ -8,7 +8,11 @@ import type {
 	ParentNodeDefinition,
 } from './NodeDefinition.ts';
 import type { RepeatInstanceDefinition } from './RepeatInstanceDefinition.ts';
+import type { RepeatSequenceDefinition } from './RepeatSequenceDefinition.ts';
+import type { RepeatTemplateDefinition } from './RepeatTemplateDefinition.ts';
 import type { RootDefinition } from './RootDefinition.ts';
+import type { SubtreeDefinition } from './SubtreeDefinition.ts';
+import type { ValueNodeDefinition } from './ValueNodeDefinition.ts';
 
 export type DescendentNodeType = Exclude<NodeDefinitionType, 'root'>;
 
@@ -49,3 +53,11 @@ export abstract class DescendentNodeDefinition<
 		]);
 	}
 }
+
+export type AnyDescendantNodeDefinition =
+	// eslint-disable-next-line @typescript-eslint/sort-type-constituents
+	| RepeatSequenceDefinition
+	| RepeatTemplateDefinition
+	| RepeatInstanceDefinition
+	| SubtreeDefinition
+	| ValueNodeDefinition;

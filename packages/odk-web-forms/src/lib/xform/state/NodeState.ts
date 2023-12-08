@@ -1,13 +1,7 @@
 import type { Accessor, Signal } from 'solid-js';
-import type {
-	NodeDefinition,
-	NodeDefinitionType,
-	TypedNodeDefinition,
-} from '../model/NodeDefinition.ts';
+import type { AnyNodeDefinition, NodeDefinitionType } from '../model/NodeDefinition.ts';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- referenced in JSDoc
 import type { BindDefinition } from '../model/BindDefinition.ts';
-import type { RepeatInstanceDefinition } from '../model/RepeatInstanceDefinition.ts';
-import type { RepeatTemplateDefinition } from '../model/RepeatTemplateDefinition.ts';
 import type { EntryState } from './EntryState.ts';
 import type { RepeatInstanceState } from './RepeatInstanceState.ts';
 import type { RepeatSequenceAnchorComment, RepeatSequenceState } from './RepeatSequenceState.ts';
@@ -33,57 +27,9 @@ type ChildStateType = Exclude<NodeStateType, 'repeat-instance' | 'root'>;
 
 export type AnyChildState = Extract<AnyNodeState, { readonly type: ChildStateType }>;
 
-export type AnyChildStates = readonly AnyChildState[];
-
-// prettier-ignore
-export type ChildStates<Type extends NodeStateType> =
-	Type extends ParentStateType
-		? readonly AnyChildState[]
-		: null;
-
-// prettier-ignore
-export type ParentState<Type extends NodeStateType> =
-	Type extends 'repeat-instance'
-		? RepeatSequenceState
-	: Type extends ChildStateType
-		? AnyParentState
-		: null;
-
-// prettier-ignore
-export type ValueSignal<Type extends NodeStateType> =
-	Type extends 'value-node'
-		? Signal<string>
-		: null;
-
-// prettier-ignore
-export type StateNode<Type extends NodeStateType> =
-	Type extends 'repeat-sequence'
-		? RepeatSequenceAnchorComment
-		: Element;
-
-// prettier-ignore
-export type RepeatModelDefinition =
-	| RepeatInstanceDefinition
-	| RepeatTemplateDefinition;
-
-// prettier-ignore
-type StateModelDefinitionType<Type extends NodeStateType> =
-	Type extends 'repeat-instance'
-		? 'repeat-instance' | 'repeat-template'
-		: Type;
-
-// prettier-ignore
-export type StateModelDefinition<Type extends NodeStateType> =
-	& NodeDefinition<StateModelDefinitionType<Type>>
-	& (
-			Type extends 'repeat-instance'
-				? RepeatModelDefinition
-				: TypedNodeDefinition<Type>
-		);
-
 export interface NodeState<Type extends NodeStateType> {
 	readonly type: Type;
-	readonly definition: StateModelDefinition<Type>;
+	readonly definition: AnyNodeDefinition;
 
 	/**
 	 * The static, unindexed nodeset reference to all nodes for the same
@@ -132,9 +78,9 @@ export interface NodeState<Type extends NodeStateType> {
 	// consideration), but in other ways it makes certain logic seem more complicated
 	// than it needs to be (e.g. it would be trivial to build any flattened or
 	// derived structure from the state tree if these special cases didn't exist).
-	readonly parent: ParentState<Type>;
+	readonly parent: AnyParentState | RepeatSequenceState | null;
 
-	readonly children: ChildStates<Type>;
+	readonly children: readonly AnyChildState[] | null;
 
 	/**
 	 * The actual DOM node represented by a {@link NodeState} implementation
@@ -145,7 +91,7 @@ export interface NodeState<Type extends NodeStateType> {
 	 * nodeState.entry.evaluator.evaluateNode(nodeState.reference);
 	 * ```
 	 */
-	readonly node: StateNode<Type>;
+	readonly node: Element | RepeatSequenceAnchorComment;
 
 	/**
 	 * Per ODK XForms spec:
@@ -183,7 +129,7 @@ export interface NodeState<Type extends NodeStateType> {
 	 */
 	readonly isRequired: Accessor<boolean>;
 
-	readonly valueState: ValueSignal<Type>;
+	readonly valueState: Signal<string> | null;
 
 	get isStateInitialized(): boolean;
 	initializeState(): void;

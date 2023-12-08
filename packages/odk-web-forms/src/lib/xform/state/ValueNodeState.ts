@@ -18,7 +18,11 @@ export class ValueNodeState
 
 	valueState: Signal<string>;
 
-	constructor(entry: EntryState, parent: AnyParentState, definition: ValueNodeDefinition) {
+	constructor(
+		entry: EntryState,
+		override readonly parent: AnyParentState,
+		definition: ValueNodeDefinition
+	) {
 		super(entry, parent, 'value-node', definition);
 
 		// TODO: set default value rather than `cloneNode(true)`?

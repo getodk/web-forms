@@ -1,4 +1,4 @@
-import type { Accessor } from 'solid-js';
+import type { Accessor, Signal } from 'solid-js';
 import { createComputed, createMemo, createSignal, on } from 'solid-js';
 import { createUninitializedAccessor } from '../../reactivity/primitives/uninitialized.ts';
 import type { AnyTextElementDefinition } from '../body/text/TextElementDefinition.ts';
@@ -9,17 +9,17 @@ import type {
 	DependentExpressionResultType,
 } from '../expression/DependentExpression.ts';
 import type { BindComputation } from '../model/BindComputation.ts';
+import type { AnyDescendantNodeDefinition } from '../model/DescendentNodeDefinition.ts';
+import type { RepeatNodeDefinition } from '../model/NodeDefinition.ts';
 import type { EntryState } from './EntryState.ts';
 import type {
+	AnyChildState,
 	AnyNodeState,
-	ChildStates,
+	AnyParentState,
 	NodeState,
 	NodeStateType,
-	ParentState,
-	StateModelDefinition,
-	StateNode,
-	ValueSignal,
 } from './NodeState.ts';
+import type { RepeatSequenceAnchorComment, RepeatSequenceState } from './RepeatSequenceState.ts';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- referenced in JSDoc
 import type { ValueNodeState } from './ValueNodeState.ts';
 
@@ -36,12 +36,22 @@ type BooleanBindComputationType =
 
 type DescendantNodeStateType = Exclude<NodeStateType, 'root'>;
 
+type TypedDescendantNodeDefinition<Type extends DescendantNodeStateType> =
+	Type extends 'repeat-instance'
+		? RepeatNodeDefinition
+		: Extract<
+				AnyDescendantNodeDefinition,
+				{
+					readonly type: Type;
+				}
+		  >;
+
 export abstract class DescendantNodeState<Type extends DescendantNodeStateType>
 	implements NodeState<Type>
 {
 	readonly nodeset: string;
 
-	abstract readonly node: StateNode<Type>;
+	abstract readonly node: Element | RepeatSequenceAnchorComment;
 
 	protected referenceMemo: Accessor<string> | null = null;
 
@@ -69,15 +79,15 @@ export abstract class DescendantNodeState<Type extends DescendantNodeStateType>
 	isRelevant: Accessor<boolean>;
 	isRequired: Accessor<boolean>;
 
-	abstract readonly valueState: ValueSignal<Type>;
+	abstract readonly valueState: Signal<string> | null;
 
-	abstract readonly children: ChildStates<Type>;
+	abstract readonly children: readonly AnyChildState[] | null;
 
 	constructor(
 		readonly entry: EntryState,
-		readonly parent: ParentState<Type>,
+		readonly parent: AnyParentState | RepeatSequenceState,
 		readonly type: Type,
-		readonly definition: StateModelDefinition<Type>
+		readonly definition: TypedDescendantNodeDefinition<Type>
 	) {
 		this.nodeset = definition.nodeset;
 		this.isReferenceStatic = parent.isReferenceStatic && type !== 'repeat-instance';

@@ -1,9 +1,10 @@
 import type { Accessor, Signal } from 'solid-js';
 import { createMemo, createSignal } from 'solid-js';
+import type { RepeatNodeDefinition } from '../model/NodeDefinition.ts';
 import { DescendantNodeState } from './DescendantNodeState.ts';
 import type { EntryState } from './EntryState.ts';
 import { buildChildStates } from './EntryState.ts';
-import type { AnyChildState, NodeState, RepeatModelDefinition } from './NodeState.ts';
+import type { AnyChildState, NodeState } from './NodeState.ts';
 import type { RepeatSequenceState } from './RepeatSequenceState.ts';
 
 export class RepeatInstanceState
@@ -13,7 +14,7 @@ export class RepeatInstanceState
 	static create(
 		entry: EntryState,
 		sequence: RepeatSequenceState,
-		modelDefinition: RepeatModelDefinition,
+		modelDefinition: RepeatNodeDefinition,
 		previousInstance: RepeatInstanceState | null
 	): RepeatInstanceState {
 		const previousNode = previousInstance?.node ?? sequence.node;
@@ -49,8 +50,8 @@ export class RepeatInstanceState
 
 	protected constructor(
 		entry: EntryState,
-		parent: RepeatSequenceState,
-		definition: RepeatModelDefinition,
+		override readonly parent: RepeatSequenceState,
+		definition: RepeatNodeDefinition,
 		readonly node: Element,
 		index: number
 	) {

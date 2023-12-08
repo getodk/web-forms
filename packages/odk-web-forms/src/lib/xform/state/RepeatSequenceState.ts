@@ -1,16 +1,12 @@
 import { isDocumentNode } from '@odk/common/lib/dom/predicates.ts';
 import type { Signal } from 'solid-js';
 import { batch, createComputed, createSignal, untrack } from 'solid-js';
+import type { RepeatNodeDefinition } from '../model/NodeDefinition.ts';
 import type { RepeatInstanceDefinition } from '../model/RepeatInstanceDefinition.ts';
 import type { RepeatSequenceDefinition } from '../model/RepeatSequenceDefinition.ts';
 import { DescendantNodeState } from './DescendantNodeState.ts';
 import type { EntryState } from './EntryState.ts';
-import type {
-	AnyNodeState,
-	AnyParentState,
-	NodeState,
-	RepeatModelDefinition,
-} from './NodeState.ts';
+import type { AnyNodeState, AnyParentState, NodeState } from './NodeState.ts';
 import { RepeatInstanceState } from './RepeatInstanceState.ts';
 
 interface MarkerComment<Data extends string> extends Comment {
@@ -108,7 +104,7 @@ export class RepeatSequenceState
 	}
 
 	createInstance(from?: RepeatInstanceDefinition): RepeatInstanceState {
-		const modelDefinition: RepeatModelDefinition = from ?? this.definition.template;
+		const modelDefinition: RepeatNodeDefinition = from ?? this.definition.template;
 		const { instancesState: instances, entry } = this;
 		const [, setInstances] = instances;
 

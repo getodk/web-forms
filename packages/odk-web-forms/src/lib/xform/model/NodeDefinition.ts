@@ -83,6 +83,12 @@ export type ChildNodeInstanceDefinition =
 	| SubtreeDefinition
 	| ValueNodeDefinition;
 
+// prettier-ignore
+export type RepeatNodeDefinition =
+	// eslint-disable-next-line @typescript-eslint/sort-type-constituents
+	| RepeatTemplateDefinition
+	| RepeatInstanceDefinition;
+
 export interface NodeDefinition<Type extends NodeDefinitionType> {
 	readonly type: Type;
 

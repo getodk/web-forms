@@ -9,7 +9,11 @@ export class SubtreeState extends DescendantNodeState<'subtree'> implements Node
 	readonly valueState = null;
 	readonly node: Element;
 
-	constructor(entry: EntryState, parent: AnyParentState, definition: SubtreeDefinition) {
+	constructor(
+		entry: EntryState,
+		override readonly parent: AnyParentState,
+		definition: SubtreeDefinition
+	) {
 		super(entry, parent, 'subtree', definition);
 
 		const node = definition.node.cloneNode(false) as Element;
