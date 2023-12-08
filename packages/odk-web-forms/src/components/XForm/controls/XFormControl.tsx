@@ -1,41 +1,26 @@
 import { Match, Switch, createMemo } from 'solid-js';
-import type { InputDefinition } from '../../../lib/xform/body/control/InputDefinition.ts';
-import type { AnySelectDefinition } from '../../../lib/xform/body/control/select/SelectDefinition.ts';
-import type { ValueNodeState } from '../../../lib/xform/state/ValueNodeState.ts';
+import type { InputState } from '../../../lib/xform/state/value/InputState.ts';
+import type { SelectState } from '../../../lib/xform/state/value/SelectState.ts';
+import type { ControlState } from '../../../lib/xform/state/value/ValueState.ts';
 import { XFormRelevanceGuard } from '../XFormRelevanceGuard.tsx';
 import { XFormUnknownControl } from '../debugging/XFormUnknownControl.tsx';
 import { SelectControl } from './SelectControl.tsx';
 import { XFormInputControl } from './XFormInputControl.tsx';
 
 export interface XFormControlProps {
-	readonly state: ValueNodeState;
+	readonly state: ControlState;
 }
 
-const inputContol = (props: XFormControlProps): InputDefinition | null => {
-	const { bodyElement } = props.state.definition;
+const inputState = (props: XFormControlProps): InputState | null => {
+	const { state } = props;
 
-	if (bodyElement?.type === 'input') {
-		return bodyElement;
-	}
-
-	return null;
+	return state.valueType === 'input' ? state : null;
 };
 
-const selectControl = (props: XFormControlProps): AnySelectDefinition | null => {
-	const { bodyElement } = props.state.definition;
+const selectState = (props: XFormControlProps): SelectState | null => {
+	const { state } = props;
 
-	if (bodyElement == null) {
-		return null;
-	}
-
-	switch (bodyElement.type) {
-		case 'rank':
-		case 'select':
-		case 'select1':
-			return bodyElement as AnySelectDefinition;
-	}
-
-	return null;
+	return state.valueType === 'select' ? state : null;
 };
 
 export const XFormControl = (props: XFormControlProps) => {
@@ -46,14 +31,14 @@ export const XFormControl = (props: XFormControlProps) => {
 	return (
 		<XFormRelevanceGuard isRelevant={isRelevant()}>
 			<Switch fallback={<XFormUnknownControl {...props} />}>
-				<Match when={inputContol(props)} keyed={true}>
-					{(control) => {
-						return <XFormInputControl control={control} state={props.state} />;
+				<Match when={inputState(props)} keyed={true}>
+					{(state) => {
+						return <XFormInputControl state={state} />;
 					}}
 				</Match>
-				<Match when={selectControl(props)} keyed={true}>
-					{(control) => {
-						return <SelectControl control={control} state={props.state} />;
+				<Match when={selectState(props)} keyed={true}>
+					{(state) => {
+						return <SelectControl state={state} />;
 					}}
 				</Match>
 			</Switch>

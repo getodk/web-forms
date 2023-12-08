@@ -12,7 +12,7 @@ import type { RepeatSequenceDefinition } from './RepeatSequenceDefinition.ts';
 import type { RepeatTemplateDefinition } from './RepeatTemplateDefinition.ts';
 import type { RootDefinition } from './RootDefinition.ts';
 import type { AnySubtreeDefinition } from './subtree/SubtreeDefinition.ts';
-import type { ValueNodeDefinition } from './ValueNodeDefinition.ts';
+import type { AnyValueNodeDefinition } from './value-node/ValueNodeDefinition.ts';
 
 export type DescendentNodeType = Exclude<NodeDefinitionType, 'root'>;
 
@@ -60,4 +60,4 @@ export type AnyDescendantNodeDefinition =
 	| RepeatTemplateDefinition
 	| RepeatInstanceDefinition
 	| AnySubtreeDefinition
-	| ValueNodeDefinition;
+	| AnyValueNodeDefinition;

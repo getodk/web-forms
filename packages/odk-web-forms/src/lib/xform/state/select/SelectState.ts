@@ -3,7 +3,7 @@ import { ReactiveSet } from '@solid-primitives/set';
 import type { Accessor } from 'solid-js';
 import { batch, createComputed, createMemo } from 'solid-js';
 import type { AnySelectDefinition } from '../../body/control/select/SelectDefinition.ts';
-import type { ValueNodeState } from '../ValueNodeState.ts';
+import type { SelectState as TempSelectStateActual } from '../value/SelectState.ts';
 import { SelectStateItem } from './SelectStateItem.ts';
 
 export class SelectState {
@@ -66,7 +66,7 @@ export class SelectState {
 	 */
 	protected readonly selected: ReactiveSet<string>;
 
-	constructor(state: ValueNodeState, select: AnySelectDefinition) {
+	constructor(state: TempSelectStateActual, select: AnySelectDefinition) {
 		const items = this.createItems(state, select);
 		const itemValues = createMemo(() => items().map((item) => item.value));
 		const initialValue = xmlXPathWhitespaceSeparatedList(state.getValue(), {
@@ -89,7 +89,7 @@ export class SelectState {
 	}
 
 	protected createItems(
-		state: ValueNodeState,
+		state: TempSelectStateActual,
 		select: AnySelectDefinition
 	): Accessor<readonly SelectStateItem[]> {
 		const { itemset } = select;

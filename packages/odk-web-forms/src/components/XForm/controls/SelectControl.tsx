@@ -3,7 +3,7 @@ import type {
 	AnySelectDefinition,
 	SelectDefinition,
 } from '../../../lib/xform/body/control/select/SelectDefinition.ts';
-import type { ValueNodeState } from '../../../lib/xform/state/ValueNodeState.ts';
+import type { SelectState } from '../../../lib/xform/state/value/SelectState.ts';
 import { MultiSelect } from '../../Widget/MultiSelect.tsx';
 import { SingleSelect } from '../../Widget/SingleSelect.tsx';
 
@@ -28,17 +28,16 @@ const selectN = (control: AnySelectDefinition): SelectNDefinition | null => {
 };
 
 interface SelectControlProps {
-	readonly control: AnySelectDefinition;
-	readonly state: ValueNodeState;
+	readonly state: SelectState;
 }
 
 export const SelectControl = (props: SelectControlProps) => {
 	return (
 		<Switch fallback={<p>!</p>}>
-			<Match when={select1(props.control)} keyed={true}>
+			<Match when={select1(props.state.bodyElement)} keyed={true}>
 				{(control) => <SingleSelect control={control} state={props.state} />}
 			</Match>
-			<Match when={selectN(props.control)} keyed={true}>
+			<Match when={selectN(props.state.bodyElement)} keyed={true}>
 				{(control) => <MultiSelect control={control} state={props.state} />}
 			</Match>
 		</Switch>

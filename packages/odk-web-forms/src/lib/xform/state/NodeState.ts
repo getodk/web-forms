@@ -6,7 +6,7 @@ import type { EntryState } from './EntryState.ts';
 import type { RepeatInstanceState } from './RepeatInstanceState.ts';
 import type { RepeatSequenceAnchorComment, RepeatSequenceState } from './RepeatSequenceState.ts';
 import type { AnySubtreeState } from './subtree/SubtreeState.ts';
-import type { ValueNodeState } from './ValueNodeState.ts';
+import type { AnyValueState } from './value/ValueState.ts';
 
 export type NodeStateType = Exclude<NodeDefinitionType, 'repeat-template'>;
 
@@ -17,7 +17,7 @@ export type AnyNodeState =
 	| RepeatSequenceState
 	| RepeatInstanceState
 	| AnySubtreeState
-	| ValueNodeState;
+	| AnyValueState;
 
 type ParentStateType = Exclude<NodeStateType, 'repeat-sequence' | 'value-node'>;
 

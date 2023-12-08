@@ -4,26 +4,18 @@ import type { CollectionValues } from '@odk/common/types/collections/CollectionV
 import { createMemo, createSignal, type Accessor, type Signal } from 'solid-js';
 import { afterEach, expect } from 'vitest';
 import { XFormDefinition } from '../../lib/xform/XFormDefinition.ts';
-import type { AnyBodyElementDefinition } from '../../lib/xform/body/BodyDefinition.ts';
-import type { AnyControlDefinition } from '../../lib/xform/body/control/ControlDefinition.ts';
 import { EntryState } from '../../lib/xform/state/EntryState.ts';
 import type { AnyNodeState } from '../../lib/xform/state/NodeState.ts';
 import type { RepeatInstanceState } from '../../lib/xform/state/RepeatInstanceState.ts';
 import type { RepeatSequenceState } from '../../lib/xform/state/RepeatSequenceState.ts';
-import { ValueNodeState } from '../../lib/xform/state/ValueNodeState.ts';
 import type { SubtreeState } from '../../lib/xform/state/subtree/SubtreeState.ts';
+import { ValueState, type ControlState } from '../../lib/xform/state/value/ValueState.ts';
 import type { XFormsElement } from '../fixtures/xform-dsl/XFormsElement.ts';
 import { castToString } from './cast.ts';
 
-interface BodyElementSpecifier<
-	Element extends AnyBodyElementDefinition = AnyBodyElementDefinition,
-> {
-	readonly bodyElement: Element;
-}
-
 interface GroupQuestionState extends SubtreeState<'group'> {}
 
-interface ControlQuestionState extends ValueNodeState, BodyElementSpecifier<AnyControlDefinition> {}
+type ControlQuestionState = ControlState;
 
 /**
  * Based on the static members on JavaRosa's `FormEntryController` (there
@@ -400,7 +392,7 @@ export class Scenario {
 	answerOf(reference: string): string {
 		const question = this.entry.getState(reference);
 
-		if (!(question instanceof ValueNodeState)) {
+		if (!(question instanceof ValueState)) {
 			throw new Error(`State for reference ${reference} is not a question`);
 		}
 

@@ -19,7 +19,7 @@ import { XFormDefinition } from '../XFormDefinition.ts';
 import { BindDefinition } from './BindDefinition.ts';
 import { ModelDefinition } from './ModelDefinition.ts';
 import type { RepeatSequenceDefinition } from './RepeatSequenceDefinition.ts';
-import type { ValueNodeDefinition } from './ValueNodeDefinition.ts';
+import type { AnyValueNodeDefinition } from './value-node/ValueNodeDefinition.ts';
 
 describe('ModelDefinition', () => {
 	let modelDefinition: ModelDefinition;
@@ -115,7 +115,7 @@ describe('ModelDefinition', () => {
 			expected: null,
 		},
 	])('includes a reference to the $index body element definition', ({ index, expected }) => {
-		const child = modelDefinition.root.children[index] as ValueNodeDefinition;
+		const child = modelDefinition.root.children[index] as AnyValueNodeDefinition;
 
 		if (expected == null) {
 			expect(child.bodyElement).toBeNull();

@@ -1,13 +1,13 @@
 import type { ChangeEvent } from '@suid/types';
 import { createMemo, For, Show } from 'solid-js';
 import { FormControlLabel, Radio, RadioGroup } from 'suid/material';
-import type { ValueNodeState } from '../../lib/xform/state/ValueNodeState.ts';
+import type { SelectState } from '../../lib/xform/state/value/SelectState.ts';
 import type { Select1Definition } from '../XForm/controls/SelectControl.tsx';
 import { XFormControlLabel } from '../XForm/controls/XFormControlLabel.tsx';
 
 export interface SingleSelectProps {
 	readonly control: Select1Definition;
-	readonly state: ValueNodeState;
+	readonly state: SelectState;
 }
 
 export const SingleSelect = (props: SingleSelectProps) => {

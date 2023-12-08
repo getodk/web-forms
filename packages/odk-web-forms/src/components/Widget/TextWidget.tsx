@@ -1,13 +1,11 @@
 import { Show, createMemo } from 'solid-js';
-import type { InputDefinition } from '../../lib/xform/body/control/InputDefinition.ts';
-import type { ValueNodeState } from '../../lib/xform/state/ValueNodeState.ts';
+import type { InputState } from '../../lib/xform/state/value/InputState.ts';
 import { XFormControlLabel } from '../XForm/controls/XFormControlLabel.tsx';
 import { DefaultTextField } from '../styled/DefaultTextField.tsx';
 import { DefaultTextFormControl } from '../styled/DefaultTextFormControl.tsx';
 
 export interface TextWidgetProps {
-	readonly control: InputDefinition;
-	readonly state: ValueNodeState;
+	readonly state: InputState;
 }
 
 export const TextWidget = (props: TextWidgetProps) => {
@@ -17,7 +15,7 @@ export const TextWidget = (props: TextWidgetProps) => {
 
 	return (
 		<DefaultTextFormControl fullWidth={true}>
-			<Show when={props.control.label} keyed={true}>
+			<Show when={props.state.bodyElement.label} keyed={true}>
 				{(label) => {
 					return <XFormControlLabel state={props.state} label={label} />;
 				}}

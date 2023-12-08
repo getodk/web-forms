@@ -1,21 +1,19 @@
 import { Show } from 'solid-js';
-import { InputDefinition } from '../../../lib/xform/body/control/InputDefinition.ts';
-import type { ValueNodeState } from '../../../lib/xform/state/ValueNodeState.ts';
+import type { InputState } from '../../../lib/xform/state/value/InputState.ts';
 import { TextWidget } from '../../Widget/TextWidget.tsx';
 import { XFormUnlabeledControl } from '../debugging/XFormUnlabeledInputControl.tsx';
 
 interface XFormInputControlProps {
-	readonly control: InputDefinition;
-	readonly state: ValueNodeState;
+	readonly state: InputState;
 }
 
 export const XFormInputControl = (props: XFormInputControlProps) => {
 	return (
 		<>
-			<Show when={props.control.label == null}>
-				<XFormUnlabeledControl control={props.control} />
+			<Show when={props.state.bodyElement.label == null}>
+				<XFormUnlabeledControl control={props.state.bodyElement} />
 			</Show>
-			<TextWidget control={props.control} state={props.state} />
+			<TextWidget state={props.state} />
 		</>
 	);
 };

@@ -1,12 +1,12 @@
 import { createMemo, For, Show } from 'solid-js';
 import { Checkbox, FormControlLabel, FormGroup } from 'suid/material';
-import type { ValueNodeState } from '../../lib/xform/state/ValueNodeState.ts';
+import type { SelectState } from '../../lib/xform/state/value/SelectState.ts';
 import type { SelectNDefinition } from '../XForm/controls/SelectControl.tsx';
 import { XFormControlLabel } from '../XForm/controls/XFormControlLabel.tsx';
 
 export interface MultiSelectProps {
 	readonly control: SelectNDefinition;
-	readonly state: ValueNodeState;
+	readonly state: SelectState;
 }
 
 export const MultiSelect = (props: MultiSelectProps) => {

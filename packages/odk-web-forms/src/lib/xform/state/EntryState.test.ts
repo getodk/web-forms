@@ -12,7 +12,7 @@ import {
 } from '../../../test/fixtures/xform-dsl/index.ts';
 import { XFormDefinition } from '../XFormDefinition.ts';
 import { EntryState } from './EntryState.ts';
-import type { ValueNodeState } from './ValueNodeState.ts';
+import type { AnyValueState } from './value/ValueState.ts';
 
 describe('Form entry state', () => {
 	describe('basic calculation', () => {
@@ -52,7 +52,7 @@ describe('Form entry state', () => {
 		});
 
 		it('calculates the bound question state on initialization', () => {
-			const state = entry.getState('/root/second-question') as ValueNodeState;
+			const state = entry.getState('/root/second-question') as AnyValueState;
 
 			expect(state.getValue()).toBe('2');
 		});
@@ -69,8 +69,8 @@ describe('Form entry state', () => {
 		])(
 			'updates the calculation to $expected when its dependency value is updated to $firstValue',
 			({ firstValue, expected }) => {
-				const first = entry.getState('/root/first-question') as ValueNodeState;
-				const second = entry.getState('/root/second-question') as ValueNodeState;
+				const first = entry.getState('/root/first-question') as AnyValueState;
+				const second = entry.getState('/root/second-question') as AnyValueState;
 
 				first.setValue(firstValue);
 
@@ -80,8 +80,8 @@ describe('Form entry state', () => {
 		);
 
 		it('sets an arbitrary value overriding the calculated value', () => {
-			const first = entry.getState('/root/first-question') as ValueNodeState;
-			const second = entry.getState('/root/second-question') as ValueNodeState;
+			const first = entry.getState('/root/first-question') as AnyValueState;
+			const second = entry.getState('/root/second-question') as AnyValueState;
 
 			first.setValue('1');
 			second.setValue('234');
@@ -91,8 +91,8 @@ describe('Form entry state', () => {
 		});
 
 		it("overrides the arbitrary value with a new calculation when the calculation's dependency is updated", () => {
-			const first = entry.getState('/root/first-question') as ValueNodeState;
-			const second = entry.getState('/root/second-question') as ValueNodeState;
+			const first = entry.getState('/root/first-question') as AnyValueState;
+			const second = entry.getState('/root/second-question') as AnyValueState;
 
 			first.setValue('1');
 			second.setValue('234');
@@ -153,7 +153,7 @@ describe('Form entry state', () => {
 		});
 
 		it('stores the DOM value when relevant', () => {
-			const first = entry.getState('/root/first-question') as ValueNodeState;
+			const first = entry.getState('/root/first-question') as AnyValueState;
 
 			first.setValue('3');
 
@@ -163,11 +163,11 @@ describe('Form entry state', () => {
 		});
 
 		it('restores the DOM value when it becomes relevant again', () => {
-			const first = entry.getState('/root/first-question') as ValueNodeState;
+			const first = entry.getState('/root/first-question') as AnyValueState;
 
 			first.setValue('3');
 
-			const second = entry.getState('/root/second-question') as ValueNodeState;
+			const second = entry.getState('/root/second-question') as AnyValueState;
 
 			second.setValue('updated value');
 
@@ -185,9 +185,9 @@ describe('Form entry state', () => {
 
 		describe('relevance inheritance', () => {
 			it('clears the child of a non-relevant parent', () => {
-				const first = entry.getState('/root/first-question') as ValueNodeState;
+				const first = entry.getState('/root/first-question') as AnyValueState;
 				const parent = entry.getState('/root/parent-group')!;
-				const child = entry.getState('/root/parent-group/child-question') as ValueNodeState;
+				const child = entry.getState('/root/parent-group/child-question') as AnyValueState;
 
 				child.setValue('anything');
 				first.setValue('3');
@@ -200,9 +200,9 @@ describe('Form entry state', () => {
 			});
 
 			it('restores the child value of a parent which becomes relevant', () => {
-				const first = entry.getState('/root/first-question') as ValueNodeState;
+				const first = entry.getState('/root/first-question') as AnyValueState;
 				const parent = entry.getState('/root/parent-group')!;
-				const child = entry.getState('/root/parent-group/child-question') as ValueNodeState;
+				const child = entry.getState('/root/parent-group/child-question') as AnyValueState;
 
 				child.setValue('anything');
 				first.setValue('3');
@@ -259,14 +259,14 @@ describe('Form entry state', () => {
 		});
 
 		it('clears the value when non-relevant', () => {
-			const state = entry.getState('/root/third-question') as ValueNodeState;
+			const state = entry.getState('/root/third-question') as AnyValueState;
 
 			expect(state.node.textContent).toBe('');
 		});
 
 		it('calculates the value when it becomes relevant', () => {
-			const second = entry.getState('/root/second-question') as ValueNodeState;
-			const third = entry.getState('/root/third-question') as ValueNodeState;
+			const second = entry.getState('/root/second-question') as AnyValueState;
+			const third = entry.getState('/root/third-question') as AnyValueState;
 
 			second.setValue('yes');
 
@@ -281,9 +281,9 @@ describe('Form entry state', () => {
 		])(
 			'updates the calculated value $expected while it is relevant',
 			({ firstValue, expected }) => {
-				const first = entry.getState('/root/first-question') as ValueNodeState;
-				const second = entry.getState('/root/second-question') as ValueNodeState;
-				const third = entry.getState('/root/third-question') as ValueNodeState;
+				const first = entry.getState('/root/first-question') as AnyValueState;
+				const second = entry.getState('/root/second-question') as AnyValueState;
+				const third = entry.getState('/root/third-question') as AnyValueState;
 
 				second.setValue('yes');
 				first.setValue(firstValue);
@@ -300,9 +300,9 @@ describe('Form entry state', () => {
 		])(
 			'updates the calculated value $expected when it becomes relevant after the calculated dependency has been updated',
 			({ firstValue, expected }) => {
-				const first = entry.getState('/root/first-question') as ValueNodeState;
-				const second = entry.getState('/root/second-question') as ValueNodeState;
-				const third = entry.getState('/root/third-question') as ValueNodeState;
+				const first = entry.getState('/root/first-question') as AnyValueState;
+				const second = entry.getState('/root/second-question') as AnyValueState;
+				const third = entry.getState('/root/third-question') as AnyValueState;
 
 				first.setValue('20');
 				second.setValue('no');
@@ -316,9 +316,9 @@ describe('Form entry state', () => {
 		);
 
 		it('restores an arbitrary value without recalculating when becoming relevant again', () => {
-			const first = entry.getState('/root/first-question') as ValueNodeState;
-			const second = entry.getState('/root/second-question') as ValueNodeState;
-			const third = entry.getState('/root/third-question') as ValueNodeState;
+			const first = entry.getState('/root/first-question') as AnyValueState;
+			const second = entry.getState('/root/second-question') as AnyValueState;
+			const third = entry.getState('/root/third-question') as AnyValueState;
 
 			first.setValue('20');
 			third.setValue('999');
@@ -373,8 +373,8 @@ describe('Form entry state', () => {
 		});
 
 		it("recomputes the state's required condition when a dependency changes", () => {
-			const first = entry.getState('/root/first-question') as ValueNodeState;
-			const second = entry.getState('/root/second-question') as ValueNodeState;
+			const first = entry.getState('/root/first-question') as AnyValueState;
+			const second = entry.getState('/root/second-question') as AnyValueState;
 
 			first.setValue('1');
 
@@ -429,8 +429,8 @@ describe('Form entry state', () => {
 		});
 
 		it("recomputes the state's readonly condition when a dependency changes", () => {
-			const first = entry.getState('/root/first-question') as ValueNodeState;
-			const second = entry.getState('/root/second-question') as ValueNodeState;
+			const first = entry.getState('/root/first-question') as AnyValueState;
+			const second = entry.getState('/root/second-question') as AnyValueState;
 
 			first.setValue('1');
 
@@ -485,8 +485,8 @@ describe('Form entry state', () => {
 			});
 
 			it('is readonly if a parent is readonly', () => {
-				const a = entry.getState('/root/a') as ValueNodeState;
-				const b = entry.getState('/root/grp/b') as ValueNodeState;
+				const a = entry.getState('/root/a') as AnyValueState;
+				const b = entry.getState('/root/grp/b') as AnyValueState;
 
 				// Check assumptions
 				expect(b.isReadonly()).toBe(false);
@@ -497,8 +497,8 @@ describe('Form entry state', () => {
 			});
 
 			it('is not readonly if the parent is no longer readonly', () => {
-				const a = entry.getState('/root/a') as ValueNodeState;
-				const b = entry.getState('/root/grp/b') as ValueNodeState;
+				const a = entry.getState('/root/a') as AnyValueState;
+				const b = entry.getState('/root/grp/b') as AnyValueState;
 
 				a.setValue('set b readonly');
 
@@ -511,9 +511,9 @@ describe('Form entry state', () => {
 			});
 
 			it('remains readonly for its own condition if the parent is not readonly', () => {
-				const a = entry.getState('/root/a') as ValueNodeState;
-				const b = entry.getState('/root/grp/b') as ValueNodeState;
-				const c = entry.getState('/root/grp/c') as ValueNodeState;
+				const a = entry.getState('/root/a') as AnyValueState;
+				const b = entry.getState('/root/grp/b') as AnyValueState;
+				const c = entry.getState('/root/grp/c') as AnyValueState;
 
 				b.setValue('yep');
 
@@ -531,9 +531,9 @@ describe('Form entry state', () => {
 			});
 
 			it("is no longer readonly if both its own condition and parent's are not satisfied", () => {
-				const a = entry.getState('/root/a') as ValueNodeState;
-				const b = entry.getState('/root/grp/b') as ValueNodeState;
-				const c = entry.getState('/root/grp/c') as ValueNodeState;
+				const a = entry.getState('/root/a') as AnyValueState;
+				const b = entry.getState('/root/grp/b') as AnyValueState;
+				const c = entry.getState('/root/grp/c') as AnyValueState;
 
 				b.setValue('yep');
 

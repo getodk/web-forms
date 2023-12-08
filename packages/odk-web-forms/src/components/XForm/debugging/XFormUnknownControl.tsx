@@ -1,9 +1,9 @@
 import { Box } from 'suid/material';
-import type { ValueNodeState } from '../../../lib/xform/state/ValueNodeState.ts';
+import type { AnyValueState } from '../../../lib/xform/state/value/ValueState.ts';
 import { XFormAlert } from './XFormAlert.tsx';
 
 interface XFormUnknownControlProps {
-	readonly state: ValueNodeState;
+	readonly state: AnyValueState;
 }
 
 export const XFormUnknownControl = (props: XFormUnknownControlProps) => {

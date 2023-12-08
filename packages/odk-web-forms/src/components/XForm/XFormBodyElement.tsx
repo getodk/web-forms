@@ -1,7 +1,7 @@
 import { Match, Switch } from 'solid-js';
 import { type AnyBodyElementDefinition } from '../../lib/xform/body/BodyDefinition.ts';
 import type { AnyChildState } from '../../lib/xform/state/NodeState.ts';
-import type { ValueNodeState } from '../../lib/xform/state/ValueNodeState.ts';
+import type { ControlState } from '../../lib/xform/state/value/ValueState.ts';
 import { XFormGroup, type GroupLikeState } from './containers/XFormGroup.tsx';
 import { XFormControl } from './controls/XFormControl.tsx';
 
@@ -28,10 +28,10 @@ const groupState = (props: XFormBodyElementProps): GroupLikeState | null => {
 	return null;
 };
 
-const controlState = (props: XFormBodyElementProps): ValueNodeState | null => {
+const controlState = (props: XFormBodyElementProps): ControlState | null => {
 	const { state } = props;
 
-	if (state.type === 'value-node') {
+	if (state.type === 'value-node' && state.valueType !== 'model') {
 		return state;
 	}
 

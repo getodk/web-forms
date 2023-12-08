@@ -1,3 +1,4 @@
+import { UnreachableError } from '@odk/common/lib/error/UnreachableError.ts';
 import type { XFormDefinition } from '../XFormDefinition.ts';
 import type { BindDefinition } from './BindDefinition.ts';
 import type { ModelDefinition } from './ModelDefinition.ts';
@@ -7,9 +8,11 @@ import type {
 	ParentNodeDefinition,
 } from './NodeDefinition.ts';
 import { RepeatSequenceDefinition } from './RepeatSequenceDefinition.ts';
-import { ValueNodeDefinition } from './ValueNodeDefinition.ts';
 import { GroupSubtreeDefinition } from './subtree/GroupSubtreeDefinition.ts';
 import { ModelSubtreeDefinition } from './subtree/ModelSubtreeDefinition.ts';
+import { InputValueNodeDefinition } from './value-node/InputValueNodeDefinition.ts';
+import { ModelValueNodeDefinition } from './value-node/ModelValueNodeDefinition.ts';
+import { SelectValueNodeDefinition } from './value-node/SelectValueNodeDefinition.ts';
 
 export class RootDefinition implements NodeDefinition<'root'> {
 	readonly type = 'root';
@@ -104,16 +107,27 @@ export class RootDefinition implements NodeDefinition<'root'> {
 			const element = firstChild;
 			const isLeafNode = element.childElementCount === 0;
 
-			if (bodyElement == null) {
+			if (bodyElement == null || bodyElement.category === 'UNSUPPORTED') {
 				if (isLeafNode) {
-					return new ValueNodeDefinition(parent, bind, null, element);
+					return new ModelValueNodeDefinition(parent, bind, element);
 				}
 
 				return new ModelSubtreeDefinition(parent, bind, element);
 			}
 
-			if (bodyElement.category === 'control' || bodyElement.category === 'UNSUPPORTED') {
-				return new ValueNodeDefinition(parent, bind, bodyElement, element);
+			if (bodyElement.category === 'control') {
+				switch (bodyElement.type) {
+					case 'input':
+						return new InputValueNodeDefinition(parent, bind, bodyElement, element);
+
+					case 'rank':
+					case 'select':
+					case 'select1':
+						return new SelectValueNodeDefinition(parent, bind, bodyElement, element);
+
+					default:
+						throw new UnreachableError(bodyElement);
+				}
 			}
 
 			return new GroupSubtreeDefinition(parent, bind, bodyElement, element);

@@ -21,7 +21,7 @@ import type {
 } from './NodeState.ts';
 import type { RepeatSequenceAnchorComment, RepeatSequenceState } from './RepeatSequenceState.ts';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- referenced in JSDoc
-import type { ValueNodeState } from './ValueNodeState.ts';
+import type { ValueState } from './value/ValueState.ts';
 
 interface ReactiveEvaluationOptions {
 	readonly contextNode?: Node;
@@ -269,7 +269,7 @@ export abstract class DescendantNodeState<Type extends DescendantNodeStateType>
 	/**
 	 * Creates a reactive getter which produces the evaluated result for the
 	 * provided {@link BindComputation} on initialization, and whenever the state
-	 * (runtime or DOM, @see {@link ValueNodeState.createValueNodeState}) of any
+	 * (runtime or DOM, @see {@link ValueState.createValueNodeState}) of any
 	 * of its dependencies is updated.
 	 */
 	protected createBooleanBindComputation<

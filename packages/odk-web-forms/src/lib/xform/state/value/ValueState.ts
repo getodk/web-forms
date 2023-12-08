@@ -1,18 +1,28 @@
 import type { Accessor, Signal } from 'solid-js';
 import { createComputed, createSignal, untrack } from 'solid-js';
-import { createLatest } from '../../reactivity/primitives/createLatest.ts';
-import { createUninitialized } from '../../reactivity/primitives/uninitialized.ts';
-import type { AnySelectDefinition } from '../body/control/select/SelectDefinition.ts';
-import type { ValueNodeDefinition } from '../model/ValueNodeDefinition.ts';
-import { DescendantNodeState } from './DescendantNodeState.ts';
-import type { EntryState } from './EntryState.ts';
-import type { AnyParentState, NodeState } from './NodeState.ts';
-import { SelectState } from './select/SelectState.ts';
+import { createLatest } from '../../../reactivity/primitives/createLatest.ts';
+import { createUninitialized } from '../../../reactivity/primitives/uninitialized.ts';
+import type { AnyControlDefinition } from '../../body/control/ControlDefinition.ts';
+import type { AnySelectDefinition } from '../../body/control/select/SelectDefinition.ts';
+import type {
+	TypedValueNodeDefinition,
+	ValueNodeType,
+} from '../../model/value-node/ValueNodeDefinition.ts';
+import { DescendantNodeState } from '../DescendantNodeState.ts';
+import type { EntryState } from '../EntryState.ts';
+import type { AnyParentState, NodeState } from '../NodeState.ts';
+import { SelectState as TempSelectState } from '../select/SelectState.ts';
+import type { InputState } from './InputState.ts';
+import type { ModelValueState } from './ModelValueState.ts';
+import type { SelectState } from './SelectState.ts';
 
-export class ValueNodeState
+export abstract class ValueState<ValueType extends ValueNodeType>
 	extends DescendantNodeState<'value-node'>
 	implements NodeState<'value-node'>
 {
+	abstract readonly valueType: ValueType;
+	abstract readonly bodyElement: AnyControlDefinition | null;
+
 	readonly node: Element;
 	readonly children = null;
 
@@ -21,7 +31,7 @@ export class ValueNodeState
 	constructor(
 		entry: EntryState,
 		override readonly parent: AnyParentState,
-		definition: ValueNodeDefinition
+		definition: TypedValueNodeDefinition<ValueType>
 	) {
 		super(entry, parent, 'value-node', definition);
 
@@ -126,8 +136,8 @@ export class ValueNodeState
 		return [state, setState];
 	}
 
-	createSelect(select: AnySelectDefinition): SelectState {
-		return new SelectState(this, select);
+	createSelect(this: SelectState, select: AnySelectDefinition): TempSelectState {
+		return new TempSelectState(this, select);
 	}
 
 	setValue(value: string): string {
@@ -136,3 +146,14 @@ export class ValueNodeState
 		return setValue(() => value);
 	}
 }
+
+// prettier-ignore
+export type AnyValueState =
+	| InputState
+	| ModelValueState
+	| SelectState;
+
+// prettier-ignore
+export type ControlState =
+	| InputState
+	| SelectState;
