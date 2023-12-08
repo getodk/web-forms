@@ -13,7 +13,22 @@ const collectNodes = (parentNode: AnyNodeDefinition): readonly AnyNodeDefinition
 
 	switch (parentNode.type) {
 		case 'repeat-sequence':
-			children = parentNode.instances;
+			// In a previous iteration, this referenced the form definition's repeat
+			// instances. This failed to account for repeats with only a template
+			// definition and no other instances in the form definition.
+			//
+			// Side note: I know that the term "default instances" has been a source
+			// of confusion, but I really do think there should be a succinct term for
+			// it to allow shared understanding when it matters. There is an inherent
+			// distinction between:
+			//
+			// - repeat template (`<rep jr:template=""/>`)
+			// - repeat instances in the form definition (either `<rep/>` following
+			//   `<rep jr:template=""/>`, or `<rep/>` where no `<rep jr:template=""/>`
+			//   is present in the definition) `jr:template` at all)
+			// - repeat instances in a submission (which may be derived from one or
+			//   the other of the above)
+			children = [parentNode.template];
 			break;
 
 		case 'value-node':
