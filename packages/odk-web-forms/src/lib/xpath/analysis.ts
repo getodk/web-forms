@@ -112,6 +112,16 @@ const isFunctionCalled = (localName: string, node: AnySyntaxNode): boolean => {
 	}
 };
 
+export const staticBooleanExpressionResult = (expression: string): boolean | null => {
+	const { rootNode } = xpathParser.parse(expression);
+
+	if (isFunctionCalled('true', rootNode)) {
+		return true;
+	}
+
+	return isFunctionCalled('false', rootNode) ? false : null;
+};
+
 export const isItextFunctionCalled = (expression: string): boolean => {
 	const { rootNode } = xpathParser.parse(expression);
 

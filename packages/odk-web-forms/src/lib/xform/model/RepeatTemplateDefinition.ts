@@ -1,5 +1,5 @@
 import { JAVAROSA_NAMESPACE_URI } from '@odk/common/constants/xmlns.ts';
-import type { RepeatDefinition } from '../body/RepeatDefinition.ts';
+import type { RepeatDefinition } from '../body/repeat/RepeatDefinition.ts';
 import { BindDefinition } from './BindDefinition.ts';
 import { DescendentNodeDefinition } from './DescendentNodeDefinition.ts';
 import type { ChildNodeDefinition, NodeDefinition } from './NodeDefinition.ts';

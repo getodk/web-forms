@@ -1,4 +1,4 @@
-import { For, getOwner, runWithOwner } from 'solid-js';
+import { For, Show, getOwner, runWithOwner } from 'solid-js';
 import { Box, Stack } from 'suid/material';
 import type { RepeatSequenceState } from '../../../lib/xform/state/RepeatSequenceState.ts';
 import { ThemeColorOutlineButton } from '../../styled/ThemeColorOutlineButton.tsx';
@@ -18,17 +18,19 @@ export const XFormRepeatList = (props: XFormRepeatListProps) => {
 					return <XFormRepeatInstance state={instance} />;
 				}}
 			</For>
-			<Box>
-				<ThemeColorOutlineButton
-					onClick={() => {
-						runWithOwner(owner, () => {
-							props.state.createInstance();
-						});
-					}}
-				>
-					+ Add
-				</ThemeColorOutlineButton>
-			</Box>
+			<Show when={!props.state.isCountComputed}>
+				<Box>
+					<ThemeColorOutlineButton
+						onClick={() => {
+							runWithOwner(owner, () => {
+								props.state.createInstance();
+							});
+						}}
+					>
+						+ Add
+					</ThemeColorOutlineButton>
+				</Box>
+			</Show>
 		</Stack>
 	);
 };

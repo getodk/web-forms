@@ -1,6 +1,7 @@
 import { isDocumentNode } from '@odk/common/lib/dom/predicates.ts';
-import type { Signal } from 'solid-js';
+import type { Accessor, Signal } from 'solid-js';
 import { batch, createComputed, createSignal, untrack } from 'solid-js';
+import type { RepeatCountExpression } from '../body/repeat/RepeatCountExpression.ts';
 import type { RepeatNodeDefinition } from '../model/NodeDefinition.ts';
 import type { RepeatInstanceDefinition } from '../model/RepeatInstanceDefinition.ts';
 import type { RepeatSequenceDefinition } from '../model/RepeatSequenceDefinition.ts';
@@ -43,6 +44,11 @@ export class RepeatSequenceState
 
 	protected readonly instancesState: Signal<readonly RepeatInstanceState[]>;
 
+	readonly countExpression: RepeatCountExpression | null;
+	readonly isCountComputed: boolean;
+
+	protected computedCount: Accessor<number> | null = null;
+
 	readonly valueState = null;
 
 	constructor(entry: EntryState, parent: AnyParentState, definition: RepeatSequenceDefinition) {
@@ -79,10 +85,21 @@ export class RepeatSequenceState
 		definition.instances.forEach((instance) => {
 			this.createInstance(instance);
 		});
+
+		const { countExpression, isCountControlled: isCountComputed } = definition.bodyElement.repeat;
+
+		this.countExpression = countExpression;
+		this.isCountComputed = isCountComputed;
 	}
 
 	override initializeState(): void {
 		super.initializeState();
+
+		const { countExpression } = this;
+
+		if (countExpression != null) {
+			this.createCountComputation(countExpression);
+		}
 
 		// **Important:** Update this comment if related logic in `createInstance`
 		// is changed in a way that invalidates this.
@@ -101,6 +118,42 @@ export class RepeatSequenceState
 				instance.setIndex(index);
 			});
 		});
+	}
+
+	protected createCountComputation(countExpression: RepeatCountExpression): void {
+		if (this.computedCount == null) {
+			const computedCount = this.createEvaluation(countExpression);
+
+			this.computedCount = computedCount;
+
+			createComputed(() => {
+				const reference = untrack(() => this.reference);
+				const instances = this.getInstances();
+				const targetCount = computedCount();
+
+				let countDelta = targetCount - instances.length;
+
+				while (countDelta > 0) {
+					this.createInstance();
+					countDelta -= 1;
+				}
+
+				while (countDelta < 0) {
+					const lastInstance = instances[instances.length - 1];
+
+					if (lastInstance == null) {
+						const removalFailures = Math.abs(countDelta);
+
+						throw new Error(
+							`Failed to remove ${removalFailures} instances (repeat reference: ${reference})`
+						);
+					}
+
+					this.removeInstance(lastInstance);
+					countDelta += 1;
+				}
+			});
+		}
 	}
 
 	createInstance(from?: RepeatInstanceDefinition): RepeatInstanceState {

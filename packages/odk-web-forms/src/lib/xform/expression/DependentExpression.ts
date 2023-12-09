@@ -2,11 +2,14 @@ import type { XFormsXPathEvaluator } from '@odk/xpath';
 import { getNodesetDependencies, isItextFunctionCalled } from '../../xpath/analysis.ts';
 import type { DependencyContext } from './DependencyContext.ts';
 
+type EvaluateMethod = Extract<keyof XFormsXPathEvaluator, `evaluate${string}`>;
+
 const evaluatorMethodsByResultType = {
 	boolean: 'evaluateBoolean',
 	nodes: 'evaluateNodes',
+	number: 'evaluateNumber',
 	string: 'evaluateString',
-} as const;
+} as const satisfies Record<string, EvaluateMethod>;
 
 type EvaluatorMethodsByResultType = typeof evaluatorMethodsByResultType;
 

@@ -1,5 +1,5 @@
 import type { AnyBodyElementDefinition } from '../body/BodyDefinition.ts';
-import type { RepeatDefinition } from '../body/RepeatDefinition.ts';
+import type { RepeatDefinition } from '../body/repeat/RepeatDefinition.ts';
 import type { BindDefinition } from './BindDefinition.ts';
 import type {
 	ChildNodeDefinition,

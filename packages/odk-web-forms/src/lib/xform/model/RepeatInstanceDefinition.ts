@@ -1,4 +1,4 @@
-import { RepeatDefinition } from '../body/RepeatDefinition.ts';
+import { RepeatDefinition } from '../body/repeat/RepeatDefinition.ts';
 import { DescendentNodeDefinition } from './DescendentNodeDefinition.ts';
 import type { ChildNodeDefinition, NodeDefinition } from './NodeDefinition.ts';
 import type { RepeatSequenceDefinition } from './RepeatSequenceDefinition.ts';
