@@ -1,4 +1,5 @@
-import { styled } from 'suid/material';
+import { Show, createSignal } from 'solid-js';
+import { Box, Checkbox, FormControlLabel, styled } from 'suid/material';
 import type { EntryState } from '../../lib/xform/state/EntryState.ts';
 
 const Details = styled('details')({
@@ -23,19 +24,37 @@ export interface XFormDetailsProps {
 	readonly entry: EntryState;
 }
 
-export const XFormDetails = (props: XFormDetailsProps) => (
-	<>
-		<Details>
-			<Summary>Submission state (XML)</Summary>
-			<Pre>{props.entry.serializedInstanceState()}</Pre>
-		</Details>
-		<Details>
-			<Summary>XFormDefinition</Summary>
-			<Pre>{JSON.stringify(props.entry.form, null, 2)}</Pre>
-		</Details>
-		<Details>
-			<Summary>XForm (XML)</Summary>
-			<Pre>{props.entry.form.xformDocument.documentElement.outerHTML}</Pre>
-		</Details>
-	</>
-);
+export const XFormDetails = (props: XFormDetailsProps) => {
+	const [inspectDetails, setInspectDetails] = createSignal(false);
+
+	return (
+		<Box>
+			<FormControlLabel
+				label={'Inspect Details'}
+				control={
+					<Checkbox
+						checked={inspectDetails()}
+						onChange={(_, checked) => {
+							setInspectDetails(checked);
+						}}
+					/>
+				}
+			/>
+
+			<Show when={inspectDetails()}>
+				<Details>
+					<Summary>Submission state (XML)</Summary>
+					<Pre>{props.entry.serializedInstanceState()}</Pre>
+				</Details>
+				<Details>
+					<Summary>XFormDefinition</Summary>
+					<Pre>{JSON.stringify(props.entry.form, null, 2)}</Pre>
+				</Details>
+				<Details>
+					<Summary>XForm (XML)</Summary>
+					<Pre>{props.entry.form.xformDocument.documentElement.outerHTML}</Pre>
+				</Details>
+			</Show>
+		</Box>
+	);
+};
