@@ -203,7 +203,7 @@ describe('BodyDefinition', () => {
 				label: {
 					category: 'support',
 					type: 'label',
-					children: [{ expression: '"Label text"' }],
+					children: [{ stringValue: 'Label text' }],
 				},
 			});
 		});
@@ -218,7 +218,7 @@ describe('BodyDefinition', () => {
 				hint: {
 					category: 'support',
 					type: 'hint',
-					children: [{ expression: '"Hint text"' }],
+					children: [{ stringValue: 'Hint text' }],
 				},
 			});
 		});
@@ -256,7 +256,7 @@ describe('BodyDefinition', () => {
 							label: {
 								category: 'support',
 								type: 'label',
-								children: [{ expression: '"Logical group child 2"' }],
+								children: [{ stringValue: 'Logical group child 2' }],
 							},
 							hint: null,
 						},
@@ -274,7 +274,7 @@ describe('BodyDefinition', () => {
 					label: {
 						category: 'support',
 						type: 'label',
-						children: [{ expression: '"Logical group 2 with label"' }],
+						children: [{ stringValue: 'Logical group 2 with label' }],
 					},
 				});
 			});
@@ -314,7 +314,7 @@ describe('BodyDefinition', () => {
 					label: {
 						category: 'support',
 						type: 'label',
-						children: [{ expression: '"Presentation group label"' }],
+						children: [{ stringValue: 'Presentation group label' }],
 					},
 				});
 			});
@@ -338,7 +338,7 @@ describe('BodyDefinition', () => {
 							label: {
 								category: 'support',
 								type: 'label',
-								children: [{ expression: '"Presentation group child b"' }],
+								children: [{ stringValue: 'Presentation group child b' }],
 							},
 							hint: null,
 						},
@@ -416,7 +416,7 @@ describe('BodyDefinition', () => {
 				label: {
 					category: 'support',
 					type: 'label',
-					children: [{ expression: '"Repeat group"' }],
+					children: [{ stringValue: 'Repeat group' }],
 				},
 			});
 		});
@@ -452,7 +452,7 @@ describe('BodyDefinition', () => {
 							label: {
 								category: 'support',
 								type: 'label',
-								children: [{ expression: '"Repeat 1 input 2"' }],
+								children: [{ stringValue: 'Repeat 1 input 2' }],
 							},
 						},
 					],

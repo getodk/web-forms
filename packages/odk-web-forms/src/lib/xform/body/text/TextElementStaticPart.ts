@@ -1,25 +1,19 @@
 import type { AnyTextElementDefinition } from './TextElementDefinition.ts';
-import { TextElementPart } from './TextElementPart.ts';
 
-const toStaticXPathExpression = (staticTextValue: string): string => {
-	const quote = staticTextValue.includes('"') ? "'" : '"';
+export class TextElementStaticPart {
+	readonly type = 'static';
+	readonly stringValue: string;
 
-	if (staticTextValue.includes(quote)) {
-		throw new Error('todo concat()');
+	constructor(
+		readonly context: AnyTextElementDefinition,
+		node: Text
+	) {
+		this.stringValue = node.data;
 	}
 
-	return `${quote}${staticTextValue}${quote}`;
-};
+	toJSON() {
+		const { stringValue } = this;
 
-export class TextElementStaticPart extends TextElementPart<'static'> {
-	override readonly stringValue: string;
-
-	constructor(context: AnyTextElementDefinition, node: Text) {
-		const stringValue = node.data;
-		const expression = toStaticXPathExpression(stringValue);
-
-		super('static', context, expression);
-
-		this.stringValue = stringValue;
+		return { stringValue };
 	}
 }
