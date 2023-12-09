@@ -17,6 +17,7 @@ export abstract class TextElementPart<
 		expression: string
 	) {
 		super(context, 'string', expression, {
+			ignoreContextReference: type === 'output',
 			semanticDependencies: {
 				translations: type !== 'static',
 			},
