@@ -3,7 +3,6 @@ import { createComputed, createSignal, untrack } from 'solid-js';
 import { createLatest } from '../../../reactivity/primitives/createLatest.ts';
 import { createUninitialized } from '../../../reactivity/primitives/uninitialized.ts';
 import type { AnyControlDefinition } from '../../body/control/ControlDefinition.ts';
-import type { AnySelectDefinition } from '../../body/control/select/SelectDefinition.ts';
 import type {
 	TypedValueNodeDefinition,
 	ValueNodeType,
@@ -11,10 +10,9 @@ import type {
 import { DescendantNodeState } from '../DescendantNodeState.ts';
 import type { EntryState } from '../EntryState.ts';
 import type { AnyParentState, NodeState } from '../NodeState.ts';
-import { SelectState as TempSelectState } from '../select/SelectState.ts';
+import type { SelectState } from '../select/SelectState.ts';
 import type { InputState } from './InputState.ts';
 import type { ModelValueState } from './ModelValueState.ts';
-import type { SelectState } from './SelectState.ts';
 
 export abstract class ValueState<ValueType extends ValueNodeType>
 	extends DescendantNodeState<'value-node'>
@@ -134,10 +132,6 @@ export abstract class ValueState<ValueType extends ValueNodeType>
 		}, isRelevant());
 
 		return [state, setState];
-	}
-
-	createSelect(this: SelectState, select: AnySelectDefinition): TempSelectState {
-		return new TempSelectState(this, select);
 	}
 
 	setValue(value: string): string {

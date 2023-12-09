@@ -1,6 +1,6 @@
 import { Match, Switch, createMemo } from 'solid-js';
+import type { SelectState } from '../../../lib/xform/state/select/SelectState.ts';
 import type { InputState } from '../../../lib/xform/state/value/InputState.ts';
-import type { SelectState } from '../../../lib/xform/state/value/SelectState.ts';
 import type { ControlState } from '../../../lib/xform/state/value/ValueState.ts';
 import { XFormRelevanceGuard } from '../XFormRelevanceGuard.tsx';
 import { XFormUnknownControl } from '../debugging/XFormUnknownControl.tsx';

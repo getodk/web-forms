@@ -1,13 +1,25 @@
 import { xmlXPathWhitespaceSeparatedList } from '@odk/common/lib/string/whitespace.ts';
 import { ReactiveSet } from '@solid-primitives/set';
-import type { Accessor } from 'solid-js';
-import { batch, createComputed, createMemo } from 'solid-js';
+import { batch, createComputed, createMemo, type Accessor } from 'solid-js';
+import { createUninitializedAccessor } from '../../../reactivity/primitives/uninitialized.ts';
 import type { AnySelectDefinition } from '../../body/control/select/SelectDefinition.ts';
-import type { SelectState as TempSelectStateActual } from '../value/SelectState.ts';
+import type { SelectValueNodeDefinition } from '../../model/value-node/SelectValueNodeDefinition.ts';
+import type { EntryState } from '../EntryState.ts';
+import type { AnyParentState } from '../NodeState.ts';
+import { ValueState } from '../value/ValueState.ts';
 import { SelectStateItem } from './SelectStateItem.ts';
 
-export class SelectState {
-	readonly items: Accessor<readonly SelectStateItem[]>;
+export class SelectState extends ValueState<'select'> {
+	override readonly valueType = 'select';
+	override readonly bodyElement: AnySelectDefinition;
+
+	protected readonly isMultiple: boolean;
+
+	protected _items: Accessor<readonly SelectStateItem[]>;
+
+	get items(): Accessor<readonly SelectStateItem[]> {
+		return this._items;
+	}
 
 	/**
 	 * Stores all currently selected item values, as selected either by:
@@ -64,19 +76,39 @@ export class SelectState {
 	 *    - `selected`: A, C  -- **not** A, B, C
 	 *    - submission: A, C
 	 */
-	protected readonly selected: ReactiveSet<string>;
+	protected selected: ReactiveSet<string>;
 
-	constructor(state: TempSelectStateActual, select: AnySelectDefinition) {
-		const items = this.createItems(state, select);
-		const itemValues = createMemo(() => items().map((item) => item.value));
-		const initialValue = xmlXPathWhitespaceSeparatedList(state.getValue(), {
+	constructor(
+		entry: EntryState,
+		parent: AnyParentState,
+		override readonly definition: SelectValueNodeDefinition
+	) {
+		super(entry, parent, definition);
+
+		const { bodyElement } = definition;
+
+		this.bodyElement = bodyElement;
+		this.isMultiple = bodyElement.type === 'select';
+
+		this._items = createUninitializedAccessor<readonly SelectStateItem[]>();
+		this.selected = new ReactiveSet();
+	}
+
+	override initializeState(): void {
+		super.initializeState();
+
+		const { definition } = this;
+		const { bodyElement } = definition;
+		const items = this.createItems(bodyElement);
+		const initialValue = xmlXPathWhitespaceSeparatedList(definition.defaultValue, {
 			ignoreEmpty: true,
 		});
 		const selected = new ReactiveSet<string>(initialValue);
 
-		this.items = items;
+		this._items = items;
 		this.selected = selected;
 
+		const itemValues = createMemo(() => items().map((item) => item.value));
 		const serializedValue = createMemo(() => {
 			return itemValues()
 				.filter((itemValue) => selected.has(itemValue))
@@ -84,32 +116,29 @@ export class SelectState {
 		});
 
 		createComputed(() => {
-			state.setValue(serializedValue());
+			this.setValue(serializedValue());
 		});
 	}
 
-	protected createItems(
-		state: TempSelectStateActual,
-		select: AnySelectDefinition
-	): Accessor<readonly SelectStateItem[]> {
+	protected createItems(select: AnySelectDefinition): Accessor<readonly SelectStateItem[]> {
 		const { itemset } = select;
 
 		if (itemset == null) {
 			const stateItems = select.items.map((item) => {
-				return new SelectStateItem(state, item.value, item.label);
+				return new SelectStateItem(this, item.value, item.label);
 			});
 
 			return () => stateItems;
 		} else {
-			const itemNodes = state.createNodesetEvaluation(itemset.nodes);
+			const itemNodes = this.createNodesetEvaluation(itemset.nodes);
 
 			return createMemo(() => {
 				return itemNodes().map((contextNode) => {
 					const itemOptions = { contextNode };
-					const value = state.entry.evaluator.evaluateString(itemset.value.expression, itemOptions);
+					const value = this.entry.evaluator.evaluateString(itemset.value.expression, itemOptions);
 					const { label } = itemset;
 
-					return new SelectStateItem(state, value, label, itemOptions);
+					return new SelectStateItem(this, value, label, itemOptions);
 				});
 			});
 		}
@@ -119,20 +148,18 @@ export class SelectState {
 		return this.selected.has(item.value);
 	}
 
-	select(item: SelectStateItem): void {
-		this.selected.add(item.value);
-	}
-
 	deselect(item: SelectStateItem): void {
 		this.selected.delete(item.value);
 	}
 
-	setValue(value: string): void {
-		batch(() => {
-			const { selected } = this;
+	select(item: SelectStateItem): void {
+		this.selected.add(item.value);
+	}
 
-			selected.clear();
-			selected.add(value);
+	selectExclusive(value: string): void {
+		batch(() => {
+			this.selected.clear();
+			this.selected.add(value);
 		});
 	}
 }

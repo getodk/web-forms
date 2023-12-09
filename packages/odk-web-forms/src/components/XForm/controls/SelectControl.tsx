@@ -3,7 +3,7 @@ import type {
 	AnySelectDefinition,
 	SelectDefinition,
 } from '../../../lib/xform/body/control/select/SelectDefinition.ts';
-import type { SelectState } from '../../../lib/xform/state/value/SelectState.ts';
+import type { SelectState } from '../../../lib/xform/state/select/SelectState.ts';
 import { MultiSelect } from '../../Widget/MultiSelect.tsx';
 import { SingleSelect } from '../../Widget/SingleSelect.tsx';
 

@@ -1,7 +1,7 @@
 import type { ChangeEvent } from '@suid/types';
 import { createMemo, For, Show } from 'solid-js';
 import { FormControlLabel, Radio, RadioGroup } from 'suid/material';
-import type { SelectState } from '../../lib/xform/state/value/SelectState.ts';
+import type { SelectState } from '../../lib/xform/state/select/SelectState.ts';
 import type { Select1Definition } from '../XForm/controls/SelectControl.tsx';
 import { XFormControlLabel } from '../XForm/controls/XFormControlLabel.tsx';
 
@@ -11,12 +11,11 @@ export interface SingleSelectProps {
 }
 
 export const SingleSelect = (props: SingleSelectProps) => {
-	const selectState = props.state.createSelect(props.control);
 	const isDisabled = createMemo(() => {
 		return props.state.isReadonly() === true || props.state.isRelevant() === false;
 	});
 	const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-		selectState.setValue(event.target.value);
+		props.state.selectExclusive(event.target.value);
 	};
 
 	return (
@@ -26,7 +25,7 @@ export const SingleSelect = (props: SingleSelectProps) => {
 					return <XFormControlLabel state={props.state} label={label} />;
 				}}
 			</Show>
-			<For each={selectState.items()}>
+			<For each={props.state.items()}>
 				{(item) => {
 					return (
 						<FormControlLabel

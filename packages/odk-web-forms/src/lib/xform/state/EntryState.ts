@@ -10,11 +10,11 @@ import type { AnyDescandantNodeState } from './DescendantNodeState.ts';
 import type { AnyChildState, AnyNodeState, AnyParentState, NodeState } from './NodeState.ts';
 import { RepeatSequenceState } from './RepeatSequenceState.ts';
 import { TranslationState } from './TranslationState.ts';
+import { SelectState } from './select/SelectState.ts';
 import { GroupSubtreeState } from './subtree/GroupSubtreeState.ts';
 import { ModelSubtreeState } from './subtree/ModelSubtreeState.ts';
 import { InputState } from './value/InputState.ts';
 import { ModelValueState } from './value/ModelValueState.ts';
-import { SelectState } from './value/SelectState.ts';
 
 export const buildChildStates = (
 	entry: EntryState,

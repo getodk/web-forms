@@ -1,6 +1,6 @@
 import { createMemo, For, Show } from 'solid-js';
 import { Checkbox, FormControlLabel, FormGroup } from 'suid/material';
-import type { SelectState } from '../../lib/xform/state/value/SelectState.ts';
+import type { SelectState } from '../../lib/xform/state/select/SelectState.ts';
 import type { SelectNDefinition } from '../XForm/controls/SelectControl.tsx';
 import { XFormControlLabel } from '../XForm/controls/XFormControlLabel.tsx';
 
@@ -10,7 +10,6 @@ export interface MultiSelectProps {
 }
 
 export const MultiSelect = (props: MultiSelectProps) => {
-	const selectState = props.state.createSelect(props.control);
 	const isDisabled = createMemo(() => {
 		return props.state.isReadonly() === true || props.state.isRelevant() === false;
 	});
@@ -22,7 +21,7 @@ export const MultiSelect = (props: MultiSelectProps) => {
 					return <XFormControlLabel state={props.state} label={label} />;
 				}}
 			</Show>
-			<For each={selectState.items()}>
+			<For each={props.state.items()}>
 				{(item) => {
 					return (
 						<FormControlLabel
@@ -30,12 +29,12 @@ export const MultiSelect = (props: MultiSelectProps) => {
 							disabled={isDisabled()}
 							control={
 								<Checkbox
-									checked={selectState.isSelected(item)}
+									checked={props.state.isSelected(item)}
 									onChange={(_, checked) => {
 										if (checked) {
-											selectState.select(item);
+											props.state.select(item);
 										} else {
-											selectState.deselect(item);
+											props.state.deselect(item);
 										}
 									}}
 								/>

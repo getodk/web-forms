@@ -1,6 +1,6 @@
 import type { Accessor } from 'solid-js';
 import type { LabelDefinition } from '../../body/text/LabelDefinition.ts';
-import type { SelectState } from '../value/SelectState.ts';
+import type { SelectState } from './SelectState.ts';
 
 interface SelectStateItemOptions {
 	readonly contextNode: Node;
