@@ -134,15 +134,13 @@ export class RepeatSequenceState
 				const reference = untrack(() => this.reference);
 				const instances = this.getInstances();
 				const targetCount = computedCount();
+				const countDelta = targetCount - instances.length;
 
-				let countDelta = targetCount - instances.length;
-
-				while (countDelta > 0) {
+				if (countDelta > 0) {
 					this.createInstance();
-					countDelta -= 1;
 				}
 
-				while (countDelta < 0) {
+				if (countDelta < 0) {
 					const lastInstance = instances[instances.length - 1];
 
 					if (lastInstance == null) {
@@ -154,7 +152,6 @@ export class RepeatSequenceState
 					}
 
 					this.removeInstance(lastInstance);
-					countDelta += 1;
 				}
 			});
 		}
