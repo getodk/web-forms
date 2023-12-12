@@ -30,18 +30,20 @@ export const XFormControl = (props: XFormControlProps) => {
 
 	return (
 		<XFormRelevanceGuard isRelevant={isRelevant()}>
-			<Switch fallback={<XFormUnknownControl {...props} />}>
-				<Match when={inputState(props)} keyed={true}>
-					{(state) => {
-						return <XFormInputControl state={state} />;
-					}}
-				</Match>
-				<Match when={selectState(props)} keyed={true}>
-					{(state) => {
-						return <SelectControl state={state} />;
-					}}
-				</Match>
-			</Switch>
+			<div class="xform-control" data-reference={props.state.reference}>
+				<Switch fallback={<XFormUnknownControl {...props} />}>
+					<Match when={inputState(props)} keyed={true}>
+						{(state) => {
+							return <XFormInputControl state={state} />;
+						}}
+					</Match>
+					<Match when={selectState(props)} keyed={true}>
+						{(state) => {
+							return <SelectControl state={state} />;
+						}}
+					</Match>
+				</Switch>
+			</div>
 		</XFormRelevanceGuard>
 	);
 };

@@ -12,25 +12,27 @@ export const XFormRepeatList = (props: XFormRepeatListProps) => {
 	const owner = getOwner();
 
 	return (
-		<Stack spacing={2}>
-			<For each={props.state.getInstances()}>
-				{(instance) => {
-					return <XFormRepeatInstance state={instance} />;
-				}}
-			</For>
-			<Show when={!props.state.isCountComputed}>
-				<Box>
-					<ThemeColorOutlineButton
-						onClick={() => {
-							runWithOwner(owner, () => {
-								props.state.createInstance();
-							});
-						}}
-					>
-						+ Add
-					</ThemeColorOutlineButton>
-				</Box>
-			</Show>
-		</Stack>
+		<div class="xform-repeat-sequence" data-reference={props.state.reference}>
+			<Stack spacing={2}>
+				<For each={props.state.getInstances()}>
+					{(instance) => {
+						return <XFormRepeatInstance state={instance} />;
+					}}
+				</For>
+				<Show when={!props.state.isCountComputed}>
+					<Box>
+						<ThemeColorOutlineButton
+							onClick={() => {
+								runWithOwner(owner, () => {
+									props.state.createInstance();
+								});
+							}}
+						>
+							+ Add
+						</ThemeColorOutlineButton>
+					</Box>
+				</Show>
+			</Stack>
+		</div>
 	);
 };

@@ -21,25 +21,27 @@ export const XFormRepeatInstance = (props: XFormRepeatInstanceProps) => {
 		elementDefinition().label ?? elementDefinition().groupDefinition.label;
 
 	return (
-		<TopLevelRepeatInstance>
-			<Stack direction="row" justifyContent="space-between">
-				<Show when={labelDefinition()} keyed={true}>
-					{(label) => (
-						<XFormRepeatInstanceLabel
-							state={props.state}
-							label={label}
-							isRepeatInstanceVisible={isRepeatInstanceVisible()}
-							setRepeatInstanceVisible={setRepeatInstanceVisible}
-						/>
-					)}
+		<div class="xform-repeat-instance" data-reference={props.state.reference}>
+			<TopLevelRepeatInstance>
+				<Stack direction="row" justifyContent="space-between">
+					<Show when={labelDefinition()} keyed={true}>
+						{(label) => (
+							<XFormRepeatInstanceLabel
+								state={props.state}
+								label={label}
+								isRepeatInstanceVisible={isRepeatInstanceVisible()}
+								setRepeatInstanceVisible={setRepeatInstanceVisible}
+							/>
+						)}
+					</Show>
+					<RepeatInstanceOptionsMenuContainer justifySelf="flex-end">
+						<RepeatInstanceOptionsMenu state={props.state} />
+					</RepeatInstanceOptionsMenuContainer>
+				</Stack>
+				<Show when={isRepeatInstanceVisible()}>
+					<XFormQuestionList state={props.state} />
 				</Show>
-				<RepeatInstanceOptionsMenuContainer justifySelf="flex-end">
-					<RepeatInstanceOptionsMenu state={props.state} />
-				</RepeatInstanceOptionsMenuContainer>
-			</Stack>
-			<Show when={isRepeatInstanceVisible()}>
-				<XFormQuestionList state={props.state} />
-			</Show>
-		</TopLevelRepeatInstance>
+			</TopLevelRepeatInstance>
+		</div>
 	);
 };
