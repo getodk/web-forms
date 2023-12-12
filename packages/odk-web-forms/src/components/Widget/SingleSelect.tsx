@@ -1,4 +1,3 @@
-import type { ChangeEvent } from '@suid/types';
 import { createMemo, For, Show } from 'solid-js';
 import { FormControlLabel, Radio, RadioGroup } from 'suid/material';
 import type { SelectState } from '../../lib/xform/state/select/SelectState.ts';
@@ -14,12 +13,9 @@ export const SingleSelect = (props: SingleSelectProps) => {
 	const isDisabled = createMemo(() => {
 		return props.state.isReadonly() === true || props.state.isRelevant() === false;
 	});
-	const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-		props.state.selectExclusive(event.target.value);
-	};
 
 	return (
-		<RadioGroup name={props.state.reference} value={props.state.getValue()} onChange={handleChange}>
+		<RadioGroup name={props.state.reference}>
 			<Show when={props.control.label} keyed={true}>
 				{(label) => {
 					return <XFormControlLabel state={props.state} label={label} />;
@@ -30,7 +26,18 @@ export const SingleSelect = (props: SingleSelectProps) => {
 					return (
 						<FormControlLabel
 							value={item.value}
-							control={<Radio />}
+							control={
+								<Radio
+									checked={props.state.isSelected(item)}
+									onChange={(_, checked) => {
+										if (checked) {
+											props.state.selectExclusive(item);
+										} else {
+											props.state.deselect(item);
+										}
+									}}
+								/>
+							}
 							label={item.label()}
 							disabled={isDisabled()}
 						/>

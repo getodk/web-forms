@@ -160,10 +160,10 @@ export class SelectState extends ValueState<'select'> {
 		this.selected.add(item.value);
 	}
 
-	selectExclusive(value: string): void {
+	selectExclusive(item: SelectStateItem): void {
 		batch(() => {
 			this.selected.clear();
-			this.selected.add(value);
+			this.selected.add(item.value);
 		});
 	}
 }
