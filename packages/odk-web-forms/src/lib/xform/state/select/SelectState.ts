@@ -95,6 +95,10 @@ export class SelectState extends ValueState<'select'> {
 	}
 
 	override initializeState(): void {
+		if (this.isStateInitialized) {
+			return;
+		}
+
 		super.initializeState();
 
 		const { definition } = this;

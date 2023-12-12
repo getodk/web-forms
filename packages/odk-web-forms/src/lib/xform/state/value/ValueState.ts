@@ -42,6 +42,10 @@ export abstract class ValueState<ValueType extends ValueNodeType>
 	}
 
 	override initializeState(): void {
+		if (this.isStateInitialized) {
+			return;
+		}
+
 		super.initializeState();
 		this.valueState = this.createValueNodeState(this.node);
 	}

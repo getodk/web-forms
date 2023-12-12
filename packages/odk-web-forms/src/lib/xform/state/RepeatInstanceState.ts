@@ -64,6 +64,10 @@ export class RepeatInstanceState
 	}
 
 	override initializeState(): void {
+		if (this.isStateInitialized) {
+			return;
+		}
+
 		super.initializeState();
 
 		const { definition, entry } = this;

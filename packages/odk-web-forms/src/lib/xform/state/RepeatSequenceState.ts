@@ -93,6 +93,10 @@ export class RepeatSequenceState
 	}
 
 	override initializeState(): void {
+		if (this.isStateInitialized) {
+			return;
+		}
+
 		super.initializeState();
 
 		const { countExpression } = this;
