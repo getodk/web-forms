@@ -1,6 +1,7 @@
 import { type JSX } from 'solid-js';
 import { Page } from './components/Page/Page.tsx';
 import { ThemeProvider } from './components/ThemeProvider.tsx';
+import { TranslationsContextProvider } from './components/TranslationsContext.tsx';
 
 interface AppProps {
 	readonly children?: JSX.Element;
@@ -9,7 +10,9 @@ interface AppProps {
 export const App = (props: AppProps) => {
 	return (
 		<ThemeProvider>
-			<Page>{props.children}</Page>
+			<TranslationsContextProvider>
+				<Page>{props.children}</Page>
+			</TranslationsContextProvider>
 		</ThemeProvider>
 	);
 };

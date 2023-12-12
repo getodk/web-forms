@@ -118,7 +118,7 @@ function render(ui: Ui, options: Options = {}): Result {
 		typeof location === 'string' || typeof options.routeDataFunc === 'function'
 			? lazy(async () => {
 					try {
-						const { memoryIntegration, useNavigate, Router } = await import('@solidjs/router');
+						const { useNavigate, Router } = await import('@solidjs/router');
 						return {
 							default: () =>
 								createComponent(Router, {
@@ -132,13 +132,6 @@ function render(ui: Ui, options: Options = {}): Result {
 												: null,
 											createComponent(wrappedUi, {}),
 										];
-									},
-									// Ideally this wouldn't be `!` asserted, but it works around
-									// lack of `undefined` in underlying types (accommodation for
-									// `exactOptionalPropertyTypes` TypeScript config)
-									data: options.routeDataFunc!,
-									get source() {
-										return memoryIntegration();
 									},
 								}),
 						};

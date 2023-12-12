@@ -1,6 +1,6 @@
 import { render } from '@solidjs/testing-library';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { App } from '../../App.tsx';
+import { XFormView } from '../../components/XForm/XFormView.tsx';
 import { XFormDefinition } from '../../lib/xform/XFormDefinition.ts';
 import { EntryState } from '../../lib/xform/state/EntryState.ts';
 import {
@@ -50,7 +50,7 @@ describe('XFormView', () => {
 		const rendered = render(() => {
 			const entry = new EntryState(xformDefinition);
 
-			return <App entry={entry} />;
+			return <XFormView entry={entry} />;
 		});
 
 		const label = rendered.getByText(/^1\./);
@@ -65,7 +65,7 @@ describe('XFormView', () => {
 		const rendered = render(() => {
 			entry = new EntryState(xformDefinition);
 
-			return <App entry={entry} />;
+			return <XFormView entry={entry} />;
 		});
 
 		// TODO: the intent was actually to test this by selecting the menu item,

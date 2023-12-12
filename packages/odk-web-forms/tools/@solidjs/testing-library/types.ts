@@ -5,7 +5,7 @@
  * Modified to address type strictness errors (largely by loosening types :/)
  */
 
-import type { RouteDataFunc } from '@solidjs/router';
+import type { RouteLoadFunc } from '@solidjs/router';
 import type { BoundFunctions, Queries, prettyFormat } from '@testing-library/dom';
 import { queries } from '@testing-library/dom';
 import type { Accessor, Component, JSX, Owner, Setter } from 'solid-js';
@@ -24,7 +24,7 @@ export interface Options {
 	hydrate?: boolean;
 	wrapper?: Component<{ children: JSX.Element }>;
 	readonly location?: string;
-	routeDataFunc?: RouteDataFunc;
+	routeDataFunc?: RouteLoadFunc;
 }
 
 export type DebugFn = (
