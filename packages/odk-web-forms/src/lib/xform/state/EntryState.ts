@@ -345,8 +345,55 @@ export class EntryState implements NodeState<'root'> {
 		};
 	}
 
+	protected getDescendantState(current: AnyNodeState, reference: string): AnyNodeState | null {
+		const currentReference = current.reference;
+
+		if (reference === currentReference) {
+			return current;
+		}
+
+		if (
+			reference.startsWith(`${currentReference}/`) ||
+			reference.startsWith(`${currentReference}[`)
+		) {
+			switch (current.type) {
+				case 'repeat-sequence':
+					const instances = current.getInstances();
+
+					for (const instance of instances) {
+						if (instance.reference === reference) {
+							return instance;
+						}
+
+						const result = this.getDescendantState(instance, reference);
+
+						if (result != null) {
+							return result;
+						}
+					}
+
+					return null;
+
+				case 'repeat-instance':
+				case 'subtree':
+				case 'root':
+					for (const child of current.children) {
+						const result = this.getDescendantState(child, reference);
+
+						if (result != null) {
+							return result;
+						}
+					}
+
+					return null;
+			}
+		}
+
+		return null;
+	}
+
 	getState(reference: string): AnyNodeState | null {
-		return this.stateByReference().get(reference) ?? null;
+		return this.getDescendantState(this, reference);
 	}
 
 	toJSON() {
