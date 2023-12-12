@@ -68,6 +68,10 @@ export const odkTheme = createTheme({
 			fontSize: '2.25rem',
 			fontWeight: 500,
 		},
+		h2: {
+			fontSize: '1.75rem',
+			fontWeight: 500,
+		},
 		body1: {
 			fontSize: '1.5rem',
 			fontWeight: 400,

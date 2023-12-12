@@ -49,10 +49,10 @@
     "@odk/common": "0.0.0",
     "@odk/xpath": "1.0.0-alpha.0",
     "@solid-primitives/set": "^0.4.8",
-    "@solidjs/router": "^0.8.3",
+    "@solidjs/router": "^0.10.1",
     "@suid/icons-material": "^0.6.11",
     "@suid/material": "^0.15.1",
-    "solid-js": "^1.8.3",
+    "solid-js": "^1.8.7",
     "tree-sitter-xpath": "1.0.0-alpha.0",
     "web-tree-sitter": "^0.20.8"
   },

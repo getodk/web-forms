@@ -1,5 +1,5 @@
 /* @refresh reload */
 import { render } from 'solid-js/web';
-import { Demo } from './Demo.tsx';
+import { DemoRouter } from './components/Demo/DemoRouter.tsx';
 
-render(() => <Demo />, document.getElementById('root')!);
+render(() => <DemoRouter />, document.getElementById('root')!);

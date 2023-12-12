@@ -7,6 +7,7 @@ const BasePageFooter = styled(Stack)(({ theme }) => ({
 	flexDirection: 'row',
 	justifyContent: 'space-between',
 	paddingBlockStart: theme.spacing(1),
+	paddingBlockEnd: theme.spacing(2),
 	paddingInlineStart: theme.spacing(1),
 }));
 

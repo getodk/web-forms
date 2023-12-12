@@ -8,7 +8,7 @@ import { PageMain } from './PageMain.tsx';
 
 interface PageProps {
 	readonly children?: JSX.Element;
-	readonly entry: EntryState | null;
+	readonly entry?: EntryState | null;
 }
 
 export const Page = (props: PageProps) => {
@@ -38,7 +38,7 @@ export const Page = (props: PageProps) => {
 			/>
 			<PageContainer>
 				<Stack spacing={2}>
-					<PageHeader entry={props.entry} />
+					<PageHeader entry={props.entry ?? null} />
 					<PageMain elevation={2}>{props.children}</PageMain>
 					<PageFooter />
 				</Stack>
