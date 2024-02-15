@@ -57,6 +57,7 @@ const configs = [
 			'packages/tree-sitter-xpath/types/**/*',
 			'vendor-packages/**/dist/**/*',
 			'**/vendor',
+			'packages/odk-web-forms/vue/**/*', // eslint-plugin-vue doesn't support flat config yet https://github.com/vuejs/eslint-plugin-vue/pull/2319
 		],
 	},
 
