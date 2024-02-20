@@ -1,5 +1,6 @@
 import type { Accessor, Signal } from 'solid-js';
 import { createComputed, createSignal, untrack } from 'solid-js';
+import { ref, type Ref } from 'vue';
 import { createLatest } from '../../reactivity/primitives/createLatest.ts';
 import { createUninitialized } from '../../reactivity/primitives/uninitialized.ts';
 import type { ValueNodeDefinition } from '../model/ValueNodeDefinition.ts';
@@ -15,7 +16,8 @@ export class ValueNodeState
 	readonly children = null;
 
 	valueState: Signal<string>;
-
+	vueValue: Ref<string>;
+	
 	constructor(entry: EntryState, parent: AnyParentState, definition: ValueNodeDefinition) {
 		super(entry, parent, 'value-node', definition);
 
@@ -25,6 +27,8 @@ export class ValueNodeState
 		parent.node.append(node);
 		this.node = node;
 		this.valueState = createUninitialized<string>();
+
+		this.vueValue = ref(""); // TODO read default value
 	}
 
 	override initializeState(): void {
