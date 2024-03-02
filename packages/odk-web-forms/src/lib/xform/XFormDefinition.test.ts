@@ -12,7 +12,6 @@ import {
 	title,
 } from '../../test/fixtures/xform-dsl';
 import { XFormDefinition } from './XFormDefinition.ts';
-import { BodyDefinition } from './body/BodyDefinition.ts';
 import { ModelDefinition } from './model/ModelDefinition.ts';
 
 describe('XFormDefinition', () => {
@@ -61,9 +60,5 @@ describe('XFormDefinition', () => {
 
 	it("gets the form's model definition", () => {
 		expect(xformDefinition.model).toBeInstanceOf(ModelDefinition);
-	});
-
-	it("gets the form's body definition", () => {
-		expect(xformDefinition.body).toBeInstanceOf(BodyDefinition);
 	});
 });

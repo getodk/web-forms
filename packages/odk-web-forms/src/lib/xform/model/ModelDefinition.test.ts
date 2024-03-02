@@ -18,7 +18,8 @@ import {
 import { XFormDefinition } from '../XFormDefinition.ts';
 import { BindDefinition } from './BindDefinition.ts';
 import { ModelDefinition } from './ModelDefinition.ts';
-import type { RepeatSequenceDefinition } from './RepeatSequenceDefinition.ts';
+import type { AnyNodeDefinition } from './NodeDefinition.ts';
+import { RepeatSequenceDefinition } from './RepeatSequenceDefinition.ts';
 import type { ValueNodeDefinition } from './ValueNodeDefinition.ts';
 
 describe('ModelDefinition', () => {
@@ -122,6 +123,660 @@ describe('ModelDefinition', () => {
 		} else {
 			expect(child.bodyElement).toMatchObject(expected);
 		}
+	});
+
+	// These tests were originally defined in `BodyDefinition.test.ts`, against
+	// the `body` property of an `XFormDefinition`. The separate presence of
+	// `body` has been a source of some confusion. In reality, an XForm's body
+	// is parsed ahead of its model (well, its head, including the model as
+	// well as the binds, which are more analogous to a controller) because
+	// aspects of the body are important for determining the entire scope of a
+	// given field or other form aspect.
+	//
+	// The structure which ultimately matters downstream, to the "engine", is
+	// contained entirely within what we currently call the `ModelDefinition`.
+	// References into the body are resolved as a next parsing stage, and then
+	// the `body` property itself becomes effectively moot. So... we're going to
+	// eliminate this source of confusion. First step: preserving whatever is
+	// valuable about the body tests, in the place where they actually matter.
+	describe('information derived from the XForm body, in greater detail', () => {
+		beforeEach(() => {
+			const xform = html(
+				head(
+					title('Body definition'),
+					model(
+						mainInstance(
+							// prettier-ignore
+							t('root id="body-definition"',
+
+								// prettier-ignore
+								t('input'),
+								t('input-label-hint'),
+
+								// prettier-ignore
+								t('loggrp',
+									// prettier-ignore
+									t('lg-child-1'),
+									t('lg-child-2')
+								),
+
+								// prettier-ignore
+								t('loggrp-2',
+									// prettier-ignore
+									t('lg2-1'),
+									t('lg2-2')
+								),
+
+								// prettier-ignore
+								t('presgrp',
+									// prettier-ignore
+									t('pg-a'),
+									t('pg-b')
+								),
+
+								t('sg-1'),
+								t('sg-2'),
+								t('sg-3'),
+								t('sg-4'),
+								t('sg-5'),
+
+								// prettier-ignore
+								t('rep1',
+									t('r1-1'),
+									t('r1-2')
+								),
+
+								// prettier-ignore
+								t('rep2',
+									t('r2-1')
+								),
+
+								// prettier-ignore
+								t('unrelated-grp',
+									t('rep3',
+										t('r3-1')
+									)
+								)
+							)
+						),
+						bind('/root/input'),
+						bind('/root/input-label-hint'),
+						bind('/root/loggrp'),
+						bind('/root/loggrp/lg-child-1'),
+						bind('/root/loggrp/lg-child-2'),
+						bind('/root/loggrp-2/lg2-1'),
+						bind('/root/loggrp-2/lg2-2'),
+						bind('/root/presgrp/pg-a'),
+						bind('/root/presgrp/pg-b'),
+						bind('/root/sg-1'),
+						bind('/root/sg-2'),
+						bind('/root/sg-3'),
+						bind('/root/sg-4'),
+						bind('/root/sg-5'),
+						bind('/root/rep1'),
+						bind('/root/rep1/r1-1'),
+						bind('/root/rep1/r1-2'),
+						bind('/root/rep2/r2-1'),
+						bind('/root/unrelated-grp'),
+						bind('/root/unrelated-grp/rep3/r3-1')
+					)
+				),
+				body(
+					input('/root/input'),
+
+					// prettier-ignore
+					input('/root/input-label-hint',
+						// prettier-ignore
+						label('Label text'),
+						t('hint', 'Hint text')
+					),
+
+					// prettier-ignore
+					group('/root/loggrp',
+						input('/root/loggrp/lg-child-1'),
+						input(
+							'/root/loggrp/lg-child-2',
+							// prettier-ignore
+							label('Logical group child 2')
+						)
+					),
+
+					// prettier-ignore
+					group('/root/loggrp-2',
+						label('Logical group 2 with label'),
+
+						input('/root/loggrp-2/lg2-1'),
+						input('/root/loggrp-2/lg2-2')
+					),
+
+					// prettier-ignore
+					t('group',
+						label('Presentation group label'),
+
+						input('/root/presgrp/pg-a'),
+						input('/root/presgrp/pg-b', label('Presentation group child b'))
+					),
+
+					// prettier-ignore
+					t('group',
+						input('/root/sg-1'),
+						input('/root/sg-2'),
+						input('/root/sg-3'),
+						input('/root/sg-4'),
+						input('/root/sg-5')
+					),
+
+					// prettier-ignore
+					group('/root/rep1',
+						label('Repeat group'),
+
+						// prettier-ignore
+						repeat('/root/rep1',
+							input('/root/rep1/r1-1'),
+
+							// prettier-ignore
+							input('/root/rep1/r1-2',
+								label('Repeat 1 input 2'))
+						)
+					),
+
+					// prettier-ignore
+					repeat('/root/rep2',
+						input('/root/rep2/r2-1')
+					),
+
+					// prettier-ignore
+					group('/root/unrelated-grp',
+						label('Group unrelated to the repeat it contains'),
+
+						// prettier-ignore
+						repeat('/root/unrelated-grp/rep3',
+							input('/root/unrelated-grp/rep3/r3-1')
+						)
+					)
+				)
+			);
+			const xformDefinition = new XFormDefinition(xform.asXml());
+
+			modelDefinition = xformDefinition.model;
+		});
+
+		/**
+		 * Generally not used for testing logic, mostly to check that we're asserting
+		 * expectations against the node that we think we are.
+		 *
+		 * Also serves as a type assertion for `node` input which might be nullish
+		 * (e.g. where the node has been accessed by array index).
+		 */
+		const assertNodeset: AssertNodeset = (node, nodeset) => {
+			expect(node?.nodeset).toBe(nodeset);
+		};
+
+		type AssertNodeset = <T extends AnyNodeDefinition>(
+			node: T | undefined,
+			nodeset: string
+		) => asserts node is T;
+
+		describe('controls', () => {
+			it('defines the input control of a model node', () => {
+				const inputNode = modelDefinition.root.children[0];
+
+				assertNodeset(inputNode, '/root/input');
+
+				expect(inputNode).toMatchObject({
+					bodyElement: {
+						category: 'control',
+						type: 'input',
+						reference: '/root/input',
+						label: null,
+						hint: null,
+					},
+				});
+			});
+
+			it("defines the model node's inputs label", () => {
+				const labeledInputNode = modelDefinition.root.children[1];
+
+				assertNodeset(labeledInputNode, '/root/input-label-hint');
+
+				expect(labeledInputNode).toMatchObject({
+					bodyElement: {
+						category: 'control',
+						type: 'input',
+						reference: '/root/input-label-hint',
+						label: {
+							category: 'support',
+							type: 'label',
+							children: [{ expression: '"Label text"' }],
+						},
+					},
+				});
+			});
+
+			it("defines the model node's input hint", () => {
+				const hintedInputNode = modelDefinition.root.children[1];
+
+				assertNodeset(hintedInputNode, '/root/input-label-hint');
+
+				expect(hintedInputNode).toMatchObject({
+					bodyElement: {
+						category: 'control',
+						type: 'input',
+						reference: '/root/input-label-hint',
+						hint: {
+							category: 'support',
+							type: 'hint',
+							children: [{ expression: '"Hint text"' }],
+						},
+					},
+				});
+			});
+		});
+
+		describe('groups', () => {
+			describe('logical groups', () => {
+				it('defines the body element of a logical group for a <group> with a `ref`, but no <label>', () => {
+					const logicalGroupNode = modelDefinition.root.children[2];
+
+					assertNodeset(logicalGroupNode, '/root/loggrp');
+
+					expect(logicalGroupNode).toMatchObject({
+						bodyElement: {
+							category: 'structure',
+							type: 'logical-group',
+							reference: '/root/loggrp',
+							label: null,
+						},
+					});
+				});
+
+				it("defines the body elements of an unlabeled logical group's children", () => {
+					const logicalGroupNode = modelDefinition.root.children[2];
+
+					assertNodeset(logicalGroupNode, '/root/loggrp');
+
+					expect(logicalGroupNode).toMatchObject({
+						children: [
+							{
+								nodeset: '/root/loggrp/lg-child-1',
+
+								bodyElement: {
+									category: 'control',
+									type: 'input',
+									reference: '/root/loggrp/lg-child-1',
+									label: null,
+									hint: null,
+								},
+							},
+							{
+								nodeset: '/root/loggrp/lg-child-2',
+
+								bodyElement: {
+									category: 'control',
+									type: 'input',
+									reference: '/root/loggrp/lg-child-2',
+									label: {
+										category: 'support',
+										type: 'label',
+										children: [{ expression: '"Logical group child 2"' }],
+									},
+									hint: null,
+								},
+							},
+						],
+					});
+				});
+
+				it('defines the body element of a logical group for a <group> with a `ref` and a <label>', () => {
+					const logicalGroupNode = modelDefinition.root.children[3];
+
+					assertNodeset(logicalGroupNode, '/root/loggrp-2');
+
+					expect(logicalGroupNode).toMatchObject({
+						bodyElement: {
+							category: 'structure',
+							type: 'logical-group',
+							reference: '/root/loggrp-2',
+							label: {
+								category: 'support',
+								type: 'label',
+								children: [{ expression: '"Logical group 2 with label"' }],
+							},
+						},
+					});
+				});
+
+				it("defines the body elements of a labeled logical group's children", () => {
+					const logicalGroupNode = modelDefinition.root.children[3];
+
+					assertNodeset(logicalGroupNode, '/root/loggrp-2');
+
+					expect(logicalGroupNode).toMatchObject({
+						children: [
+							{
+								bodyElement: {
+									category: 'control',
+									type: 'input',
+									reference: '/root/loggrp-2/lg2-1',
+									label: null,
+									hint: null,
+								},
+							},
+							{
+								bodyElement: {
+									category: 'control',
+									type: 'input',
+									reference: '/root/loggrp-2/lg2-2',
+									label: null,
+									hint: null,
+								},
+							},
+						],
+					});
+				});
+			});
+
+			describe('presentation groups', () => {
+				// WE HAVE A BUG!
+				//
+				// Well, we have an assumption that doesn't hold, and then related to
+				// that we have an actual bug which would affect end-users.
+				//
+				// - Assumption that doesn't hold: the targeted model element, a subtree
+				//   node, has children which are referenced in the body, by inputs
+				//   inside a labeled group. That group does not explicitly reference
+				//   this subtree node (hence the term "presentation group", taken from
+				//   the XForms spec's discussion of this kind of structure). But it's
+				//   implicitly connected. It would make sense to expect the group to be
+				//   implicitly associated to the model node. But it is not! (And of
+				//   course it isn't; there's no direct reference associating them. This
+				//   aspect is just an unhandled case.)
+				//
+				// - Actual bug: the group is not rendered in the view of the form. Not
+				//   its structural presentation, not its label, but more troubling: not
+				//   its child inputs! The root cause is that the view loop:
+				//
+				//      1. Reaches the node's state (currently `SubtreeState`, which
+				//         corresponds to this model node's `SubtreeDefinition`)
+				//      2. Finding that it has no associated body element, determines
+				//         the subtree is model-only.
+				//      3. Breaks recursion, thereby failing to render the child inputs.
+				//
+				// All of this will make its way into an issue. And while solving it is
+				// well out of scope for this particular testing step in this particular
+				// refactoring task, it's hard not to see the irony of finding this bug
+				// in this context!
+				//
+				// It's **because** the design already seeks to unify body/model
+				// concerns in a single structure, and **because** the view renders
+				// based on that structure rather than the `BodyDefinition` structure,
+				// that the erroneous assumption can cause the user-facing bug. It's
+				// certainly possible to rectify the design to handle this case. But
+				// it's worth considering how and whether the design can be stretched to
+				// handle more significant model/body divergence. (We likely won't
+				// address that beyond theory, because we likely won't encounter these
+				// hypothetical cases with XLSForms. But it's an interesting insight
+				// into the confounding XForms structure, and the kinds of challenges
+				// we'd encounter if we tried to unify it without losing fidelity of
+				// XForms semantics.)
+				it.todo(
+					'defines (the body element of) a presentation group for a <group> a <label> and no `ref`',
+					() => {
+						const presentationGroupNode = modelDefinition.root.children[4];
+
+						assertNodeset(presentationGroupNode, '/root/presgrp');
+
+						expect(presentationGroupNode.bodyElement).toMatchObject({
+							category: 'structure',
+							type: 'presentation-group',
+							reference: null,
+							label: {
+								category: 'support',
+								type: 'label',
+								children: [{ expression: '"Presentation group label"' }],
+							},
+						});
+					}
+				);
+
+				it("defines (the body elements of) a presentation group's children", () => {
+					const presentationGroupNode = modelDefinition.root.children[4];
+
+					assertNodeset(presentationGroupNode, '/root/presgrp');
+
+					expect(presentationGroupNode).toMatchObject({
+						children: [
+							{
+								bodyElement: {
+									category: 'control',
+									type: 'input',
+									reference: '/root/presgrp/pg-a',
+									label: null,
+									hint: null,
+								},
+							},
+							{
+								bodyElement: {
+									category: 'control',
+									type: 'input',
+									reference: '/root/presgrp/pg-b',
+									label: {
+										category: 'support',
+										type: 'label',
+										children: [{ expression: '"Presentation group child b"' }],
+									},
+									hint: null,
+								},
+							},
+						],
+					});
+				});
+			});
+
+			describe('structural groups', () => {
+				// Another expression of the issues discussed around "presentation
+				// groups" above. This test cannot even be adapted from the original
+				// `BodyDefinition` tests, because there's not even a subtree node to
+				// associate the group with!
+				//
+				// It seems unlikely that this case can be produced by XLSForms either.
+				it.skip('defines a structural group for a <group> with no `ref` or <label>', () => {
+					const structuralGroupNode = modelDefinition.root.children[5];
+
+					assertNodeset(structuralGroupNode, '/root/sg');
+
+					expect(structuralGroupNode.bodyElement).toMatchObject({
+						category: 'structure',
+						type: 'structural-group',
+						reference: null,
+						label: null,
+					});
+				});
+
+				// This diverges significantly from the original `BodyDefinition` test,
+				// because there is no subtree node with children to test in the first
+				// place. To the extent there's an intention to the original test which
+				// can be preserved and has meaning, it's been preserved by matching
+				// against the model nodes themselves. This means the nodes are matched
+				// as children of the root, because that is their actual model
+				// structure, despite incongruity with their corresponding body inputs
+				// being structured in a ref-less group. As such, in order to adapt the
+				// test to this model structure, the root's children array is matched
+				// as an object of shape `Record<ArrayIndex, ArrayValueAtThatIndex>`.
+				it("defines a structural group's children", () => {
+					expect(modelDefinition.root).toMatchObject({
+						children: {
+							5: {
+								bodyElement: {
+									category: 'control',
+									type: 'input',
+									reference: '/root/sg-1',
+									label: null,
+									hint: null,
+								},
+							},
+							6: {
+								bodyElement: {
+									category: 'control',
+									type: 'input',
+									reference: '/root/sg-2',
+									label: null,
+									hint: null,
+								},
+							},
+							7: {
+								bodyElement: {
+									category: 'control',
+									type: 'input',
+									reference: '/root/sg-3',
+									label: null,
+									hint: null,
+								},
+							},
+							8: {
+								bodyElement: {
+									category: 'control',
+									type: 'input',
+									reference: '/root/sg-4',
+									label: null,
+									hint: null,
+								},
+							},
+							9: {
+								bodyElement: {
+									category: 'control',
+									type: 'input',
+									reference: '/root/sg-5',
+									label: null,
+									hint: null,
+								},
+							},
+						},
+					});
+				});
+			});
+		});
+
+		describe('repeats/repeat-group', () => {
+			it('defines a repeat group for a node corresponding to a <group> containing a <repeat> with the same `ref`/`nodeset`', () => {
+				// Note: position in the body differs from position in the model.
+				const repeatGroupNode = modelDefinition.root.children[/* 6 */ 10];
+
+				assertNodeset(repeatGroupNode, '/root/rep1');
+
+				expect(repeatGroupNode).toMatchObject({
+					bodyElement: {
+						category: 'structure',
+						type: 'repeat-group',
+						reference: '/root/rep1',
+						label: {
+							category: 'support',
+							type: 'label',
+							children: [{ expression: '"Repeat group"' }],
+						},
+					},
+				});
+			});
+
+			it("defines a repeat-group's repeat, distinct from general `children`", () => {
+				const repeatGroupNode = modelDefinition.root.children[/* 6 */ 10];
+
+				assertNodeset(repeatGroupNode, '/root/rep1');
+
+				expect(repeatGroupNode).toMatchObject({
+					bodyElement: {
+						children: [],
+						repeat: {
+							category: 'structure',
+							type: 'repeat',
+						},
+					},
+				});
+			});
+
+			it("defines the body elements, of the children, of the repeat's initial first instance", () => {
+				const repeatGroupNode = modelDefinition.root.children[/* 6 */ 10] as
+					| RepeatSequenceDefinition
+					| undefined;
+
+				assertNodeset(repeatGroupNode, '/root/rep1');
+
+				expect(repeatGroupNode).toMatchObject({
+					instances: [
+						{
+							children: [
+								{
+									bodyElement: {
+										category: 'control',
+										type: 'input',
+										reference: '/root/rep1/r1-1',
+										label: null,
+									},
+								},
+								{
+									bodyElement: {
+										category: 'control',
+										type: 'input',
+										reference: '/root/rep1/r1-2',
+										label: {
+											category: 'support',
+											type: 'label',
+											children: [{ expression: '"Repeat 1 input 2"' }],
+										},
+									},
+								},
+							],
+						},
+					],
+				});
+			});
+
+			it('defines a repeat group for a <repeat> without an explicit containing <group>, for API consistency', () => {
+				const inferredRepeatGroupNode = modelDefinition.root.children[/* 7 */ 11];
+
+				assertNodeset(inferredRepeatGroupNode, '/root/rep2');
+
+				expect(inferredRepeatGroupNode).toMatchObject({
+					bodyElement: {
+						category: 'structure',
+						type: 'repeat-group',
+						reference: '/root/rep2',
+						label: null,
+						children: [],
+						repeat: {
+							category: 'structure',
+							type: 'repeat',
+							children: [
+								{
+									category: 'control',
+									type: 'input',
+									reference: '/root/rep2/r2-1',
+									label: null,
+								},
+							],
+						},
+					},
+				});
+			});
+
+			// This test has no meaningful correlary for the model. It is testing an
+			// interface specifically intended for use by the model. The specific
+			// intent of that use is to build the model node/body associations under
+			// test in the rest of these sub-suites.
+			it.skip('gets repeat instance children by reference', () => {
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+				const control = bodyDefinition.getBodyElement('/root/rep1/r1-1');
+
+				expect(control).toMatchObject({
+					category: 'control',
+					type: 'input',
+					reference: '/root/rep1/r1-1',
+					label: null,
+				});
+			});
+		});
 	});
 
 	describe('subtrees (groups and non-groups)', () => {
