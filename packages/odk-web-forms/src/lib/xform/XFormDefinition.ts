@@ -85,13 +85,6 @@ export class XFormDefinition {
 
 	readonly rootReference: string;
 
-	/**
-	 * This property is not used after the `XFormDefinition` constructor completes
-	 * (and it was never intended to be!). It is currently only used to provide a
-	 * means for constructing {@link ModelDefinition}. It will go away in a
-	 * subsequent commit!
-	 */
-	readonly body: BodyDefinition;
 	readonly model: ModelDefinition;
 	readonly sortedNodesetIndexes: SortedNodesetIndexes;
 
@@ -117,41 +110,7 @@ export class XFormDefinition {
 
 		const body = new BodyDefinition(this);
 
-		this.body = body;
-
-		// TypeScript (correctly!) objects to deleting a `readonly` property. If the
-		// type says the `body` property has a `BodyDefinition`, and we delete it
-		// here, we can break any downstream use of `XFormDefinition` which expects
-		// that type to be accurate.
-		//
-		// @ts-expect-error - ^
-		delete this.body;
-
-		// In fact, we'll demonstrate this. By suppressing the type error, we've now
-		// broken the contract with `ModelDefinition`.
-
-		let caughtModelDefinitionConstructorException: Error | null = null;
-
-		let model: ModelDefinition | null = null;
-
-		try {
-			// @ts-expect-error - `body` is now an explicit parameter!
-			model = new ModelDefinition(this);
-		} catch (error) {
-			if (error instanceof Error) {
-				caughtModelDefinitionConstructorException = error;
-			}
-		}
-
-		if (caughtModelDefinitionConstructorException == null || model != null) {
-			throw new Error(
-				'The above comments about breaking the contract with `ModelDefinition` no longer hold. Delete me, and that commentary!'
-			);
-		}
-
-		this.body = body;
 		this.model = new ModelDefinition(this, body);
-
 		this.sortedNodesetIndexes = sortNodes(this.model.root);
 	}
 }
