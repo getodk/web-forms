@@ -1,4 +1,5 @@
 import type { XFormDefinition } from '../XFormDefinition.ts';
+import type { BodyDefinition } from '../body/BodyDefinition.ts';
 import type { RepeatGroupDefinition } from '../body/group/RepeatGroupDefinition.ts';
 import type { BindDefinition } from './BindDefinition.ts';
 import type { ModelDefinition } from './ModelDefinition.ts';
@@ -27,9 +28,36 @@ export class RootDefinition implements NodeDefinition<'root'> {
 	readonly isTranslated = false;
 	readonly dependencyExpressions: ReadonlySet<string> = new Set<string>();
 
+	/**
+	 * Stored internally during construction, in order to associate aspects of the
+	 * parsed body with the model nodes they reference. This property is otherwise
+	 * ephemeral. It is removed upon completing the aspects of construction which
+	 * reference it.
+	 *
+	 * Instead of this temporary storage on the root, we could consider passing it
+	 * through to each descendant node constructor. But that would in turn pass it
+	 * right back to the {@link buildSubtree} method on this class, which is the
+	 * only place it's ultimately used. That's a lot of indirection for what
+	 * otherwise is effectively a local variable which goes out of use when its
+	 * scope exits.
+	 *
+	 * We could also consider that this more isolated indirection is a consequence
+	 * of, perhaps, overuse of classes for this aspect of the domain model. That is
+	 * a worthwhile question, but probably better for another time!
+	 */
+	private body?: BodyDefinition;
+
 	constructor(
 		protected readonly form: XFormDefinition,
-		protected readonly model: ModelDefinition
+		protected readonly model: ModelDefinition,
+
+		/**
+		 * Note: we don't use a
+		 * {@link https://www.typescriptlang.org/docs/handbook/2/classes.html#parameter-properties | parameter property}
+		 * here, because while the body **property** is ephemeral (and marked
+		 * optional), it's required at the constructor call site.
+		 */
+		body: BodyDefinition
 	) {
 		// TODO: theoretically the pertinent step in the bind's `nodeset` *could* be
 		// namespaced. It also may make more sense to determine the root nodeset
@@ -54,12 +82,24 @@ export class RootDefinition implements NodeDefinition<'root'> {
 		this.bind = bind;
 		this.nodeset = nodeset;
 		this.node = primaryInstanceRoot;
-		this.children = this.buildSubtree(this);
+		this.children = this.buildRootTree(body);
+
+		delete this.body;
+	}
+
+	private buildRootTree(body: BodyDefinition): readonly ChildNodeDefinition[] {
+		this.body = body;
+
+		try {
+			return this.buildSubtree(this);
+		} finally {
+			delete this.body;
+		}
 	}
 
 	buildSubtree(parent: ParentNodeDefinition): readonly ChildNodeDefinition[] {
-		const { form, model } = this;
-		const { body } = form;
+		const { model } = this;
+		const { body } = this;
 		const { binds } = model;
 		const { bind: parentBind, node } = parent;
 		const { nodeset: parentNodeset } = parentBind;
@@ -84,9 +124,9 @@ export class RootDefinition implements NodeDefinition<'root'> {
 		return Array.from(childrenByName).map(([localName, children]) => {
 			const nodeset = `${parentNodeset}/${localName}`;
 			const bind = binds.getOrCreateBindDefinition(nodeset);
-			const bodyElement = body.getBodyElement(nodeset);
+			const bodyElement = body!.getBodyElement(nodeset);
 			const [firstChild, ...restChildren] = children;
-			const repeatGroup = body.getRepeatGroup(nodeset);
+			const repeatGroup = body!.getRepeatGroup(nodeset);
 
 			if (repeatGroup != null) {
 				const repeatDefinition = (bodyElement as RepeatGroupDefinition).repeat;

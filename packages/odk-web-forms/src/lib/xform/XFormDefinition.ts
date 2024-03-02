@@ -135,6 +135,7 @@ export class XFormDefinition {
 		let model: ModelDefinition | null = null;
 
 		try {
+			// @ts-expect-error - `body` is now an explicit parameter!
 			model = new ModelDefinition(this);
 		} catch (error) {
 			if (error instanceof Error) {
@@ -149,9 +150,7 @@ export class XFormDefinition {
 		}
 
 		this.body = body;
-		model = new ModelDefinition(this);
-
-		this.model = model;
+		this.model = new ModelDefinition(this, body);
 
 		this.sortedNodesetIndexes = sortNodes(this.model.root);
 	}
