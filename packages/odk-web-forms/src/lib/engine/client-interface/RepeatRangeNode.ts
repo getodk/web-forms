@@ -6,7 +6,7 @@ import type { ParentNode } from './ParentNode.ts';
 import type { RepeatInstanceID, RepeatInstanceNode } from './RepeatInstanceNode.ts';
 import type { RootNode } from './RootNode.ts';
 
-interface RepeatRangeState extends FormNodeState {
+interface RepeatRangeNodeState extends FormNodeState {
 	/**
 	 * @todo this is a hint to implementation, and we may not want to expose it
 	 * as a part of the client interface. As conceived, it's a necessary
@@ -16,13 +16,13 @@ interface RepeatRangeState extends FormNodeState {
 	get instanceIDs(): Iterable<RepeatInstanceID>;
 
 	/**
-	 * @todo this is intentionally inconsistent with {@link RepeatRange.children}
+	 * @todo this is intentionally inconsistent with {@link RepeatRangeNode.children}
 	 * (extended from {@link ParentNode}), both to call out the fact that that
 	 * aspect of the interface is unsettled, and because this case represents the
 	 * two important exceptions we care about modeling in the engine state tree/
 	 * client interface:
 	 *
-	 * - {@link RepeatRange} has parent-like semantics, in that it contains and
+	 * - {@link RepeatRangeNode} has parent-like semantics, in that it contains and
 	 *   manages its instances, but does not correspond to a node (parent or
 	 *   otherwise) in the form's primary instance.
 	 * - It is the only concrete case where {@link ParentNode.children} would not
@@ -83,8 +83,8 @@ interface RepeatRangeState extends FormNodeState {
  *
  * @todo bikeshed this name!
  */
-export interface RepeatRange
-	extends ParentNode<RepeatSequenceDefinition, RepeatRangeState, RepeatInstanceNode> {
+export interface RepeatRangeNode
+	extends ParentNode<RepeatSequenceDefinition, RepeatRangeNodeState, RepeatInstanceNode> {
 	/**
 	 * @param afterIndex where to add new instances (defaults to end of range)
 	 * @param count how many instances to add (defaults to 1)
