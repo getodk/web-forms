@@ -2,7 +2,7 @@ import type { RepeatInstanceDefinition } from '../../xform/model/RepeatInstanceD
 import type { DescendantNode } from './DescendantNode.ts';
 import type { FormNodeID } from './FormNode.ts';
 import type { FormNodeState } from './FormNodeState.ts';
-import type { AnyParentNode, ParentNode } from './ParentNode.ts';
+import type { ParentNode } from './ParentNode.ts';
 import type { RepeatRange } from './RepeatRange.ts';
 
 export type RepeatInstanceID = FormNodeID;
@@ -34,7 +34,7 @@ interface RepeatInstanceState extends FormNodeState {
 	 * @example (for implementation)
 	 * ```ts
 	 * get reference() {
-	 *   return `${instanceNode.range.currentState.reference}[${}]
+	 *   return `${instanceNode.range.currentState.reference}[${instanceNode.currentState.index}]
 	 * }
 	 * ```
 	 */
@@ -45,17 +45,14 @@ export interface RepeatInstanceNode
 	extends DescendantNode<RepeatInstanceDefinition, RepeatInstanceState>,
 		ParentNode<RepeatInstanceDefinition, RepeatInstanceState> {
 	/**
-	 * The range of repeats to which an instance belongs. This value will always
-	 * differ from an instance's {@link parent}.
-	 */
-	readonly range: RepeatRange;
-
-	/**
-	 * Corresponds to the node actually containing the repeat instance, within
-	 * the form's primary instance. This is also the {@link parent} of the repeat
-	 * instance's {@link range}.
+	 * The range of repeats to which an instance belongs. This is the instance's
+	 * parent node in the web-forms engine's representation of a form, which
+	 * notably differs from its parent node in the XForms primary instance tree.
+	 * @see {@link RepeatRange} for more detail about this divergence.
 	 *
-	 * @see {@link RepeatRange} for more detail about this structural oddity.
+	 * @todo if we
+	 * {@link https://github.com/getodk/web-forms/issues/39 | decouple the @odk/xpath API from the XML/browser DOM},
+	 * we'll need to reconcile this discrepancy differently for that purpose.
 	 */
-	readonly parent: AnyParentNode;
+	readonly parent: RepeatRange;
 }
