@@ -8,7 +8,7 @@ import type { RootNode } from './RootNode.ts';
 
 interface RepeatRangeState extends FormNodeState {
 	/**
-	 * TODO: this is a hint to implementation, and we may not want to expose it
+	 * @todo this is a hint to implementation, and we may not want to expose it
 	 * as a part of the client interface. As conceived, it's a necessary
 	 * implementation detail to allow computation of {@link instances} without
 	 * nesting calls to the client's reactive factory.
@@ -16,7 +16,7 @@ interface RepeatRangeState extends FormNodeState {
 	get instanceIDs(): Iterable<RepeatInstanceID>;
 
 	/**
-	 * TODO: this is intentionally inconsistent with {@link RepeatRange.children}
+	 * @todo this is intentionally inconsistent with {@link RepeatRange.children}
 	 * (extended from {@link ParentNode}), both to call out the fact that that
 	 * aspect of the interface is unsettled, and because this case represents the
 	 * two important exceptions we care about modeling in the engine state tree/
@@ -81,7 +81,7 @@ interface RepeatRangeState extends FormNodeState {
  * </h:html>
  * ```
  *
- * TODO: bikeshed this name!
+ * @todo bikeshed this name!
  */
 export interface RepeatRange
 	extends ParentNode<RepeatSequenceDefinition, RepeatRangeState, RepeatInstanceNode> {

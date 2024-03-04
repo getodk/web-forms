@@ -1,11 +1,11 @@
 /**
- * TODO: this may better be expressed as a structured type, at least in part for
+ * @todo this may better be expressed as a structured type, at least in part for
  * reasons discussed on {@link ActiveLanguage}.
  */
 export type TranslationLanguage = string;
 
 /**
- * TODO: technically a form's active language is (or at least will initially be)
+ * @todo technically a form's active language is (or at least will initially be)
  * nullable, i.e. for forms with no translations. `TranslationLanguage | null`
  * (which is presently `string | null`) type, while accurate, might be
  * misleading, and suggests client logic which doesn't make much sense (i.e. a

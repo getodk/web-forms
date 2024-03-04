@@ -24,7 +24,7 @@ export interface ParentNode<
 	 * A parent node's children _might_ be computed. If that is the case, they
 	 * **WILL** be computed using a client's {@link OpaqueReactiveObjectFactory}.
 	 *
-	 * TODO: should this be a part of the node's {@link currentState} instead?
+	 * @todo should this be a part of the node's {@link currentState} instead?
 	 * Should we further distinguish the dynamic/reactive case (repeat range)
 	 * from all other cases, which will always be static?
 	 */

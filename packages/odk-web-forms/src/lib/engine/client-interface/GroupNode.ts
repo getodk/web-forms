@@ -9,7 +9,7 @@ interface GroupNodeState extends FormNodeState {
 /**
  * A {@link SubtreeNode} which corresponds to an XForms <group>.
  *
- * TODO: it may not be necessary to distinguish these cases. Consider merging
+ * @todo it may not be necessary to distinguish these cases. Consider merging
  * the two. In which case {@link SubtreeNode}'s state should instead allow
  * an optional label.
  */
