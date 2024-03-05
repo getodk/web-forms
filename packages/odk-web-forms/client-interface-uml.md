@@ -3,6 +3,7 @@
 ```mermaid
 
 classDiagram
+direction LR
 class DescendantNode~Definition,CurrentState~ {
             <<interface>>
             +parent: AnyParentNode*
