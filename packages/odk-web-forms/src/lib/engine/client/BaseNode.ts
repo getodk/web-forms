@@ -1,18 +1,65 @@
 import type { AnyNodeDefinition } from '../../xform/model/NodeDefinition.ts';
 import type { EngineConfig } from './EngineConfig.ts';
-import type { ActiveLanguage } from './FormLanguage.ts';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- referenced in JSDoc
-import type { OpaqueReactiveObjectFactory } from '../client-interface/state/OpaqueReactiveObjectFactory.ts';
-import type { TextRange } from '../client-interface/text/TextRange.ts';
+import type { OpaqueReactiveObjectFactory } from './OpaqueReactiveObjectFactory.ts';
+import type { TextRange } from './TextRange.ts';
 
 export interface BaseNodeState {
+	/**
+	 * Location path reference to the node's primary instance state. This property
+	 * may change if a node's position changes, e.g. when a repeat instance is
+	 * removed. Its potential reactivity allows nodes to re-run computations which
+	 * depend on the node's position itself, or when any other relative reference
+	 * might target different nodes as a result of the positional change.
+	 *
+	 * @example
+	 * /data/repeat[1]/foo
+	 * /data/repeat[2]/foo
+	 */
 	get reference(): string;
 
-	get activeLanguage(): ActiveLanguage;
-
+	/**
+	 * Note: a node's `readonly` state may become `true` by inheriting that state
+	 * from one of its ancestors. Computing this inheritance is handled by the
+	 * engine, but it may be of interest to clients.
+	 *
+	 * In the future, a more granular type might convey this detail more
+	 * explicitly (at the expense of a more complex type). For now, a client can
+	 * infer that inheritance by visiting the
+	 * {@link BaseNode.parent | parent node}.
+	 */
 	get readonly(): boolean;
+
+	/**
+	 * Note: a node's `relevant` state may become `false` by inheriting that state
+	 * from one of its ancestors. Computing this inheritance is handled by the
+	 * engine, but it may be of interest to clients.
+	 *
+	 * In the future, a more granular type might convey this detail more
+	 * explicitly (at the expense of a more complex type). For now, a client can
+	 * infer that inheritance by visiting the
+	 * {@link BaseNode.parent | parent node}.
+	 */
 	get relevant(): boolean;
+
+	// Note: according to spec, `required` is NOT inherited from ancestor nodes.
+	// What this means for a `required` state on subtree nodes is an open
+	// question. It was also raised on the first engine-internals iteration, and I
+	// could have sworn it was discussed in that PR, but finding any record of
+	// this discussion has proven elusive.
 	get required(): boolean;
+
+	/**
+	 * Interfaces for nodes which cannot provide a label should override this to
+	 * specify that the property will always be `null`.
+	 */
+	get label(): TextRange<'label'> | null;
+
+	/**
+	 * Interfaces for nodes which cannot provide a hint should override this to
+	 * specify that the property will always be `null`.
+	 */
+	get hint(): TextRange<'hint'> | null;
 
 	/**
 	 * Each node's children (if it is a parent node) will be accessed on that
@@ -20,21 +67,32 @@ export interface BaseNodeState {
 	 * other nodes' children will be stateful (i.e. repeats). For a client, both
 	 * cases are accessed the same way for consistency.
 	 *
-	 * @todo Interfaces for specific (non-base) node types should override this to
-	 * specify the actual type of their children.
-	 * @todo Interfaces for non-parent node types should override this to `null`.
+	 * Certain kinds of nodes are considered parent nodes: they may have child
+	 * nodes. In some cases (presently, repeat ranges), children may be added or
+	 * removed while a user is filling a form. As such, those children must be
+	 * accessed as part of the node's
+	 * {@link BaseNode.currentState | current state}. (In contrast, child nodes
+	 * are never moved between different parents, so their
+	 * {@link BaseNode.parent | parent} is static rather than part of their
+	 * current state).
+	 *
+	 * A node is either:
+	 *
+	 * - Always a parent, in which case its `children` state should always produce
+	 *   an array. When the parent node's children can be added or removed, an
+	 *   empty array should be used to represent the absence of any children in
+	 *   its current state.
+	 * - Never a parent, in which case its `children` state should always produce
+	 *   `null`. Such a node will instead have a {@link value}.
 	 */
 	get children(): readonly BaseNode[] | null;
 
-	get label(): TextRange<'label'> | null;
-
-	get hint(): TextRange<'hint'> | null;
-
 	/**
-	 * @todo Interfaces for specific (non-base) node types should override this
-	 * to specify the actual type of their value.
-	 * @todo Parent nodes should specify their value as `null`, to make clear
-	 * that parent nodes do not bear a value at all.
+	 * Certain kinds of nodes store a value state. Where they do, they will
+	 * specify the type of the value directly.
+	 *
+	 * Parent nodes, i.e. nodes which can contain {@link children}, do not store a
+	 * value state. For those nodes, their value state should always be `null`.
 	 */
 	get value(): unknown;
 }
@@ -54,7 +112,7 @@ export interface BaseNode {
 	readonly engineConfig: EngineConfig;
 
 	/**
-	 * Each node has a unique identifier. That identifier is stable throughout
+	 * Each node has a unique identifier. This identifier is stable throughout
 	 * the lifetime of an active session filling a form.
 	 */
 	readonly nodeId: FormNodeID;
@@ -82,6 +140,27 @@ export interface BaseNode {
 	 * Each node links back to its parent, if any. All nodes have a parent except
 	 * the form's {@link root}.
 	 */
+	// TODO: the `children` state property discusses the fact that a child node
+	// cannot be reassigned to another parent. As such, it is currently treated as
+	// static. This fails to address the removal of nodes, i.e. when removing
+	// repeat instances. This suggests that perhaps `parent` should also be part
+	// of the node's state. However that would be insufficient to communicate the
+	// same information about a removed node's descendants. Some considerations:
+	//
+	// 1. If `parent` becomes part of state, how do we communicate that removal is
+	//    the only possible state change (as in, a child node will never be
+	//    reassigned to another parent)?
+	// 2. If `parent` does become nullable state, how best to convey the same
+	//    information for removed descendants. Some ideas:
+	//
+	//    - Apply null-as-removed recursively. This wouldn't technically be true
+	//      for the engine's current use of a DOM backing store (but that's an
+	//      implementation detail clients don't/shouldn't care about).
+	//
+	//    - Borrow the browser DOM's notion of node "connected"-ness. When a node
+	//      is removed, its `isConnected` property is `false`. The same is true
+	//      for any of its descendants, even though they retain their own direct
+	//      parent reference.
 	readonly parent: BaseNode | null;
 
 	/**

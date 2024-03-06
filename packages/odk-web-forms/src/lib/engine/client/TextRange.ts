@@ -1,12 +1,12 @@
+import type { ActiveLanguage } from './FormLanguage.ts';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { RootNodeState } from '../RootNode.ts';
-import type { ActiveLanguage } from './TranslationLanguage.ts';
+import type { RootNodeState } from './RootNode.ts';
 
 /**
- * This (and everything else to do with {@link TextRange}s is for illustration
- * purposes, as a starting point where any particular detail is of unknown
- * utility. We can iterate on all aspects of text ranges in actual clients and
- * refine from there.
+ * @todo This (and everything else to do with {@link TextRange}s is for
+ * illustration purposes, as a starting point where any particular detail is of
+ * unknown utility. We can iterate on all aspects of text ranges in actual
+ * clients and refine from there.
  *
  * @see {@link TextRange}
  */
@@ -42,8 +42,8 @@ export interface TextChunk {
  * {@link OpaqueReactiveObjectFactory}), and may produce multiple spans of text
  * (or none at all) depending on the structure and state of the form.
  *
- * This interface should be considered **incomplete and in flux**, and subject
- * to change as we evaluate client needs and engine responsibilities. In
+ * @todo This interface should be considered **incomplete and in flux**, and
+ * subject to change as we evaluate client needs and engine responsibilities. In
  * particular, we've deferred a notion of an interface for formatting aspects,
  * while leaving open the possibility that it may come in future iterations.
  *

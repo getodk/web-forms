@@ -1,5 +1,13 @@
-import type { OpaqueReactiveObjectFactory } from '../client-interface/state/OpaqueReactiveObjectFactory.ts';
+import type { OpaqueReactiveObjectFactory } from './OpaqueReactiveObjectFactory.ts';
 
+/**
+ * @todo this is currently a strict subset of the web standard `Response`. Is it
+ * sufficient? Ways it might not be:
+ *
+ * - No way to convey metadata about the resource
+ * - Ambiguous if a client supplies an alternative implementation which doesn't
+ *   exhaust the body on access
+ */
 interface FetchResourceResponse {
 	readonly body?: ReadableStream<Uint8Array> | null;
 	readonly bodyUsed?: boolean;
@@ -8,6 +16,18 @@ interface FetchResourceResponse {
 	text(): Promise<string>;
 }
 
+/**
+ * @todo this is a strict subset of the web standard `fetch` interface. It
+ * implicitly assumes that the engine itself will only ever issue `GET`-like
+ * requests. It also provides no further request-like semantics to the engine.
+ * This is presumed sufficient for now, but notably doesn't expose any notion of
+ * content negotiation (e.g. the ability to supply `Accept` headers).
+ *
+ * This also completely ignores any notion of mapping
+ * {@link https://getodk.github.io/xforms-spec/#uris | `jr:` URLs} to their
+ * actual resources (likely, but not necessarily, accessed at a corresponding
+ * HTTP URL).
+ */
 type FetchResource = (resource: URL) => Promise<FetchResourceResponse>;
 
 /**
