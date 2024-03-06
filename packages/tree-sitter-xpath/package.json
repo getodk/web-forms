@@ -20,7 +20,7 @@
   ],
   "engines": {
     "node": ">=18 <21",
-    "yarn": "~1.22.19"
+    "yarn": "1.22.19"
   },
   "scripts": {
     "build": "yarn build:clean && yarn build:js && yarn build:node && yarn build:parser-types && yarn build:wasm",

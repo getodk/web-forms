@@ -36,7 +36,7 @@
   ],
   "engines": {
     "node": ">=18 <21",
-    "yarn": "~1.22.19"
+    "yarn": "1.22.19"
   },
   "scripts": {
     "test": "npm-run-all --print-name --print-label test-node:* test-browser:*",
