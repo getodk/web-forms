@@ -1,5 +1,5 @@
-import type { ValueNodeDefinition } from '../../../xform/model/ValueNodeDefinition.ts';
-import type { TextRange } from '../text/TextRange.ts';
+import type { ValueNodeDefinition } from '../../xform/model/ValueNodeDefinition.ts';
+import type { TextRange } from '../client-interface/text/TextRange.ts';
 import type { BaseNode, BaseNodeState } from './BaseNode.ts';
 import type { RootNode } from './RootNode.ts';
 import type { GeneralParentNode } from './hierarchy.ts';

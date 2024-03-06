@@ -1,4 +1,4 @@
-import type { ValueNodeDefinition } from '../../../xform/model/ValueNodeDefinition.ts';
+import type { ValueNodeDefinition } from '../../xform/model/ValueNodeDefinition.ts';
 import type { BaseNode, BaseNodeState } from './BaseNode.ts';
 import type { RootNode } from './RootNode.ts';
 import type { GeneralParentNode } from './hierarchy.ts';

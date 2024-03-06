@@ -1,9 +1,9 @@
-import type { AnyNodeDefinition } from '../../../xform/model/NodeDefinition.ts';
+import type { AnyNodeDefinition } from '../../xform/model/NodeDefinition.ts';
 import type { EngineConfig } from './EngineConfig.ts';
 import type { ActiveLanguage } from './FormLanguage.ts';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- referenced in JSDoc
-import type { OpaqueReactiveObjectFactory } from '../state/OpaqueReactiveObjectFactory.ts';
-import type { TextRange } from '../text/TextRange.ts';
+import type { OpaqueReactiveObjectFactory } from '../client-interface/state/OpaqueReactiveObjectFactory.ts';
+import type { TextRange } from '../client-interface/text/TextRange.ts';
 
 export interface BaseNodeState {
 	get reference(): string;
@@ -41,6 +41,9 @@ export interface BaseNodeState {
 
 type FormNodeID = string;
 
+/**
+ * Base interface for common/shared aspects of any node type.
+ */
 export interface BaseNode {
 	/**
 	 * Each node retains access to the client-provided engine configuration.

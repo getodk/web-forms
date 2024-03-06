@@ -1,4 +1,4 @@
-import type { RootDefinition } from '../../../xform/model/RootDefinition.ts';
+import type { RootDefinition } from '../../xform/model/RootDefinition.ts';
 import type { BaseNode, BaseNodeState } from './BaseNode.ts';
 import type { FormLanguage } from './FormLanguage.ts';
 import type { GeneralChildNode } from './hierarchy.ts';

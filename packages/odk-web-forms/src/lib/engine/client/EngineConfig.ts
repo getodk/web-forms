@@ -1,4 +1,4 @@
-import type { OpaqueReactiveObjectFactory } from '../state/OpaqueReactiveObjectFactory.ts';
+import type { OpaqueReactiveObjectFactory } from '../client-interface/state/OpaqueReactiveObjectFactory.ts';
 
 interface FetchResourceResponse {
 	readonly body?: ReadableStream<Uint8Array> | null;

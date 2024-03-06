@@ -1,4 +1,4 @@
-import type { RepeatInstanceDefinition } from '../../../xform/model/RepeatInstanceDefinition.ts';
+import type { RepeatInstanceDefinition } from '../../xform/model/RepeatInstanceDefinition.ts';
 import type { BaseNode, BaseNodeState } from './BaseNode.ts';
 import type { RepeatRangeNode } from './RepeatRangeNode.ts';
 import type { RootNode } from './RootNode.ts';

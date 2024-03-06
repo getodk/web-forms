@@ -1,5 +1,5 @@
-import type { NonRepeatGroupElementDefinition } from '../../../xform/body/BodyDefinition.ts';
-import type { SubtreeDefinition } from '../../../xform/model/SubtreeDefinition.ts';
+import type { NonRepeatGroupElementDefinition } from '../../xform/body/BodyDefinition.ts';
+import type { SubtreeDefinition } from '../../xform/model/SubtreeDefinition.ts';
 import type { SubtreeNode } from './SubtreeNode.ts';
 
 interface GroupDefinition extends SubtreeDefinition {
