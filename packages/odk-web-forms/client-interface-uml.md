@@ -4,73 +4,137 @@
 
 classDiagram
 direction LR
-class DescendantNode~Definition,CurrentState~ {
+class BaseNodeState {
             <<interface>>
-            +parent: AnyParentNode*
+            
             
         }
-FormNode~Definition,CurrentState~<|..DescendantNode~Definition,CurrentState~
-class FormNode~Definition,CurrentState~ {
+class BaseNode {
             <<interface>>
-            +root: RootNode*
-+parent: AnyParentNode*
+            +engineConfig: EngineConfig*
 +nodeId: string*
-+definition: Definition*
-+currentState: CurrentState*
++definition: AnyNodeDefinition*
++root: BaseNode*
++parent: BaseNode*
++currentState: BaseNodeState*
             
         }
-FormNode~Definition,CurrentState~  --  RootNode
-class FormNodeState {
+BaseNode  --  EngineConfig
+BaseNode  --  BaseNode
+BaseNode  --  BaseNodeState
+class FetchResourceResponse {
             <<interface>>
-            
+            +body?: ReadableStream~Uint8Array~*
++bodyUsed?: boolean*
+            +blob() Promise~Blob~
++text() Promise~string~
+        }
+class EngineConfig {
+            <<interface>>
+            +stateFactory?: OpaqueReactiveObjectFactory*
++fetchResource?: FetchResource*
             
         }
+class BaseFormLanguage {
+            <<interface>>
+            +isSyntheticDefault?: true*
++language: string*
++locale?: Intl.Locale*
+            
+        }
+class SyntheticDefaultLanguage {
+            <<interface>>
+            +isSyntheticDefault: true*
++language: ""*
+            
+        }
+class FormLanguage {
+            <<interface>>
+            +isSyntheticDefault?: never*
+            
+        }
+BaseFormLanguage<|..SyntheticDefaultLanguage
+BaseFormLanguage<|..FormLanguage
 class GroupNodeState {
             <<interface>>
             
             
         }
+class GroupDefinition {
+            <<interface>>
+            +bodyElement: NonRepeatGroupElementDefinition*
+            
+        }
 class GroupNode {
             <<interface>>
-            
+            +definition: GroupDefinition*
++root: RootNode*
++parent: GeneralParentNode*
++currentState: GroupNodeState*
             
         }
-FormNodeState<|..GroupNodeState
-SubtreeNode~SubtreeState~<|..GroupNode
-class ParentNode~Definition,CurrentState,Child~ {
+BaseNodeState<|..GroupNodeState
+SubtreeDefinition<|..GroupDefinition
+BaseNode<|..GroupNode
+GroupNode  --  GroupDefinition
+GroupNode  --  RootNode
+GroupNode  --  RootNode
+GroupNode  --  SubtreeNode
+GroupNode  --  GroupNode
+GroupNode  --  RepeatInstanceNode
+GroupNode  --  GroupNodeState
+class InitializeFormOptions {
+            <<interface>>
+            +config: EngineConfig*
++initialState?: FormResource*
+            
+        }
+InitializeFormOptions  --  EngineConfig
+class OpaqueReactiveObject {
             <<interface>>
             
             
         }
-FormNode~Definition,CurrentState~<|..ParentNode~Definition,CurrentState,Child~
-class RepeatInstanceState {
+Object<|..OpaqueReactiveObject
+class RepeatInstanceNodeState {
             <<interface>>
             
             
         }
 class RepeatInstanceNode {
             <<interface>>
-            +range: RepeatRange*
-+parent: AnyParentNode*
+            +definition: RepeatInstanceDefinition*
++root: RootNode*
++parent: RepeatRangeNode*
++currentState: RepeatInstanceNodeState*
             
         }
-FormNodeState<|..RepeatInstanceState
-DescendantNode~Definition,CurrentState~<|..RepeatInstanceNode
-ParentNode~Definition,CurrentState,Child~<|..RepeatInstanceNode
-RepeatInstanceNode  --  RepeatRange
-class RepeatRangeState {
+BaseNodeState<|..RepeatInstanceNodeState
+BaseNode<|..RepeatInstanceNode
+RepeatInstanceNode  --  RootNode
+RepeatInstanceNode  --  RepeatRangeNode
+RepeatInstanceNode  --  RepeatInstanceNodeState
+class RepeatRangeNodeState {
             <<interface>>
             
             
         }
-class RepeatRange {
+class RepeatRangeNode {
             <<interface>>
-            
+            +definition: RepeatSequenceDefinition*
++root: RootNode*
++parent: GeneralParentNode*
++currentState: RepeatRangeNodeState*
             +addInstances() RootNode
 +removeInstances() RootNode
         }
-FormNodeState<|..RepeatRangeState
-ParentNode~Definition,CurrentState,Child~<|..RepeatRange
+BaseNodeState<|..RepeatRangeNodeState
+BaseNode<|..RepeatRangeNode
+RepeatRangeNode  --  RootNode
+RepeatRangeNode  --  RootNode
+RepeatRangeNode  --  SubtreeNode
+RepeatRangeNode  --  GroupNode
+RepeatRangeNode  --  RepeatRangeNodeState
 class RootNodeState {
             <<interface>>
             
@@ -78,61 +142,88 @@ class RootNodeState {
         }
 class RootNode {
             <<interface>>
-            +form: XFormDefinition*
-+clientStateFactory: OpaqueReactiveObjectFactory*
+            +definition: RootDefinition*
++root: RootNode*
 +parent: null*
-+setLanguage: (language: string) =~ RootNode
-            
++currentState: RootNodeState*
++languages: readonly FormLanguages[]*
+            +setLanguage() RootNode
         }
-ParentNode~Definition,CurrentState,Child~<|..RootNode
+BaseNodeState<|..RootNodeState
+BaseNode<|..RootNode
+RootNode  --  RootNode
+RootNode  --  RootNodeState
 class SelectItem {
             <<interface>>
             
             
         }
-class SelectValueNodeState {
+class SelectNodeState {
             <<interface>>
             
             
         }
-class SelectValueNode {
+class SelectNode {
+            <<interface>>
+            +definition: ValueNodeDefinition*
++root: RootNode*
++parent: GeneralParentNode*
+            +select() RootNode
++deselect() RootNode
+        }
+BaseNodeState<|..SelectNodeState
+BaseNode<|..SelectNode
+SelectNode  --  RootNode
+SelectNode  --  RootNode
+SelectNode  --  SubtreeNode
+SelectNode  --  GroupNode
+SelectNode  --  RepeatInstanceNode
+class StringNodeState {
             <<interface>>
             
             
         }
-ValueNodeState~Value~<|..SelectValueNodeState
-ValueNode~Value,CurrentState~<|..SelectValueNode
-class StringValueNode {
+class StringNode {
             <<interface>>
-            
-            
-        }
-ValueNode~Value,CurrentState~<|..StringValueNode
-class SubtreeNode~SubtreeState~ {
-            <<interface>>
-            +parent: AnyParentNode*
-            
-        }
-DescendantNode~Definition,CurrentState~<|..SubtreeNode~SubtreeState~
-ParentNode~Definition,CurrentState,Child~<|..SubtreeNode~SubtreeState~
-class ValueNodeState~Value~ {
-            <<interface>>
-            
-            
-        }
-class ValueNode~Value,CurrentState~ {
-            <<interface>>
-            
+            +definition: ValueNodeDefinition*
++root: RootNode*
++parent: GeneralParentNode*
             +setValue() RootNode
         }
-FormNodeState<|..ValueNodeState~Value~
-DescendantNode~Definition,CurrentState~<|..ValueNode~Value,CurrentState~
-class OpaqueReactiveObject {
+BaseNodeState<|..StringNodeState
+BaseNode<|..StringNode
+StringNode  --  RootNode
+StringNode  --  RootNode
+StringNode  --  SubtreeNode
+StringNode  --  GroupNode
+StringNode  --  RepeatInstanceNode
+class SubtreeNodeState {
             <<interface>>
             
             
         }
-Object<|..OpaqueReactiveObject
+class SubtreeDefinition {
+            <<interface>>
+            +bodyElement: null*
+            
+        }
+class SubtreeNode {
+            <<interface>>
+            +definition: SubtreeDefinition*
++root: RootNode*
++parent: GeneralParentNode*
++currentState: SubtreeNodeState*
+            
+        }
+BaseNodeState<|..SubtreeNodeState
+SubtreeDefinition<|..SubtreeDefinition
+BaseNode<|..SubtreeNode
+SubtreeNode  --  SubtreeDefinition
+SubtreeNode  --  RootNode
+SubtreeNode  --  RootNode
+SubtreeNode  --  SubtreeNode
+SubtreeNode  --  RepeatInstanceNode
+SubtreeNode  --  SubtreeNodeState
 class TextChunk {
             <<interface>>
             +source: "itext" | "output" | "static"*
