@@ -8,3 +8,7 @@
 # Directories
 .github
 .changeset
+
+# Exclude Vue entirely. There are many conflicts with ESLint Vue rules, and some
+# of those appear to affect behavior.
+**/*.vue

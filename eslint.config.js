@@ -1,16 +1,37 @@
-/// <reference path="./vendor-types/@eslint/eslintrc.d.ts" />
-/// <reference path="./vendor-types/@typescript-eslint/parser.d.ts" />
-/// <reference path="./vendor-types/eslint-plugin-no-only-tests.d.ts" />
 // @ts-check
 
+// TODO: consider using any of the zillion "TypeScript at runtime in Node"
+// options so we can configure ESLint with a .ts file. Managing the types in JS
+// syntax is maddening and highly error prone.
+
+// TODO: look into a rule about aging TODOs. One from past usage required
+// annotating with a date, but it'd be nice if we could just derive that from
+// git history or whatever.
+
+/// <reference path="./vendor-types/@eslint/eslintrc.d.ts" />
+/// <reference path="./vendor-types/@vue/eslint-config-typescript/index.d.ts" />
+/// <reference path="./vendor-types/eslint-plugin-no-only-tests.d.ts" />
+/// <reference path="./vendor-types/eslint-plugin-vue/lib/configs/base.d.ts" />
+/// <reference path="./vendor-types/eslint-plugin-vue/lib/configs/vue3-essential.d.ts" />
+/// <reference path="./vendor-types/eslint-plugin-vue/lib/configs/vue3-strongly-recommended.d.ts" />
+/// <reference path="./vendor-types/eslint-plugin-vue/lib/configs/vue3-recommended.d.ts" />
+/// <reference path="./vendor-types/eslint-plugin-vue/lib/index.d.ts" />
+/// <reference path="./vendor-types/eslint-plugin-vue/lib/processor.d.ts" />
+
 import { FlatCompat } from '@eslint/eslintrc';
-import js from '@eslint/js';
-import typeScriptESLintParser from '@typescript-eslint/parser';
+import eslint from '@eslint/js';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import noOnlyTestsPlugin from 'eslint-plugin-no-only-tests';
+import vuePlugin from 'eslint-plugin-vue';
+import vueBase from 'eslint-plugin-vue/lib/configs/base.js';
+import vue3Essential from 'eslint-plugin-vue/lib/configs/vue3-essential.js';
+import vue3Recommended from 'eslint-plugin-vue/lib/configs/vue3-recommended.js';
+import vue3StronglyRecommended from 'eslint-plugin-vue/lib/configs/vue3-strongly-recommended.js';
+import vueProcessor from 'eslint-plugin-vue/lib/processor.js';
 import { builtinModules } from 'node:module';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import tseslint from 'typescript-eslint';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -18,9 +39,20 @@ const __dirname = path.dirname(__filename);
 const compat = new FlatCompat({
 	baseDirectory: __dirname,
 	resolvePluginsRelativeTo: __dirname,
-	recommendedConfig: js.configs.recommended,
-	allConfig: js.configs.all,
+	recommendedConfig: eslint.configs.recommended,
+	allConfig: eslint.configs.all,
 });
+
+/**
+ * @param {string} pathSansExtension
+ * @param {readonly string[]} extensions
+ * @returns {string}
+ */
+const extensionsGlob = (pathSansExtension, extensions) => {
+	const extensionsGlobPattern = `.{${extensions.join(',')}}`;
+
+	return `${pathSansExtension}${extensionsGlobPattern}`;
+};
 
 const typeScriptFileExtensions = /** @type {const} */ ([
 	'cjs',
@@ -32,17 +64,30 @@ const typeScriptFileExtensions = /** @type {const} */ ([
 	'ts',
 	'tsx',
 ]);
-const typeScriptExtensionsGlobPattern = `.{${typeScriptFileExtensions.join(',')}}`;
 
 /**
  * @param {string} pathSansExtension
  */
 const typeScriptGlob = (pathSansExtension) => {
-	return `${pathSansExtension}${typeScriptExtensionsGlobPattern}`;
+	return extensionsGlob(pathSansExtension, typeScriptFileExtensions);
 };
 
-/** @type {import('eslint').Linter.FlatConfig[]} */
-const configs = [
+const vueFileExtensions = [...typeScriptFileExtensions, 'vue'];
+
+/**
+ * @param {string} pathSansExtensions
+ */
+const vueGlob = (pathSansExtensions) => {
+	return extensionsGlob(pathSansExtensions, vueFileExtensions);
+};
+
+const vuePackageGlob = vueGlob('packages/ui-vue/**/*');
+
+/**
+ * @typedef {import('eslint').Linter.FlatConfig} FlatConfig
+ */
+
+export default tseslint.config(
 	{
 		ignores: [
 			'.changeset',
@@ -61,27 +106,187 @@ const configs = [
 	},
 
 	{
+		extends: [
+			eslint.configs.recommended,
+
+			// TODO: consider applying just the plugin and parser here, and applying
+			// the base rules in a separate config (as was done with the Vue split,
+			// also below).
+			...tseslint.configs.recommendedTypeChecked,
+			...tseslint.configs.stylisticTypeChecked,
+
+			/**
+			 * For future reference, there's a **lot** going on here. As briefly as
+			 * reasonably possible, all of this happens for the `ui-vue` package:
+			 *
+			 * 1. ESLint uses the Vue parser (`vue-eslint-parser`)
+			 * 2. The Vue parser, in turn, uses the TypeScript parser
+			 *    (`@typescript-eslint/parser`) for:
+			 *
+			 *    - `<script>` and `<script lang="ts">` within .vue files
+			 *    - JavaScript and TypeScript source files
+			 * 3. The Vue parser uses the espree parser (ESLint's default) for
+			 *    `<template>` within .vue files
+			 * 4. To ensure all of these play nicely, these plugins need to be (re-)
+			 *    defined:
+			 *
+			 *    - `eslint-plugin-vue`
+			 *    - `@typescript-eslint`
+			 * 5. The Vue plugin's **processor** must also be (re-)applied.
+			 *
+			 * Absence of any of these caused either ESLint to fail to apply shared
+			 * rules in affected areas, or ESLint itself to crash.
+			 *
+			 * Note: Contrary to the defaults provided in a Vue template project, it
+			 * was found that linting applies most consistently by applying
+			 * Vue-specific parsing **after** TypeScript.
+			 *
+			 * TODO: after breaking up the parser and rule aspects, it seemed likely
+			 * that we could stop using `FlatCompat` for this. For reasons that are
+			 * unclear, I wasn't able to find a way to get that working.
+			 */
+			...compat
+				.config({
+					parser: 'vue-eslint-parser',
+					parserOptions: {
+						/**
+						 * @see {@link https://github.com/vuejs/vue-eslint-parser/issues/173#issuecomment-1367298274}
+						 */
+						parser: {
+							// Script parser for `<script>` (without `lang` attribute)
+							js: '@typescript-eslint/parser',
+
+							// Script parser for `<script lang="ts">`
+							ts: '@typescript-eslint/parser',
+
+							// Script parser for vue directives (e.g. `v-if=` or `:attribute=`)
+							// and vue interpolations (e.g. `{{variable}}`).
+							// If not specified, the parser determined by `<script lang ="...">` is used.
+							'<template>': 'espree',
+						},
+					},
+				})
+				.map((vueConfig) => ({
+					files: [vuePackageGlob],
+					plugins: {
+						vue: vuePlugin,
+						'@typescript-eslint': tseslint.plugin,
+					},
+					processor: vueProcessor,
+
+					...vueConfig,
+				})),
+
+			eslintConfigPrettier,
+		],
+
 		languageOptions: {
-			parser: typeScriptESLintParser,
 			parserOptions: {
 				ecmaFeatures: {
 					modules: true,
 				},
 				ecmaVersion: 'latest',
+
+				/**
+				 * This **mostly** works, instructing the TypeScript parser and plugin
+				 * to regard Vue modules as (special) TypeScript source modules. There
+				 * is one known issue: when importing a .vue file within a traditional
+				 * TypeScript module, there is some disagreement between aspects of the
+				 * tools about what has been imported:
+				 *
+				 * - VSCode's TypeScript language server will not understand the import,
+				 *   but this is addressed by the Volar VSCode extension. (Some
+				 *   resources discuss something called "take-over mode", which I did
+				 *   not need to enable explicitly; but there's a good chance this may
+				 *   be an issue depending on a user's local setup.)
+				 *
+				 *   With Volar working as expected, the import is recognized in-editor
+				 *   as a type representing a Vue module.
+				 *
+				 * - ESLint recognizes the import.
+				 *
+				 * - `@typescript-eslint` partially recognizes the import. Some rules
+				 *   which might be affected apply correctly. Rules which depend on type
+				 *   information, however, apparently fail to recognize the type that
+				 *   the Volar plugin recognizes. There is a variety of discussion that
+				 *   can be tracked down on the topic, but from what I can tell this is
+				 *   a breakdown in how the `@typescript-eslint` and `vue-plugin-eslint`
+				 *   internals communicate about the `typescript` package's internal
+				 *   `Program` representation. I do not believe this can be meaningfully
+				 *   resolved at this time without undue effort. In the meantime, the
+				 *   most likely workaround will be something like this (using the
+				 *   `router.ts` from Vue's template project as an example):
+				 *
+				 *   ```ts
+				 *   import { createRouter, createWebHistory } from 'vue-router';
+				 *   import HomeView from '../views/HomeView.vue';
+				 *
+				 *   const router = createRouter({
+				 *     history: createWebHistory(import.meta.env.BASE_URL),
+				 *     routes: [
+				 *       {
+				 *         path: '/',
+				 *         name: 'home',
+				 *         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				 *         component: HomeView,
+				 *       },
+				 *     ],
+				 *   });
+				 *   ```
+				 *
+				 *   In particular, note that the
+				 *   `@typescript-eslint/no-unsafe-assignment` rule is disabled where
+				 *   the imported Vue component is assigned to a property. This is due
+				 *   to a manifest of this breakdown between the tool internals
+				 *   reasoning about the underlying TypeScript `Program`: as far as
+				 *   `@typescript-eslint` is aware, the value has an `any` type (and we
+				 *   error when assigning `any` values, even though their type is
+				 *   technically assignable, as an extra safety check).
+				 */
+				extraFileExtensions: ['.vue'],
+
 				project: [
 					'./tsconfig.json',
 					'./tsconfig.tools.json',
 					'./tsconfig.vendor-types.json',
 					'./examples/*/tsconfig.json',
 					'./packages/**/tsconfig.json',
+
+					// NOTE: `@typescript-eslint` doesn't resolve composite projects. For
+					// now we just list all of these directly. In the future, we should
+					// consider whether we can have a single composite config for the full
+					// project. This is something I wanted to explore on project init, but
+					// backed off because the documentation was kind of impenetrable. But
+					// Vue's project template does a great job of illustrating the use,
+					// and I suspect we'd benefit from applying the pattern throughout the
+					// entire monorepo.
+					'./packages/ui-vue/tsconfig.json',
+					'./packages/ui-vue/tsconfig.app.json',
+					'./packages/ui-vue/tsconfig.node.json',
+					'./packages/ui-vue/tsconfig.vitest.json',
+
 					'./vendor-packages/**/tsconfig.json',
 					'./scripts/tsconfig.json',
 				],
-				tsconfigRootDir: __dirname,
 			},
+
 			sourceType: 'module',
+
+			/**
+			 * TODO: investigate using
+			 * {@link https://www.npmjs.com/package/globals | globals} for this, and
+			 * perhaps more broadly (in particular where the absence/presence of
+			 * "@types/node" and similar gets fussy).
+			 */
 			globals: {
-				globalThis: false, // Apparently this means read-only?
+				/**
+				 * Apparently this means read-only?
+				 *
+				 * TODO: ^ it is unclear if this is still true! It's also possible to
+				 * assign 'readonly', which similarly seems to do nothing, so perhaps
+				 * an indication of some other config/tool combination problem.
+				 */
+				globalThis: false,
 			},
 		},
 
@@ -92,19 +297,9 @@ const configs = [
 		plugins: {
 			'no-only-tests': noOnlyTestsPlugin,
 		},
-	},
 
-	...compat.config({
-		plugins: ['@typescript-eslint'],
-		extends: [
-			'plugin:@typescript-eslint/recommended-type-checked',
-			'plugin:@typescript-eslint/stylistic-type-checked',
-		],
-	}),
-
-	eslintConfigPrettier,
-
-	{
+		// Base rules, applied across project and throughout all packages (unless
+		// overridden in subsequent configs)
 		rules: {
 			'@typescript-eslint/array-type': ['error', { default: 'array-simple' }],
 			'@typescript-eslint/no-unused-vars': [
@@ -165,7 +360,30 @@ const configs = [
 	},
 
 	{
-		files: ['eslint.config.js', 'packages/**/*.d.ts'],
+		files: [vuePackageGlob],
+
+		/**
+		 * These are the rules applied by the Vue project template. We can of course
+		 * refine from there to suit our needs.
+		 *
+		 * TODO: The Vue template project included only the "essential" rules by
+		 * default. We've added both the "strongly recommended" and "recommended"
+		 * sets, but we'll likely want to relax and/or configure some of them as we
+		 * run into issues.
+		 */
+		rules: {
+			...vueBase.rules,
+			...vue3Essential.rules,
+			...vue3StronglyRecommended.rules,
+			...vue3Recommended.rules,
+
+			// Consistent with all other source code
+			'vue/html-indent': ['error', 'tab'],
+		},
+	},
+
+	{
+		files: ['eslint.config.js', 'packages/**/*.d.ts', 'vendor-types/**/*.d.ts'],
 		rules: {
 			'@typescript-eslint/triple-slash-reference': 'off',
 		},
@@ -206,7 +424,7 @@ const configs = [
 			'@typescript-eslint/no-shadow': 'warn',
 			'@typescript-eslint/no-non-null-asserted-optional-chain': 'warn',
 		},
-	},
-];
+	}
+);
 
-export default configs;
+globalThis.foo = 'bar';

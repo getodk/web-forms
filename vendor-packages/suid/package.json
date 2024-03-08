@@ -16,6 +16,10 @@
       "default": "./dist/node_modules/@suid/icons-material/*.js"
     }
   },
+  "engines": {
+    "node": "^18.19.1 || ^20.11.1",
+    "yarn": "1.22.19"
+  },
   "scripts": {
     "build": "vite build"
   },
