@@ -58,7 +58,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.23.2",
-    "@playwright/test": "^1.38.1",
+    "@playwright/test": "^1.42.1",
     "@suid/vite-plugin": "^0.1.5",
     "@testing-library/dom": "^9.3.3",
     "@testing-library/jest-dom": "^6.1.4",
