@@ -164,7 +164,7 @@ jobs:
       - run: 'yarn lint'
 
   odk-common:
-    name: '@odk/common'
+    name: '@odk-web-forms/common'
     needs: ['install-and-build', 'changes']
     if: needs.changes.outputs.root == 'true' || needs.changes.outputs.odk-common == 'true'
     runs-on: 'ubuntu-latest'
@@ -218,16 +218,16 @@ jobs:
           fail-on-cache-miss: true
 
       - if: ${{ matrix.target == 'Node' }}
-        run: 'yarn workspace @odk/common test:types'
+        run: 'yarn workspace @odk-web-forms/common test:types'
 
       - if: ${{ matrix.target == 'Node' }}
-        run: 'yarn workspace @odk/common test-node:jsdom'
+        run: 'yarn workspace @odk-web-forms/common test-node:jsdom'
 
       - if: ${{ matrix.target == 'Web' }}
         run: 'yarn playwright install ${{ matrix.browser }} --with-deps'
 
       - if: ${{ matrix.target == 'Web' }}
-        run: 'yarn workspace @odk/common test-browser:${{ matrix.browser }}'
+        run: 'yarn workspace @odk-web-forms/common test-browser:${{ matrix.browser }}'
 
   odk-web-forms:
     name: '@odk/web-forms'
