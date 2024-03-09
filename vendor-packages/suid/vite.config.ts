@@ -54,8 +54,8 @@ export default defineConfig(() => {
 			}),
 
 			// Generate type definitions. This turned out to be more reliable in
-			// @odk/xpath. TODO: revisit in case it makes sense to use tsc directly in
-			// this package
+			// @odk-web-forms/xpath. TODO: revisit in case it makes sense to use tsc
+			// directly in this package
 			dts(),
 
 			noBundle(),

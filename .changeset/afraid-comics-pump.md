@@ -1,5 +1,5 @@
 ---
-'@odk/xpath': patch
+'@odk-web-forms/xpath': patch
 ---
 
 Initial evaluator implementation

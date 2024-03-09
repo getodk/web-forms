@@ -22,7 +22,7 @@ examples/**/dist
 packages/**/dist
 vendor-packages/**/dist
 
-## Specific to tree-sitter and/or tree-sitter-xpath
+## Specific to tree-sitter and/or @odk-web-forms/tree-sitter-xpath
 packages/tree-sitter-xpath/bindings/
 packages/tree-sitter-xpath/build/
 packages/tree-sitter-xpath/src/tree_sitter

@@ -31,8 +31,8 @@ jobs:
       root: ${{ steps.changes.outputs.root }}
       odk-common: ${{ steps.changes.outputs.odk-common }}
       odk-web-forms: ${{ steps.changes.outputs.odk-web-forms }}
-      odk-xpath: ${{ steps.changes.outputs.odk-xpath }}
       tree-sitter-xpath: ${{ steps.changes.outputs.tree-sitter-xpath }}
+      xpath: ${{ steps.changes.outputs.xpath }}
       ui-vue: ${{ steps.changes.outputs.ui-vue }}
 
     steps:
@@ -51,13 +51,13 @@ jobs:
             odk-web-forms:
               - 'packages/odk-web-forms/**'
 
-            odk-xpath:
-              - 'packages/odk-xpath/**'
-
             tree-sitter-xpath:
               - 'packages/tree-sitter-xpath/grammar.ts'
               - 'packages/tree-sitter-xpath/scripts/**'
               - 'packages/tree-sitter-xpath/test/**'
+
+            xpath:
+              - 'packages/xpath/**'
 
             ui-vue:
               - 'packages/ui-vue/**'
@@ -109,7 +109,7 @@ jobs:
             packages/tree-sitter-xpath/types
           key: build-${{ matrix.node-version }}-${{ github.sha }}
 
-      # `@odk/xpath` tests (currently) expect this time zone
+      # `@odk-web-forms/xpath` tests (currently) expect this time zone
       - uses: szenius/set-timezone@v1.2
         with:
           timezoneLinux: ${{ env.TZ }}
@@ -295,10 +295,10 @@ jobs:
       - if: ${{ matrix.target == 'Web' }}
         run: 'yarn workspace @odk/web-forms test-browser:${{ matrix.browser }}'
 
-  odk-xpath:
-    name: '@odk/xpath'
+  xpath:
+    name: '@odk-web-forms/xpath'
     needs: ['install-and-build', 'changes']
-    if: needs.changes.outputs.root == 'true' || needs.changes.outputs.tree-sitter-xpath == 'true' || needs.changes.outputs.odk-xpath == 'true'
+    if: needs.changes.outputs.root == 'true' || needs.changes.outputs.tree-sitter-xpath == 'true' || needs.changes.outputs.xpath == 'true'
     runs-on: 'ubuntu-latest'
 
     strategy:
@@ -356,16 +356,16 @@ jobs:
           timezoneWindows: ${{ env.TZ }}
 
       - if: ${{ matrix.target == 'Node' }}
-        run: 'yarn workspace @odk/xpath test:types'
+        run: 'yarn workspace @odk-web-forms/xpath test:types'
 
       - if: ${{ matrix.target == 'Node' }}
-        run: 'yarn workspace @odk/xpath test-node:jsdom'
+        run: 'yarn workspace @odk-web-forms/xpath test-node:jsdom'
 
       - if: ${{ matrix.target == 'Web' }}
         run: 'yarn playwright install ${{ matrix.browser }} --with-deps'
 
       - if: ${{ matrix.target == 'Web' }}
-        run: 'yarn workspace @odk/xpath test-browser:${{ matrix.browser }}'
+        run: 'yarn workspace @odk-web-forms/xpath test-browser:${{ matrix.browser }}'
 
   tree-sitter-xpath:
     name: '@odk-web-forms/tree-sitter-xpath'
