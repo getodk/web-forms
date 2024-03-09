@@ -15,12 +15,12 @@
     "suid#build": {
       "outputMode": "new-only"
     },
-    "@odk/web-forms#build": {
+    "@odk-web-forms/xforms-engine#build": {
       "dependsOn": ["suid#build", "@odk-web-forms/xpath#build"],
       "outputs": ["dist/**"]
     },
     "@odk-web-forms/ui-vue#build": {
-      "dependsOn": ["@odk-web-forms/xpath#build"],
+      "dependsOn": ["@odk-web-forms/xforms-engine#build"],
       "outputs": ["dist/**"]
     },
     "test": {

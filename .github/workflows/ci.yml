@@ -30,8 +30,8 @@ jobs:
     outputs:
       root: ${{ steps.changes.outputs.root }}
       odk-common: ${{ steps.changes.outputs.odk-common }}
-      odk-web-forms: ${{ steps.changes.outputs.odk-web-forms }}
       tree-sitter-xpath: ${{ steps.changes.outputs.tree-sitter-xpath }}
+      xforms-engine: ${{ steps.changes.outputs.xforms-engine }}
       xpath: ${{ steps.changes.outputs.xpath }}
       ui-vue: ${{ steps.changes.outputs.ui-vue }}
 
@@ -48,13 +48,13 @@ jobs:
             odk-common:
               - 'packages/common/**'
 
-            odk-web-forms:
-              - 'packages/odk-web-forms/**'
-
             tree-sitter-xpath:
               - 'packages/tree-sitter-xpath/grammar.ts'
               - 'packages/tree-sitter-xpath/scripts/**'
               - 'packages/tree-sitter-xpath/test/**'
+
+            xforms-engine:
+              - 'packages/xforms-engine/**'
 
             xpath:
               - 'packages/xpath/**'
@@ -229,10 +229,10 @@ jobs:
       - if: ${{ matrix.target == 'Web' }}
         run: 'yarn workspace @odk-web-forms/common test-browser:${{ matrix.browser }}'
 
-  odk-web-forms:
-    name: '@odk/web-forms'
+  xforms-engine:
+    name: '@odk-web-forms/xforms-engine'
     needs: ['install-and-build', 'changes']
-    if: needs.changes.outputs.root == 'true' || needs.changes.outputs.odk-web-forms == 'true'
+    if: needs.changes.outputs.root == 'true' || needs.changes.outputs.xforms-engine == 'true'
     runs-on: 'ubuntu-latest'
 
     strategy:
@@ -284,16 +284,16 @@ jobs:
           fail-on-cache-miss: true
 
       - if: ${{ matrix.target == 'Node' }}
-        run: 'yarn workspace @odk/web-forms test:types'
+        run: 'yarn workspace @odk-web-forms/xforms-engine test:types'
 
       - if: ${{ matrix.target == 'Node' }}
-        run: 'yarn workspace @odk/web-forms test-node:jsdom'
+        run: 'yarn workspace @odk-web-forms/xforms-engine test-node:jsdom'
 
       - if: ${{ matrix.target == 'Web' }}
         run: 'yarn playwright install ${{ matrix.browser }} --with-deps'
 
       - if: ${{ matrix.target == 'Web' }}
-        run: 'yarn workspace @odk/web-forms test-browser:${{ matrix.browser }}'
+        run: 'yarn workspace @odk-web-forms/xforms-engine test-browser:${{ matrix.browser }}'
 
   xpath:
     name: '@odk-web-forms/xpath'
