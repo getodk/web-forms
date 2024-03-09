@@ -368,7 +368,7 @@ jobs:
         run: 'yarn workspace @odk/xpath test-browser:${{ matrix.browser }}'
 
   tree-sitter-xpath:
-    name: 'tree-sitter-xpath'
+    name: '@odk-web-forms/tree-sitter-xpath'
     needs: ['install-and-build', 'changes']
     if: needs.changes.outputs.root == 'true' || needs.changes.outputs.tree-sitter-xpath == 'true'
     runs-on: 'ubuntu-latest'
