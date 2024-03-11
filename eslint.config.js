@@ -100,7 +100,6 @@ export default tseslint.config(
 			'packages/tree-sitter-xpath/grammar.js',
 			'packages/tree-sitter-xpath/bindings/**/*',
 			'packages/tree-sitter-xpath/types/**/*',
-			'vendor-packages/**/dist/**/*',
 			'**/vendor',
 		],
 	},
@@ -265,7 +264,6 @@ export default tseslint.config(
 					'./packages/ui-vue/tsconfig.node.json',
 					'./packages/ui-vue/tsconfig.vitest.json',
 
-					'./vendor-packages/**/tsconfig.json',
 					'./scripts/tsconfig.json',
 				],
 			},
@@ -398,7 +396,6 @@ export default tseslint.config(
 			'packages/*/vitest.config.ts',
 			'packages/xforms-engine/vite.*.config.ts',
 			'packages/*/tools/**/*',
-			'vendor-packages/*/vite.config.ts',
 
 			// TODO: in theory, all e2e tests (if they continue to be run with
 			// Playwright) are technically run in a "Node" environment, although

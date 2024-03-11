@@ -33,6 +33,7 @@ jobs:
       tree-sitter-xpath: ${{ steps.changes.outputs.tree-sitter-xpath }}
       xforms-engine: ${{ steps.changes.outputs.xforms-engine }}
       xpath: ${{ steps.changes.outputs.xpath }}
+      ui-solid: ${{ steps.changes.outputs.ui-solid }}
       ui-vue: ${{ steps.changes.outputs.ui-vue }}
 
     steps:
@@ -58,6 +59,9 @@ jobs:
 
             xpath:
               - 'packages/xpath/**'
+
+            ui-solid:
+              - 'packages/ui-solid/**'
 
             ui-vue:
               - 'packages/ui-vue/**'
@@ -100,7 +104,6 @@ jobs:
           path: |
             examples/*/dist
             packages/*/dist
-            vendor-packages/*/dist
             packages/tree-sitter-xpath/grammar.js
             packages/tree-sitter-xpath/src/grammar.json
             packages/tree-sitter-xpath/src/parser.c
@@ -151,7 +154,6 @@ jobs:
           path: |
             examples/*/dist
             packages/*/dist
-            vendor-packages/*/dist
             packages/tree-sitter-xpath/grammar.js
             packages/tree-sitter-xpath/src/grammar.json
             packages/tree-sitter-xpath/src/parser.c
@@ -207,7 +209,6 @@ jobs:
           path: |
             examples/*/dist
             packages/*/dist
-            vendor-packages/*/dist
             packages/tree-sitter-xpath/grammar.js
             packages/tree-sitter-xpath/src/grammar.json
             packages/tree-sitter-xpath/src/parser.c
@@ -273,7 +274,6 @@ jobs:
           path: |
             examples/*/dist
             packages/*/dist
-            vendor-packages/*/dist
             packages/tree-sitter-xpath/grammar.js
             packages/tree-sitter-xpath/src/grammar.json
             packages/tree-sitter-xpath/src/parser.c
@@ -339,7 +339,6 @@ jobs:
           path: |
             examples/*/dist
             packages/*/dist
-            vendor-packages/*/dist
             packages/tree-sitter-xpath/grammar.js
             packages/tree-sitter-xpath/src/grammar.json
             packages/tree-sitter-xpath/src/parser.c
@@ -400,7 +399,6 @@ jobs:
           path: |
             examples/*/dist
             packages/*/dist
-            vendor-packages/*/dist
             packages/tree-sitter-xpath/grammar.js
             packages/tree-sitter-xpath/src/grammar.json
             packages/tree-sitter-xpath/src/parser.c
@@ -411,6 +409,71 @@ jobs:
           fail-on-cache-miss: true
 
       - run: 'yarn workspace tree-sitter-xpath test'
+
+  ui-solid:
+    name: 'ui-solid'
+    needs: ['install-and-build', 'changes']
+    if: needs.changes.outputs.root == 'true' || needs.changes.outputs.ui-solid == 'true'
+    runs-on: 'ubuntu-latest'
+
+    strategy:
+      matrix:
+        target: ['Node']
+        node-version: ['18.19.1', '20.11.1']
+        include:
+          - target: 'Web'
+            node-version: '20.11.1'
+            browser: chromium
+          - target: 'Web'
+            node-version: '20.11.1'
+            browser: firefox
+          - target: 'Web'
+            node-version: '20.11.1'
+            browser: webkit
+
+    steps:
+      - uses: 'actions/checkout@v3'
+
+      - uses: 'volta-cli/action@v4'
+        with:
+          node-version: '${{ matrix.node-version }}'
+          yarn-version: '1.22.19'
+
+      - uses: 'actions/cache@v3'
+        id: cache-install
+        with:
+          path: |
+            node_modules
+            **/node_modules
+          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', 'examples/*/yarn.lock', 'packages/*/yarn.lock') }}
+          fail-on-cache-miss: true
+
+      - uses: 'actions/cache@v3'
+        id: cache-build
+        with:
+          path: |
+            examples/*/dist
+            packages/*/dist
+            packages/tree-sitter-xpath/grammar.js
+            packages/tree-sitter-xpath/src/grammar.json
+            packages/tree-sitter-xpath/src/parser.c
+            packages/tree-sitter-xpath/src/tree_sitter/parser.h
+            packages/tree-sitter-xpath/tree-sitter-xpath.wasm
+            packages/tree-sitter-xpath/types
+          key: build-${{ matrix.node-version }}-${{ github.sha }}
+          fail-on-cache-miss: true
+
+      - if: ${{ matrix.target == 'Node' }}
+        run: 'yarn workspace @odk-web-forms/ui-solid test:types'
+
+      - if: ${{ matrix.target == 'Node' }}
+        run: 'yarn workspace @odk-web-forms/ui-solid test-node:jsdom'
+
+      - if: ${{ matrix.target == 'Web' }}
+        run: 'yarn playwright install ${{ matrix.browser }} --with-deps'
+
+      - if: ${{ matrix.target == 'Web' }}
+        run: 'yarn workspace @odk-web-forms/ui-solid test-browser:${{ matrix.browser }}'
 
   ui-vue:
     name: 'ui-vue'
@@ -456,7 +519,6 @@ jobs:
           path: |
             examples/*/dist
             packages/*/dist
-            vendor-packages/*/dist
             packages/tree-sitter-xpath/grammar.js
             packages/tree-sitter-xpath/src/grammar.json
             packages/tree-sitter-xpath/src/parser.c
