@@ -408,7 +408,7 @@ jobs:
           key: build-${{ matrix.node-version }}-${{ github.sha }}
           fail-on-cache-miss: true
 
-      - run: 'yarn workspace tree-sitter-xpath test'
+      - run: 'yarn workspace @odk-web-forms/tree-sitter-xpath test'
 
   ui-solid:
     name: 'ui-solid'
