@@ -427,5 +427,3 @@ export default tseslint.config(
 		},
 	}
 );
-
-globalThis.foo = 'bar';
