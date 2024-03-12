@@ -21,6 +21,9 @@ dist/
 examples/**/dist
 packages/**/dist
 
+# Generated documentation
+packages/*/api-docs
+
 ## Specific to tree-sitter and/or @odk-web-forms/tree-sitter-xpath
 packages/tree-sitter-xpath/bindings/
 packages/tree-sitter-xpath/build/
