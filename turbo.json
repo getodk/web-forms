@@ -5,15 +5,19 @@
       "dependsOn": ["^build"],
       "outputMode": "new-only"
     },
-    "suid#build": {
+    "@odk-web-forms/tree-sitter-xpath#build": {
       "outputMode": "new-only"
     },
-    "@odk/xpath#build": {
-      "dependsOn": ["tree-sitter-xpath#build"],
+    "@odk-web-forms/xpath#build": {
+      "dependsOn": ["@odk-web-forms/tree-sitter-xpath#build"],
       "outputMode": "new-only"
     },
-    "@odk/web-forms#build": {
-      "dependsOn": ["suid#build", "@odk/xpath#build"],
+    "@odk-web-forms/xforms-engine#build": {
+      "dependsOn": ["@odk-web-forms/xpath#build"],
+      "outputs": ["dist/**"]
+    },
+    "@odk-web-forms/ui-vue#build": {
+      "dependsOn": ["@odk-web-forms/xforms-engine#build"],
       "outputs": ["dist/**"]
     },
     "test": {

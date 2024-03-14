@@ -11,12 +11,12 @@
     "packages/*/playwright.config.ts",
     "packages/*/vite.config.ts",
     "packages/*/vitest.config.ts",
-    "vendor-packages/*/vite.config.ts"
+    "packages/xforms-engine/vite.*.config.ts"
   ],
   "compilerOptions": {
     "paths": {
-      "@odk/common/types/*": ["../common/types/*"],
-      "@odk/common/*": ["../common/src/*"]
+      "@odk-web-forms/common/types/*": ["../common/types/*"],
+      "@odk-web-forms/common/*": ["../common/src/*"]
     }
   }
 }

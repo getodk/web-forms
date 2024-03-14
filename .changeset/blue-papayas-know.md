@@ -1,5 +1,5 @@
 ---
-'@odk/web-forms': patch
+'@odk-web-forms/xforms-engine': patch
 'odk-scripts': patch
 ---
 

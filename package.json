@@ -17,7 +17,6 @@
   },
   "workspaces": [
     "packages/*",
-    "vendor-packages/*",
     "scripts"
   ],
   "scripts": {
