@@ -21,6 +21,7 @@
 import { FlatCompat } from '@eslint/eslintrc';
 import eslint from '@eslint/js';
 import eslintConfigPrettier from 'eslint-config-prettier';
+import jsdoc from 'eslint-plugin-jsdoc';
 import noOnlyTestsPlugin from 'eslint-plugin-no-only-tests';
 import vuePlugin from 'eslint-plugin-vue';
 import vueBase from 'eslint-plugin-vue/lib/configs/base.js';
@@ -102,6 +103,19 @@ export default tseslint.config(
 			'packages/tree-sitter-xpath/types/**/*',
 			'**/vendor',
 		],
+	},
+
+	{
+		plugins: { jsdoc },
+		rules: {
+			'jsdoc/no-undefined-types': [
+				'error',
+				{
+					markVariablesAsUsed: true,
+					disableReporting: true,
+				},
+			],
+		},
 	},
 
 	{

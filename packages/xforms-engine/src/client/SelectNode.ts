@@ -1,10 +1,9 @@
 import type { ValueNodeDefinition } from '../model/ValueNodeDefinition.ts';
 import type { BaseNode, BaseNodeState } from './BaseNode.ts';
 import type { RootNode } from './RootNode.ts';
+import type { StringNode } from './StringNode.ts';
 import type { TextRange } from './TextRange.ts';
 import type { GeneralParentNode } from './hierarchy.ts';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- referenced in JSDoc
-import type { StringNode } from './StringNode.ts';
 
 interface SelectItem {
 	get value(): string;

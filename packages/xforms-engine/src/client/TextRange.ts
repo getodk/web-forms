@@ -1,5 +1,4 @@
 import type { ActiveLanguage } from './FormLanguage.ts';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { RootNodeState } from './RootNode.ts';
 
 /**

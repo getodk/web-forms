@@ -1,6 +1,5 @@
 import type { AnyNodeDefinition } from '../model/NodeDefinition.ts';
 import type { EngineConfig } from './EngineConfig.ts';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- referenced in JSDoc
 import type { OpaqueReactiveObjectFactory } from './OpaqueReactiveObjectFactory.ts';
 import type { TextRange } from './TextRange.ts';
 
