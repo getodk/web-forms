@@ -73,13 +73,16 @@ type Thunk<T> = () => T;
 export type DefineComputation = <T>(computeFn: Thunk<T>) => Thunk<T>;
 
 /**
- * Defines a reactive subscription context. Runs synchronously when defined.
+ * Defines a reactive subscription context. Runs immediately upon definition.
  * Reading reactive values within `effectFn` establishes a subscription, causing
  * `effectFn` to be re-run for writes to those reactive values.
  *
  * @todo effects may run more frequently than we'd prefer in real world usage,
  * both due to reasoning discussed in {@link Write} and because there is
- * currently no batching mechanism for multiple synchronous writes.
+ * currently no batching mechanism for multiple synchronous writes. As such (and
+ * despite what the name might imply), the current `effect` implementation most
+ * closely resembles Solid's
+ * {@link https://docs.solidjs.com/reference/secondary-primitives/create-computed | `createComputed`}.
  */
 export type DefineEffect = (effectFn: VoidFunction) => void;
 
