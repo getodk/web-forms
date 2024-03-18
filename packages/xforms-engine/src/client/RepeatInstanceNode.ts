@@ -12,6 +12,7 @@ export interface RepeatInstanceNodeState extends BaseNodeState {
 
 	get hint(): null;
 	get children(): readonly GeneralChildNode[];
+	get valueOptions(): null;
 	get value(): null;
 }
 
