@@ -1,4 +1,5 @@
 import type { RepeatInstanceDefinition } from '../model/RepeatInstanceDefinition.ts';
+import type { RepeatTemplateDefinition } from '../model/RepeatTemplateDefinition.ts';
 import type { BaseNode, BaseNodeState } from './BaseNode.ts';
 import type { RepeatRangeNode } from './RepeatRangeNode.ts';
 import type { RootNode } from './RootNode.ts';
@@ -16,8 +17,13 @@ export interface RepeatInstanceNodeState extends BaseNodeState {
 	get value(): null;
 }
 
+// prettier-ignore
+export type RepeatDefinition =
+	| RepeatInstanceDefinition
+	| RepeatTemplateDefinition;
+
 export interface RepeatInstanceNode extends BaseNode {
-	readonly definition: RepeatInstanceDefinition;
+	readonly definition: RepeatDefinition;
 	readonly root: RootNode;
 
 	/**
