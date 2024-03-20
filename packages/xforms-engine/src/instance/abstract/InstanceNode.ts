@@ -68,7 +68,6 @@ export abstract class InstanceNode<
 
 	// Subscribable: node-specific
 	abstract subscribe(): void;
-	abstract unsubscribe?(): void;
 
 	constructor(engineConfig: InstanceConfig, definition: Definition) {
 		this.engineConfig = engineConfig;

@@ -58,7 +58,4 @@ import type { EvaluationContext } from './EvaluationContext.ts';
 export interface SubscribableDependency {
 	readonly scope: ReactiveScope;
 	readonly subscribe: VoidFunction;
-
-	// Unsure if we want/need this. Likely to be triggered by a node's removal(?).
-	readonly unsubscribe?: VoidFunction;
 }
