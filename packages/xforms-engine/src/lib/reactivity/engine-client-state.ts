@@ -6,6 +6,7 @@ import type { Primitive } from '@odk-web-forms/common/types/Primitive.ts';
 import type { ShallowMutable } from '@odk-web-forms/common/types/helpers.js';
 import { createComputed, untrack } from 'solid-js';
 import { createMutable } from 'solid-js/store';
+import type { ActiveLanguage } from '../../client/FormLanguage.ts';
 import type { OpaqueReactiveObjectFactory } from '../../client/OpaqueReactiveObjectFactory.ts';
 import type { AnyNode } from '../../client/hierarchy.ts';
 import { createReactiveScope, type ReactiveScope } from './scope.ts';
@@ -19,12 +20,28 @@ import { createReactiveScope, type ReactiveScope } from './scope.ts';
  */
 type IncompleteValueSupport = unknown;
 
+// prettier-ignore
+type SupportedReactiveStateValue =
+	// eslint-disable-next-line @typescript-eslint/sort-type-constituents
+	| Primitive
+	| ActiveLanguage;
+
+interface IdentifiedNode {
+	readonly nodeId: string;
+}
+
 /**
  * @see {@link InitialState} for details.
  *
  * @todo supporting reactive `children` to be addressed in a subsequent commit.
  */
-type InitialStateValue<Value> = Extract<Value, Primitive>;
+// prettier-ignore
+export type InitialStateValue<Value> =
+	Value extends SupportedReactiveStateValue
+		? Value
+	: Value extends readonly IdentifiedNode[]
+		? Value & { readonly todo?: never }
+		: never;
 
 /**
  * Restricts the type of initial state's property values. This is a bit of
@@ -41,7 +58,13 @@ type InitialState<T> = {
  *
  * @todo @see {@link IncompleteValueSupport}
  */
-type SharedStateValue<Value> = Extract<Value, Primitive>;
+// prettier-ignore
+type SharedStateValue<Value> =
+	Value extends SupportedReactiveStateValue
+		? Value
+	: Value extends readonly IdentifiedNode[]
+		? Value & { readonly todo?: never }
+		: never;
 
 /**
  * State shared between the engine and client is intentionally restricted, to
@@ -290,6 +313,12 @@ type EngineStateValueUpdate<T extends object, K extends keyof T> =
 	| EngineStateValue<T, K>
 	| EngineStateValueUpdateCallback<T, K>;
 
+const isUpdateCallback = <T extends object, K extends keyof T>(
+	update: EngineStateValueUpdate<T, K>
+): update is EngineStateValueUpdateCallback<T, K> => {
+	return typeof update === 'function';
+};
+
 type UpdateEngineStateValue<T extends object> = <K extends keyof T>(
 	key: K,
 	update: EngineStateValueUpdate<T, K>
@@ -303,7 +332,7 @@ const updateSharedStateValueFactory = <T extends object>(
 		return scope.runTask(() => {
 			let updatedValue: EngineState<T>[K];
 
-			if (typeof update === 'function') {
+			if (isUpdateCallback(update)) {
 				// Note: providing a current value to an update callback doesn't
 				// typically constitute a read; otherwise, writing to state in an
 				// effect/effect-like subscription context could create an infinite

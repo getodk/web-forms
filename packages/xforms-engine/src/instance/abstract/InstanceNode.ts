@@ -31,12 +31,12 @@ export abstract class InstanceNode<
 	 * Note: {@link currentState} is expected to reference this property's
 	 * {@link EngineClientState.clientState | `clientState`} sub-property.
 	 */
-	protected abstract readonly state: EngineClientState<State>;
+	protected readonly state: EngineClientState<State>;
 
 	/**
 	 * Convenience access to the same property in {@link state}.
 	 */
-	protected abstract readonly engineState: EngineState<State>;
+	protected readonly engineState: EngineState<State>;
 
 	// BaseNode: identity
 	readonly nodeId: string;
@@ -44,7 +44,7 @@ export abstract class InstanceNode<
 	// BaseNode: node-specific
 	readonly definition: Definition;
 
-	abstract readonly currentState: ClientState<State>;
+	readonly currentState: ClientState<State>;
 
 	// BaseNode: instance-global/shared
 	readonly engineConfig: InstanceConfig;
@@ -57,7 +57,7 @@ export abstract class InstanceNode<
 	abstract readonly evaluator: XFormsXPathEvaluator;
 
 	// EvaluationContext *and* Subscribable: node-specific
-	abstract readonly scope: ReactiveScope;
+	readonly scope: ReactiveScope;
 
 	// EvaluationContext: node-specific
 	abstract get contextReference(): string;
@@ -69,9 +69,17 @@ export abstract class InstanceNode<
 	// Subscribable: node-specific
 	abstract subscribe(): void;
 
-	constructor(engineConfig: InstanceConfig, definition: Definition) {
+	constructor(
+		engineConfig: InstanceConfig,
+		definition: Definition,
+		state: EngineClientState<State>
+	) {
 		this.engineConfig = engineConfig;
 		this.nodeId = engineConfig.createUniqueId();
 		this.definition = definition;
+		this.state = state;
+		this.engineState = state.engineState;
+		this.currentState = state.clientState;
+		this.scope = state.scope;
 	}
 }

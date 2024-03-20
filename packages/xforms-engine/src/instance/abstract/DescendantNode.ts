@@ -1,5 +1,6 @@
 import type { BaseNode, BaseNodeState } from '../../client/BaseNode.ts';
 import type { TextRange } from '../../client/TextRange.ts';
+import type { EngineClientState } from '../../lib/reactivity/engine-client-state.ts';
 import type { AnyDescendantNodeDefinition } from '../../model/DescendentNodeDefinition.ts';
 import type { AnyNodeDefinition } from '../../model/NodeDefinition.ts';
 import type { RepeatInstanceDefinition } from '../../model/RepeatInstanceDefinition.ts';
@@ -80,8 +81,15 @@ export abstract class DescendantNode<
 
 	constructor(
 		override readonly parent: DescendantNodeParent<Definition>,
-		override readonly definition: Definition
+		override readonly definition: Definition,
+		state?: EngineClientState<State>
 	) {
-		super(parent.engineConfig, definition);
+		// Temporary, we'll deal with other node-specific aspects of state
+		// initialization in subsequent commits.
+		if (state == null) {
+			throw new Error('Engine/client state bridge not implemented for node');
+		}
+
+		super(parent.engineConfig, definition, state);
 	}
 }

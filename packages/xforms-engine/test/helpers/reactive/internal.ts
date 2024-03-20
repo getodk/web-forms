@@ -131,6 +131,11 @@ type ReactiveTestScopeCallback<T> = (context: ReactiveTestScope) => T;
  * Runs an arbitrary {@link ReactiveTestContextCallback} within a
  * {@link ReactiveTestScope}, and returns the callback's value. See docs for
  * both for additional detail and considerations.
+ *
+ * @todo - this should probably be renamed `reactiveTestScope` for now. It's
+ * already getting confusing to write tests dealing with both internal and
+ * client reactive scopes. I can only imagine it's more confusing to **read
+ * them** after the fact!
  */
 export const reactiveScope = <Result>(callback: ReactiveTestScopeCallback<Result>): Result => {
 	interface Dependency {
