@@ -29,7 +29,7 @@ export interface RootNode extends BaseNode {
 	 * @todo as with {@link RootNodeState.activeLanguage}, this is the most
 	 * significant break in consistency across node types.
 	 */
-	readonly languages: readonly FormLanguages[];
+	readonly languages: FormLanguages;
 
 	setLanguage(language: FormLanguage): RootNode;
 }
