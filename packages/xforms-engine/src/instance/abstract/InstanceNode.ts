@@ -7,7 +7,6 @@ import type {
 } from '../../lib/reactivity/engine-client-state.ts';
 import type { ReactiveScope } from '../../lib/reactivity/scope.ts';
 import type { AnyNodeDefinition } from '../../model/NodeDefinition.ts';
-import type { RepeatSequenceDefinition } from '../../model/RepeatSequenceDefinition.ts';
 import type { Root } from '../Root.ts';
 import type { AnyChildNode, AnyParentNode } from '../hierarchy.ts';
 import type { EvaluationContext } from '../internal-api/EvaluationContext.ts';
@@ -17,9 +16,6 @@ import type { SubscribableDependency } from '../internal-api/SubscribableDepende
 export interface InstanceNodeState extends BaseNodeState {
 	get children(): readonly AnyChildNode[] | null;
 }
-
-type EvaluationContextNode<Definition extends AnyNodeDefinition> =
-	Definition extends RepeatSequenceDefinition ? Node : Element;
 
 export abstract class InstanceNode<
 		Definition extends AnyNodeDefinition,
@@ -61,7 +57,7 @@ export abstract class InstanceNode<
 
 	// EvaluationContext: node-specific
 	abstract get contextReference(): string;
-	abstract readonly contextNode: EvaluationContextNode<Definition>;
+	abstract readonly contextNode: Element;
 
 	constructor(
 		engineConfig: InstanceConfig,

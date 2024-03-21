@@ -4,7 +4,6 @@ import type { EngineClientState } from '../../lib/reactivity/engine-client-state
 import type { AnyDescendantNodeDefinition } from '../../model/DescendentNodeDefinition.ts';
 import type { AnyNodeDefinition } from '../../model/NodeDefinition.ts';
 import type { RepeatInstanceDefinition } from '../../model/RepeatInstanceDefinition.ts';
-import type { RepeatSequenceDefinition } from '../../model/RepeatSequenceDefinition.ts';
 import type { RepeatRange } from '../RepeatRange.ts';
 import type { AnyChildNode, GeneralParentNode } from '../hierarchy.ts';
 import type { EvaluationContext } from '../internal-api/EvaluationContext.ts';
@@ -36,9 +35,6 @@ type DescendantNodeParent<Definition extends DescendantNodeDefinition> =
 		? RepeatRange
 		: GeneralParentNode;
 
-type DescendantContextNode<Definition extends DescendantNodeDefinition> =
-	Definition extends RepeatSequenceDefinition ? Comment : Element;
-
 export abstract class DescendantNode<
 		Definition extends DescendantNodeDefinition,
 		State extends DescendantNodeState,
@@ -46,8 +42,6 @@ export abstract class DescendantNode<
 	extends InstanceNode<Definition, State>
 	implements BaseNode, EvaluationContext, SubscribableDependency
 {
-	abstract override readonly contextNode: DescendantContextNode<Definition>;
-
 	constructor(
 		override readonly parent: DescendantNodeParent<Definition>,
 		override readonly definition: Definition,
