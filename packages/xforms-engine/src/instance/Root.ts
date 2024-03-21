@@ -1,4 +1,5 @@
 import type { XFormsXPathEvaluator } from '@odk-web-forms/xpath';
+import { createSignal } from 'solid-js';
 import type { XFormDOM } from '../XFormDOM.ts';
 import type { XFormDefinition } from '../XFormDefinition.ts';
 import type { ActiveLanguage, FormLanguage, FormLanguages } from '../client/FormLanguage.ts';
@@ -12,6 +13,7 @@ import { engineClientState } from '../lib/reactivity/engine-client-state.ts';
 import type { RootDefinition } from '../model/RootDefinition.ts';
 import type { InstanceNodeState } from './abstract/InstanceNode.ts';
 import { InstanceNode } from './abstract/InstanceNode.ts';
+import { buildChildren } from './children.ts';
 import type { GeneralChildNode } from './hierarchy.ts';
 import type { EvaluationContext } from './internal-api/EvaluationContext.ts';
 import type { InstanceConfig } from './internal-api/InstanceConfig.ts';
@@ -117,6 +119,9 @@ export class Root
 		const evaluator = instanceDOM.primaryInstanceEvaluator;
 		const { translations } = evaluator;
 		const { activeLanguage, languages } = getInitialLanguageState(translations);
+
+		const [children, setChildren] = createSignal<readonly GeneralChildNode[]>([]);
+
 		const state = engineClientState<RootState>(engineConfig.stateFactory, {
 			get reference() {
 				return reference;
@@ -146,14 +151,8 @@ export class Root
 				return null;
 			},
 
-			// TODO (1): implement children at all
-			//
-			// TODO (2): the engine/client state bridge creates a computed effect
-			// which always throws if an input getter throws. This is probably too
-			// aggressive, and also probably a really good sign that the reflection
-			// effects themselves are too aggressive.
-			get children(): GeneralChildNode[] {
-				return [];
+			get children() {
+				return children();
 			},
 		});
 
@@ -169,6 +168,8 @@ export class Root
 		this.contextNode = contextNode;
 		this.instanceDOM = instanceDOM;
 		this.languages = languages;
+
+		setChildren(buildChildren(this));
 	}
 
 	// RootNode

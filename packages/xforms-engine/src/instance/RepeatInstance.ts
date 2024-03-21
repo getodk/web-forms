@@ -1,3 +1,4 @@
+import { createSignal } from 'solid-js';
 import type {
 	RepeatDefinition,
 	RepeatInstanceNode,
@@ -12,6 +13,7 @@ import { engineClientState } from '../lib/reactivity/engine-client-state.ts';
 import type { RepeatRange } from './RepeatRange.ts';
 import type { DescendantNodeState } from './abstract/DescendantNode.ts';
 import { DescendantNode } from './abstract/DescendantNode.ts';
+import { buildChildren } from './children.ts';
 import type { GeneralChildNode } from './hierarchy.ts';
 import type { EvaluationContext } from './internal-api/EvaluationContext.ts';
 import type { SubscribableDependency } from './internal-api/SubscribableDependency.ts';
@@ -39,6 +41,8 @@ export class RepeatInstance
 	) {
 		super(parent, definition);
 
+		const [children, setChildren] = createSignal<readonly GeneralChildNode[]>([]);
+
 		const initialPosition = initialIndex + 1;
 
 		const state = engineClientState<RepeatInstanceState>(this.engineConfig.stateFactory, {
@@ -48,13 +52,18 @@ export class RepeatInstance
 			required: false,
 			label: null,
 			hint: null,
-			children: [],
 			valueOptions: null,
 			value: null,
+
+			get children() {
+				return children();
+			},
 		});
 
 		this.state = state;
 		this.engineState = state.engineState;
 		this.currentState = state.clientState;
+
+		setChildren(buildChildren(this));
 	}
 }

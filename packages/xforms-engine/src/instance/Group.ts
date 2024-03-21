@@ -1,3 +1,4 @@
+import { createSignal } from 'solid-js';
 import type { GroupDefinition, GroupNode, GroupNodeState } from '../client/GroupNode.ts';
 import type {
 	ClientState,
@@ -7,6 +8,7 @@ import type {
 import { engineClientState } from '../lib/reactivity/engine-client-state.ts';
 import type { DescendantNodeState } from './abstract/DescendantNode.ts';
 import { DescendantNode } from './abstract/DescendantNode.ts';
+import { buildChildren } from './children.ts';
 import type { GeneralChildNode, GeneralParentNode } from './hierarchy.ts';
 import type { EvaluationContext } from './internal-api/EvaluationContext.ts';
 import type { SubscribableDependency } from './internal-api/SubscribableDependency.ts';
@@ -30,6 +32,8 @@ export class Group
 	constructor(parent: GeneralParentNode, definition: GroupDefinition) {
 		super(parent, definition);
 
+		const [children, setChildren] = createSignal<readonly GeneralChildNode[]>([]);
+
 		const state = engineClientState<GroupState>(this.engineConfig.stateFactory, {
 			reference: `${parent.contextReference}/${definition.nodeName}`,
 			readonly: false,
@@ -37,13 +41,18 @@ export class Group
 			required: false,
 			label: null,
 			hint: null,
-			children: [],
 			valueOptions: null,
 			value: null,
+
+			get children() {
+				return children();
+			},
 		});
 
 		this.state = state;
 		this.engineState = state.engineState;
 		this.currentState = state.clientState;
+
+		setChildren(buildChildren(this));
 	}
 }
