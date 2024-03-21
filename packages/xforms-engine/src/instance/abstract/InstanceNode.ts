@@ -27,12 +27,12 @@ export abstract class InstanceNode<
 	 * Note: {@link currentState} is expected to reference this property's
 	 * {@link EngineClientState.clientState | `clientState`} sub-property.
 	 */
-	protected readonly state: EngineClientState<State>;
+	protected abstract readonly state: EngineClientState<State>;
 
 	/**
 	 * Convenience access to the same property in {@link state}.
 	 */
-	protected readonly engineState: EngineState<State>;
+	protected abstract readonly engineState: EngineState<State>;
 
 	// BaseNode: identity
 	readonly nodeId: string;
@@ -40,7 +40,7 @@ export abstract class InstanceNode<
 	// BaseNode: node-specific
 	readonly definition: Definition;
 
-	readonly currentState: ClientState<State>;
+	abstract readonly currentState: ClientState<State>;
 
 	// BaseNode: instance-global/shared
 	readonly engineConfig: InstanceConfig;
@@ -52,25 +52,22 @@ export abstract class InstanceNode<
 	// EvaluationContext: instance-global/shared
 	abstract readonly evaluator: XFormsXPathEvaluator;
 
-	// EvaluationContext *and* Subscribable: node-specific
-	readonly scope: ReactiveScope;
+	// EvaluationContext *and* SubscribableDependency: node-specific
+	get scope(): ReactiveScope {
+		return this.state.scope;
+	}
 
 	// EvaluationContext: node-specific
-	abstract get contextReference(): string;
+	get contextReference(): string {
+		return this.engineState.reference;
+	}
+
 	abstract readonly contextNode: Element;
 
-	constructor(
-		engineConfig: InstanceConfig,
-		definition: Definition,
-		state: EngineClientState<State>
-	) {
+	constructor(engineConfig: InstanceConfig, definition: Definition) {
 		this.engineConfig = engineConfig;
 		this.nodeId = engineConfig.createUniqueId();
 		this.definition = definition;
-		this.state = state;
-		this.engineState = state.engineState;
-		this.currentState = state.clientState;
-		this.scope = state.scope;
 	}
 
 	// EvaluationContext: node-relative

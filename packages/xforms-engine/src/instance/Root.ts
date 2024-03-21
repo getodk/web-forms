@@ -3,6 +3,11 @@ import type { XFormDOM } from '../XFormDOM.ts';
 import type { XFormDefinition } from '../XFormDefinition.ts';
 import type { ActiveLanguage, FormLanguage, FormLanguages } from '../client/FormLanguage.ts';
 import type { RootNode, RootNodeState } from '../client/RootNode.ts';
+import type {
+	ClientState,
+	EngineClientState,
+	EngineState,
+} from '../lib/reactivity/engine-client-state.ts';
 import { engineClientState } from '../lib/reactivity/engine-client-state.ts';
 import type { RootDefinition } from '../model/RootDefinition.ts';
 import type { InstanceNodeState } from './abstract/InstanceNode.ts';
@@ -79,6 +84,11 @@ export class Root
 	extends InstanceNode<RootDefinition, RootState>
 	implements RootNode, EvaluationContext, SubscribableDependency
 {
+	protected readonly state: EngineClientState<RootState>;
+	protected readonly engineState: EngineState<RootState>;
+
+	readonly currentState: ClientState<RootState>;
+
 	/**
 	 * @todo this will be used to construct new instances of each node in the
 	 * backing DOM store.
@@ -90,7 +100,6 @@ export class Root
 
 	// EvaluationContext
 	readonly evaluator: XFormsXPathEvaluator;
-	readonly contextReference: string;
 	readonly contextNode: Element;
 
 	// RootNode
@@ -100,12 +109,15 @@ export class Root
 
 	constructor(form: XFormDefinition, engineConfig: InstanceConfig) {
 		const definition = form.model.root;
+
+		super(engineConfig, definition);
+
 		const reference = definition.nodeset;
 		const instanceDOM = form.xformDOM.createInstance();
 		const evaluator = instanceDOM.primaryInstanceEvaluator;
 		const { translations } = evaluator;
 		const { activeLanguage, languages } = getInitialLanguageState(translations);
-		const initialState: RootState = {
+		const state = engineClientState<RootState>(engineConfig.stateFactory, {
 			get reference() {
 				return reference;
 			},
@@ -143,17 +155,17 @@ export class Root
 			get children(): GeneralChildNode[] {
 				return [];
 			},
-		};
-		const state = engineClientState(engineConfig.stateFactory, initialState);
+		});
 
-		super(engineConfig, definition, state);
+		this.state = state;
+		this.engineState = state.engineState;
+		this.currentState = state.clientState;
 
 		const contextNode = instanceDOM.xformDocument.createElement(definition.nodeName);
 
 		instanceDOM.primaryInstanceRoot.replaceWith(contextNode);
 
 		this.evaluator = evaluator;
-		this.contextReference = initialState.reference;
 		this.contextNode = contextNode;
 		this.instanceDOM = instanceDOM;
 		this.languages = languages;
