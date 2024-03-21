@@ -63,12 +63,6 @@ export abstract class InstanceNode<
 	abstract get contextReference(): string;
 	abstract readonly contextNode: EvaluationContextNode<Definition>;
 
-	// EvaluationContext: node-relative
-	abstract getSubscribableDependencyByReference(reference: string): SubscribableDependency | null;
-
-	// Subscribable: node-specific
-	abstract subscribe(): void;
-
 	constructor(
 		engineConfig: InstanceConfig,
 		definition: Definition,
@@ -82,4 +76,10 @@ export abstract class InstanceNode<
 		this.currentState = state.clientState;
 		this.scope = state.scope;
 	}
+
+	// EvaluationContext: node-relative
+	abstract getSubscribableDependencyByReference(reference: string): SubscribableDependency | null;
+
+	// SubscribableDependency: node-specific
+	abstract subscribe(): void;
 }

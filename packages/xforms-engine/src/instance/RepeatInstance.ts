@@ -21,9 +21,9 @@ export abstract class RepeatInstance
 	extends DescendantNode<RepeatDefinition, RepeatInstanceState>
 	implements RepeatInstanceNode, EvaluationContext, SubscribableDependency
 {
+	abstract override readonly parent: RepeatRange;
+
 	constructor(parent: RepeatRange, definition: RepeatDefinition) {
 		super(parent, definition);
 	}
-
-	abstract override readonly parent: RepeatRange;
 }

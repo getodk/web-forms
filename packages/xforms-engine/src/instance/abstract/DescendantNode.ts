@@ -48,20 +48,6 @@ export abstract class DescendantNode<
 {
 	abstract override readonly contextNode: DescendantContextNode<Definition>;
 
-	/**
-	 * To be called when:
-	 *
-	 * - the node itself is removed
-	 * - a parent/ancestor has been removed(?)
-	 *
-	 * Implies, at least, a call to `this.scope.dispose()`; possibly make an
-	 * exception for repeat instances, which we might want to retain in case
-	 * they're re-added. This came up as a behavior of Collect/JavaRosa, and we
-	 * should investigate the details and ramifications of that, and whether it's
-	 * the desired behavior.
-	 */
-	abstract remove(): void;
-
 	constructor(
 		override readonly parent: DescendantNodeParent<Definition>,
 		override readonly definition: Definition,
@@ -75,4 +61,18 @@ export abstract class DescendantNode<
 
 		super(parent.engineConfig, definition, state);
 	}
+
+	/**
+	 * To be called when:
+	 *
+	 * - the node itself is removed
+	 * - a parent/ancestor has been removed(?)
+	 *
+	 * Implies, at least, a call to `this.scope.dispose()`; possibly make an
+	 * exception for repeat instances, which we might want to retain in case
+	 * they're re-added. This came up as a behavior of Collect/JavaRosa, and we
+	 * should investigate the details and ramifications of that, and whether it's
+	 * the desired behavior.
+	 */
+	abstract remove(): void;
 }
