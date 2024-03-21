@@ -17,3 +17,5 @@ export type { ValueNodeState } from './state/ValueNodeState.ts';
 
 export { XFormDefinition } from './XFormDefinition.ts';
 export { EntryState } from './state/EntryState.ts';
+
+export { initializeForm } from './instance/index.ts';
