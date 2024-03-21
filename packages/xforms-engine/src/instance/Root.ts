@@ -1,5 +1,4 @@
 import type { XFormsXPathEvaluator } from '@odk-web-forms/xpath';
-import { createSignal } from 'solid-js';
 import type { XFormDOM } from '../XFormDOM.ts';
 import type { XFormDefinition } from '../XFormDefinition.ts';
 import type { ActiveLanguage, FormLanguage, FormLanguages } from '../client/FormLanguage.ts';
@@ -120,40 +119,17 @@ export class Root
 		const { translations } = evaluator;
 		const { activeLanguage, languages } = getInitialLanguageState(translations);
 
-		const [children, setChildren] = createSignal<readonly GeneralChildNode[]>([]);
-
 		const state = engineClientState<RootState>(engineConfig.stateFactory, {
-			get reference() {
-				return reference;
-			},
-
 			activeLanguage,
-
-			get label(): null {
-				return null;
-			},
-			get hint(): null {
-				return null;
-			},
-			get readonly(): false {
-				return false;
-			},
-			get relevant(): true {
-				return true;
-			},
-			get required(): false {
-				return false;
-			},
-			get valueOptions(): null {
-				return null;
-			},
-			get value(): null {
-				return null;
-			},
-
-			get children() {
-				return children();
-			},
+			reference,
+			label: null,
+			hint: null,
+			readonly: false,
+			relevant: true,
+			required: false,
+			valueOptions: null,
+			value: null,
+			children: [],
 		});
 
 		this.state = state;
@@ -169,7 +145,7 @@ export class Root
 		this.instanceDOM = instanceDOM;
 		this.languages = languages;
 
-		setChildren(buildChildren(this));
+		state.updateValue('children', buildChildren(this));
 	}
 
 	// RootNode
