@@ -3,6 +3,12 @@ import type {
 	RepeatInstanceNode,
 	RepeatInstanceNodeState,
 } from '../client/RepeatInstanceNode.ts';
+import type {
+	ClientState,
+	EngineClientState,
+	EngineState,
+} from '../lib/reactivity/engine-client-state.ts';
+import { engineClientState } from '../lib/reactivity/engine-client-state.ts';
 import type { RepeatRange } from './RepeatRange.ts';
 import type { DescendantNodeState } from './abstract/DescendantNode.ts';
 import { DescendantNode } from './abstract/DescendantNode.ts';
@@ -17,13 +23,38 @@ interface RepeatInstanceState extends RepeatInstanceNodeState, DescendantNodeSta
 	get value(): null;
 }
 
-export abstract class RepeatInstance
+export class RepeatInstance
 	extends DescendantNode<RepeatDefinition, RepeatInstanceState>
 	implements RepeatInstanceNode, EvaluationContext, SubscribableDependency
 {
-	abstract override readonly parent: RepeatRange;
+	protected readonly state: EngineClientState<RepeatInstanceState>;
+	protected override engineState: EngineState<RepeatInstanceState>;
 
-	constructor(parent: RepeatRange, definition: RepeatDefinition) {
+	readonly currentState: ClientState<RepeatInstanceState>;
+
+	constructor(
+		override readonly parent: RepeatRange,
+		definition: RepeatDefinition,
+		initialIndex: number
+	) {
 		super(parent, definition);
+
+		const initialPosition = initialIndex + 1;
+
+		const state = engineClientState<RepeatInstanceState>(this.engineConfig.stateFactory, {
+			reference: `${parent.contextReference}[${initialPosition}]`,
+			readonly: false,
+			relevant: true,
+			required: false,
+			label: null,
+			hint: null,
+			children: [],
+			valueOptions: null,
+			value: null,
+		});
+
+		this.state = state;
+		this.engineState = state.engineState;
+		this.currentState = state.clientState;
 	}
 }

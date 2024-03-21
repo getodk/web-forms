@@ -8,6 +8,7 @@ import { createComputed, untrack } from 'solid-js';
 import { createMutable } from 'solid-js/store';
 import type { ActiveLanguage } from '../../client/FormLanguage.ts';
 import type { OpaqueReactiveObjectFactory } from '../../client/OpaqueReactiveObjectFactory.ts';
+import type { SelectItem } from '../../client/SelectNode.ts';
 import type { AnyNode } from '../../client/hierarchy.ts';
 import { createReactiveScope, type ReactiveScope } from './scope.ts';
 
@@ -24,7 +25,8 @@ type IncompleteValueSupport = unknown;
 type SupportedReactiveStateValue =
 	// eslint-disable-next-line @typescript-eslint/sort-type-constituents
 	| Primitive
-	| ActiveLanguage;
+	| ActiveLanguage
+	| readonly SelectItem[];
 
 interface IdentifiedNode {
 	readonly nodeId: string;

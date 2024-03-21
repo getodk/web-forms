@@ -1,4 +1,10 @@
 import type { RepeatRangeNode, RepeatRangeNodeState } from '../client/RepeatRangeNode.ts';
+import type {
+	ClientState,
+	EngineClientState,
+	EngineState,
+} from '../lib/reactivity/engine-client-state.ts';
+import { engineClientState } from '../lib/reactivity/engine-client-state.ts';
 import type { RepeatSequenceDefinition } from '../model/RepeatSequenceDefinition.ts';
 import type { RepeatInstance } from './RepeatInstance.ts';
 import type { Root } from './Root.ts';
@@ -16,14 +22,40 @@ interface RepeatRangeState extends RepeatRangeNodeState, DescendantNodeState {
 	get value(): null;
 }
 
-export abstract class RepeatRange
+export class RepeatRange
 	extends DescendantNode<RepeatSequenceDefinition, RepeatRangeState>
 	implements RepeatRangeNode, EvaluationContext, SubscribableDependency
 {
+	protected readonly state: EngineClientState<RepeatRangeState>;
+	protected override engineState: EngineState<RepeatRangeState>;
+
+	readonly currentState: ClientState<RepeatRangeState>;
+
 	constructor(parent: GeneralParentNode, definition: RepeatSequenceDefinition) {
 		super(parent, definition);
+
+		const state = engineClientState<RepeatRangeState>(this.engineConfig.stateFactory, {
+			reference: `${parent.contextReference}/${definition.nodeName}`,
+			readonly: false,
+			relevant: true,
+			required: false,
+			label: null,
+			hint: null,
+			children: [],
+			valueOptions: null,
+			value: null,
+		});
+
+		this.state = state;
+		this.engineState = state.engineState;
+		this.currentState = state.clientState;
 	}
 
-	abstract addInstances(afterIndex?: number | undefined, count?: number | undefined): Root;
-	abstract removeInstances(startIndex: number, count?: number | undefined): Root;
+	addInstances(_afterIndex?: number | undefined, _count?: number | undefined): Root {
+		throw new Error('Not implemented');
+	}
+
+	removeInstances(_startIndex: number, _count?: number | undefined): Root {
+		throw new Error('Not implemented');
+	}
 }
