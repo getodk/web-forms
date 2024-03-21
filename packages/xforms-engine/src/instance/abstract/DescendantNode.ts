@@ -1,4 +1,4 @@
-import type { BaseNode, BaseNodeState } from '../../client/BaseNode.ts';
+import type { BaseNode } from '../../client/BaseNode.ts';
 import type { TextRange } from '../../client/TextRange.ts';
 import type { EngineClientState } from '../../lib/reactivity/engine-client-state.ts';
 import type { AnyDescendantNodeDefinition } from '../../model/DescendentNodeDefinition.ts';
@@ -12,33 +12,16 @@ import type { SubscribableDependency } from '../internal-api/SubscribableDepende
 import type { InstanceNodeState } from './InstanceNode.ts';
 import { InstanceNode } from './InstanceNode.ts';
 
-/**
- * @todo
- *
- * Handles cross-cutting concerns involving computation and reactivity which are
- * general to all non-root nodes (all of which may be conditionally present for
- * a given node, but otherwise have the same behavior regardless of node type):
- *
- * - `reference` (reactive positioning of/within repeat instances)
- * - bind state expressions (`readonly`, `relevant`, `required`, `constraint`
- *   when supported, etc)
- * - reactive `value` (`calculate`)
- * - reactive `valueOptions` (select/select1 with itemsets)
- * - text ranges (`label`, `hint`)
- * - reactive `children` (at least anticipating this for repeat ranges and their
- *   repeat instances, but we may find it's beneficial for a general subscribe-
- *   on-arrival mechanism as the instance tree is built up)
- */
-export abstract class DescendantNodeState implements InstanceNodeState, BaseNodeState {
-	abstract get reference(): string;
-	abstract get readonly(): boolean;
-	abstract get relevant(): boolean;
-	abstract get required(): boolean;
-	abstract get label(): TextRange<'label'> | null;
-	abstract get hint(): TextRange<'hint'> | null;
-	abstract get children(): readonly AnyChildNode[] | null;
-	abstract get valueOptions(): unknown;
-	abstract get value(): unknown;
+export interface DescendantNodeState extends InstanceNodeState {
+	get reference(): string;
+	get readonly(): boolean;
+	get relevant(): boolean;
+	get required(): boolean;
+	get label(): TextRange<'label'> | null;
+	get hint(): TextRange<'hint'> | null;
+	get children(): readonly AnyChildNode[] | null;
+	get valueOptions(): unknown;
+	get value(): unknown;
 }
 
 // prettier-ignore

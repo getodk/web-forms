@@ -2,17 +2,18 @@ import type { RepeatRangeNode, RepeatRangeNodeState } from '../client/RepeatRang
 import type { RepeatSequenceDefinition } from '../model/RepeatSequenceDefinition.ts';
 import type { RepeatInstance } from './RepeatInstance.ts';
 import type { Root } from './Root.ts';
-import { DescendantNode, DescendantNodeState } from './abstract/DescendantNode.ts';
+import type { DescendantNodeState } from './abstract/DescendantNode.ts';
+import { DescendantNode } from './abstract/DescendantNode.ts';
 import type { GeneralParentNode } from './hierarchy.ts';
 import type { EvaluationContext } from './internal-api/EvaluationContext.ts';
 import type { SubscribableDependency } from './internal-api/SubscribableDependency.ts';
 
-abstract class RepeatRangeState extends DescendantNodeState implements RepeatRangeNodeState {
-	abstract override get hint(): null;
-	abstract override get label(): null;
-	abstract override get children(): readonly RepeatInstance[];
-	abstract override get valueOptions(): null;
-	abstract override get value(): null;
+interface RepeatRangeState extends RepeatRangeNodeState, DescendantNodeState {
+	get hint(): null;
+	get label(): null;
+	get children(): readonly RepeatInstance[];
+	get valueOptions(): null;
+	get value(): null;
 }
 
 export abstract class RepeatRange

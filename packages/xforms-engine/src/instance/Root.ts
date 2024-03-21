@@ -12,11 +12,16 @@ import type { EvaluationContext } from './internal-api/EvaluationContext.ts';
 import type { InstanceConfig } from './internal-api/InstanceConfig.ts';
 import type { SubscribableDependency } from './internal-api/SubscribableDependency.ts';
 
-// prettier-ignore
-type RootState =
-	& InstanceNodeState
-	& RootNodeState
-	& { get children(): GeneralChildNode[] };
+interface RootState extends RootNodeState, InstanceNodeState {
+	get label(): null;
+	get hint(): null;
+	get children(): readonly GeneralChildNode[];
+	get valueOptions(): null;
+	get value(): null;
+
+	// Root-specific
+	get activeLanguage(): ActiveLanguage;
+}
 
 // Subset of types expected from evaluator
 interface ItextTranslations {
