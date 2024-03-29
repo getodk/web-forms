@@ -15,7 +15,7 @@ export type {
 	AnyNode,
 	AnyParentNode,
 	GeneralChildNode,
-	GeneralParentNode,
+	GeneralParentNode
 } from './client/hierarchy.ts';
 export type * from './client/index.ts';
 
@@ -28,5 +28,6 @@ export { initializeForm } from './instance/index.ts';
 // implementation. We'll refine the various `definition` types in due time.
 export type {
 	AnySelectDefinition,
-	SelectDefinition,
+	SelectDefinition
 } from './body/control/select/SelectDefinition.ts';
+
