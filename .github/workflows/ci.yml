@@ -33,6 +33,7 @@ jobs:
       tree-sitter-xpath: ${{ steps.changes.outputs.tree-sitter-xpath }}
       xforms-engine: ${{ steps.changes.outputs.xforms-engine }}
       xpath: ${{ steps.changes.outputs.xpath }}
+      scenario: ${{ steps.changes.outputs.scenario }}
       ui-solid: ${{ steps.changes.outputs.ui-solid }}
       ui-vue: ${{ steps.changes.outputs.ui-vue }}
 
@@ -56,6 +57,9 @@ jobs:
 
             xforms-engine:
               - 'packages/xforms-engine/**'
+
+            scenario:
+              - 'packages/scenario/**'
 
             xpath:
               - 'packages/xpath/**'
@@ -294,6 +298,71 @@ jobs:
 
       - if: ${{ matrix.target == 'Web' }}
         run: 'yarn workspace @odk-web-forms/xforms-engine test-browser:${{ matrix.browser }}'
+
+  scenario:
+    name: 'scenario'
+    needs: ['install-and-build', 'changes']
+    if: needs.changes.outputs.root == 'true' || needs.changes.outputs.scenario == 'true'
+    runs-on: 'ubuntu-latest'
+
+    strategy:
+      matrix:
+        target: ['Node']
+        node-version: ['18.19.1', '20.11.1']
+        include:
+          - target: 'Web'
+            node-version: '20.11.1'
+            browser: chromium
+          - target: 'Web'
+            node-version: '20.11.1'
+            browser: firefox
+          - target: 'Web'
+            node-version: '20.11.1'
+            browser: webkit
+
+    steps:
+      - uses: 'actions/checkout@v3'
+
+      - uses: 'volta-cli/action@v4'
+        with:
+          node-version: '${{ matrix.node-version }}'
+          yarn-version: '1.22.19'
+
+      - uses: 'actions/cache@v3'
+        id: cache-install
+        with:
+          path: |
+            node_modules
+            **/node_modules
+          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', 'examples/*/yarn.lock', 'packages/*/yarn.lock') }}
+          fail-on-cache-miss: true
+
+      - uses: 'actions/cache@v3'
+        id: cache-build
+        with:
+          path: |
+            examples/*/dist
+            packages/*/dist
+            packages/tree-sitter-xpath/grammar.js
+            packages/tree-sitter-xpath/src/grammar.json
+            packages/tree-sitter-xpath/src/parser.c
+            packages/tree-sitter-xpath/src/tree_sitter/parser.h
+            packages/tree-sitter-xpath/tree-sitter-xpath.wasm
+            packages/tree-sitter-xpath/types
+          key: build-${{ matrix.node-version }}-${{ github.sha }}
+          fail-on-cache-miss: true
+
+      - if: ${{ matrix.target == 'Node' }}
+        run: 'yarn workspace @odk-web-forms/scenario test:types'
+
+      - if: ${{ matrix.target == 'Node' }}
+        run: 'yarn workspace @odk-web-forms/scenario test-node:jsdom'
+
+      - if: ${{ matrix.target == 'Web' }}
+        run: 'yarn playwright install ${{ matrix.browser }} --with-deps'
+
+      - if: ${{ matrix.target == 'Web' }}
+        run: 'yarn workspace @odk-web-forms/scenario test-browser:${{ matrix.browser }}'
 
   xpath:
     name: '@odk-web-forms/xpath'
