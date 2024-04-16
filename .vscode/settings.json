@@ -32,5 +32,8 @@
   // This corresponds to the `lib` we're using everywhere. Setting it here
   // helps to address editor-only type errors in tooling files, where VSCode
   // doesn't pick up the top-level `tsconfig.tools.json`.
-  "js/ts.implicitProjectConfig.target": "ES2022"
+  "js/ts.implicitProjectConfig.target": "ES2022",
+  "[xml]": {
+    "editor.defaultFormatter": "redhat.vscode-xml"
+  }
 }
