@@ -393,6 +393,7 @@ export default tseslint.config(
 			'vue/html-indent': ['error', 'tab'],
 			// should be based on the printWidth
 			'vue/max-attributes-per-line': 'off',
+			'vue/no-undef-components': 'error',
 		},
 	},
 
