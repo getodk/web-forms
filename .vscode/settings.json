@@ -25,12 +25,14 @@
     "editor.formatOnSave": true
   },
   "[vue]": {
-    // Vue files are ignored in Prettier. Some formatting **will** be applied
-    // on save by ESLint (via `editor.codeActionsOnSave` settings above)
-    "editor.formatOnSave": false
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "editor.formatOnSave": true
   },
   // This corresponds to the `lib` we're using everywhere. Setting it here
   // helps to address editor-only type errors in tooling files, where VSCode
   // doesn't pick up the top-level `tsconfig.tools.json`.
-  "js/ts.implicitProjectConfig.target": "ES2022"
+  "js/ts.implicitProjectConfig.target": "ES2022",
+  "[xml]": {
+    "editor.defaultFormatter": "redhat.vscode-xml"
+  }
 }
