@@ -16,8 +16,8 @@ demoForms.forEach(f => {
 
 const selectForm = ref<[string, string] | null>(null);
 
-const handleSubmit = (data: string) => {
-	alert(`Submit button was pressed. Data: ${data}`);  
+const handleSubmit = () => {
+	alert(`Submit button was pressed`);  
 } 
 
 </script>
