@@ -29,6 +29,7 @@ import vue3Essential from 'eslint-plugin-vue/lib/configs/vue3-essential.js';
 import vue3Recommended from 'eslint-plugin-vue/lib/configs/vue3-recommended.js';
 import vue3StronglyRecommended from 'eslint-plugin-vue/lib/configs/vue3-strongly-recommended.js';
 import vueProcessor from 'eslint-plugin-vue/lib/processor.js';
+import globals from "globals";
 import { builtinModules } from 'node:module';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -373,7 +374,11 @@ export default tseslint.config(
 
 	{
 		files: [vuePackageGlob],
-
+		languageOptions: {
+			globals: {
+				...globals.browser
+			}
+		},
 		/**
 		 * These are the rules applied by the Vue project template. We can of course
 		 * refine from there to suit our needs.

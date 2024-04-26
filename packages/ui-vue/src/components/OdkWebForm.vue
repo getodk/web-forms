@@ -29,13 +29,15 @@ const handleSubmit = () => {
 	// following is just a temporary line for personal satisfaction
 	emit('submit', (odkForm as any).value.contextNode.outerHTML); // eslint-disable-line
 }
+
+const print = () => window.print();
 </script>
 
 <template>
 	<div v-if="odkForm" class="odk-form">
 		<div class="form-wrapper">
 			<div class="odk-menu-bar flex justify-content-end flex-wrap gap-3">
-				<Button severity="secondary" rounded icon="icon-local_printshop" />
+				<Button severity="secondary" rounded icon="icon-local_printshop" @click="print" />
 				<FormLanguageMenu :form="odkForm" />
 			</div>
 
