@@ -16,19 +16,6 @@ const mountComponent = async (formPath: string) => {
 	return { xform, component };
 };
 
-// Workaround of the error thrown when language dropdown is opened
-// This is an open issue of jsdom
-// see primefaces/primevue#4512 and jsdom/jsdom#2177
-/* eslint-disable */
-const originalConsoleError = console.error;
-const jsDomCssError = 'Error: Could not parse CSS stylesheet';
-console.error = (...params) => {
-	if (!params.find((p) => p.toString().includes(jsDomCssError))) {
-		originalConsoleError(...params);
-	}
-};
-/* eslint-enable */
-
 describe('LanguageChanger', () => {
 	it('does not show the dropdown when there is no user defined lang in the form', async () => {
 		const { xform, component } = await mountComponent(
