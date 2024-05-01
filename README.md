@@ -10,15 +10,16 @@ With ODK Web Forms, you can define forms with powerful logic using the spreadshe
 - [ui-vue](/packages/ui-vue): form-filling frontend built with Vue
 - [xforms-engine](/packages/xforms-engine): implementation of the [ODK XForms specification](https://getodk.github.io/xforms-spec/)
 - [xpath](/packages/xpath): XPath evaluator with ODK XForms extensions
-- [scenario](/packages/ui-solid): form-filling frontend built with Solid, likely not as up-to-date as the Vue client
+- [scenario](/packages/scenario): engine client used to express tests on forms
+- [ui-solid](/packages/ui-solid): form-filling frontend built with Solid, likely not as up-to-date as the Vue client
 
 ## Project status
 
 ODK Web Forms is developed by the [ODK team](https://getodk.org/).
 
-The ODK Web Forms frontend is designed to complement the [ODK Collect](https://play.google.com/store/apps/details?id=org.odk.collect.android) mobile data collection app. Our short-term goal is to use it to replace [Enketo](https://github.com/enketo/enketo/) in the [ODK Central form server](https://github.com/getodk/central) for web-based form filling and editing existing submissions.
+The ODK Web Forms frontend is designed to provide a similar user experience to the [ODK Collect](https://play.google.com/store/apps/details?id=org.odk.collect.android) mobile data collection app. Our short-term goal is to use it to replace [Enketo](https://github.com/enketo/enketo/) in the [ODK Central form server](https://github.com/getodk/central) for web-based form filling and editing existing submissions.
 
-Longer-term, we hope to use the engine to replace [JavaRosa](https://github.com/getodk/javarosa), the engine part of ODK Collect, so that we can maintain a single correct and extensible form engine.
+Longer-term, we hope to use the engine to replace [JavaRosa](https://github.com/getodk/javarosa) to power ODK Collect, so that we can maintain a single correct and extensible form engine.
 
 Here are some of our high-level priorities to get to a production-ready state:
 
@@ -32,7 +33,7 @@ We welcome discussion about the project [on the ODK forum](https://forum.getodk.
 
 ### Why not evolve [Enketo](https://github.com/enketo/enketo/)?
 
-Enketo is critical infrastructure for a number of organizations and used in many different ways. As its maintainer, we found deeper changes to be challenging because they often led to regressions, many times in functionality that we don't use ourselves. We hope that the narrower scope of ODK Web Forms (in particular, no transformation step and no backend) will allow us to iterate quickly and align more closely with Collect while allowing organizations that have built infrastructure around Enketo to continue using it as they prefer.
+Enketo is critical infrastructure for a number of organizations and used in many different ways. As its maintainer, we found deeper changes to be challenging because they often led to regressions, many times in functionality that we don't use ourselves. We hope that the narrower scope of ODK Web Forms (in particular, no transformation step and no standalone service) will allow us to iterate quickly and align more closely with Collect while allowing organizations that have built infrastructure around Enketo to continue using it as they prefer.
 
 ### What will happen to [Enketo](https://github.com/enketo/enketo/)?
 
@@ -44,7 +45,7 @@ After many years of maintaining JavaRosa and a few maintaining Enketo, we have l
 
 ### Why use web technologies?
 
-There exist more and more ways to run code written with web technologies in different environments and web technologies continue to increase in popularity. We believe this choice will give us a lot of flexibility in how this library can be used.
+There exist more and more ways to run code written with web technologies in different environments and web technologies continue to increase in popularity. We believe this choice will give us a lot of flexibility in how these packages can be used.
 
 ### Why have a strong separation between the form engine and its frontend?
 
@@ -52,7 +53,7 @@ We aspire to use the engine to drive other kinds of frontends such as test runne
 
 ### Why Vue and PrimeVue?
 
-Vue powers [Central frontend](https://github.com/getodk/central-frontend/) where it has served us well. For Web Forms, we've selected to use a component library to help us build a consistent, attractive user experience in minimal time. We chose PrimeVue for its development pace, approach to extensibility, and dedication to backwards compatibility.
+Vue powers [Central frontend](https://github.com/getodk/central-frontend/) where it has served us well. For Web Forms, we've selected to use a component library to help us build a consistent, accessible, and user-friendly experience in minimal time. We chose PrimeVue for its development pace, approach to extensibility, and dedication to backwards compatibility.
 
 ### Why not use browsers' XPath parser and evaluator (e.g. [Enketo's wrapper around them](https://github.com/enketo/enketo/tree/main/packages/openrosa-xpath-evaluator))?
 
