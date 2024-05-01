@@ -1,4 +1,4 @@
-import LanguageChanager from '@/components/LanguageChanager.vue';
+import FormLanguageMenu from '@/components/FormLanguageMenu.vue';
 import { mount } from '@vue/test-utils';
 import { describe, expect, it } from 'vitest';
 import { getReactiveForm, globalMountOptions } from '../helpers';
@@ -6,7 +6,7 @@ import { getReactiveForm, globalMountOptions } from '../helpers';
 const mountComponent = async (formPath: string) => {
 	const xform = await getReactiveForm(formPath);
 
-	const component = mount(LanguageChanager, {
+	const component = mount(FormLanguageMenu, {
 		props: {
 			form: xform,
 		},
