@@ -29,16 +29,16 @@ const createSelectItemLabel = (
 const buildStaticSelectItems = (
 	selectField: SelectField,
 	items: readonly ItemDefinition[]
-): readonly SelectItem[] => {
-	return selectField.scope.runTask(() => {
+): Accessor<readonly SelectItem[]> => {
+	return createMemo(() => {
 		return items.map((item) => {
 			const { value } = item;
-			const label = createSelectItemLabel(selectField, item);
+			const label = createSelectItemLabel(selectField, item)();
 
 			return {
 				value,
 				get label() {
-					return label();
+					return label;
 				},
 			};
 		});
@@ -101,11 +101,11 @@ const createItemset = (
 		return itemNodes().map((itemNode) => {
 			const context = new ItemsetItemEvaluationContext(selectField, itemNode);
 			const value = createComputedExpression(context, itemset.value);
-			const label = createSelectItemsetItemLabel(context, itemset, value);
+			const label = createSelectItemsetItemLabel(context, itemset, value)();
 
 			return {
 				get label() {
-					return label();
+					return label;
 				},
 				get value() {
 					return value();
@@ -132,9 +132,7 @@ export const createSelectItems = (selectField: SelectField): Accessor<readonly S
 		const { items, itemset } = selectField.definition.bodyElement;
 
 		if (itemset == null) {
-			const staticItems = buildStaticSelectItems(selectField, items);
-
-			return () => staticItems;
+			return buildStaticSelectItems(selectField, items);
 		}
 
 		return createItemset(selectField, itemset);
