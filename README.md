@@ -7,6 +7,9 @@ With ODK Web Forms, you can define forms with powerful logic using the spreadshe
 
 ## Packages
 
+> [!NOTE]
+> Comprehensive usage and development instructions are coming soon! For now, you can see each packages README. Please be sure to run `yarn` commands from the project root.
+
 - [ui-vue](/packages/ui-vue): form-filling frontend built with Vue
 - [xforms-engine](/packages/xforms-engine): implementation of the [ODK XForms specification](https://getodk.github.io/xforms-spec/)
 - [xpath](/packages/xpath): XPath evaluator with ODK XForms extensions
@@ -23,7 +26,7 @@ Longer-term, we hope to use the engine to replace [JavaRosa](https://github.com/
 
 Here are some of our high-level priorities to get to a production-ready state:
 
-- Port tests from JavaRosa and Enketo and get them passing to ensure alignment with the [ODK XForms spec](https://getodk.github.io/xforms-spec/)
+- Adapt tests from JavaRosa and Enketo and get them passing to ensure alignment with the [ODK XForms spec](https://getodk.github.io/xforms-spec/)
 - Implement all types and appearances defined in [XLSForm](https://xlsform.org/en/ref-table/)
 - Define a thoughtful interface for host applications that balances ease of use and flexibility
 
@@ -62,6 +65,14 @@ We want to be able to use this code in browsers but also in backends and eventua
 ### Why not build an engine that operates directly on XLSForms?
 
 While XLSForm is a powerful form authoring format, it doesn't have clearly defined engine semantics or a formal specification. An XLSForm engine would have to refer to the underlying ODK XForms specification for much of its behavior and represent the form in a way that's appropriate for XPath querying.
+
+### When are you going to add XYZ?
+
+If there's specific functionality you're eager to see, please let us know [on the ODK forum](https://forum.getodk.org/). You can see what we're currently prioritizing on [the project board](https://github.com/orgs/getodk/projects/10/views/1) and the [ODK roadmap](https://getodk.org/roadmap).
+
+### The default theme looks very... gray. Will I be able to customize it?
+
+We will be adding color and more styling soon. We intend to expose a way to do basic theming as well as a no-styles option to let advanced users define their own styling.
 
 ## Related projects
 
