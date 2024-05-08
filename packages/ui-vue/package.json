@@ -26,9 +26,10 @@
     "yarn": "1.22.19"
   },
   "scripts": {
-    "build": "npm-run-all -nl build:*",
+    "build": "npm-run-all -nls build:*",
     "build:clean": "rimraf dist/",
-    "build:js": "vite build",
+    "build:vue": "vite build",
+    "build:web-component": "vite build --mode web-component",
     "dev": "vite",
     "test": "npm-run-all -nl test:*",
     "test:e2e": "playwright test",

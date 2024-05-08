@@ -60,3 +60,8 @@ const print = () => window.print();
 	</div>	
 </template>
 
+<style lang="scss">
+@import '../assets/css/icomoon.css';
+@import '../themes/2024-light/theme.scss';
+@import 'primeflex/primeflex.css';
+</style>
