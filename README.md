@@ -5,6 +5,10 @@ With ODK Web Forms, you can define forms with powerful logic using the spreadshe
 > [!IMPORTANT]
 > ODK Web Forms is currently pre-release. We don't yet guarantee that its interfaces are stable and it is missing many features that are available in XLSForm form definitions.
 
+
+https://github.com/getodk/web-forms/assets/447837/e0785785-c288-43dd-a907-64a4ce390e33
+
+
 ## Packages
 
 > [!NOTE]
