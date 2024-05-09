@@ -67,13 +67,6 @@ const typeScriptFileExtensions = /** @type {const} */ ([
 	'tsx',
 ]);
 
-/**
- * @param {string} pathSansExtension
- */
-const typeScriptGlob = (pathSansExtension) => {
-	return extensionsGlob(pathSansExtension, typeScriptFileExtensions);
-};
-
 const vueFileExtensions = [...typeScriptFileExtensions, 'vue'];
 
 /**
@@ -321,7 +314,7 @@ export default tseslint.config(
 			],
 			'no-only-tests/no-only-tests': 'error',
 			'@typescript-eslint/no-shadow': 'error',
-			'no-console': 'warn',
+			'no-console': 'error',
 
 			'@typescript-eslint/class-literal-property-style': 'error',
 			'@typescript-eslint/consistent-indexed-object-style': 'error',
@@ -433,19 +426,6 @@ export default tseslint.config(
 		],
 		rules: {
 			'no-restricted-imports': 'off',
-		},
-	},
-
-	{
-		files: [
-			typeScriptGlob('packages/**/e2e/*'),
-			typeScriptGlob('packages/**/test/*'),
-			typeScriptGlob('packages/**/*.{spec,test}'),
-		],
-		rules: {
-			'no-console': 'warn',
-			'@typescript-eslint/no-shadow': 'warn',
-			'@typescript-eslint/no-non-null-asserted-optional-chain': 'warn',
 		},
 	}
 );

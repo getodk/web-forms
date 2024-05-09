@@ -78,8 +78,6 @@ export abstract class TextElementDefinition<
 				return [];
 			}
 
-			console.error('Unexpected text element child', node);
-
 			throw new Error(`Unexpected <${element.nodeName}> child element`);
 		});
 
