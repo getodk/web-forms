@@ -8,7 +8,7 @@ With ODK Web Forms, you can define forms with powerful logic using the spreadshe
 ## Packages
 
 > [!NOTE]
-> Comprehensive usage and development instructions are coming soon! For now, you can see each packages README. Please be sure to run `yarn` commands from the project root.
+> Comprehensive usage and development instructions are coming soon! For now, you can see each package's README. Please be sure to run `yarn` commands from the project root.
 
 - [ui-vue](/packages/ui-vue): form-filling frontend built with Vue
 - [xforms-engine](/packages/xforms-engine): implementation of the [ODK XForms specification](https://getodk.github.io/xforms-spec/)
