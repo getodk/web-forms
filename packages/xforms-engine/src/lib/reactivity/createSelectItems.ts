@@ -1,3 +1,4 @@
+import { UpsertableMap } from '@odk-web-forms/common/lib/collections/UpsertableMap.ts';
 import type { XFormsXPathEvaluator } from '@odk-web-forms/xpath';
 import type { Accessor } from 'solid-js';
 import { createMemo } from 'solid-js';
@@ -26,21 +27,23 @@ const createSelectItemLabel = (
 	});
 };
 
-const buildStaticSelectItems = (
+const createTranslatedStaticSelectItems = (
 	selectField: SelectField,
 	items: readonly ItemDefinition[]
-): readonly SelectItem[] => {
+): Accessor<readonly SelectItem[]> => {
 	return selectField.scope.runTask(() => {
-		return items.map((item) => {
+		const labeledItems = items.map((item) => {
 			const { value } = item;
 			const label = createSelectItemLabel(selectField, item);
 
-			return {
+			return () => ({
 				value,
-				get label() {
-					return label();
-				},
-			};
+				label: label(),
+			});
+		});
+
+		return createMemo(() => {
+			return labeledItems.map((item) => item());
 		});
 	});
 };
@@ -89,27 +92,62 @@ const createSelectItemsetItemLabel = (
 	return createTextRange(context, 'label', label);
 };
 
-// TODO: this is begging for caching.
+class ItemsetItem {
+	readonly itemLabel: Accessor<TextRange<'label'>>;
+	readonly itemValue: Accessor<string>;
+
+	constructor(
+		selectField: SelectField,
+		itemset: ItemsetDefinition,
+
+		/**
+		 * Reference to the actual {@link Node}, as resolved for an individual
+		 * `<select>`/`<select1>` item in an `<itemset nodeset>` expression.
+		 *
+		 * In the future, if we move away from using XML DOM for XPath evaluation,
+		 * we may need to update this type to reflect that, where the item node's
+		 * type will be a representation of any type of "node" abstraction that may
+		 * be used to produce dynamic select items.
+		 */
+		itemNode: Node
+	) {
+		const context = new ItemsetItemEvaluationContext(selectField, itemNode);
+
+		this.itemValue = createComputedExpression(context, itemset.value);
+		this.itemLabel = createSelectItemsetItemLabel(context, itemset, this.itemValue);
+	}
+}
+
+const createItemsetItems = (
+	selectField: SelectField,
+	itemset: ItemsetDefinition
+): Accessor<readonly ItemsetItem[]> => {
+	return selectField.scope.runTask(() => {
+		const nodes = createComputedExpression(selectField, itemset.nodes);
+		const itemsCache = new UpsertableMap<Node, ItemsetItem>();
+
+		return createMemo(() => {
+			return nodes().map((node) => {
+				return itemsCache.upsert(node, () => {
+					return new ItemsetItem(selectField, itemset, node);
+				});
+			});
+		});
+	});
+};
+
+// TODO: this is begging for (more?) caching.
 const createItemset = (
 	selectField: SelectField,
 	itemset: ItemsetDefinition
 ): Accessor<readonly SelectItem[]> => {
-	const { nodes: itemNodesExpression } = itemset;
-	const itemNodes = createComputedExpression(selectField, itemNodesExpression);
+	const itemsetItems = createItemsetItems(selectField, itemset);
 
 	return createMemo(() => {
-		return itemNodes().map((itemNode) => {
-			const context = new ItemsetItemEvaluationContext(selectField, itemNode);
-			const value = createComputedExpression(context, itemset.value);
-			const label = createSelectItemsetItemLabel(context, itemset, value);
-
+		return itemsetItems().map((item) => {
 			return {
-				get label() {
-					return label();
-				},
-				get value() {
-					return value();
-				},
+				label: item.itemLabel(),
+				value: item.itemValue(),
 			};
 		});
 	});
@@ -132,9 +170,7 @@ export const createSelectItems = (selectField: SelectField): Accessor<readonly S
 		const { items, itemset } = selectField.definition.bodyElement;
 
 		if (itemset == null) {
-			const staticItems = buildStaticSelectItems(selectField, items);
-
-			return () => staticItems;
+			return createTranslatedStaticSelectItems(selectField, items);
 		}
 
 		return createItemset(selectField, itemset);
