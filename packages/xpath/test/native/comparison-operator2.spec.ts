@@ -161,12 +161,12 @@ describe('Comparison operator (2)', () => {
 	});
 
 	describe('<, <=, >, >=', () => {
-		interface InequalityTestCaseInput {
+		interface RelationalExprTestCaseInput {
 			readonly operands: readonly [lhs: string, rhs: string];
 			readonly expected: readonly [lt: boolean, lte: boolean, gt: boolean, gte: boolean];
 		}
 
-		const cases: readonly InequalityTestCaseInput[] = [
+		const cases: readonly RelationalExprTestCaseInput[] = [
 			{ operands: ['1', '2'], expected: [true, true, false, false] },
 			{ operands: ['1', '1'], expected: [false, true, false, true] },
 			{ operands: ['1', '0'], expected: [false, false, true, true] },

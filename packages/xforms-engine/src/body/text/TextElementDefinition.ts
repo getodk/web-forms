@@ -78,6 +78,9 @@ export abstract class TextElementDefinition<
 				return [];
 			}
 
+			// eslint-disable-next-line no-console
+			console.error('Unexpected text element child', node);
+
 			throw new Error(`Unexpected <${element.nodeName}> child element`);
 		});
 
