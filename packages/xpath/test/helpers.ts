@@ -196,8 +196,7 @@ export class TestContext<XForms extends boolean = false> {
 		if (Number.isNaN(expected)) {
 			expect(numberValue, message).toBeNaN();
 		} else {
-			// numberValue can be -0; jest's toEqual fails when -0 is compared with 0
-			expect(expected === numberValue, message).toEqual(true);
+			expect(numberValue, message).toBe(expected);
 		}
 	}
 
