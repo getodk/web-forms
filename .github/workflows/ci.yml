@@ -45,7 +45,7 @@ jobs:
           path: |
             node_modules
             **/node_modules
-          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', 'examples/*/yarn.lock', 'packages/*/yarn.lock') }}
+          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
 
       - uses: 'actions/cache@v3'
         id: cache-build
@@ -98,7 +98,7 @@ jobs:
           path: |
             node_modules
             **/node_modules
-          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', 'examples/*/yarn.lock', 'packages/*/yarn.lock') }}
+          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
           fail-on-cache-miss: true
 
       - uses: 'actions/cache@v3'
@@ -152,7 +152,7 @@ jobs:
           path: |
             node_modules
             **/node_modules
-          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', 'examples/*/yarn.lock', 'packages/*/yarn.lock') }}
+          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
           fail-on-cache-miss: true
 
       - uses: 'actions/cache@v3'
@@ -216,7 +216,7 @@ jobs:
           path: |
             node_modules
             **/node_modules
-          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', 'examples/*/yarn.lock', 'packages/*/yarn.lock') }}
+          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
           fail-on-cache-miss: true
 
       - uses: 'actions/cache@v3'
@@ -280,7 +280,7 @@ jobs:
           path: |
             node_modules
             **/node_modules
-          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', 'examples/*/yarn.lock', 'packages/*/yarn.lock') }}
+          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
           fail-on-cache-miss: true
 
       - uses: 'actions/cache@v3'
@@ -344,7 +344,7 @@ jobs:
           path: |
             node_modules
             **/node_modules
-          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', 'examples/*/yarn.lock', 'packages/*/yarn.lock') }}
+          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
           fail-on-cache-miss: true
 
       - uses: 'actions/cache@v3'
@@ -403,7 +403,7 @@ jobs:
           path: |
             node_modules
             **/node_modules
-          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', 'examples/*/yarn.lock', 'packages/*/yarn.lock') }}
+          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
           fail-on-cache-miss: true
 
       - uses: 'actions/cache@v3'
@@ -457,7 +457,7 @@ jobs:
           path: |
             node_modules
             **/node_modules
-          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', 'examples/*/yarn.lock', 'packages/*/yarn.lock') }}
+          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
           fail-on-cache-miss: true
 
       - uses: 'actions/cache@v3'
@@ -521,7 +521,7 @@ jobs:
           path: |
             node_modules
             **/node_modules
-          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', 'examples/*/yarn.lock', 'packages/*/yarn.lock') }}
+          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
           fail-on-cache-miss: true
 
       - uses: 'actions/cache@v3'
