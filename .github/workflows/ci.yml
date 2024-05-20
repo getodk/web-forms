@@ -23,57 +23,6 @@ env:
   TZ: 'America/Phoenix'
 
 jobs:
-  changes:
-    name: 'Determine package changes'
-    runs-on: 'ubuntu-latest'
-
-    outputs:
-      root: ${{ steps.changes.outputs.root }}
-      odk-common: ${{ steps.changes.outputs.odk-common }}
-      tree-sitter-xpath: ${{ steps.changes.outputs.tree-sitter-xpath }}
-      xforms-engine: ${{ steps.changes.outputs.xforms-engine }}
-      xpath: ${{ steps.changes.outputs.xpath }}
-      scenario: ${{ steps.changes.outputs.scenario }}
-      ui-solid: ${{ steps.changes.outputs.ui-solid }}
-      ui-vue: ${{ steps.changes.outputs.ui-vue }}
-
-    steps:
-      - uses: 'actions/checkout@v3'
-      - uses: dorny/paths-filter@v2
-        id: changes
-        with:
-          filters: |
-            root:
-              - '*'
-              - '.github/workflows/*'
-
-            odk-common:
-              - 'packages/common/**'
-
-            tree-sitter-xpath:
-              - 'packages/tree-sitter-xpath/grammar.ts'
-              - 'packages/tree-sitter-xpath/scripts/**'
-              - 'packages/tree-sitter-xpath/test/**'
-
-            xforms-engine:
-              - 'packages/xforms-engine/**'
-
-            scenario:
-              - 'packages/scenario/**'
-
-            xpath:
-              - 'packages/xpath/**'
-
-            ui-solid:
-              - 'packages/ui-solid/**'
-
-            ui-vue:
-              - 'packages/ui-vue/**'
-
-          # So the `paths-filter` action doesn't attempt to use the GitHub API
-          # when run on pull requests
-          token: ''
-
   install-and-build:
     name: 'Install dependencies and build packages'
     runs-on: 'ubuntu-latest'
@@ -128,7 +77,7 @@ jobs:
 
   lint:
     name: 'Lint (global)'
-    needs: ['install-and-build', 'changes']
+    needs: ['install-and-build']
     runs-on: 'ubuntu-latest'
 
     strategy:
@@ -171,8 +120,7 @@ jobs:
 
   odk-common:
     name: '@odk-web-forms/common'
-    needs: ['install-and-build', 'changes']
-    if: needs.changes.outputs.root == 'true' || needs.changes.outputs.odk-common == 'true'
+    needs: ['install-and-build']
     runs-on: 'ubuntu-latest'
 
     strategy:
@@ -236,8 +184,7 @@ jobs:
 
   xforms-engine:
     name: '@odk-web-forms/xforms-engine'
-    needs: ['install-and-build', 'changes']
-    if: needs.changes.outputs.root == 'true' || needs.changes.outputs.xforms-engine == 'true'
+    needs: ['install-and-build']
     runs-on: 'ubuntu-latest'
 
     strategy:
@@ -301,8 +248,7 @@ jobs:
 
   scenario:
     name: 'scenario'
-    needs: ['install-and-build', 'changes']
-    if: needs.changes.outputs.root == 'true' || needs.changes.outputs.scenario == 'true'
+    needs: ['install-and-build']
     runs-on: 'ubuntu-latest'
 
     strategy:
@@ -366,8 +312,7 @@ jobs:
 
   xpath:
     name: '@odk-web-forms/xpath'
-    needs: ['install-and-build', 'changes']
-    if: needs.changes.outputs.root == 'true' || needs.changes.outputs.tree-sitter-xpath == 'true' || needs.changes.outputs.xpath == 'true'
+    needs: ['install-and-build']
     runs-on: 'ubuntu-latest'
 
     strategy:
@@ -437,8 +382,7 @@ jobs:
 
   tree-sitter-xpath:
     name: '@odk-web-forms/tree-sitter-xpath'
-    needs: ['install-and-build', 'changes']
-    if: needs.changes.outputs.root == 'true' || needs.changes.outputs.tree-sitter-xpath == 'true'
+    needs: ['install-and-build']
     runs-on: 'ubuntu-latest'
 
     strategy:
@@ -481,8 +425,7 @@ jobs:
 
   ui-solid:
     name: 'ui-solid'
-    needs: ['install-and-build', 'changes']
-    if: needs.changes.outputs.root == 'true' || needs.changes.outputs.ui-solid == 'true'
+    needs: ['install-and-build']
     runs-on: 'ubuntu-latest'
 
     strategy:
@@ -546,8 +489,7 @@ jobs:
 
   ui-vue:
     name: 'ui-vue'
-    needs: ['install-and-build', 'changes']
-    if: needs.changes.outputs.root == 'true' || needs.changes.outputs.ui-vue == 'true'
+    needs: ['install-and-build']
     runs-on: 'ubuntu-latest'
 
     strategy:
