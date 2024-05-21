@@ -59,14 +59,7 @@ export default defineConfig(({ mode }) => {
 		};
 	}
 	return {
-		plugins: [
-			vue({
-				// Treat OdkWebForm.vue as Web Component / Custom Element
-				// This adds the styles in the shadow DOM
-				customElement: mode === 'web-component' ? /OdkWebForm\.vue/ : /\.ce\.vue$/,
-			}),
-			vueJsx(),
-		],
+		plugins: [vue(), vueJsx()],
 		resolve: {
 			alias: {
 				'@': fileURLToPath(new URL('./src', import.meta.url)),
