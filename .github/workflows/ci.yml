@@ -487,8 +487,8 @@ jobs:
       - if: ${{ matrix.target == 'Web' }}
         run: 'yarn workspace @getodk/ui-solid test-browser:${{ matrix.browser }}'
 
-  ui-vue:
-    name: '@getodk/ui-vue'
+  web-forms:
+    name: '@getodk/web-forms'
     needs: ['install-and-build']
     runs-on: 'ubuntu-latest'
 
@@ -540,13 +540,13 @@ jobs:
           fail-on-cache-miss: true
 
       - if: ${{ matrix.target == 'Node' }}
-        run: 'yarn workspace @getodk/ui-vue test:types'
+        run: 'yarn workspace @getodk/web-forms test:types'
 
       - if: ${{ matrix.target == 'Node' }}
-        run: 'yarn workspace @getodk/ui-vue test-node:jsdom'
+        run: 'yarn workspace @getodk/web-forms test-node:jsdom'
 
       - if: ${{ matrix.target == 'Web' }}
         run: 'yarn playwright install ${{ matrix.browser }} --with-deps'
 
       - if: ${{ matrix.target == 'Web' }}
-        run: 'yarn workspace @getodk/ui-vue test-browser:${{ matrix.browser }}'
+        run: 'yarn workspace @getodk/web-forms test-browser:${{ matrix.browser }}'

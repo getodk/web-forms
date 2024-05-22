@@ -1,4 +1,4 @@
-<!-- 
+<!--
 
 Thank you for taking the time to report an ODK Web Forms issue!
 
@@ -10,7 +10,7 @@ Feature suggestions should be described [in the forum Features category](https:/
 
 -->
 
-#### Web Forms version and package (e.g. are you using `ui-vue` or only the engine?)
+#### Web Forms version and package (e.g. are you using `web-forms` or only the engine?)
 
 #### Browser and version
 
@@ -22,6 +22,6 @@ Feature suggestions should be described [in the forum Features category](https:/
 
 #### Expected behavior
 
-#### Other information 
+#### Other information
 
 Things you tried, stack traces, related issues, suggestions on how to fix it...

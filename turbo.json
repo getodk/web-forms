@@ -16,7 +16,7 @@
       "dependsOn": ["@getodk/xpath#build"],
       "outputs": ["dist/**"]
     },
-    "@getodk/ui-vue#build": {
+    "@getodk/web-forms#build": {
       "dependsOn": ["@getodk/xforms-engine#build"],
       "outputs": ["dist/**"]
     },
