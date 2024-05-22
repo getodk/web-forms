@@ -45,7 +45,7 @@ jobs:
           path: |
             node_modules
             **/node_modules
-          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', 'examples/*/yarn.lock', 'packages/*/yarn.lock') }}
+          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
 
       - uses: 'actions/cache@v3'
         id: cache-build
@@ -65,7 +65,7 @@ jobs:
             packages/tree-sitter-xpath/types
           key: build-${{ matrix.node-version }}-${{ github.sha }}
 
-      # `@odk-web-forms/xpath` tests (currently) expect this time zone
+      # `@getodk/xpath` tests (currently) expect this time zone
       - uses: szenius/set-timezone@v1.2
         with:
           timezoneLinux: ${{ env.TZ }}
@@ -98,7 +98,7 @@ jobs:
           path: |
             node_modules
             **/node_modules
-          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', 'examples/*/yarn.lock', 'packages/*/yarn.lock') }}
+          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
           fail-on-cache-miss: true
 
       - uses: 'actions/cache@v3'
@@ -119,7 +119,7 @@ jobs:
       - run: 'yarn lint'
 
   odk-common:
-    name: '@odk-web-forms/common'
+    name: '@getodk/common'
     needs: ['install-and-build']
     runs-on: 'ubuntu-latest'
 
@@ -152,7 +152,7 @@ jobs:
           path: |
             node_modules
             **/node_modules
-          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', 'examples/*/yarn.lock', 'packages/*/yarn.lock') }}
+          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
           fail-on-cache-miss: true
 
       - uses: 'actions/cache@v3'
@@ -171,19 +171,19 @@ jobs:
           fail-on-cache-miss: true
 
       - if: ${{ matrix.target == 'Node' }}
-        run: 'yarn workspace @odk-web-forms/common test:types'
+        run: 'yarn workspace @getodk/common test:types'
 
       - if: ${{ matrix.target == 'Node' }}
-        run: 'yarn workspace @odk-web-forms/common test-node:jsdom'
+        run: 'yarn workspace @getodk/common test-node:jsdom'
 
       - if: ${{ matrix.target == 'Web' }}
         run: 'yarn playwright install ${{ matrix.browser }} --with-deps'
 
       - if: ${{ matrix.target == 'Web' }}
-        run: 'yarn workspace @odk-web-forms/common test-browser:${{ matrix.browser }}'
+        run: 'yarn workspace @getodk/common test-browser:${{ matrix.browser }}'
 
   xforms-engine:
-    name: '@odk-web-forms/xforms-engine'
+    name: '@getodk/xforms-engine'
     needs: ['install-and-build']
     runs-on: 'ubuntu-latest'
 
@@ -216,7 +216,7 @@ jobs:
           path: |
             node_modules
             **/node_modules
-          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', 'examples/*/yarn.lock', 'packages/*/yarn.lock') }}
+          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
           fail-on-cache-miss: true
 
       - uses: 'actions/cache@v3'
@@ -235,19 +235,19 @@ jobs:
           fail-on-cache-miss: true
 
       - if: ${{ matrix.target == 'Node' }}
-        run: 'yarn workspace @odk-web-forms/xforms-engine test:types'
+        run: 'yarn workspace @getodk/xforms-engine test:types'
 
       - if: ${{ matrix.target == 'Node' }}
-        run: 'yarn workspace @odk-web-forms/xforms-engine test-node:jsdom'
+        run: 'yarn workspace @getodk/xforms-engine test-node:jsdom'
 
       - if: ${{ matrix.target == 'Web' }}
         run: 'yarn playwright install ${{ matrix.browser }} --with-deps'
 
       - if: ${{ matrix.target == 'Web' }}
-        run: 'yarn workspace @odk-web-forms/xforms-engine test-browser:${{ matrix.browser }}'
+        run: 'yarn workspace @getodk/xforms-engine test-browser:${{ matrix.browser }}'
 
   scenario:
-    name: 'scenario'
+    name: '@getodk/scenario'
     needs: ['install-and-build']
     runs-on: 'ubuntu-latest'
 
@@ -280,7 +280,7 @@ jobs:
           path: |
             node_modules
             **/node_modules
-          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', 'examples/*/yarn.lock', 'packages/*/yarn.lock') }}
+          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
           fail-on-cache-miss: true
 
       - uses: 'actions/cache@v3'
@@ -299,19 +299,19 @@ jobs:
           fail-on-cache-miss: true
 
       - if: ${{ matrix.target == 'Node' }}
-        run: 'yarn workspace @odk-web-forms/scenario test:types'
+        run: 'yarn workspace @getodk/scenario test:types'
 
       - if: ${{ matrix.target == 'Node' }}
-        run: 'yarn workspace @odk-web-forms/scenario test-node:jsdom'
+        run: 'yarn workspace @getodk/scenario test-node:jsdom'
 
       - if: ${{ matrix.target == 'Web' }}
         run: 'yarn playwright install ${{ matrix.browser }} --with-deps'
 
       - if: ${{ matrix.target == 'Web' }}
-        run: 'yarn workspace @odk-web-forms/scenario test-browser:${{ matrix.browser }}'
+        run: 'yarn workspace @getodk/scenario test-browser:${{ matrix.browser }}'
 
   xpath:
-    name: '@odk-web-forms/xpath'
+    name: '@getodk/xpath'
     needs: ['install-and-build']
     runs-on: 'ubuntu-latest'
 
@@ -344,7 +344,7 @@ jobs:
           path: |
             node_modules
             **/node_modules
-          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', 'examples/*/yarn.lock', 'packages/*/yarn.lock') }}
+          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
           fail-on-cache-miss: true
 
       - uses: 'actions/cache@v3'
@@ -369,19 +369,19 @@ jobs:
           timezoneWindows: ${{ env.TZ }}
 
       - if: ${{ matrix.target == 'Node' }}
-        run: 'yarn workspace @odk-web-forms/xpath test:types'
+        run: 'yarn workspace @getodk/xpath test:types'
 
       - if: ${{ matrix.target == 'Node' }}
-        run: 'yarn workspace @odk-web-forms/xpath test-node:jsdom'
+        run: 'yarn workspace @getodk/xpath test-node:jsdom'
 
       - if: ${{ matrix.target == 'Web' }}
         run: 'yarn playwright install ${{ matrix.browser }} --with-deps'
 
       - if: ${{ matrix.target == 'Web' }}
-        run: 'yarn workspace @odk-web-forms/xpath test-browser:${{ matrix.browser }}'
+        run: 'yarn workspace @getodk/xpath test-browser:${{ matrix.browser }}'
 
   tree-sitter-xpath:
-    name: '@odk-web-forms/tree-sitter-xpath'
+    name: '@getodk/tree-sitter-xpath'
     needs: ['install-and-build']
     runs-on: 'ubuntu-latest'
 
@@ -403,7 +403,7 @@ jobs:
           path: |
             node_modules
             **/node_modules
-          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', 'examples/*/yarn.lock', 'packages/*/yarn.lock') }}
+          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
           fail-on-cache-miss: true
 
       - uses: 'actions/cache@v3'
@@ -421,10 +421,10 @@ jobs:
           key: build-${{ matrix.node-version }}-${{ github.sha }}
           fail-on-cache-miss: true
 
-      - run: 'yarn workspace @odk-web-forms/tree-sitter-xpath test'
+      - run: 'yarn workspace @getodk/tree-sitter-xpath test'
 
   ui-solid:
-    name: 'ui-solid'
+    name: '@getodk/ui-solid'
     needs: ['install-and-build']
     runs-on: 'ubuntu-latest'
 
@@ -457,7 +457,7 @@ jobs:
           path: |
             node_modules
             **/node_modules
-          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', 'examples/*/yarn.lock', 'packages/*/yarn.lock') }}
+          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
           fail-on-cache-miss: true
 
       - uses: 'actions/cache@v3'
@@ -476,19 +476,19 @@ jobs:
           fail-on-cache-miss: true
 
       - if: ${{ matrix.target == 'Node' }}
-        run: 'yarn workspace @odk-web-forms/ui-solid test:types'
+        run: 'yarn workspace @getodk/ui-solid test:types'
 
       - if: ${{ matrix.target == 'Node' }}
-        run: 'yarn workspace @odk-web-forms/ui-solid test-node:jsdom'
+        run: 'yarn workspace @getodk/ui-solid test-node:jsdom'
 
       - if: ${{ matrix.target == 'Web' }}
         run: 'yarn playwright install ${{ matrix.browser }} --with-deps'
 
       - if: ${{ matrix.target == 'Web' }}
-        run: 'yarn workspace @odk-web-forms/ui-solid test-browser:${{ matrix.browser }}'
+        run: 'yarn workspace @getodk/ui-solid test-browser:${{ matrix.browser }}'
 
-  ui-vue:
-    name: 'ui-vue'
+  web-forms:
+    name: '@getodk/web-forms'
     needs: ['install-and-build']
     runs-on: 'ubuntu-latest'
 
@@ -521,7 +521,7 @@ jobs:
           path: |
             node_modules
             **/node_modules
-          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', 'examples/*/yarn.lock', 'packages/*/yarn.lock') }}
+          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
           fail-on-cache-miss: true
 
       - uses: 'actions/cache@v3'
@@ -540,13 +540,13 @@ jobs:
           fail-on-cache-miss: true
 
       - if: ${{ matrix.target == 'Node' }}
-        run: 'yarn workspace @odk-web-forms/ui-vue test:types'
+        run: 'yarn workspace @getodk/web-forms test:types'
 
       - if: ${{ matrix.target == 'Node' }}
-        run: 'yarn workspace @odk-web-forms/ui-vue test-node:jsdom'
+        run: 'yarn workspace @getodk/web-forms test-node:jsdom'
 
       - if: ${{ matrix.target == 'Web' }}
         run: 'yarn playwright install ${{ matrix.browser }} --with-deps'
 
       - if: ${{ matrix.target == 'Web' }}
-        run: 'yarn workspace @odk-web-forms/ui-vue test-browser:${{ matrix.browser }}'
+        run: 'yarn workspace @getodk/web-forms test-browser:${{ matrix.browser }}'

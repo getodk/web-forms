@@ -24,7 +24,7 @@ packages/**/dist
 # Generated documentation
 packages/*/api-docs
 
-## Specific to tree-sitter and/or @odk-web-forms/tree-sitter-xpath
+## Specific to tree-sitter and/or @getodk/tree-sitter-xpath
 packages/tree-sitter-xpath/bindings/
 packages/tree-sitter-xpath/build/
 packages/tree-sitter-xpath/src/tree_sitter

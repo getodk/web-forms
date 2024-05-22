@@ -76,7 +76,7 @@ const vueGlob = (pathSansExtensions) => {
 	return extensionsGlob(pathSansExtensions, vueFileExtensions);
 };
 
-const vuePackageGlob = vueGlob('packages/ui-vue/**/*');
+const vuePackageGlob = vueGlob('packages/web-forms/**/*');
 
 /**
  * @typedef {import('eslint').Linter.FlatConfig} FlatConfig
@@ -95,6 +95,7 @@ export default tseslint.config(
 			'packages/tree-sitter-xpath/grammar.js',
 			'packages/tree-sitter-xpath/bindings/**/*',
 			'packages/tree-sitter-xpath/types/**/*',
+			'packages/xforms-engine/api-docs/**/*',
 			'**/vendor',
 		],
 	},
@@ -124,7 +125,7 @@ export default tseslint.config(
 
 			/**
 			 * For future reference, there's a **lot** going on here. As briefly as
-			 * reasonably possible, all of this happens for the `ui-vue` package:
+			 * reasonably possible, all of this happens for the `web-forms` package:
 			 *
 			 * 1. ESLint uses the Vue parser (`vue-eslint-parser`)
 			 * 2. The Vue parser, in turn, uses the TypeScript parser
@@ -267,10 +268,10 @@ export default tseslint.config(
 					// Vue's project template does a great job of illustrating the use,
 					// and I suspect we'd benefit from applying the pattern throughout the
 					// entire monorepo.
-					'./packages/ui-vue/tsconfig.json',
-					'./packages/ui-vue/tsconfig.app.json',
-					'./packages/ui-vue/tsconfig.node.json',
-					'./packages/ui-vue/tsconfig.vitest.json',
+					'./packages/web-forms/tsconfig.json',
+					'./packages/web-forms/tsconfig.app.json',
+					'./packages/web-forms/tsconfig.node.json',
+					'./packages/web-forms/tsconfig.vitest.json',
 
 					'./scripts/tsconfig.json',
 				],
