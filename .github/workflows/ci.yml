@@ -29,7 +29,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ['18.19.1', '20.11.1']
+        node-version: ['18.20.3', '20.13.1', '22.2.0']
 
     steps:
       - uses: 'actions/checkout@v4'
@@ -82,7 +82,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ['20.11.1']
+        node-version: ['22.2.0']
 
     steps:
       - uses: 'actions/checkout@v4'
@@ -126,16 +126,16 @@ jobs:
     strategy:
       matrix:
         target: ['Node']
-        node-version: ['18.19.1', '20.11.1']
+        node-version: ['18.20.3', '20.13.1', '22.2.0']
         include:
           - target: 'Web'
-            node-version: '20.11.1'
+            node-version: '22.2.0'
             browser: chromium
           - target: 'Web'
-            node-version: '20.11.1'
+            node-version: '22.2.0'
             browser: firefox
           - target: 'Web'
-            node-version: '20.11.1'
+            node-version: '22.2.0'
             browser: webkit
 
     steps:
@@ -190,16 +190,16 @@ jobs:
     strategy:
       matrix:
         target: ['Node']
-        node-version: ['18.19.1', '20.11.1']
+        node-version: ['18.20.3', '20.13.1', '22.2.0']
         include:
           - target: 'Web'
-            node-version: '20.11.1'
+            node-version: '22.2.0'
             browser: chromium
           - target: 'Web'
-            node-version: '20.11.1'
+            node-version: '22.2.0'
             browser: firefox
           - target: 'Web'
-            node-version: '20.11.1'
+            node-version: '22.2.0'
             browser: webkit
 
     steps:
@@ -254,16 +254,16 @@ jobs:
     strategy:
       matrix:
         target: ['Node']
-        node-version: ['18.19.1', '20.11.1']
+        node-version: ['18.20.3', '20.13.1', '22.2.0']
         include:
           - target: 'Web'
-            node-version: '20.11.1'
+            node-version: '22.2.0'
             browser: chromium
           - target: 'Web'
-            node-version: '20.11.1'
+            node-version: '22.2.0'
             browser: firefox
           - target: 'Web'
-            node-version: '20.11.1'
+            node-version: '22.2.0'
             browser: webkit
 
     steps:
@@ -318,16 +318,16 @@ jobs:
     strategy:
       matrix:
         target: ['Node']
-        node-version: ['18.19.1', '20.11.1']
+        node-version: ['18.20.3', '20.13.1', '22.2.0']
         include:
           - target: 'Web'
-            node-version: '20.11.1'
+            node-version: '22.2.0'
             browser: chromium
           - target: 'Web'
-            node-version: '20.11.1'
+            node-version: '22.2.0'
             browser: firefox
           - target: 'Web'
-            node-version: '20.11.1'
+            node-version: '22.2.0'
             browser: webkit
 
     steps:
@@ -387,7 +387,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ['18.19.1', '20.11.1']
+        node-version: ['18.20.3', '20.13.1', '22.2.0']
 
     steps:
       - uses: 'actions/checkout@v4'
@@ -431,16 +431,16 @@ jobs:
     strategy:
       matrix:
         target: ['Node']
-        node-version: ['18.19.1', '20.11.1']
+        node-version: ['18.20.3', '20.13.1', '22.2.0']
         include:
           - target: 'Web'
-            node-version: '20.11.1'
+            node-version: '22.2.0'
             browser: chromium
           - target: 'Web'
-            node-version: '20.11.1'
+            node-version: '22.2.0'
             browser: firefox
           - target: 'Web'
-            node-version: '20.11.1'
+            node-version: '22.2.0'
             browser: webkit
 
     steps:
@@ -495,16 +495,16 @@ jobs:
     strategy:
       matrix:
         target: ['Node']
-        node-version: ['18.19.1', '20.11.1']
+        node-version: ['18.20.3', '20.13.1', '22.2.0']
         include:
           - target: 'Web'
-            node-version: '20.11.1'
+            node-version: '22.2.0'
             browser: chromium
           - target: 'Web'
-            node-version: '20.11.1'
+            node-version: '22.2.0'
             browser: firefox
           - target: 'Web'
-            node-version: '20.11.1'
+            node-version: '22.2.0'
             browser: webkit
 
     steps:
