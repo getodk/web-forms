@@ -29,7 +29,6 @@ import vue3Essential from 'eslint-plugin-vue/lib/configs/vue3-essential.js';
 import vue3Recommended from 'eslint-plugin-vue/lib/configs/vue3-recommended.js';
 import vue3StronglyRecommended from 'eslint-plugin-vue/lib/configs/vue3-strongly-recommended.js';
 import vueProcessor from 'eslint-plugin-vue/lib/processor.js';
-import globals from 'globals';
 import { builtinModules } from 'node:module';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -278,23 +277,6 @@ export default tseslint.config(
 			},
 
 			sourceType: 'module',
-
-			/**
-			 * TODO: investigate using
-			 * {@link https://www.npmjs.com/package/globals | globals} for this, and
-			 * perhaps more broadly (in particular where the absence/presence of
-			 * "@types/node" and similar gets fussy).
-			 */
-			globals: {
-				/**
-				 * Apparently this means read-only?
-				 *
-				 * TODO: ^ it is unclear if this is still true! It's also possible to
-				 * assign 'readonly', which similarly seems to do nothing, so perhaps
-				 * an indication of some other config/tool combination problem.
-				 */
-				globalThis: false,
-			},
 		},
 
 		linterOptions: {
@@ -308,6 +290,12 @@ export default tseslint.config(
 		// Base rules, applied across project and throughout all packages (unless
 		// overridden in subsequent configs)
 		rules: {
+			// This override is recommended by typescript-eslint, because TypeScript
+			// does a much better job of it, and gives us better control over which
+			// globals are present in a given context. This also obviates any need
+			// for specifying other globals in this config.
+			'no-undef': 'off',
+
 			'@typescript-eslint/array-type': ['error', { default: 'array-simple' }],
 			'@typescript-eslint/no-unused-vars': [
 				'error',
@@ -368,11 +356,6 @@ export default tseslint.config(
 
 	{
 		files: [vuePackageGlob],
-		languageOptions: {
-			globals: {
-				...globals.browser,
-			},
-		},
 		/**
 		 * These are the rules applied by the Vue project template. We can of course
 		 * refine from there to suit our needs.
