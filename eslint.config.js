@@ -398,6 +398,7 @@ export default tseslint.config(
 			'packages/*/vitest.config.ts',
 			'packages/xforms-engine/vite.*.config.ts',
 			'packages/*/tools/**/*',
+			'packages/tree-sitter-xpath/scripts/build/*.mjs',
 
 			// TODO: in theory, all e2e tests (if they continue to be run with
 			// Playwright) are technically run in a "Node" environment, although

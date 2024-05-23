@@ -1,0 +1,11 @@
+* text eol=lf
+
+packages/tree-sitter-xpath/src/*.json linguist-generated
+packages/tree-sitter-xpath/src/parser.c linguist-generated
+packages/tree-sitter-xpath/src/tree_sitter/* linguist-generated
+
+packages/tree-sitter-xpath/bindings/** linguist-generated
+packages/tree-sitter-xpath/binding.gyp linguist-generated
+packages/tree-sitter-xpath/setup.py linguist-generated
+packages/tree-sitter-xpath/Makefile linguist-generated
+packages/tree-sitter-xpath/Package.swift linguist-generated
