@@ -48,10 +48,10 @@
   },
   "dependencies": {
     "@getodk/xforms-engine": "0.1.0",
-    "primevue": "^3.49.1",
+    "primevue": "^3.52.0",
     "primeflex": "^3.3.1",
-    "vue": "^3.4.19",
-    "vue-router": "^4.3.0"
+    "vue": "^3.4.27",
+    "vue-router": "^4.3.2"
   },
   "devDependencies": {
     "@faker-js/faker": "8.4.1",
@@ -59,7 +59,7 @@
     "@types/ramda": "0.29.11",
     "@vitejs/plugin-vue": "^5.0.4",
     "@vitejs/plugin-vue-jsx": "^3.1.0",
-    "@vue/test-utils": "^2.4.4",
+    "@vue/test-utils": "^2.4.6",
     "jsdom": "^24.0.0",
     "primevue-sass-theme": "https://github.com/primefaces/primevue-sass-theme.git#3.49.1",
     "ramda": "0.29.1",
