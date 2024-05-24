@@ -16,6 +16,9 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./style.css": {
+      "import": "./dist/style.css"
     }
   },
   "files": [
@@ -49,9 +52,7 @@
   "dependencies": {
     "@getodk/xforms-engine": "0.1.0",
     "primevue": "^3.49.1",
-    "primeflex": "^3.3.1",
-    "vue": "^3.4.19",
-    "vue-router": "^4.3.0"
+    "primeflex": "^3.3.1"
   },
   "devDependencies": {
     "@faker-js/faker": "8.4.1",
@@ -65,6 +66,10 @@
     "ramda": "0.29.1",
     "sass": "^1.71.1",
     "vite": "^5.1.5",
-    "vitest": "^1.3.1"
+    "vitest": "^1.3.1",
+    "vue": "^3.4.19"
+  },
+  "peerDependencies": {
+    "vue": "^3"
   }
 }
