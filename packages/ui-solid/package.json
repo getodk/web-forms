@@ -54,8 +54,8 @@
     "solid-js": "^1.8.17"
   },
   "devDependencies": {
-    "@babel/core": "^7.23.2",
-    "@playwright/test": "^1.42.1",
+    "@babel/core": "^7.24.6",
+    "@playwright/test": "^1.44.1",
     "@suid/vite-plugin": "^0.2.0",
     "@vitest/browser": "^1.6.0",
     "@vitest/ui": "^1.6.0",
