@@ -54,7 +54,7 @@
     "test:types": "tsc --project ./tsconfig.json --emitDeclarationOnly false --noEmit"
   },
   "dependencies": {
-    "solid-js": "^1.8.3"
+    "solid-js": "^1.8.17"
   },
   "devDependencies": {
     "@babel/core": "^7.23.2",
@@ -73,7 +73,7 @@
     "vitest": "^1.6.0"
   },
   "peerDependencies": {
-    "solid-js": "^1.8.3"
+    "solid-js": "^1.8.17"
   },
   "peerDependenciesMeta": {
     "solid-js": {

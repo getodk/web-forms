@@ -48,10 +48,10 @@
     "@fontsource/roboto": "^5.0.8",
     "@getodk/common": "0.1.0",
     "@getodk/xforms-engine": "0.1.0",
-    "@solidjs/router": "^0.8.3",
-    "@suid/icons-material": "^0.6.11",
-    "@suid/material": "^0.15.1",
-    "solid-js": "^1.8.3"
+    "@solidjs/router": "^0.13.3",
+    "@suid/icons-material": "^0.7.0",
+    "@suid/material": "^0.16.0",
+    "solid-js": "^1.8.17"
   },
   "devDependencies": {
     "@babel/core": "^7.23.2",

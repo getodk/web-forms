@@ -45,7 +45,7 @@
     "@getodk/xforms-engine": "0.1.0",
     "@vitest/browser": "^1.6.0",
     "jsdom": "^24.0.0",
-    "solid-js": "^1.8.3",
+    "solid-js": "^1.8.17",
     "vite": "^5.2.11",
     "vitest": "^1.6.0"
   }
