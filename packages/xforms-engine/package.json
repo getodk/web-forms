@@ -57,15 +57,15 @@
     "solid-js": "^1.8.17"
   },
   "devDependencies": {
-    "@babel/core": "^7.23.2",
+    "@babel/core": "^7.24.6",
     "@getodk/tree-sitter-xpath": "0.1.0",
     "@getodk/xpath": "0.1.0",
-    "@playwright/test": "^1.42.1",
+    "@playwright/test": "^1.44.1",
     "@vitest/browser": "^1.6.0",
     "babel-plugin-transform-jsbi-to-bigint": "^1.4.0",
     "http-server": "^14.1.1",
     "jsdom": "^24.0.0",
-    "typedoc": "^0.25.12",
+    "typedoc": "^0.25.13",
     "unplugin-fonts": "^1.1.1",
     "vite": "^5.2.11",
     "vite-plugin-dts": "^3.9.1",
