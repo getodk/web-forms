@@ -1,4 +1,4 @@
-import type { RepeatSequenceDefinition } from '../model/RepeatSequenceDefinition.ts';
+import type { RepeatRangeDefinition } from '../model/RepeatRangeDefinition.ts';
 import type { BaseNode, BaseNodeState } from './BaseNode.ts';
 import type { RepeatInstanceNode } from './RepeatInstanceNode.ts';
 import type { RootNode } from './RootNode.ts';
@@ -89,7 +89,7 @@ export interface RepeatRangeNodeState extends BaseNodeState {
  */
 export interface RepeatRangeNode extends BaseNode {
 	readonly nodeType: 'repeat-range';
-	readonly definition: RepeatSequenceDefinition;
+	readonly definition: RepeatRangeDefinition;
 	readonly root: RootNode;
 	readonly parent: GeneralParentNode;
 	readonly currentState: RepeatRangeNodeState;

@@ -1,7 +1,7 @@
 import { RepeatElementDefinition } from '../body/RepeatElementDefinition.ts';
 import { DescendentNodeDefinition } from './DescendentNodeDefinition.ts';
 import type { ChildNodeDefinition, NodeDefinition } from './NodeDefinition.ts';
-import type { RepeatSequenceDefinition } from './RepeatSequenceDefinition.ts';
+import type { RepeatRangeDefinition } from './RepeatRangeDefinition.ts';
 
 export class RepeatInstanceDefinition
 	extends DescendentNodeDefinition<'repeat-instance', RepeatElementDefinition>
@@ -15,19 +15,19 @@ export class RepeatInstanceDefinition
 	readonly defaultValue = null;
 
 	constructor(
-		protected readonly sequence: RepeatSequenceDefinition,
+		range: RepeatRangeDefinition,
 		readonly node: Element
 	) {
-		const { bind, bodyElement, parent, root } = sequence;
+		const { bind, bodyElement, parent, root } = range;
 
 		super(parent, bind, bodyElement);
 
-		this.nodeName = sequence.nodeName;
+		this.nodeName = range.nodeName;
 		this.children = root.buildSubtree(this);
 	}
 
 	toJSON() {
-		const { bind, bodyElement, parent, root, sequence, ...rest } = this;
+		const { bind, bodyElement, parent, root, ...rest } = this;
 
 		return rest;
 	}

@@ -10,7 +10,7 @@ import type { EngineState } from '../lib/reactivity/node-state/createEngineState
 import type { SharedNodeState } from '../lib/reactivity/node-state/createSharedNodeState.ts';
 import { createSharedNodeState } from '../lib/reactivity/node-state/createSharedNodeState.ts';
 import { createNodeLabel } from '../lib/reactivity/text/createNodeLabel.ts';
-import type { RepeatSequenceDefinition } from '../model/RepeatSequenceDefinition.ts';
+import type { RepeatRangeDefinition } from '../model/RepeatRangeDefinition.ts';
 import type { RepeatDefinition } from './RepeatInstance.ts';
 import { RepeatInstance } from './RepeatInstance.ts';
 import type { Root } from './Root.ts';
@@ -31,7 +31,7 @@ interface RepeatRangeStateSpec extends DescendantNodeSharedStateSpec {
 }
 
 export class RepeatRange
-	extends DescendantNode<RepeatSequenceDefinition, RepeatRangeStateSpec, RepeatInstance>
+	extends DescendantNode<RepeatRangeDefinition, RepeatRangeStateSpec, RepeatInstance>
 	implements RepeatRangeNode, EvaluationContext, SubscribableDependency
 {
 	/**
@@ -69,7 +69,7 @@ export class RepeatRange
 
 	readonly currentState: MaterializedChildren<CurrentState<RepeatRangeStateSpec>, RepeatInstance>;
 
-	constructor(parent: GeneralParentNode, definition: RepeatSequenceDefinition) {
+	constructor(parent: GeneralParentNode, definition: RepeatRangeDefinition) {
 		super(parent, definition);
 
 		const childrenState = createChildrenState<RepeatRange, RepeatInstance>(this);

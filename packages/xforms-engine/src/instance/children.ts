@@ -32,7 +32,7 @@ export const buildChildren = (parent: GeneralParentNode): GeneralChildNode[] => 
 				return new Group(parent, child as GroupDefinition);
 			}
 
-			case 'repeat-sequence': {
+			case 'repeat-range': {
 				return new RepeatRange(parent, child);
 			}
 

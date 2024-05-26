@@ -6,7 +6,7 @@ import type {
 	NodeDefinition,
 	ParentNodeDefinition,
 } from './NodeDefinition.ts';
-import { RepeatSequenceDefinition } from './RepeatSequenceDefinition.ts';
+import { RepeatRangeDefinition } from './RepeatRangeDefinition.ts';
 import { SubtreeDefinition } from './SubtreeDefinition.ts';
 import { ValueNodeDefinition } from './ValueNodeDefinition.ts';
 
@@ -87,7 +87,7 @@ export class RootDefinition implements NodeDefinition<'root'> {
 			const [firstChild, ...restChildren] = children;
 
 			if (bodyElement?.type === 'repeat') {
-				return new RepeatSequenceDefinition(parent, bind, bodyElement, children);
+				return new RepeatRangeDefinition(parent, bind, bodyElement, children);
 			}
 
 			if (restChildren.length) {
