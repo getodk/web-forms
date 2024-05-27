@@ -4,10 +4,9 @@ import { type AnyDependentExpression } from '../../expression/DependentExpressio
 import type { AnyGroupElementDefinition } from '../BodyDefinition.ts';
 import { BodyElementDefinition } from '../BodyElementDefinition.ts';
 import type { RepeatElementDefinition } from '../RepeatElementDefinition.ts';
-import type { InputDefinition } from '../control/InputDefinition.ts';
+import type { AnyControlDefinition } from '../control/ControlDefinition.ts';
 import type { ItemDefinition } from '../control/select/ItemDefinition.ts';
 import type { ItemsetDefinition } from '../control/select/ItemsetDefinition.ts';
-import type { AnySelectDefinition } from '../control/select/SelectDefinition.ts';
 import { TextElementOutputPart } from './TextElementOutputPart.ts';
 import { TextElementReferencePart } from './TextElementReferencePart.ts';
 import { TextElementStaticPart } from './TextElementStaticPart.ts';
@@ -19,9 +18,8 @@ export interface TextElement extends Element {
 }
 
 export type TextElementOwner =
+	| AnyControlDefinition
 	| AnyGroupElementDefinition
-	| AnySelectDefinition
-	| InputDefinition
 	| ItemDefinition
 	| ItemsetDefinition
 	| RepeatElementDefinition;

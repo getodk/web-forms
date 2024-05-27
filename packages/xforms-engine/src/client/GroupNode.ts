@@ -1,6 +1,7 @@
 import type { AnyGroupElementDefinition } from '../body/BodyDefinition.ts';
 import type { SubtreeDefinition } from '../model/SubtreeDefinition.ts';
 import type { BaseNode, BaseNodeState } from './BaseNode.ts';
+import type { NodeAppearances } from './NodeAppearances.ts';
 import type { RootNode } from './RootNode.ts';
 import type { GeneralChildNode, GeneralParentNode } from './hierarchy.ts';
 
@@ -17,6 +18,8 @@ export interface GroupDefinition extends SubtreeDefinition {
 	readonly bodyElement: AnyGroupElementDefinition;
 }
 
+export type GroupNodeAppearances = NodeAppearances<GroupDefinition>;
+
 /**
  * A node corresponding to an XForms `<group>`.
  */
@@ -26,6 +29,7 @@ export interface GroupDefinition extends SubtreeDefinition {
 // for context.
 export interface GroupNode extends BaseNode {
 	readonly nodeType: 'group';
+	readonly appearances: GroupNodeAppearances;
 	readonly definition: GroupDefinition;
 	readonly root: RootNode;
 	readonly parent: GeneralParentNode;

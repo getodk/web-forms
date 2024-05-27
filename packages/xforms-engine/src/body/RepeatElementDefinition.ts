@@ -3,6 +3,8 @@ import type { XFormDefinition } from '../XFormDefinition.ts';
 import type { BodyElementDefinitionArray, BodyElementParentContext } from './BodyDefinition.ts';
 import { BodyDefinition } from './BodyDefinition.ts';
 import { BodyElementDefinition } from './BodyElementDefinition.ts';
+import type { StructureElementAppearanceDefinition } from './appearance/structureElementAppearanceParser.ts';
+import { structureElementAppearanceParser } from './appearance/structureElementAppearanceParser.ts';
 import { LabelDefinition } from './text/LabelDefinition.ts';
 
 export class RepeatElementDefinition extends BodyElementDefinition<'repeat'> {
@@ -13,6 +15,7 @@ export class RepeatElementDefinition extends BodyElementDefinition<'repeat'> {
 	override readonly category = 'structure';
 	readonly type = 'repeat';
 	override readonly reference: string;
+	readonly appearances: StructureElementAppearanceDefinition;
 	override readonly label: LabelDefinition | null;
 
 	// TODO: this will fall into the growing category of non-`BindExpression`
@@ -35,6 +38,7 @@ export class RepeatElementDefinition extends BodyElementDefinition<'repeat'> {
 		}
 
 		this.reference = reference;
+		this.appearances = structureElementAppearanceParser.parseFrom(element, 'appearance');
 		this.countExpression = element.getAttributeNS(JAVAROSA_NAMESPACE_URI, 'count');
 
 		const childElements = Array.from(element.children).filter((childElement) => {

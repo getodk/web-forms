@@ -1,4 +1,5 @@
 import type { XFormDefinition } from '../XFormDefinition.ts';
+import type { BodyClassList } from '../body/BodyDefinition.ts';
 import type { BindDefinition } from './BindDefinition.ts';
 import type { ModelDefinition } from './ModelDefinition.ts';
 import type {
@@ -28,7 +29,8 @@ export class RootDefinition implements NodeDefinition<'root'> {
 
 	constructor(
 		protected readonly form: XFormDefinition,
-		protected readonly model: ModelDefinition
+		protected readonly model: ModelDefinition,
+		readonly classes: BodyClassList
 	) {
 		// TODO: theoretically the pertinent step in the bind's `nodeset` *could* be
 		// namespaced. It also may make more sense to determine the root nodeset

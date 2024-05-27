@@ -7,6 +7,8 @@ import {
 	type BodyElementParentContext,
 } from '../BodyDefinition.ts';
 import { BodyElementDefinition } from '../BodyElementDefinition.ts';
+import type { StructureElementAppearanceDefinition } from '../appearance/structureElementAppearanceParser.ts';
+import { structureElementAppearanceParser } from '../appearance/structureElementAppearanceParser.ts';
 import { LabelDefinition } from '../text/LabelDefinition.ts';
 
 /**
@@ -67,6 +69,7 @@ export abstract class BaseGroupDefinition<
 	readonly children: BodyElementDefinitionArray;
 
 	override readonly reference: string | null;
+	readonly appearances: StructureElementAppearanceDefinition;
 	override readonly label: LabelDefinition | null;
 
 	constructor(
@@ -79,6 +82,7 @@ export abstract class BaseGroupDefinition<
 
 		this.children = children ?? this.getChildren(element);
 		this.reference = element.getAttribute('ref');
+		this.appearances = structureElementAppearanceParser.parseFrom(element, 'appearance');
 		this.label = LabelDefinition.forGroup(form, this);
 	}
 
