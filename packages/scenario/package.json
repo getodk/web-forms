@@ -1,7 +1,7 @@
 {
   "name": "@getodk/scenario",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "@getodk/scenario",
   "type": "module",
   "author": "getodk",
@@ -42,7 +42,7 @@
     "test:types": "tsc --project ./tsconfig.json --emitDeclarationOnly false --noEmit"
   },
   "devDependencies": {
-    "@getodk/xforms-engine": "0.1.0",
+    "@getodk/xforms-engine": "0.1.1",
     "@vitest/browser": "^1.6.0",
     "jsdom": "^24.0.0",
     "solid-js": "^1.8.17",
