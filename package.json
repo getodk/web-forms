@@ -60,7 +60,7 @@
     "turbo": "^1.13.3",
     "typescript": "~5.4.5",
     "typescript-eslint": "^7.10.0",
-    "vue": "^3.4.27",
+    "vue": "3.3.4",
     "vue-tsc": "^2.0.19"
   },
   "resolutions": {
