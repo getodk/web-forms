@@ -29,17 +29,17 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ['18.19.1', '20.11.1']
+        node-version: ['18.20.3', '20.13.1', '22.2.0']
 
     steps:
-      - uses: 'actions/checkout@v3'
+      - uses: 'actions/checkout@v4'
 
       - uses: 'volta-cli/action@v4'
         with:
           node-version: '${{ matrix.node-version }}'
           yarn-version: '1.22.19'
 
-      - uses: 'actions/cache@v3'
+      - uses: 'actions/cache@v4'
         id: cache-install
         with:
           path: |
@@ -47,7 +47,7 @@ jobs:
             **/node_modules
           key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
 
-      - uses: 'actions/cache@v3'
+      - uses: 'actions/cache@v4'
         id: cache-build
         with:
           # Note: the tree-sitter-xpath .js and .wasm paths are standard for
@@ -66,7 +66,7 @@ jobs:
           key: build-${{ matrix.node-version }}-${{ github.sha }}
 
       # `@getodk/xpath` tests (currently) expect this time zone
-      - uses: szenius/set-timezone@v1.2
+      - uses: szenius/set-timezone@v2.0
         with:
           timezoneLinux: ${{ env.TZ }}
           timezoneMacos: ${{ env.TZ }}
@@ -82,17 +82,17 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ['20.11.1']
+        node-version: ['22.2.0']
 
     steps:
-      - uses: 'actions/checkout@v3'
+      - uses: 'actions/checkout@v4'
 
       - uses: 'volta-cli/action@v4'
         with:
           node-version: '${{ matrix.node-version }}'
           yarn-version: '1.22.19'
 
-      - uses: 'actions/cache@v3'
+      - uses: 'actions/cache@v4'
         id: cache-install
         with:
           path: |
@@ -101,7 +101,7 @@ jobs:
           key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
           fail-on-cache-miss: true
 
-      - uses: 'actions/cache@v3'
+      - uses: 'actions/cache@v4'
         id: cache-build
         with:
           path: |
@@ -126,27 +126,27 @@ jobs:
     strategy:
       matrix:
         target: ['Node']
-        node-version: ['18.19.1', '20.11.1']
+        node-version: ['18.20.3', '20.13.1', '22.2.0']
         include:
           - target: 'Web'
-            node-version: '20.11.1'
+            node-version: '22.2.0'
             browser: chromium
           - target: 'Web'
-            node-version: '20.11.1'
+            node-version: '22.2.0'
             browser: firefox
           - target: 'Web'
-            node-version: '20.11.1'
+            node-version: '22.2.0'
             browser: webkit
 
     steps:
-      - uses: 'actions/checkout@v3'
+      - uses: 'actions/checkout@v4'
 
       - uses: 'volta-cli/action@v4'
         with:
           node-version: '${{ matrix.node-version }}'
           yarn-version: '1.22.19'
 
-      - uses: 'actions/cache@v3'
+      - uses: 'actions/cache@v4'
         id: cache-install
         with:
           path: |
@@ -155,7 +155,7 @@ jobs:
           key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
           fail-on-cache-miss: true
 
-      - uses: 'actions/cache@v3'
+      - uses: 'actions/cache@v4'
         id: cache-build
         with:
           path: |
@@ -190,27 +190,27 @@ jobs:
     strategy:
       matrix:
         target: ['Node']
-        node-version: ['18.19.1', '20.11.1']
+        node-version: ['18.20.3', '20.13.1', '22.2.0']
         include:
           - target: 'Web'
-            node-version: '20.11.1'
+            node-version: '22.2.0'
             browser: chromium
           - target: 'Web'
-            node-version: '20.11.1'
+            node-version: '22.2.0'
             browser: firefox
           - target: 'Web'
-            node-version: '20.11.1'
+            node-version: '22.2.0'
             browser: webkit
 
     steps:
-      - uses: 'actions/checkout@v3'
+      - uses: 'actions/checkout@v4'
 
       - uses: 'volta-cli/action@v4'
         with:
           node-version: '${{ matrix.node-version }}'
           yarn-version: '1.22.19'
 
-      - uses: 'actions/cache@v3'
+      - uses: 'actions/cache@v4'
         id: cache-install
         with:
           path: |
@@ -219,7 +219,7 @@ jobs:
           key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
           fail-on-cache-miss: true
 
-      - uses: 'actions/cache@v3'
+      - uses: 'actions/cache@v4'
         id: cache-build
         with:
           path: |
@@ -254,27 +254,27 @@ jobs:
     strategy:
       matrix:
         target: ['Node']
-        node-version: ['18.19.1', '20.11.1']
+        node-version: ['18.20.3', '20.13.1', '22.2.0']
         include:
           - target: 'Web'
-            node-version: '20.11.1'
+            node-version: '22.2.0'
             browser: chromium
           - target: 'Web'
-            node-version: '20.11.1'
+            node-version: '22.2.0'
             browser: firefox
           - target: 'Web'
-            node-version: '20.11.1'
+            node-version: '22.2.0'
             browser: webkit
 
     steps:
-      - uses: 'actions/checkout@v3'
+      - uses: 'actions/checkout@v4'
 
       - uses: 'volta-cli/action@v4'
         with:
           node-version: '${{ matrix.node-version }}'
           yarn-version: '1.22.19'
 
-      - uses: 'actions/cache@v3'
+      - uses: 'actions/cache@v4'
         id: cache-install
         with:
           path: |
@@ -283,7 +283,7 @@ jobs:
           key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
           fail-on-cache-miss: true
 
-      - uses: 'actions/cache@v3'
+      - uses: 'actions/cache@v4'
         id: cache-build
         with:
           path: |
@@ -318,27 +318,27 @@ jobs:
     strategy:
       matrix:
         target: ['Node']
-        node-version: ['18.19.1', '20.11.1']
+        node-version: ['18.20.3', '20.13.1', '22.2.0']
         include:
           - target: 'Web'
-            node-version: '20.11.1'
+            node-version: '22.2.0'
             browser: chromium
           - target: 'Web'
-            node-version: '20.11.1'
+            node-version: '22.2.0'
             browser: firefox
           - target: 'Web'
-            node-version: '20.11.1'
+            node-version: '22.2.0'
             browser: webkit
 
     steps:
-      - uses: 'actions/checkout@v3'
+      - uses: 'actions/checkout@v4'
 
       - uses: 'volta-cli/action@v4'
         with:
           node-version: '${{ matrix.node-version }}'
           yarn-version: '1.22.19'
 
-      - uses: 'actions/cache@v3'
+      - uses: 'actions/cache@v4'
         id: cache-install
         with:
           path: |
@@ -347,7 +347,7 @@ jobs:
           key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
           fail-on-cache-miss: true
 
-      - uses: 'actions/cache@v3'
+      - uses: 'actions/cache@v4'
         id: cache-build
         with:
           path: |
@@ -362,7 +362,7 @@ jobs:
           key: build-${{ matrix.node-version }}-${{ github.sha }}
           fail-on-cache-miss: true
 
-      - uses: szenius/set-timezone@v1.2
+      - uses: szenius/set-timezone@v2.0
         with:
           timezoneLinux: ${{ env.TZ }}
           timezoneMacos: ${{ env.TZ }}
@@ -387,17 +387,17 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ['18.19.1', '20.11.1']
+        node-version: ['18.20.3', '20.13.1', '22.2.0']
 
     steps:
-      - uses: 'actions/checkout@v3'
+      - uses: 'actions/checkout@v4'
 
       - uses: 'volta-cli/action@v4'
         with:
           node-version: '${{ matrix.node-version }}'
           yarn-version: '1.22.19'
 
-      - uses: 'actions/cache@v3'
+      - uses: 'actions/cache@v4'
         id: cache-install
         with:
           path: |
@@ -406,7 +406,7 @@ jobs:
           key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
           fail-on-cache-miss: true
 
-      - uses: 'actions/cache@v3'
+      - uses: 'actions/cache@v4'
         id: cache-build
         with:
           path: |
@@ -431,27 +431,27 @@ jobs:
     strategy:
       matrix:
         target: ['Node']
-        node-version: ['18.19.1', '20.11.1']
+        node-version: ['18.20.3', '20.13.1', '22.2.0']
         include:
           - target: 'Web'
-            node-version: '20.11.1'
+            node-version: '22.2.0'
             browser: chromium
           - target: 'Web'
-            node-version: '20.11.1'
+            node-version: '22.2.0'
             browser: firefox
           - target: 'Web'
-            node-version: '20.11.1'
+            node-version: '22.2.0'
             browser: webkit
 
     steps:
-      - uses: 'actions/checkout@v3'
+      - uses: 'actions/checkout@v4'
 
       - uses: 'volta-cli/action@v4'
         with:
           node-version: '${{ matrix.node-version }}'
           yarn-version: '1.22.19'
 
-      - uses: 'actions/cache@v3'
+      - uses: 'actions/cache@v4'
         id: cache-install
         with:
           path: |
@@ -460,7 +460,7 @@ jobs:
           key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
           fail-on-cache-miss: true
 
-      - uses: 'actions/cache@v3'
+      - uses: 'actions/cache@v4'
         id: cache-build
         with:
           path: |
@@ -495,27 +495,27 @@ jobs:
     strategy:
       matrix:
         target: ['Node']
-        node-version: ['18.19.1', '20.11.1']
+        node-version: ['18.20.3', '20.13.1', '22.2.0']
         include:
           - target: 'Web'
-            node-version: '20.11.1'
+            node-version: '22.2.0'
             browser: chromium
           - target: 'Web'
-            node-version: '20.11.1'
+            node-version: '22.2.0'
             browser: firefox
           - target: 'Web'
-            node-version: '20.11.1'
+            node-version: '22.2.0'
             browser: webkit
 
     steps:
-      - uses: 'actions/checkout@v3'
+      - uses: 'actions/checkout@v4'
 
       - uses: 'volta-cli/action@v4'
         with:
           node-version: '${{ matrix.node-version }}'
           yarn-version: '1.22.19'
 
-      - uses: 'actions/cache@v3'
+      - uses: 'actions/cache@v4'
         id: cache-install
         with:
           path: |
@@ -524,7 +524,7 @@ jobs:
           key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
           fail-on-cache-miss: true
 
-      - uses: 'actions/cache@v3'
+      - uses: 'actions/cache@v4'
         id: cache-build
         with:
           path: |
