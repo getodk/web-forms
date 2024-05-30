@@ -79,6 +79,7 @@ export class RepeatInstance
 			{
 				...this.buildSharedStateSpec(parent, definition),
 
+				// TODO: only-child <group><label>
 				label: createNodeLabel(this, definition),
 				hint: null,
 				children: childrenState.childIds,

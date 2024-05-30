@@ -1,4 +1,4 @@
-import { RepeatGroupDefinition } from '../body/group/RepeatGroupDefinition.ts';
+import type { RepeatElementDefinition } from '../body/RepeatElementDefinition.ts';
 import type { BindDefinition } from './BindDefinition.ts';
 import { DescendentNodeDefinition } from './DescendentNodeDefinition.ts';
 import type { NodeDefinition, ParentNodeDefinition } from './NodeDefinition.ts';
@@ -6,7 +6,7 @@ import { RepeatInstanceDefinition } from './RepeatInstanceDefinition.ts';
 import { RepeatTemplateDefinition } from './RepeatTemplateDefinition.ts';
 
 export class RepeatSequenceDefinition
-	extends DescendentNodeDefinition<'repeat-sequence', RepeatGroupDefinition>
+	extends DescendentNodeDefinition<'repeat-sequence', RepeatElementDefinition>
 	implements NodeDefinition<'repeat-sequence'>
 {
 	// TODO: if an implicit template is derived from an instance in a form
@@ -32,7 +32,7 @@ export class RepeatSequenceDefinition
 	constructor(
 		parent: ParentNodeDefinition,
 		bind: BindDefinition,
-		bodyElement: RepeatGroupDefinition,
+		bodyElement: RepeatElementDefinition,
 		modelNodes: readonly [Element, ...Element[]]
 	) {
 		super(parent, bind, bodyElement);

@@ -1,5 +1,4 @@
 import type { XFormDefinition } from '../XFormDefinition.ts';
-import type { RepeatGroupDefinition } from '../body/group/RepeatGroupDefinition.ts';
 import type { BindDefinition } from './BindDefinition.ts';
 import type { ModelDefinition } from './ModelDefinition.ts';
 import type {
@@ -86,16 +85,9 @@ export class RootDefinition implements NodeDefinition<'root'> {
 			const bind = binds.getOrCreateBindDefinition(nodeset);
 			const bodyElement = body.getBodyElement(nodeset);
 			const [firstChild, ...restChildren] = children;
-			const repeatGroup = body.getRepeatGroup(nodeset);
 
-			if (repeatGroup != null) {
-				const repeatDefinition = (bodyElement as RepeatGroupDefinition).repeat;
-
-				if (repeatDefinition == null) {
-					throw 'TODO: this is why I have hesitated to pick an "is repeat" predicate direction';
-				}
-
-				return new RepeatSequenceDefinition(parent, bind, repeatGroup, children);
+			if (bodyElement?.type === 'repeat') {
+				return new RepeatSequenceDefinition(parent, bind, bodyElement, children);
 			}
 
 			if (restChildren.length) {

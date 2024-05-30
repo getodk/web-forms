@@ -1,5 +1,6 @@
 import type { XFormDefinition } from '../XFormDefinition.ts';
 import { DependencyContext } from '../expression/DependencyContext.ts';
+import { RepeatElementDefinition } from './RepeatElementDefinition.ts';
 import { UnsupportedBodyElementDefinition } from './UnsupportedBodyElementDefinition.ts';
 import { ControlDefinition } from './control/ControlDefinition.ts';
 import { InputDefinition } from './control/InputDefinition.ts';
@@ -7,7 +8,6 @@ import type { AnySelectDefinition } from './control/select/SelectDefinition.ts';
 import { SelectDefinition } from './control/select/SelectDefinition.ts';
 import { LogicalGroupDefinition } from './group/LogicalGroupDefinition.ts';
 import { PresentationGroupDefinition } from './group/PresentationGroupDefinition.ts';
-import { RepeatGroupDefinition } from './group/RepeatGroupDefinition.ts';
 import { StructuralGroupDefinition } from './group/StructuralGroupDefinition.ts';
 
 export interface BodyElementParentContext {
@@ -17,7 +17,7 @@ export interface BodyElementParentContext {
 
 type SupportedBodyElementDefinition =
 	// eslint-disable-next-line @typescript-eslint/sort-type-constituents
-	| RepeatGroupDefinition
+	| RepeatElementDefinition
 	| LogicalGroupDefinition
 	| PresentationGroupDefinition
 	| StructuralGroupDefinition
@@ -28,7 +28,7 @@ type SupportedBodyElementDefinition =
 type BodyElementDefinitionConstructor = new (...args: any[]) => SupportedBodyElementDefinition;
 
 const BodyElementDefinitionConstructors = [
-	RepeatGroupDefinition,
+	RepeatElementDefinition,
 	LogicalGroupDefinition,
 	PresentationGroupDefinition,
 	StructuralGroupDefinition,
@@ -47,11 +47,6 @@ export type AnyBodyElementType = AnyBodyElementDefinition['type'];
 export type AnyGroupElementDefinition = Extract<
 	AnyBodyElementDefinition,
 	{ readonly type: `${string}-group` }
->;
-
-export type NonRepeatGroupElementDefinition = Exclude<
-	AnyGroupElementDefinition,
-	{ readonly type: 'repeat-group' }
 >;
 
 const isGroupElementDefinition = (
@@ -96,13 +91,13 @@ class BodyElementMap extends Map<BodyElementReference, AnyBodyElementDefinition>
 		for (const element of elements) {
 			const { reference } = element;
 
-			if (element instanceof RepeatGroupDefinition) {
+			if (element instanceof RepeatElementDefinition) {
 				if (reference == null) {
-					throw new Error('Missing reference for repeat/repeat group');
+					throw new Error('Missing reference for repeat');
 				}
 
 				this.set(reference, element);
-				this.mapElementsByReference(element.repeatChildren);
+				this.mapElementsByReference(element.children);
 			}
 
 			if (
@@ -182,16 +177,6 @@ export class BodyDefinition extends DependencyContext {
 
 	getBodyElement(reference: string): AnyBodyElementDefinition | null {
 		return this.elementsByReference.get(reference) ?? null;
-	}
-
-	getRepeatGroup(reference: string): RepeatGroupDefinition | null {
-		const element = this.getBodyElement(reference);
-
-		if (element?.type === 'repeat-group') {
-			return element;
-		}
-
-		return null;
 	}
 
 	toJSON() {

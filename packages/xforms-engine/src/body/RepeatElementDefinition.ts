@@ -1,13 +1,19 @@
 import { JAVAROSA_NAMESPACE_URI } from '@getodk/common/constants/xmlns.ts';
 import type { XFormDefinition } from '../XFormDefinition.ts';
-import type { BodyElementDefinitionArray } from './BodyDefinition.ts';
+import type { BodyElementDefinitionArray, BodyElementParentContext } from './BodyDefinition.ts';
+import { BodyDefinition } from './BodyDefinition.ts';
 import { BodyElementDefinition } from './BodyElementDefinition.ts';
-import type { RepeatGroupDefinition } from './group/RepeatGroupDefinition.ts';
+import { LabelDefinition } from './text/LabelDefinition.ts';
 
-export class RepeatDefinition extends BodyElementDefinition<'repeat'> {
+export class RepeatElementDefinition extends BodyElementDefinition<'repeat'> {
+	static override isCompatible(localName: string): boolean {
+		return localName === 'repeat';
+	}
+
 	override readonly category = 'structure';
 	readonly type = 'repeat';
 	override readonly reference: string;
+	override readonly label: LabelDefinition | null;
 
 	// TODO: this will fall into the growing category of non-`BindExpression`
 	// cases which have roughly the same design story.
@@ -17,12 +23,10 @@ export class RepeatDefinition extends BodyElementDefinition<'repeat'> {
 
 	readonly children: BodyElementDefinitionArray;
 
-	constructor(
-		form: XFormDefinition,
-		readonly groupDefinition: RepeatGroupDefinition,
-		element: Element
-	) {
-		super(form, groupDefinition, element);
+	constructor(form: XFormDefinition, parent: BodyElementParentContext, element: Element) {
+		super(form, parent, element);
+
+		this.label = LabelDefinition.forRepeatGroup(form, this);
 
 		const reference = element.getAttribute('nodeset');
 
@@ -32,7 +36,15 @@ export class RepeatDefinition extends BodyElementDefinition<'repeat'> {
 
 		this.reference = reference;
 		this.countExpression = element.getAttributeNS(JAVAROSA_NAMESPACE_URI, 'count');
-		this.children = groupDefinition.getChildren(element);
+
+		const childElements = Array.from(element.children).filter((childElement) => {
+			const { localName } = childElement;
+
+			return localName !== 'label' && localName !== 'group-label';
+		});
+		const children = BodyDefinition.getChildElementDefinitions(form, this, element, childElements);
+
+		this.children = children;
 
 		// Spec says this can be either `true()` or `false()`. That said, it
 		// could also presumably be `true ( )` or whatever.
@@ -47,7 +59,7 @@ export class RepeatDefinition extends BodyElementDefinition<'repeat'> {
 	}
 
 	override toJSON() {
-		const { form, groupDefinition, parent, ...rest } = this;
+		const { form, parent, ...rest } = this;
 
 		return rest;
 	}

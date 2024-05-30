@@ -3,6 +3,7 @@ import type { XFormDefinition } from '../../XFormDefinition.ts';
 import { type AnyDependentExpression } from '../../expression/DependentExpression.ts';
 import type { AnyGroupElementDefinition } from '../BodyDefinition.ts';
 import { BodyElementDefinition } from '../BodyElementDefinition.ts';
+import type { RepeatElementDefinition } from '../RepeatElementDefinition.ts';
 import type { InputDefinition } from '../control/InputDefinition.ts';
 import type { ItemDefinition } from '../control/select/ItemDefinition.ts';
 import type { ItemsetDefinition } from '../control/select/ItemsetDefinition.ts';
@@ -22,7 +23,8 @@ export type TextElementOwner =
 	| AnySelectDefinition
 	| InputDefinition
 	| ItemDefinition
-	| ItemsetDefinition;
+	| ItemsetDefinition
+	| RepeatElementDefinition;
 
 export type TextElementChild = TextElementOutputPart | TextElementStaticPart;
 

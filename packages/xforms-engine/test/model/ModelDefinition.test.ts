@@ -323,7 +323,7 @@ describe('ModelDefinition', () => {
 					type: 'repeat-sequence',
 					bind: { nodeset: '/root/rep' },
 					bodyElement: {
-						type: 'repeat-group',
+						type: 'repeat',
 					},
 					instances: [
 						{
@@ -353,7 +353,7 @@ describe('ModelDefinition', () => {
 					type: 'repeat-sequence',
 					bind: { nodeset: '/root/rep2' },
 					bodyElement: {
-						type: 'repeat-group',
+						type: 'repeat',
 					},
 					instances: [
 						{

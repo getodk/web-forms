@@ -1,5 +1,5 @@
 import type { AnyBodyElementDefinition } from '../body/BodyDefinition.ts';
-import type { RepeatDefinition } from '../body/RepeatDefinition.ts';
+import type { RepeatElementDefinition } from '../body/RepeatElementDefinition.ts';
 import type { BindDefinition } from './BindDefinition.ts';
 import type { RepeatInstanceDefinition } from './RepeatInstanceDefinition.ts';
 import type { RepeatSequenceDefinition } from './RepeatSequenceDefinition.ts';
@@ -120,7 +120,7 @@ export interface NodeDefinition<Type extends NodeDefinitionType> {
 	readonly bind: BindDefinition;
 	readonly nodeset: string;
 	readonly nodeName: string;
-	readonly bodyElement: AnyBodyElementDefinition | RepeatDefinition | null;
+	readonly bodyElement: AnyBodyElementDefinition | RepeatElementDefinition | null;
 
 	readonly isTranslated: boolean;
 	readonly dependencyExpressions: ReadonlySet<string>;

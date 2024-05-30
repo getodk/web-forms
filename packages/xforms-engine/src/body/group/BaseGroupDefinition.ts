@@ -1,7 +1,6 @@
 import { UpsertableMap } from '@getodk/common/lib/collections/UpsertableMap.ts';
-import type { XFormDOM } from '../../XFormDOM.ts';
 import type { XFormDefinition } from '../../XFormDefinition.ts';
-import { getLabelElement, getRepeatElement } from '../../lib/dom/query.ts';
+import { getLabelElement } from '../../lib/dom/query.ts';
 import {
 	BodyDefinition,
 	type BodyElementDefinitionArray,
@@ -23,10 +22,6 @@ import { LabelDefinition } from '../text/LabelDefinition.ts';
  * - `presentation-group` is a group with a `<label>` child; its usage here
  *   differs from the spec language in that `presentation-group` does **not**
  *   have a `ref`
- * - `repeat-group` is not mentioned by the spec; it is an extension of
- *   `logical-group`, wherein its `ref` is the same as its immediate `<repeat>`
- *   child's `nodeset` (usage of each attribute is normalized during
- *   initialization, in {@link XFormDOM})
  * - `structural-group` is any `<group>` element which does not satisfy any of
  *   the other usage scenarios; this isn't exactly the terminology used, but is
  *   the most closely fitting name for the concept where the other sceanarios
@@ -34,20 +29,17 @@ import { LabelDefinition } from '../text/LabelDefinition.ts';
  *
  * A more succinct decision tree:
  *
- * - `<group ref="$ref"><repeat nodeset="$ref">` -> `repeat-group`, else
  * - `<group ref="$ref">` -> `logical-group`, else
  * - `<group><label>` -> `presentation-group`, else
  * - `<group>` -> `structural-group`
  */
-export type GroupType =
-	| 'logical-group'
-	| 'presentation-group'
-	| 'repeat-group'
-	| 'structural-group';
+export type GroupType = 'logical-group' | 'presentation-group' | 'structural-group';
 
 export abstract class BaseGroupDefinition<
 	Type extends GroupType,
 > extends BodyElementDefinition<Type> {
+	// TODO: does this really accomplish anything? It seems highly unlikely it
+	// has enough performance benefit to outweigh its memory and lookup costs.
 	private static groupTypes = new UpsertableMap<Element, GroupType | null>();
 
 	protected static getGroupType(localName: string, element: Element): GroupType | null {
@@ -56,20 +48,8 @@ export abstract class BaseGroupDefinition<
 				return null;
 			}
 
-			const ref = element.getAttribute('ref');
-
-			if (ref != null) {
-				const repeat = getRepeatElement(element);
-
-				if (repeat == null) {
-					return 'logical-group';
-				}
-
-				if (repeat.getAttribute('nodeset') === ref) {
-					return 'repeat-group';
-				}
-
-				throw new Error('Unexpected <repeat> child of unrelated <group>');
+			if (element.hasAttribute('ref')) {
+				return 'logical-group';
 			}
 
 			const label = getLabelElement(element);
@@ -107,31 +87,9 @@ export abstract class BaseGroupDefinition<
 		const children = Array.from(element.children).filter((child) => {
 			const childName = child.localName;
 
-			return childName !== 'label' && childName !== 'repeat';
+			return childName !== 'label';
 		});
 
 		return BodyDefinition.getChildElementDefinitions(form, this, element, children);
 	}
 }
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const repeatGroup = <T extends BaseGroupDefinition<any>>(
-	groupDefinition: T
-): Extract<T, BaseGroupDefinition<'repeat-group'>> | null => {
-	if (groupDefinition.type === 'repeat-group') {
-		return groupDefinition as Extract<T, BaseGroupDefinition<'repeat-group'>>;
-	}
-
-	return null;
-};
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const nonRepeatGroup = <T extends BaseGroupDefinition<any>>(
-	groupDefinition: T
-): Exclude<T, BaseGroupDefinition<'repeat-group'>> | null => {
-	if (groupDefinition.type === 'repeat-group') {
-		return null;
-	}
-
-	return groupDefinition as Exclude<T, BaseGroupDefinition<'repeat-group'>>;
-};

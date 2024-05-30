@@ -1,5 +1,5 @@
 import { JAVAROSA_NAMESPACE_URI } from '@getodk/common/constants/xmlns.ts';
-import type { RepeatDefinition } from '../body/RepeatDefinition.ts';
+import type { RepeatElementDefinition } from '../body/RepeatElementDefinition.ts';
 import { BindDefinition } from './BindDefinition.ts';
 import { DescendentNodeDefinition } from './DescendentNodeDefinition.ts';
 import type { ChildNodeDefinition, NodeDefinition } from './NodeDefinition.ts';
@@ -73,7 +73,7 @@ interface ParsedRepeatNodes {
 }
 
 export class RepeatTemplateDefinition
-	extends DescendentNodeDefinition<'repeat-template', RepeatDefinition>
+	extends DescendentNodeDefinition<'repeat-template', RepeatElementDefinition>
 	implements NodeDefinition<'repeat-template'>
 {
 	static parseModelNodes(
@@ -124,14 +124,9 @@ export class RepeatTemplateDefinition
 		protected readonly sequence: RepeatSequenceDefinition,
 		protected readonly templateNode: ExplicitRepeatTemplateElement
 	) {
-		const {
-			bind,
-			bodyElement: repeatGroupBodyElement,
-			parent: repeatSequenceParent,
-			root,
-		} = sequence;
+		const { bind, bodyElement, parent, root } = sequence;
 
-		super(repeatSequenceParent, bind, repeatGroupBodyElement.repeat);
+		super(parent, bind, bodyElement);
 
 		const node = templateNode.cloneNode(true) as Element;
 

@@ -1,4 +1,4 @@
-import type { NonRepeatGroupElementDefinition } from '../body/BodyDefinition.ts';
+import type { AnyGroupElementDefinition } from '../body/BodyDefinition.ts';
 import type { SubtreeDefinition } from '../model/SubtreeDefinition.ts';
 import type { BaseNode, BaseNodeState } from './BaseNode.ts';
 import type { RootNode } from './RootNode.ts';
@@ -14,7 +14,7 @@ export interface GroupNodeState extends BaseNodeState {
 // TODO: as with `SubtreeNode`'s `SubtreeDefinition`, there is a naming
 // inconsistency emerging here.
 export interface GroupDefinition extends SubtreeDefinition {
-	readonly bodyElement: NonRepeatGroupElementDefinition;
+	readonly bodyElement: AnyGroupElementDefinition;
 }
 
 /**
