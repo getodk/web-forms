@@ -4,7 +4,7 @@ import Button from 'primevue/button';
 import Card from 'primevue/card';
 import { reactive, ref } from 'vue';
 import FormHeader from './FormHeader.vue';
-import FormLanguageMenu from './FormLanguageMenu.vue';
+
 import QuestionList from './QuestionList.vue';
 
 const props = defineProps<{ formXml: string }>();
@@ -28,19 +28,13 @@ const handleSubmit = () => {
 	emit('submit');
 }
 
-const print = () => window.print();
+
 </script>
 
 <template>
 	<div v-if="odkForm" class="odk-form">
 		<div class="form-wrapper">
-			<div class="odk-menu-bar flex justify-content-end flex-wrap gap-3">
-				<Button class="print-button" severity="secondary" rounded icon="icon-local_printshop" @click="print" />
-				<FormLanguageMenu :form="odkForm" />
-			</div>
-
-			<!-- TODO/q: should the title be on the definition or definition.form be accessible instead of definition.bind.form -->
-			<FormHeader :title="odkForm.definition.bind.form.title" />
+			<FormHeader :form="odkForm" />
 
 			<Card class="questions-card">
 				<template #content>
@@ -60,12 +54,14 @@ const print = () => window.print();
 	</div>
 </template>
 
-<style scoped lang="scss">
+<style scoped lang="scss"> 
+@import 'primeflex/core/_variables.scss';
+
 .odk-form {
 	width: 100%;
 
 	.form-wrapper {
-		max-width: 800px;
+		max-width: 900px;
 		margin: auto;
 		padding-top: 10px;
 		padding-bottom: 20px;
@@ -80,6 +76,7 @@ const print = () => window.print();
 				padding: 1rem;
 			}
 		}
+
 	}
 
 	.print-button.p-button {
@@ -97,9 +94,34 @@ const print = () => window.print();
 
 }
 
-	
+@media screen and (max-width: #{$lg - 1}) {
+	.odk-form {
+		.form-wrapper {
+			max-width: unset;
+			.questions-card {
+				border-radius: unset;
+				box-shadow: unset;
+				margin-top: 0;
+			}
+			.footer {
 
+				button {
+					margin-right: 20px;
+				}
+			}
+		}
+	}
+}
+</style>
 
-
-
+<style lang="scss">
+@import 'primeflex/core/_variables.scss';
+body {
+	background: var(--gray-200);
+}
+@media screen and (max-width: #{$lg - 1}) {
+	body {
+		background: white;
+	}
+}
 </style>

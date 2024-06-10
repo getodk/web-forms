@@ -76,7 +76,7 @@ test('All forms are rendered and there is no console error', async ({ page, brow
 		const langChanger = page.getByLabel('change language');
 
 		if ((await langChanger.count()) > 0) {
-			await langChanger.click();
+			await langChanger.first().click();
 			await page.locator('.language-dd-label').last().click();
 		}
 

@@ -15,6 +15,7 @@ const handleLanguageChange = (event: LanguageDropdownChangeEvent) => {
 };
 
 </script>
+
 <template>
 	<Dropdown
 		v-if="languages.length > 0"
@@ -57,6 +58,7 @@ const handleLanguageChange = (event: LanguageDropdownChangeEvent) => {
 
 	.icon-language {
 		margin-right: 10px;
+		font-size: 1.5rem;
 	}
 }
 </style>
