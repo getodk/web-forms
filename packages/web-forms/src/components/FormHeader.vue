@@ -33,7 +33,7 @@ if(languages.length > 0){
 
 <template>
 	<!-- for desktop -->
-	<div class="hidden lg:flex justify-content-end flex-wrap gap-3">
+	<div class="hidden lg:flex justify-content-end flex-wrap gap-3 larger-screens">
 		<PrimeButton class="print-button" severity="secondary" rounded icon="icon-local_printshop" @click="print" />
 		<FormLanguageMenu :form="form" />
 	</div>
@@ -57,11 +57,14 @@ if(languages.length > 0){
 				<PrimeButton class="print-button" severity="secondary" rounded icon="icon-local_printshop" @click="print" />
 				<FormLanguageMenu :form="form" />
 			</div>
-
+			
 			<!-- for mobile -->
-			<PrimeButton icon="icon-menu" class="btn-menu md:hidden" text rounded aria-label="Menu" @click="menu?.toggle" />
-			<PrimeMenu id="overlay_menu" ref="menu" :model="items" :popup="true" />
-			<FormLanguageDialog v-model:state="languageDialogState" :form="form" />
+			<div class="odk-menu-bar flex md:hidden justify-content-end gap-3">
+				<PrimeButton v-if="languages.length > 0" icon="icon-menu" class="btn-menu" text rounded aria-label="Menu" @click="menu?.toggle" />
+				<PrimeButton v-else class="print-button" severity="secondary" rounded icon="icon-local_printshop" @click="print" />
+				<PrimeMenu id="overlay_menu" ref="menu" :model="items" :popup="true" />
+				<FormLanguageDialog v-model:state="languageDialogState" :form="form" />
+			</div>
 		</div>
 	</div>
 </template>
@@ -102,10 +105,6 @@ if(languages.length > 0){
 	// this adds border to parent div so that bottom shadow of immediate child
 	// is visible.
 	border-bottom: 3px solid #fff;
-	
-	// to show ellipsis in the heading
-	// https://css-tricks.com/using-flexbox-and-text-ellipsis-together/
-	min-width: 0;
 
 	> div {
 		box-shadow: 0px 1px 2px 0px #0000004D;
@@ -113,15 +112,15 @@ if(languages.length > 0){
 
 	h1 {
 		padding-left: 10px;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		overflow: hidden;
 		font-size: 1.5rem;
+	}
+
+	.odk-menu-bar{
+		padding-right: 10px;
 	}
 	
 	.btn-menu{
 		color: #000;
-		font-size: 1.5rem;
 	}
 }
 

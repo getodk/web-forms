@@ -22,7 +22,7 @@ const handleLanguageChange = (event: LanguageDropdownChangeEvent) => {
 		:model-value="form.currentState.activeLanguage"
 		:options="languages"
 		option-label="language"
-		class="flex align-items-center rounded with-icon"
+		class="flex align-items-center rounded with-icon language-changer"
 		aria-label="change language"
 		@change="handleLanguageChange"
 	>
