@@ -19,9 +19,6 @@ initializeForm(props.formXml, {
 	},
 }).then((f) => {
 	odkForm.value = f;
-	// TODO/sk: remove once dust settles
-	// eslint-disable-next-line -- temporary code
-		console.log((f as any).childrenState.getChildren());
   }).catch(() => {}); // eslint-disable-line -- noop
 
 const handleSubmit = () => {
@@ -59,6 +56,7 @@ const handleSubmit = () => {
 
 .odk-form {
 	width: 100%;
+	color: var(--text-color);
 
 	.form-wrapper {
 		max-width: 900px;
@@ -68,7 +66,7 @@ const handleSubmit = () => {
 
 		.questions-card {
 			border-radius: 10px;
-			box-shadow: 0px 1px 3px 1px #00000026;
+			box-shadow: var(--light-elevation-1);
 			border-top: none;
 			margin-top: 20px;
 
@@ -98,6 +96,8 @@ const handleSubmit = () => {
 	.odk-form {
 		.form-wrapper {
 			max-width: unset;
+			padding-top: unset;
+			
 			.questions-card {
 				border-radius: unset;
 				box-shadow: unset;

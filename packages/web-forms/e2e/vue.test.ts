@@ -15,7 +15,7 @@ test('All forms are rendered and there is no console error', async ({ page, brow
 	// this ensures that Vue application is loaded before proceeding forward.
 	await expect(page.getByText('Demo Forms')).toBeVisible();
 
-	const forms = await page.getByText('Show').all();
+	const forms = await page.locator('ul.form-list li').all();
 
 	expect(forms.length).toBeGreaterThan(0);
 
@@ -80,7 +80,7 @@ test('All forms are rendered and there is no console error', async ({ page, brow
 			await page.locator('.language-dd-label').last().click();
 		}
 
-		await page.getByText('Back').click();
+		await page.goBack();
 	}
 
 	expect(consoleErrors).toBe(0);

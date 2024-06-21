@@ -1,34 +1,23 @@
 <script setup lang="ts">
-import type { FormLanguage, RootNode } from '@getodk/xforms-engine';
+import type { ActiveLanguage, FormLanguage } from '@getodk/xforms-engine';
 import PrimeButton from 'primevue/button';
 import PrimeDialog from 'primevue/dialog';
 import PrimeRadioButton from 'primevue/radiobutton';
 import { ref } from 'vue';
 
-const props = defineProps<{ form: RootNode, state: boolean }>();
-const emit = defineEmits(['update:state']);
+const props = defineProps<{ state: boolean, languages: FormLanguage[], activeLanguage: ActiveLanguage }>();
+const emit = defineEmits(['update:state', 'update:activeLanguage']);
 
-const languages = props.form.languages.filter(language => !language.isSyntheticDefault);
 
-const selectedLanguage = ref<FormLanguage>();
-
-const initSelectedLanguage = () => {
-	if(!props.form.currentState.activeLanguage.isSyntheticDefault) {
-		selectedLanguage.value = props.form.currentState.activeLanguage;
-	}
-}
-
-initSelectedLanguage();
+const selectedLanguage = ref<ActiveLanguage>(props.activeLanguage);
 
 const handleSave = () => {
-	if(!selectedLanguage.value?.isSyntheticDefault){
-		props.form.setLanguage(selectedLanguage.value!);
-	}
+	emit('update:activeLanguage', selectedLanguage.value);
 	emit('update:state',false);
 };
 
 const handleCancel = () => {
-	initSelectedLanguage();
+	selectedLanguage.value = props.activeLanguage;
 	emit('update:state',false);
 }
 

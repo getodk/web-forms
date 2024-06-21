@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type RootNode } from '@getodk/xforms-engine';
+import { type FormLanguage, type RootNode, type SyntheticDefaultLanguage } from '@getodk/xforms-engine';
 import PrimeButton from 'primevue/button';
 import PrimeCard from 'primevue/card';
 import PrimeMenu from 'primevue/menu';
@@ -10,7 +10,12 @@ import FormLanguageMenu from './FormLanguageMenu.vue';
 const props = defineProps<{form: RootNode}>();
 const languageDialogState = ref(false);
 const menu = ref<PrimeMenu>();
-const languages = props.form.languages.filter(language => !language.isSyntheticDefault);
+
+const isFormLanguage = (lang: FormLanguage | SyntheticDefaultLanguage) : lang is FormLanguage => {
+	return !lang.isSyntheticDefault;
+}
+
+const languages = props.form.languages.filter(isFormLanguage);
 
 const print = () => window.print();
 
@@ -29,13 +34,21 @@ if(languages.length > 0){
 		command: () => languageDialogState.value = true
 	})
 }
+
+const handleLanguageChange = (event: FormLanguage) => {
+	props.form.setLanguage(event);
+};
 </script>
 
 <template>
 	<!-- for desktop -->
 	<div class="hidden lg:flex justify-content-end flex-wrap gap-3 larger-screens">
 		<PrimeButton class="print-button" severity="secondary" rounded icon="icon-local_printshop" @click="print" />
-		<FormLanguageMenu :form="form" />
+		<FormLanguageMenu 
+			:active-language="form.currentState.activeLanguage" 
+			:languages="languages" 
+			@update:active-language="handleLanguageChange"
+		/>
 	</div>
 	<PrimeCard class="form-title hidden lg:block">
 		<template #content>
@@ -46,25 +59,32 @@ if(languages.length > 0){
 	</PrimeCard>
 
 	<!-- for mobile and tablet -->
-	<div class="lg:hidden smaller-screens">
-		<div class="flex align-items-center">
-			<h1 class="flex-grow-1">
-				{{ form.definition.bind.form.title }}
-			</h1>
+	<div class="flex lg:hidden align-items-center smaller-screens">
+		<h1 class="flex-grow-1">
+			{{ form.definition.bind.form.title }}
+		</h1>
 
-			<!-- for tablet -->
-			<div class="odk-menu-bar hidden md:flex justify-content-end gap-3">
-				<PrimeButton class="print-button" severity="secondary" rounded icon="icon-local_printshop" @click="print" />
-				<FormLanguageMenu :form="form" />
-			</div>
+		<!-- for tablet -->
+		<div class="form-options hidden md:flex justify-content-end gap-3">
+			<PrimeButton class="print-button" severity="secondary" rounded icon="icon-local_printshop" @click="print" />
+			<FormLanguageMenu 
+				:active-language="form.currentState.activeLanguage" 
+				:languages="languages" 
+				@update:active-language="handleLanguageChange"
+			/>
+		</div>
 			
-			<!-- for mobile -->
-			<div class="odk-menu-bar flex md:hidden justify-content-end gap-3">
-				<PrimeButton v-if="languages.length > 0" icon="icon-menu" class="btn-menu" text rounded aria-label="Menu" @click="menu?.toggle" />
-				<PrimeButton v-else class="print-button" severity="secondary" rounded icon="icon-local_printshop" @click="print" />
-				<PrimeMenu id="overlay_menu" ref="menu" :model="items" :popup="true" />
-				<FormLanguageDialog v-model:state="languageDialogState" :form="form" />
-			</div>
+		<!-- for mobile -->
+		<div class="form-options flex md:hidden">
+			<PrimeButton v-if="languages.length > 0" icon="icon-menu" class="btn-menu" text rounded aria-label="Menu" @click="menu?.toggle" />
+			<PrimeButton v-else class="print-button" severity="secondary" rounded icon="icon-local_printshop" @click="print" />
+			<PrimeMenu id="overlay_menu" ref="menu" :model="items" :popup="true" />
+			<FormLanguageDialog 
+				v-model:state="languageDialogState" 
+				:active-language="form.currentState.activeLanguage" 
+				:languages="languages" 
+				@update:active-language="handleLanguageChange"
+			/>
 		</div>
 	</div>
 </template>
@@ -84,9 +104,12 @@ if(languages.length > 0){
 		}
 	}
 
+	
 .form-title {
+	// var(--light-elevation-1);
+
 	border-radius: 10px;
-	box-shadow: 0px 1px 3px 1px #00000026;
+	box-shadow: var(--light-elevation-1);
 	border-top: none;
 	margin-top: 20px;
 
@@ -102,25 +125,20 @@ if(languages.length > 0){
 }
 
 .smaller-screens {
-	// this adds border to parent div so that bottom shadow of immediate child
-	// is visible.
-	border-bottom: 3px solid #fff;
-
-	> div {
-		box-shadow: 0px 1px 2px 0px #0000004D;
-	}
+	background-color: var(--surface-0);
+	filter: drop-shadow(0px 2px 6px rgba(0, 0, 0, 0.15)) drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.30)) ;
 
 	h1 {
 		padding-left: 10px;
 		font-size: 1.5rem;
 	}
 
-	.odk-menu-bar{
+	.form-options{
 		padding-right: 10px;
 	}
 	
 	.btn-menu{
-		color: #000;
+		color: var(--surface-900);
 	}
 }
 
