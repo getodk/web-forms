@@ -43,12 +43,95 @@ export interface BaseNodeState {
 	 */
 	get relevant(): boolean;
 
-	// Note: according to spec, `required` is NOT inherited from ancestor nodes.
-	// What this means for a `required` state on subtree nodes is an open
-	// question. It was also raised on the first engine-internals iteration, and I
-	// could have sworn it was discussed in that PR, but finding any record of
-	// this discussion has proven elusive.
+	/**
+	 * A node's `constraint` state represents a **condition of validity** for the
+	 * node's {@link value}, which must be **satisfied**. The `constraint`
+	 * condition is considered **satisfied** when this state is `true`. Satisfying
+	 * this condition is _necessary but not sufficient_ to fully determine the
+	 * validity of the node's value: the {@link required} condition must also be
+	 * satisfied.
+	 *
+	 * This state will be `true` (and therefore **satisfied**) if **any** of these
+	 * conditions are met:
+	 *
+	 * - The node's definition does not specify a `<bind constraint>` expression
+	 * - The node has a blank {@link value} (see that state property for
+	 *   additional detail)
+	 * - The node's definition does specify a `<bind constraint>` expression, and
+	 *   the expression evaluates to `true`
+	 *
+	 * @see {@link https://getodk.github.io/xforms-spec/#bind-attributes}
+	 *
+	 * @default true
+	 *
+	 * @todo What is the expected behavior of `constraint` expressions defined for
+	 * non-leaf/value nodes?
+	 */
+	get constraint(): boolean;
+
+	/**
+	 * Represents a form-defined message, which will be present if **all**
+	 * of the following conditions are met:
+	 *
+	 * - The node's `<bind>` definition has a `jr:constraintMsg` expression
+	 * - The node's {@link constraint} condition is **not satisfied** (see
+	 *   that state property for additional detail)
+	 *
+	 * @see {@link https://getodk.github.io/xforms-spec/#bind-attributes}
+	 *
+	 * @default null
+	 */
+	get constraintMsg(): TextRange<'constraint'> | null;
+
+	/**
+	 * A node's `required` state addresses two overlapping client concerns:
+	 *
+	 * 1. Allowance for appropriate user guidance when the node must have a
+	 *    non-blank value (see {@link value} for details) to be valid. When this
+	 *    state is `true`, a client may indicate that state alongside its
+	 *    presentation of the node, in order to help users understand that they
+	 *    must supply a value for the node.
+	 *
+	 * 2. Partial representation of the node's validity state. Details of this
+	 *    representation follow.
+	 *
+	 * A node's `required` state determines whether a **condition of validity**
+	 * for the node's {@link value} is applicable; if applicable, the condition
+	 * must be **satisfied**. The `required` condition is considered **satisfied**
+	 * when **any** of these conditions are met:
+	 *
+	 * - The node's definition does not specify a `<bind required>` expression
+	 * - If the node does specify a `<bind required>` expression:
+	 *   - The expression evaluates to `false`
+	 *   - The expression evaluates to `true`  **AND** the node has a non-blank
+	 *     {@link value} (see that state property for additional detail)
+	 *
+	 * Satisfying this condition is _necessary but not sufficient_ to fully
+	 * determine the validity of the node's value: the {@link constraint}
+	 * condition must also be satisfied.
+	 *
+	 * @see {@link https://getodk.github.io/xforms-spec/#bind-attributes}
+	 *
+	 * @default false
+	 *
+	 * @todo What is the expected behavior of `required` expressions defined for
+	 * non-leaf/value nodes?
+	 */
 	get required(): boolean;
+
+	/**
+	 * Represents a form-defined message, which will be present if **all**
+	 * of the following conditions are met:
+	 *
+	 * - The node's `<bind>` definition has a `jr:requiredMsg` expression
+	 * - The node's {@link required} condition is **not satisfied** (see
+	 *   that state property for additional detail)
+	 *
+	 * @see {@link https://getodk.github.io/xforms-spec/#bind-attributes}
+	 *
+	 * @default null
+	 */
+	get requiredMsg(): TextRange<'required'> | null;
 
 	/**
 	 * Interfaces for nodes which cannot provide a label should override this to
@@ -106,6 +189,14 @@ export interface BaseNodeState {
 	 *
 	 * Parent nodes, i.e. nodes which can contain {@link children}, do not store a
 	 * value state. For those nodes, their value state should always be `null`.
+	 *
+	 * A node's value is considered "blank" when its primary instance state is an
+	 * empty string, and it is considered "non-blank" otherwise. The engine may
+	 * represent node values according to aspects of the node's definition (such
+	 * as its defined data type, its associated control type if any). The node's
+	 * value being blank or non-blank may contribute to satisfying conditions of
+	 * the node's validity ({@link constraint}, {@link required}). Otherwise, it
+	 * is an internal engine consideration.
 	 */
 	get value(): unknown;
 }
