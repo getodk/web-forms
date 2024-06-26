@@ -376,16 +376,8 @@ describe('DynamicSelectUpdateTest.java', () => {
 		});
 	});
 
-	/**
-	 * **PORTING NOTES**
-	 *
-	 * This currently fails because repeat-based itemsets are broken more
-	 * generally. As with the above sub-suite, the last assertion is a reference
-	 * check and will always pass. Once repeat-based itemsets are fixed, we'll
-	 * want to consider whether this test should be implemented differently too.
-	 */
 	describe('select with repeat as trigger', () => {
-		it.fails('recomputes [the] choice list at every request', async () => {
+		it('recomputes [the] choice list at every request', async () => {
 			const scenario = await Scenario.init(
 				'Select with repeat trigger',
 				html(
@@ -417,7 +409,8 @@ describe('DynamicSelectUpdateTest.java', () => {
 
 			expect(choices.size()).toBe(2);
 
-			// Because of the repeat trigger in the count expression, choices should be recomputed every time they're requested
+			// JR: Because of the repeat trigger in the count expression, choices
+			// should be recomputed every time they're requested
 			expect(scenario.choicesOf('/data/select')).not.toBe(choices);
 		});
 	});
