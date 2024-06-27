@@ -64,6 +64,10 @@ interface CreateNewRepeatAssertedReferenceOptions {
 	readonly assertCurrentReference: string;
 }
 
+interface SetPositionalStateOptions {
+	readonly createMissingRepeatInstances?: boolean;
+}
+
 // prettier-ignore
 type GetQuestionAtIndexParameters<
 	ExpectedQuestionType extends QuestionNodeType
@@ -140,7 +144,8 @@ export class Scenario {
 	readonly formName: string;
 	readonly instanceRoot: RootNode;
 
-	private readonly getPositionalEvents: Accessor<PositionalEvents>;
+	protected readonly getPositionalEvents: Accessor<PositionalEvents>;
+	protected readonly getEventPosition: Accessor<number>;
 	private readonly setEventPosition: Setter<number>;
 
 	protected readonly getSelectedPositionalEvent: Accessor<AnyPositionalEvent>;
@@ -151,14 +156,15 @@ export class Scenario {
 		this.formName = formName;
 		this.instanceRoot = instanceRoot;
 
-		const [eventPosition, setEventPosition] = createSignal(0);
+		const [getEventPosition, setEventPosition] = createSignal(0);
 
 		this.getPositionalEvents = () => getPositionalEvents(instanceRoot);
+		this.getEventPosition = getEventPosition;
 		this.setEventPosition = setEventPosition;
 
 		this.getSelectedPositionalEvent = createMemo(() => {
 			const events = getPositionalEvents(instanceRoot);
-			const position = eventPosition();
+			const position = getEventPosition();
 			const event = events[position];
 
 			if (event == null) {
@@ -288,13 +294,73 @@ export class Scenario {
 		return this.setNonTerminalEventPosition(increment, expectReference);
 	}
 
-	private setPositionalStateToReference(reference: string): AnyPositionalEvent {
+	private createMissingRepeatInstances(reference: string): void {
+		let tempReference = reference;
+		let indexedReference: string | null = null;
+
+		const trailingPositionalPredicatePattern = /\[\d+\]$/;
+
+		do {
+			if (trailingPositionalPredicatePattern.test(tempReference)) {
+				indexedReference = tempReference;
+			} else {
+				tempReference = tempReference.replace(/\/[^/]+$/, '');
+
+				if (tempReference === '') {
+					break;
+				}
+			}
+		} while (indexedReference == null);
+
+		if (indexedReference == null) {
+			return;
+		}
+
+		const repeatRangeReference = indexedReference.replace(trailingPositionalPredicatePattern, '');
+
+		const positionalPredicate = indexedReference.replace(/^.*\[(\d+)\]$/, '$1');
+		const count = parseInt(positionalPredicate, 10);
+
+		if (count < 1) {
+			return;
+		}
+
+		const repeatRange = this.getInstanceNode(repeatRangeReference);
+
+		if (repeatRange.nodeType !== 'repeat-range') {
+			throw 'todo';
+		}
+
+		const repeatBodyDefinition = repeatRange.definition.bodyElement;
+
+		if (repeatBodyDefinition.countExpression != null || repeatBodyDefinition.isFixedCount) {
+			return;
+		}
+
+		const instances = repeatRange.currentState.children.length;
+		const delta = count - instances;
+
+		for (let i = 0; i < delta; i += 1) {
+			this.createNewRepeat(repeatRangeReference);
+		}
+	}
+
+	private setPositionalStateToReference(
+		reference: string,
+		options: SetPositionalStateOptions = {}
+	): AnyPositionalEvent {
 		const events = this.getPositionalEvents();
 		const index = events.findIndex(({ node }) => {
 			return node?.currentState.reference === reference;
 		});
 
 		if (index === -1) {
+			if (options?.createMissingRepeatInstances) {
+				this.createMissingRepeatInstances(reference);
+
+				return this.setPositionalStateToReference(reference);
+			}
+
 			throw new Error(
 				`Setting answer to ${reference} failed: could not locate question/positional event with that reference.`
 			);
@@ -304,7 +370,9 @@ export class Scenario {
 	}
 
 	private answerSelect(reference: string, ...selectionValues: string[]): ComparableAnswer {
-		const event = this.setPositionalStateToReference(reference);
+		const event = this.setPositionalStateToReference(reference, {
+			createMissingRepeatInstances: true,
+		});
 
 		if (!isQuestionEventOfType(event, 'select')) {
 			throw new Error(
@@ -315,6 +383,15 @@ export class Scenario {
 		return event.answerQuestion(new SelectValuesAnswer(selectionValues));
 	}
 
+	/**
+	 * **PORTING NOTES**
+	 *
+	 * Per JavaRosa:
+	 *
+	 * > This method has side effects:
+	 * > - It will create all the required middle and end repeat group instances
+	 * > - It changes the current form index
+	 */
 	answer(...args: AnswerParameters): unknown {
 		if (isAnswerSelectParams(args)) {
 			return this.answerSelect(...args);
@@ -335,7 +412,9 @@ export class Scenario {
 		} else if (typeof arg0 === 'string') {
 			const reference = arg0;
 
-			event = this.setPositionalStateToReference(reference);
+			event = this.setPositionalStateToReference(reference, {
+				createMissingRepeatInstances: true,
+			});
 			value = arg1;
 		} else {
 			throw new Error('Unsupported `answer` overload call');
@@ -371,7 +450,7 @@ export class Scenario {
 		const node = getNodeForReference(this.instanceRoot, reference);
 
 		if (node == null) {
-			throw new Error(`No "answer" node for reference: ${reference}`);
+			throw new Error(`No instance node for reference: ${reference}`);
 		}
 
 		return node;
