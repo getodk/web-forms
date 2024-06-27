@@ -76,29 +76,26 @@ export class LocationPathEvaluator
 		for (const step of rest) {
 			currentContext = currentContext.step(step);
 
-			// TODO: predicate *logic* feels like it nicely belongs here (so long as it continues to pertain directly to syntax nodes), but application of predicates is definitely a concern that feels it better belongs in `LocationPathEvaluation`
+			// TODO: a previous observation here had noted that it may be appropriate
+			// to move predicate logic to `LocationPathEvaluation`. With some
+			// hindsight, and now with a subset of position predicate logic moved
+			// there to suppport equivalent logic from a function implementation, it
+			// seems quite reasonable that predicate logic would move there entirely.
+			// In fact it almost certainly should.
 			for (const predicateNode of step.predicates) {
 				const [predicateExpressionNode] = predicateNode.children;
 				const predicateExpression = createExpression(predicateExpressionNode);
 
-				let positionPredicate: number | null = null;
-
+				// Static/explicit position predicate
 				if (predicateExpression instanceof NumberExpressionEvaluator) {
-					positionPredicate = predicateExpression.evaluate(currentContext).toNumber();
+					currentContext = currentContext.evaluatePositionPredicate(predicateExpression);
+
+					continue;
 				}
 
 				const filteredNodes: Node[] = [];
 
 				for (const self of currentContext) {
-					if (positionPredicate != null) {
-						if (self.contextPosition() === positionPredicate) {
-							filteredNodes.push(...self.contextNodes);
-							break;
-						} else {
-							continue;
-						}
-					}
-
 					const predicateResult = predicateExpression.evaluate(self);
 
 					// TODO: it's surprising there aren't tests exercising this, but it

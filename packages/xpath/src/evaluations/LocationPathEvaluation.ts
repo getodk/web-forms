@@ -7,9 +7,11 @@ import type {
 	EvaluationContextTreeWalkers,
 } from '../context/EvaluationContext.ts';
 import type { Evaluator } from '../evaluator/Evaluator.ts';
+import type { ExpressionEvaluator } from '../evaluator/expression/ExpressionEvaluator.ts';
 import type { FilterPathExpressionEvaluator } from '../evaluator/expression/FilterPathExpressionEvaluator.ts';
 import type { LocationPathEvaluator } from '../evaluator/expression/LocationPathEvaluator.ts';
 import type { LocationPathExpressionEvaluator } from '../evaluator/expression/LocationPathExpressionEvaluator.ts';
+import type { EvaluableArgument } from '../evaluator/functions/FunctionImplementation.ts';
 import type { FunctionLibraryCollection } from '../evaluator/functions/FunctionLibraryCollection.ts';
 import type { NodeSetFunction } from '../evaluator/functions/NodeSetFunction.ts';
 import type { AnyStep } from '../evaluator/step/Step.ts';
@@ -102,6 +104,8 @@ type ArbitraryNodesTemporaryCallee =
 	| LocationPathEvaluator
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	| NodeSetFunction<any>;
+
+type PositionPredicateEvaluator = EvaluableArgument | ExpressionEvaluator;
 
 // TODO: naming, general design/approach. This class has multiple, overlapping
 // purposes:
@@ -336,6 +340,32 @@ export class LocationPathEvaluation
 		this._first = result;
 
 		return result;
+	}
+
+	evaluatePositionPredicate(predicate: PositionPredicateEvaluator): LocationPathEvaluation {
+		let currentPosition = 0;
+		let positioned: LocationPathEvaluation | null = null;
+
+		const contextPosition = predicate.evaluate(this).toNumber();
+
+		if (contextPosition >= 1) {
+			for (const item of this) {
+				currentPosition += 1;
+
+				if (currentPosition === contextPosition) {
+					positioned = item;
+					break;
+				}
+			}
+		}
+
+		return (
+			positioned ??
+			new LocationPathEvaluation(this, [], {
+				contextPosition,
+				contextSize: () => this.contextSize(),
+			})
+		);
 	}
 
 	protected _isEmpty: boolean | null = null;
