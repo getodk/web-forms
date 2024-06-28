@@ -6740,6 +6740,11 @@ vite-plugin-babel@^1.2.0:
   resolved "https://registry.yarnpkg.com/vite-plugin-babel/-/vite-plugin-babel-1.2.0.tgz#0d803d489c2a7e63ceb93e37533de298e1537c71"
   integrity sha512-ltAnq535Ubf9sDbVCkztAdkwx5aQbNrwPFs+iZTJ5FaAhTdxjqmLGpxsAaRfJWEKBJ/kFf9KwMoTdArm0IRUUw==
 
+vite-plugin-css-injected-by-js@^3.5.1:
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/vite-plugin-css-injected-by-js/-/vite-plugin-css-injected-by-js-3.5.1.tgz#b9c568c21b131d08e31aa6d368ee39c9d6c1b6c1"
+  integrity sha512-9ioqwDuEBxW55gNoWFEDhfLTrVKXEEZgl5adhWmmqa88EQGKfTmexy4v1Rh0pAS6RhKQs2bUYQArprB32JpUZQ==
+
 vite-plugin-dts@^3.9.1:
   version "3.9.1"
   resolved "https://registry.yarnpkg.com/vite-plugin-dts/-/vite-plugin-dts-3.9.1.tgz#625ad388ec3956708ccec7960550a7b0a8e8909e"
