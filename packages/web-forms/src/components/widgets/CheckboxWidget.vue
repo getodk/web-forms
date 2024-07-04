@@ -34,7 +34,7 @@ const setSelectNValue = (values: SelectItem[]) => {
 			:model-value="question.currentState.value"
 			@update:model-value="setSelectNValue"
 		/>
-		<span>
+		<span class="label-text">
 			{{ option.label?.asString }}
 		</span>
 	</label>
@@ -61,7 +61,7 @@ const setSelectNValue = (values: SelectItem[]) => {
 		background-color: var(--primary-50);
 	}
 
-	span {
+	.label-text {
 		margin-left: 10px;
 	}
 
@@ -80,7 +80,7 @@ const setSelectNValue = (values: SelectItem[]) => {
 		margin-left: -15px;
 	}
 
-	span {
+	.label-text {
 		margin-left: 0;
 	}
 }

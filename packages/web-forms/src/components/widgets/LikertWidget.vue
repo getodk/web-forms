@@ -26,15 +26,41 @@ defineProps<{question: SelectNode}>();
 		align-items: center;
 		cursor: pointer;
 		outline: none;
-		padding:0;
+		padding: 10px 0;
+		margin-left: 10px;
+		margin-right: 10px;
+
+		&:last-of-type::before {
+			width: calc(50% + 20px);
+			right: max(20px, calc(50% - 20px));
+		}
+
+		&:first-of-type::before {
+			width: calc(50% + 20px);
+			left: max(20px, calc(50% - 20px));
+		}
+
+		&::before{
+			content: '';
+			display: block;
+			position: relative;
+			background-color: #ccc;
+			height: 3px;
+			width: calc(100% + 20px);
+			top: 11px;
+		}
 
 		&:hover {
-			background-color: unset;
+			background-color: var(--primary-100);
 		}
 
 		&.active {
 			background-color: unset;
 			outline: none;
+
+			&:hover {
+				background-color: var(--primary-100);
+			}
 		}
 
 
@@ -43,9 +69,8 @@ defineProps<{question: SelectNode}>();
 			z-index: 10;
 		}
 
-		span {
+		.label-text {
 			text-align: center;
-			border-top: 3px solid #ccc;
 			margin-top: -11.5px;
 			margin-left: 0;
 			width: 100%;
@@ -53,32 +78,6 @@ defineProps<{question: SelectNode}>();
 			padding-top: 20px;
 			display: block;
 			word-break: break-word;
-		}
-
-		&:first-of-type {
-			span::after {
-				content: '';
-				display: block;
-				position: absolute;
-				top: -8px;
-				width: 50%;
-				background-color: #fff;
-				height: 10px;
-				left: 0;
-			}
-		}
-
-		&:last-of-type {
-			span::after {
-				content: '';
-				display: block;
-				position: absolute;
-				top: -8px;
-				width: 50%;
-				background-color: #fff;
-				height: 10px;
-				right: 0;
-			}
 		}
 
 	}

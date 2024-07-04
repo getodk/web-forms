@@ -47,7 +47,7 @@ defineProps<{ appearances: SelectNodeAppearances}>();
 			background: unset;
 		}
 
-		span {
+		.label-text {
 			display: block;
 			margin-left: 0;
 		}
@@ -62,7 +62,7 @@ defineProps<{ appearances: SelectNodeAppearances}>();
 
   :deep(.value-option){
     border-radius: 35px;
-    span {
+    .label-text {
       display: none;
     }
   }
@@ -101,7 +101,7 @@ defineProps<{ appearances: SelectNodeAppearances}>();
       top: 20px;
     }
 
-    span {
+    .label-text {
       position: relative;
       top: -20px;
       margin-bottom: 10px;
