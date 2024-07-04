@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { FullWidth as vFullWidth } from '@/directives/FullWidth';
 import type { SelectNode } from '@getodk/xforms-engine';
 import ControlLabel from '../ControlLabel.vue';
 import ColumnarAppearance from '../appearances/ColumnarAppearance.vue';
@@ -39,7 +38,7 @@ const hasFieldListRelatedAppearance = !![...props.question.appearances].find(a =
 		<template v-if="question.appearances.map || question.appearances['image-map']">
 			<UnsupportedAppearance :appearance="[...question.appearances].toString()" node-type="Select" />
 		</template>
-		<div v-full-width class="default-appearance">
+		<div class="default-appearance">
 			<CheckboxWidget :question="question" />
 		</div>
 	</template>
@@ -54,6 +53,7 @@ const hasFieldListRelatedAppearance = !![...props.question.appearances].find(a =
 	@media screen and (min-width: #{$md}) {
 		min-width: 50%;
 		width: max-content;
+		max-width: 100%;
 	}
 }
 </style>

@@ -124,10 +124,4 @@ body {
 		background: white;
 	}
 }
-
-@media screen and (min-width: #{$md}) {
-	.full-width {
-			width: 100% !important;
-		}
-}
 </style>

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { FullWidth as vFullWidth } from '@/directives/FullWidth';
 import type { GroupNode } from '@getodk/xforms-engine';
 import { computed } from 'vue';
 import FormPanel from './FormPanel.vue';
@@ -21,7 +20,7 @@ const tableLayout = computed(() => {
 
 <template>
 	<FormPanel :title="node.currentState.label?.asString" :no-ui="!node.currentState.label" :class="classes">
-		<div v-full-width="tableLayout" :class="{ 'table-layout': tableLayout }">
+		<div :class="{ 'table-layout': tableLayout }">
 			<QuestionList :nodes="node.currentState.children" />
 		</div>
 	</FormPanel>
@@ -35,5 +34,6 @@ const tableLayout = computed(() => {
 	width: max-content;
 	min-width: 50%;
 	display: table;
+	max-width: 100%;
 }
 </style>
