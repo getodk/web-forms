@@ -163,14 +163,14 @@
       <instance>
         <data id="static-selects">
           <fruit>cherry</fruit>
-          <fruits>blackberry peach</fruits>
+          <fruits>blackberry  peach</fruits>
           <meta>
-            <instanceID />
+            <instanceID/>
           </meta>
         </data>
       </instance>
-      <bind nodeset="/data/fruit" type="string" />
-      <bind nodeset="/data/fruits" type="string" />
+      <bind nodeset="/data/fruit" type="string"/>
+      <bind nodeset="/data/fruits" type="string"/>
     </model>
   </h:head>
   <h:body>
