@@ -118,6 +118,8 @@ jobs:
 
       - run: 'yarn lint'
 
+      - run: 'yarn format:checkonly'
+
   odk-common:
     name: '@getodk/common'
     needs: ['install-and-build']
