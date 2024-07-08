@@ -36,7 +36,7 @@ import {
 describe('TriggerableDagTest.java', () => {
 	describe('//region Required and constraint', () => {
 		describe('constraints of fields that are empty', () => {
-			it.fails('[is] are always satisfied', async () => {
+			it('[is] are always satisfied', async () => {
 				const scenario = await Scenario.init(
 					'Some form',
 					html(
@@ -62,7 +62,7 @@ describe('TriggerableDagTest.java', () => {
 		});
 
 		describe('empty required fields', () => {
-			it.fails('make[s] form validation fail', async () => {
+			it('make[s] form validation fail', async () => {
 				const scenario = await Scenario.init(
 					'Some form',
 					html(
@@ -86,7 +86,7 @@ describe('TriggerableDagTest.java', () => {
 		});
 
 		describe('constraint violations and form finalization', () => {
-			it.fails('[has no clear BDD-ish description equivalent]', async () => {
+			it('[has no clear BDD-ish description equivalent]', async () => {
 				const scenario = await Scenario.init(
 					'Some form',
 					html(
@@ -144,29 +144,50 @@ describe('TriggerableDagTest.java', () => {
  */
 describe('`constraint`', () => {
 	describe('FormDefTest.java', () => {
+		interface PrimaryInstanceIdOptions {
+			readonly temporarilyIncludePrimaryInstanceId: boolean;
+		}
+
 		/**
 		 * **PORTING NOTES**
 		 *
-		 * - From Slack discussion, there's probably no meaning to this fixture
-		 *   having a `.xhtml` suffix. Rename to `.xml` for consistency? (Would be
-		 *   helpful for find-in-project filtering).
-		 *
-		 * - Currently fails on form init, as the primary instance does not have an
-		 *   `id` attribute. Deferring accommodation of that as the test is also
-		 *   expected to fail pending `constraint` feature support.
+		 * Fails on form init, as the primary instance does not have an `id`
+		 * attribute. Parameterized to demonstrate test is now passing otherwise.
 		 */
-		it.fails('enforces `constraint`s defined [on] in a field', async () => {
-			const scenario = await Scenario.init(r('ImageSelectTester.xhtml'));
+		describe.each<PrimaryInstanceIdOptions>([
+			{ temporarilyIncludePrimaryInstanceId: false },
+			{ temporarilyIncludePrimaryInstanceId: true },
+		])(
+			'temporarily include primary instance id: $temporarilyIncludePrimaryInstanceId',
+			({ temporarilyIncludePrimaryInstanceId }) => {
+				let testFn: typeof it | typeof it.fails;
 
-			scenario.next('/icons/id');
-			scenario.next('/icons/name');
-			scenario.next('/icons/find-mirc');
-			scenario.next('/icons/non-local');
-			scenario.next('/icons/consTest');
+				if (temporarilyIncludePrimaryInstanceId) {
+					testFn = it;
+				} else {
+					testFn = it.fails;
+				}
 
-			expect(scenario.answer('10')).toHaveValidityStatus(AnswerResult.CONSTRAINT_VIOLATED);
-			expect(scenario.answer('13')).toHaveValidityStatus(AnswerResult.OK);
-		});
+				testFn('enforces `constraint`s defined [on] in a field', async () => {
+					const scenario = await Scenario.init(
+						r(
+							temporarilyIncludePrimaryInstanceId
+								? 'ImageSelectTester-alt.xml'
+								: 'ImageSelectTester.xml'
+						)
+					);
+
+					scenario.next('/icons/id');
+					scenario.next('/icons/name');
+					scenario.next('/icons/find-mirc');
+					scenario.next('/icons/non-local');
+					scenario.next('/icons/consTest');
+
+					expect(scenario.answer('10')).toHaveValidityStatus(AnswerResult.CONSTRAINT_VIOLATED);
+					expect(scenario.answer('13')).toHaveValidityStatus(AnswerResult.OK);
+				});
+			}
+		);
 	});
 
 	/**
@@ -193,6 +214,11 @@ describe('`constraint`', () => {
 	 *   mechanism for the assertion as-ported. (It still has an `unknown` return
 	 *   type, which we can make more specific if we agree to introduce such a
 	 *   substantial difference in the {@link Scenario} API.)
+	 *
+	 * - Test exercises (de)serialization (which we do not support), as well as
+	 *   validation. The former is the nature of failure as ported. An alternate
+	 *   test has been added below demonstrating that validation otherwise works
+	 *   as expected.
 	 */
 	it.fails('enforces `constraint`s when [an] instance is deserialized', async () => {
 		const formDef = html(
@@ -229,5 +255,166 @@ describe('`constraint`', () => {
 		result = restored.answer('00000');
 
 		expect(result).toHaveValidityStatus(AnswerResult.CONSTRAINT_VIOLATED);
+	});
+
+	it('enforces an arbitrary regex `constraint` expression (alternate to test above)', async () => {
+		const formDef = html(
+			head(
+				title('Some form'),
+				model(
+					mainInstance(t('data id="some-form"', t('a'))),
+					bind('/data/a').type('string').constraint("regex(.,'[0-9]{10}')")
+				)
+			),
+			body(input('/data/a'))
+		);
+
+		const scenario = await Scenario.init('Some form', formDef);
+
+		scenario.next('/data/a');
+
+		let result = scenario.answer('00000');
+
+		expect(result).toHaveValidityStatus(AnswerResult.CONSTRAINT_VIOLATED);
+
+		result = scenario.answer('0000000000');
+
+		expect(result).toHaveValidityStatus(AnswerResult.OK);
+
+		result = scenario.answer('00000');
+
+		expect(result).toHaveValidityStatus(AnswerResult.CONSTRAINT_VIOLATED);
+	});
+});
+
+describe('Validity messages', () => {
+	interface ValidationMessageOptions {
+		readonly constraintMsg?: string;
+		readonly requiredMsg?: string;
+	}
+
+	const initValidationFixture = async (
+		options: ValidationMessageOptions = {}
+	): Promise<Scenario> => {
+		const { constraintMsg, requiredMsg } = options;
+
+		let bindConstrainedInput = bind('/data/constrained-input').constraint("regex(.,'[0-9]{10}')");
+
+		if (constraintMsg != null) {
+			bindConstrainedInput = bindConstrainedInput.withAttribute(
+				'jr',
+				'constraintMsg',
+				constraintMsg
+			);
+		}
+
+		let bindRequiredInput = bind('/data/required-input').required();
+
+		if (requiredMsg != null) {
+			bindRequiredInput = bindRequiredInput.withAttribute('jr', 'requiredMsg', requiredMsg);
+		}
+
+		return Scenario.init(
+			'Validation fixture',
+			html(
+				head(
+					title('Validation fixture'),
+					model(
+						mainInstance(
+							t('data id="validation-fixture"', t('constrained-input'), t('required-input'))
+						),
+						bindConstrainedInput,
+						bindRequiredInput
+					)
+				),
+				body(input('/data/constrained-input'), input('/data/required-input'))
+			)
+		);
+	};
+
+	it('provides a form-defined message on constraint validation failure', async () => {
+		const constraintMsg = 'Must be ten digits';
+		const scenario = await initValidationFixture({ constraintMsg });
+
+		let result = scenario.answer('/data/constrained-input', '00000');
+
+		expect(result).toHaveConstraintMessage(constraintMsg);
+		expect(result).toHaveRequiredMessage(null);
+		expect(result).toHaveValidityMessage(constraintMsg);
+
+		result = scenario.answer('/data/constrained-input', '0000000000');
+
+		expect(result).toHaveConstraintMessage(null);
+		expect(result).toHaveRequiredMessage(null);
+		expect(result).toHaveValidityMessage(null);
+
+		result = scenario.answer('/data/constrained-input', '00000');
+
+		expect(result).toHaveConstraintMessage(constraintMsg);
+		expect(result).toHaveRequiredMessage(null);
+		expect(result).toHaveValidityMessage(constraintMsg);
+	});
+
+	it('provides an engine-defined message on constraint validation failure', async () => {
+		const scenario = await initValidationFixture();
+
+		let result = scenario.answer('/data/constrained-input', '00000');
+
+		expect(result).toHaveDefaultConstraintMessage();
+		expect(result).toHaveRequiredMessage(null);
+
+		result = scenario.answer('/data/constrained-input', '0000000000');
+
+		expect(result).toHaveConstraintMessage(null);
+		expect(result).toHaveRequiredMessage(null);
+		expect(result).toHaveValidityMessage(null);
+
+		result = scenario.answer('/data/constrained-input', '00000');
+
+		expect(result).toHaveDefaultConstraintMessage();
+		expect(result).toHaveRequiredMessage(null);
+	});
+
+	it('provides a form-defined message on required validation failure', async () => {
+		const requiredMsg = 'Must provide an answer!!';
+		const scenario = await initValidationFixture({ requiredMsg });
+
+		let result = scenario.answerOf('/data/required-input');
+
+		expect(result).toHaveConstraintMessage(null);
+		expect(result).toHaveRequiredMessage(requiredMsg);
+		expect(result).toHaveValidityMessage(requiredMsg);
+
+		result = scenario.answer('/data/required-input', '0000000000');
+
+		expect(result).toHaveConstraintMessage(null);
+		expect(result).toHaveRequiredMessage(null);
+		expect(result).toHaveValidityMessage(null);
+
+		result = scenario.answer('/data/required-input', '');
+
+		expect(result).toHaveConstraintMessage(null);
+		expect(result).toHaveRequiredMessage(requiredMsg);
+		expect(result).toHaveValidityMessage(requiredMsg);
+	});
+
+	it('provides an engine-defined message on required validation failure', async () => {
+		const scenario = await initValidationFixture();
+
+		let result = scenario.answerOf('/data/required-input');
+
+		expect(result).toHaveDefaultRequiredMessage();
+		expect(result).toHaveConstraintMessage(null);
+
+		result = scenario.answer('/data/required-input', '0000000000');
+
+		expect(result).toHaveConstraintMessage(null);
+		expect(result).toHaveRequiredMessage(null);
+		expect(result).toHaveValidityMessage(null);
+
+		result = scenario.answer('/data/required-input', '');
+
+		expect(result).toHaveDefaultRequiredMessage();
+		expect(result).toHaveConstraintMessage(null);
 	});
 });
