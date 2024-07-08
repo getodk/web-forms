@@ -11,6 +11,8 @@ const props = defineProps<{ formXml: string }>();
 
 const odkForm = ref<RootNode>();
 
+const submitPressed = ref(false);
+
 const emit = defineEmits(['submit']);
 
 initializeForm(props.formXml, {
@@ -22,21 +24,28 @@ initializeForm(props.formXml, {
   }).catch(() => {}); // eslint-disable-line -- noop
 
 const handleSubmit = () => {
-	emit('submit');
+	submitPressed.value = true;
+
+	if(odkForm.value?.validationState.violations?.length === 0){
+		emit('submit');
+	}
+	else{
+		window.scrollTo({top: 0, behavior: 'smooth'});
+	}
 }
 
 
 </script>
 
 <template>
-	<div v-if="odkForm" class="odk-form">
+	<div v-if="odkForm" class="odk-form" :class="{ 'submit-pressed': submitPressed }">
 		<div class="form-wrapper">
 			<FormHeader :form="odkForm" />
 
 			<Card class="questions-card">
 				<template #content>
 					<div class="form-questions">
-						<div class="flex flex-column gap-5">
+						<div class="flex flex-column gap-2">
 							<QuestionList :nodes="odkForm.currentState.children" />
 						</div>
 					</div>
@@ -71,7 +80,7 @@ const handleSubmit = () => {
 			margin-top: 20px;
 
 			:deep(.p-card-content) {
-				padding: 1rem;
+				padding: 0;
 			}
 		}
 

@@ -19,6 +19,7 @@ const tableLayout = computed(() => {
 </script>
 
 <template>
+	{{ node.validationState.violations.length }}
 	<FormPanel :title="node.currentState.label?.asString" :no-ui="!node.currentState.label" :class="classes">
 		<div :class="{ 'table-layout': tableLayout }">
 			<QuestionList :nodes="node.currentState.children" />

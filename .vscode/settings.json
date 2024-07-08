@@ -34,5 +34,8 @@
   "js/ts.implicitProjectConfig.target": "ES2022",
   "[xml]": {
     "editor.defaultFormatter": "redhat.vscode-xml"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
   }
 }

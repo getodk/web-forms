@@ -3,7 +3,8 @@ import { type FormLanguage, type RootNode, type SyntheticDefaultLanguage } from 
 import PrimeButton from 'primevue/button';
 import PrimeCard from 'primevue/card';
 import PrimeMenu from 'primevue/menu';
-import { ref } from 'vue';
+import PrimeMessage from 'primevue/message';
+import { computed, ref } from 'vue';
 import FormLanguageDialog from './FormLanguageDialog.vue';
 import FormLanguageMenu from './FormLanguageMenu.vue';
 
@@ -18,6 +19,14 @@ const isFormLanguage = (lang: FormLanguage | SyntheticDefaultLanguage) : lang is
 const languages = props.form.languages.filter(isFormLanguage);
 
 const print = () => window.print();
+
+const formErrorMessage = computed(() => {
+	const violationLength = props.form.validationState.violations.length;
+
+	if(violationLength === 0) return '';
+	else if(violationLength === 1) return '1 question with error';
+	else return `${violationLength} questions with errors`;
+});
 
 const items = ref([
 	{
@@ -38,10 +47,21 @@ if(languages.length > 0){
 const handleLanguageChange = (event: FormLanguage) => {
 	props.form.setLanguage(event);
 };
+
+const scrollToFirstInvalidQuestion = () => {
+	document.getElementById(props.form.validationState.violations[0].nodeId + '_container')?.scrollIntoView({
+		behavior: 'smooth'
+	});
+}
 </script>
 
 <template>
 	<!-- for desktop -->
+	{{ form.validationState.violations.length }}
+	<PrimeMessage v-if="formErrorMessage" severity="error" icon="icon-error_outline" class="form-error-message" :closable="false">
+		{{ formErrorMessage }}
+		<span class="fix-errors" @click="scrollToFirstInvalidQuestion()">Fix errors</span>
+	</PrimeMessage>
 	<div class="hidden lg:flex justify-content-end flex-wrap gap-3 larger-screens">
 		<PrimeButton class="print-button" severity="secondary" rounded icon="icon-local_printshop" @click="print" />
 		<FormLanguageMenu 
@@ -104,7 +124,6 @@ const handleLanguageChange = (event: FormLanguage) => {
 		}
 	}
 
-	
 .form-title {
 	// var(--light-elevation-1);
 
@@ -122,6 +141,29 @@ const handleLanguageChange = (event: FormLanguage) => {
 			margin: 10px 0;
 		}
 	}
+}
+
+.form-error-message.p-message.p-message-error {
+	border-radius: 10px;
+	background-color: var(--error-bg-color);
+	border: 1px solid var(--error-text-color);
+	width: 70%;
+	margin: 0rem auto 1rem auto;
+
+	:deep(.p-message-wrapper) {
+		padding: 0.75rem 0.75rem;
+	}
+
+	:deep(.p-message-text){
+		font-weight: 400;
+		flex-grow: 1;
+
+		.fix-errors {
+			float: right;
+			cursor: pointer;
+		}
+	}
+
 }
 
 .smaller-screens {
