@@ -27,7 +27,7 @@
   ],
   "engines": {
     "node": "^18.20.4 || ^20.15.1 || ^22.4.1",
-    "yarn": "1.22.19"
+    "yarn": "1.22.22"
   },
   "scripts": {
     "benchmark": "npm-run-all --print-name --print-label benchmark-node:* benchmark-browser:*",
