@@ -4,6 +4,6 @@
   "private": true,
   "type": "module",
   "devDependencies": {
-    "globby": "^13.2.2"
+    "globby": "^14.0.2"
   }
 }

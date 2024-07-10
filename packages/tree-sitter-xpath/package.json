@@ -39,11 +39,11 @@
   },
   "devDependencies": {
     "@asgerf/dts-tree-sitter": "^0.1.0",
-    "nan": "^2.19.0",
+    "nan": "2.20.0",
     "node-gyp": "10.1.0",
     "tree-sitter": "0.21.1",
     "tree-sitter-cli": "0.22.6",
-    "vite": "^5.2.11",
+    "vite": "^5.3.3",
     "web-tree-sitter": "0.22.6"
   },
   "peerDependencies": {
