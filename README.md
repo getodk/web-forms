@@ -32,6 +32,294 @@ Here are some of our high-level priorities to get to a production-ready state:
 - Implement all types and appearances defined in [XLSForm](https://xlsform.org/en/ref-table/)
 - Define a thoughtful interface for host applications that balances ease of use and flexibility
 
+Here is the feature matrix and the progress we have made so far:
+
+<!-- Following section is auto generated. Please update the `feature-matrix.json` as more features are implemented and then run `yarn feature-matrix` from the repository's root to regenerate this section. -->
+
+<!-- autogen: feature-matrix -->
+
+<details>
+  <summary>${\mathtt{Question \space \space types \space \space (basic \space \space functionality)\color{transparent}==== \color{green}███\color{LightGray}█████████████████ \space \color{initial} 15\%}}$</summary>
+
+  <br/>
+
+| Feature <img width=250px/> | Progress |
+| -------------------------- | :------: |
+| text                       |    ✅    |
+| integer                    |          |
+| decimal                    |          |
+| note                       |    🚧    |
+| select_one                 |    ✅    |
+| select_multiple            |    ✅    |
+| repeat                     |    ✅    |
+| group                      |    ✅    |
+| geopoint                   |          |
+| geotrace                   |          |
+| geoshape                   |          |
+| start-geopoint             |          |
+| range                      |          |
+| image                      |          |
+| barcode                    |          |
+| audio                      |          |
+| background-audio           |          |
+| video                      |          |
+| file                       |          |
+| date                       |          |
+| time                       |          |
+| datetime                   |          |
+| rank                       |          |
+| csv-external               |          |
+| acknowledge                |          |
+| start                      |          |
+| end                        |          |
+| today                      |          |
+| deviceid                   |          |
+| username                   |          |
+| phonenumber                |          |
+| email                      |          |
+| audit                      |          |
+
+</details>
+
+<details>
+  <summary>${\mathtt{Appearances\color{transparent}============================= \color{green}████\color{LightGray}████████████████ \space \color{initial} 21\%}}$</summary>
+
+  <br/>
+
+| Feature <img width=250px/> | Progress |
+| -------------------------- | :------: |
+| numbers                    |          |
+| multiline                  |          |
+| url                        |          |
+| ex:                        |          |
+| thousands-sep              |          |
+| bearing                    |          |
+| vertical                   |          |
+| no-ticks                   |          |
+| picker                     |          |
+| rating                     |          |
+| new                        |          |
+| new-front                  |          |
+| draw                       |          |
+| annotate                   |          |
+| signature                  |          |
+| no-calendar                |          |
+| month-year                 |          |
+| year                       |          |
+| ethiopian                  |          |
+| coptic                     |          |
+| islamic                    |          |
+| bikram-sambat              |          |
+| myanmar                    |          |
+| persian                    |          |
+| placement-map              |          |
+| maps                       |          |
+| hide-input                 |          |
+| minimal                    |    ✅    |
+| search / autocomplete      |    ✅    |
+| quick                      |          |
+| columns-pack               |          |
+| columns                    |    ✅    |
+| columns-n                  |    ✅    |
+| no-buttons                 |    ✅    |
+| image-map                  |          |
+| likert                     |          |
+| map                        |          |
+| field-list                 |    ✅    |
+| label                      |    ✅    |
+| list-nolabel               |    ✅    |
+| list                       |    ✅    |
+| table-list                 |          |
+
+</details>
+
+<details>
+  <summary>${\mathtt{Parameters\color{transparent}============================== \color{green}████\color{LightGray}████████████████ \space \color{initial} 22\%}}$</summary>
+
+  <br/>
+
+| Feature <img width=250px/>                                                                                                       | Progress |
+| -------------------------------------------------------------------------------------------------------------------------------- | :------: |
+| randomize                                                                                                                        |    ✅    |
+| seed                                                                                                                             |    ✅    |
+| value                                                                                                                            |          |
+| label                                                                                                                            |          |
+| geopoint capture-accuracy, warning-accur<br/>acy, allow-mock-accuracy                                                            |          |
+| range start, end, step                                                                                                           |          |
+| image max-pixels                                                                                                                 |          |
+| audio quality                                                                                                                    |          |
+| Audit: location-priority, location-min-i<br/>nterval, location-max-age, track-changes<br/>, track-changes-reasons, identify-user |          |
+
+</details>
+
+<details>
+  <summary>${\mathtt{Form \space \space Logic\color{transparent}============================== \color{green}██████████\color{LightGray}██████████ \space \color{initial} 50\%}}$</summary>
+
+  <br/>
+
+| Feature <img width=250px/> | Progress |
+| -------------------------- | :------: |
+| calculate                  |    ✅    |
+| relevant                   |    ✅    |
+| required                   |    ✅    |
+| required message           |    🚧    |
+| custom constraint          |    🚧    |
+| constraint message         |    🚧    |
+| read only                  |    ✅    |
+| trigger                    |          |
+| choice filter              |    ✅    |
+| default                    |    ✅    |
+| query parameter            |          |
+| repeat_count               |          |
+
+</details>
+
+<details>
+  <summary>${\mathtt{Descriptions \space \space and \space \space Annotations\color{transparent}============ \color{green}██\color{LightGray}██████████████████ \space \color{initial} 13\%}}$</summary>
+
+  <br/>
+
+| Feature <img width=250px/>                     | Progress |
+| ---------------------------------------------- | :------: |
+| label                                          |    ✅    |
+| hint                                           |          |
+| guidance hint                                  |          |
+| Translations                                   |    ✅    |
+| Translations with field/question value         |          |
+| Markdown                                       |          |
+| Inline HTML                                    |          |
+| Form attachments                               |          |
+| image                                          |          |
+| big-image                                      |          |
+| audio                                          |          |
+| video                                          |          |
+| secondary instance (external choice file<br/>) |          |
+| secondary instance (last saved)                |          |
+| autoplay                                       |          |
+
+</details>
+
+<details>
+  <summary>${\mathtt{Theme \space \space and \space \space Layouts\color{transparent}======================= \color{green}█\color{LightGray}███████████████████ \space \color{initial} 9\%}}$</summary>
+
+  <br/>
+
+| Feature <img width=250px/> | Progress |
+| -------------------------- | :------: |
+| grid                       |          |
+| pages                      |          |
+| print                      |          |
+| logo                       |          |
+| theme color                |          |
+| Submissions                |          |
+| preview                    |    ✅    |
+| send                       |          |
+| view                       |          |
+| edit                       |          |
+| attachments                |          |
+
+</details>
+
+<details>
+  <summary>${\mathtt{Offline \space \space capabilities\color{transparent}==================== \color{green}█\color{LightGray}███████████████████ \space \color{initial} 0\%}}$</summary>
+
+  <br/>
+
+| Feature <img width=250px/>   | Progress |
+| ---------------------------- | :------: |
+| List of projects & forms     |          |
+| local persistence (single)   |          |
+| save as draft                |          |
+| offline entities             |          |
+| MBtiles / offline map layers |          |
+
+</details>
+
+<details>
+  <summary>${\mathtt{XPath\color{transparent}=================================== \color{green}██████████████████\color{LightGray}██ \space \color{initial} 94\%}}$</summary>
+
+  <br/>
+
+| Feature <img width=250px/>                                                                                      | Progress |
+| --------------------------------------------------------------------------------------------------------------- | :------: |
+| operators                                                                                                       |    ✅    |
+| predicates                                                                                                      |    ✅    |
+| axes                                                                                                            |    ✅    |
+| string(\* arg)                                                                                                  |    ✅    |
+| concat(string arg*\|node-set arg*)                                                                              |    ✅    |
+| join(string separator, node-set nodes\*)                                                                        |    ✅    |
+| substr(string value, number start, numbe<br/>r end?)                                                            |    ✅    |
+| substring-before(string, string)                                                                                |    ✅    |
+| substring-after(string, string)                                                                                 |    ✅    |
+| translate(string, string, string)                                                                               |    ✅    |
+| string-length(string arg)                                                                                       |    ✅    |
+| normalize-space(string arg?)                                                                                    |    ✅    |
+| contains(string haystack, string needle)                                                                        |    ✅    |
+| starts-with(string haystack, string need<br/>le)                                                                |    ✅    |
+| ends-with(string haystack, string needle<br/>)                                                                  |    ✅    |
+| uuid(number?)                                                                                                   |    ✅    |
+| digest(string src, string algorithm, str<br/>ing encoding?)                                                     |    ✅    |
+| pulldata(string instance_id, string desi<br/>red_element, string query_element, strin<br/>g query)              |          |
+| if(boolean condition, _ then, _ else)                                                                           |    ✅    |
+| coalesce(string arg1, string arg2)                                                                              |    ✅    |
+| once(string calc)                                                                                               |    ✅    |
+| true()                                                                                                          |    ✅    |
+| false()                                                                                                         |    ✅    |
+| boolean(\* arg)                                                                                                 |    ✅    |
+| boolean-from-string(string arg)                                                                                 |    ✅    |
+| not(boolean arg)                                                                                                |    ✅    |
+| regex(string value, string expression)                                                                          |    ✅    |
+| checklist(number min, number max, string<br/> v\*)                                                              |    ✅    |
+| weighted-checklist(number min, number ma<br/>x, [string v, string w]\*)                                         |    ✅    |
+| number(\* arg)                                                                                                  |    ✅    |
+| random()                                                                                                        |    ✅    |
+| int(number arg)                                                                                                 |    ✅    |
+| sum(node-set arg)                                                                                               |    ✅    |
+| max(node-set arg\*)                                                                                             |    ✅    |
+| min(node-set arg\*)                                                                                             |    ✅    |
+| round(number arg, number decimals?)                                                                             |    ✅    |
+| pow(number value, number power)                                                                                 |    ✅    |
+| log(number arg)                                                                                                 |    ✅    |
+| log10(number arg)                                                                                               |    ✅    |
+| abs(number arg)                                                                                                 |    ✅    |
+| sin(number arg)                                                                                                 |    ✅    |
+| cos(number arg)                                                                                                 |    ✅    |
+| tan(number arg)                                                                                                 |    ✅    |
+| asin(number arg)                                                                                                |    ✅    |
+| acos(number arg)                                                                                                |    ✅    |
+| atan(number arg)                                                                                                |    ✅    |
+| atan2(number arg, number arg)                                                                                   |    ✅    |
+| sqrt(number arg)                                                                                                |    ✅    |
+| exp(number arg)                                                                                                 |    ✅    |
+| exp10(number arg)                                                                                               |    ✅    |
+| pi()                                                                                                            |    ✅    |
+| count(node-set arg)                                                                                             |    ✅    |
+| count-non-empty(node-set arg)                                                                                   |    ✅    |
+| position(node arg?)                                                                                             |    ✅    |
+| instance(string id)                                                                                             |    ✅    |
+| current()                                                                                                       |    ✅    |
+| randomize(node-set arg, number seed)                                                                            |    ✅    |
+| today()                                                                                                         |    ✅    |
+| now()                                                                                                           |    ✅    |
+| format-date(date value, string format)                                                                          |    ✅    |
+| format-date-time(dateTime value, string <br/>format)                                                            |    ✅    |
+| date(\* value)                                                                                                  |    ✅    |
+| decimal-date-time(dateTime value)                                                                               |    ✅    |
+| decimal-time(time value)                                                                                        |    ✅    |
+| selected(string list, string value)                                                                             |    ✅    |
+| selected-at(string list, number index)                                                                          |    ✅    |
+| count-selected(node node)                                                                                       |    ✅    |
+| jr:choice-name(node node, string value)                                                                         |          |
+| jr:itext(string id)                                                                                             |    ✅    |
+| indexed-repeat(node-set arg, node-set re<br/>peat1, number index1, [node-set repeatN,<br/> number indexN]{0,2}) |          |
+| area(node-set ns\|geoshape gs)                                                                                  |    ✅    |
+| distance(node-set ns\|geoshape gs\|geotr<br/>ace gt\|(geopoint\|string) arg\*)                                  |    ✅    |
+| base64-decode(base64Binary input)                                                                               |          |
+
+</details>
+
+<!-- /autogen: feature-matrix -->
+
 We welcome discussion about the project [on the ODK forum](https://forum.getodk.org/)! The forum is generally the preferred place for questions, issue reports, and feature requests unless you have information to add to an existing issue.
 
 ## Q&A
