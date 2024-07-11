@@ -12,3 +12,6 @@
 # Exclude Vue entirely. There are many conflicts with ESLint Vue rules, and some
 # of those appear to affect behavior.
 **/*.vue
+
+# Exclude test Forms in Scenario package, most of which came from JavaRosa
+packages/scenario/resources
