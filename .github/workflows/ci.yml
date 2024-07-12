@@ -550,11 +550,5 @@ jobs:
       - if: ${{ matrix.target == 'Web' }}
         run: 'yarn playwright install ${{ matrix.browser }} --with-deps'
 
-      # TODO: hopefully temporary! Attempt to mitigate flakiness in webkit by
-      # running twice when first run fails. At least in local testing, this has
-      # been near (if not at) 100% success.
-      - if: ${{ matrix.target == 'Web' && matrix.browser == 'webkit' }}
-        run: 'yarn workspace @getodk/web-forms test-browser:${{ matrix.browser }} || yarn workspace @getodk/web-forms test-browser:${{ matrix.browser }}'
-
-      - if: ${{ matrix.target == 'Web' && matrix.browser != 'webkit' }}
+      - if: ${{ matrix.target == 'Web' }}
         run: 'yarn workspace @getodk/web-forms test-browser:${{ matrix.browser }}'

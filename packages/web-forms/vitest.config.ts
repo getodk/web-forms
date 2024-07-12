@@ -1,6 +1,5 @@
 import type { CollectionValues } from '@getodk/common/types/collections/CollectionValues.ts';
 import type { VitestTestConfig } from '@getodk/common/types/vitest-config.ts';
-import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { configDefaults, defineConfig, mergeConfig } from 'vitest/config';
 import viteConfig from './vite.config';
@@ -31,20 +30,6 @@ const BROWSER_ENABLED = BROWSER_NAME != null;
 const TEST_ENVIRONMENT = BROWSER_ENABLED ? 'node' : 'jsdom';
 
 const globalSetup: string[] = [];
-
-/**
- * @todo this is (hopefully!) temporary. Adds a delay when testing in
- * `webkit`, to help mitigate flakiness that seems to be rooted in
- * first-run timing issues (where "first" = "no Vite cache"; the issue was
- * much more consistently reproducible in a state where
- * `node_modules/.vite` is not present).
- */
-const webkitFlakinessMitigations =
-	BROWSER_NAME === 'webkit' && !existsSync('./node_modules/.vite/deps');
-
-if (webkitFlakinessMitigations) {
-	globalSetup.push('./tests/globalSetup/mitigate-webkit-flakiness.ts');
-}
 
 export default mergeConfig(
 	viteConfig,
