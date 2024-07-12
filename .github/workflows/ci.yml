@@ -29,7 +29,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ['18.20.3', '20.13.1', '22.2.0']
+        node-version: ['18.20.4', '20.15.1', '22.4.1']
 
     steps:
       - uses: 'actions/checkout@v4'
@@ -37,7 +37,7 @@ jobs:
       - uses: 'volta-cli/action@v4'
         with:
           node-version: '${{ matrix.node-version }}'
-          yarn-version: '1.22.19'
+          yarn-version: '1.22.22'
 
       - uses: 'actions/cache@v4'
         id: cache-install
@@ -82,7 +82,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ['22.2.0']
+        node-version: ['22.4.1']
 
     steps:
       - uses: 'actions/checkout@v4'
@@ -90,7 +90,7 @@ jobs:
       - uses: 'volta-cli/action@v4'
         with:
           node-version: '${{ matrix.node-version }}'
-          yarn-version: '1.22.19'
+          yarn-version: '1.22.22'
 
       - uses: 'actions/cache@v4'
         id: cache-install
@@ -128,16 +128,16 @@ jobs:
     strategy:
       matrix:
         target: ['Node']
-        node-version: ['18.20.3', '20.13.1', '22.2.0']
+        node-version: ['18.20.4', '20.15.1', '22.4.1']
         include:
           - target: 'Web'
-            node-version: '22.2.0'
+            node-version: '22.4.1'
             browser: chromium
           - target: 'Web'
-            node-version: '22.2.0'
+            node-version: '22.4.1'
             browser: firefox
           - target: 'Web'
-            node-version: '22.2.0'
+            node-version: '22.4.1'
             browser: webkit
 
     steps:
@@ -146,7 +146,7 @@ jobs:
       - uses: 'volta-cli/action@v4'
         with:
           node-version: '${{ matrix.node-version }}'
-          yarn-version: '1.22.19'
+          yarn-version: '1.22.22'
 
       - uses: 'actions/cache@v4'
         id: cache-install
@@ -192,16 +192,16 @@ jobs:
     strategy:
       matrix:
         target: ['Node']
-        node-version: ['18.20.3', '20.13.1', '22.2.0']
+        node-version: ['18.20.4', '20.15.1', '22.4.1']
         include:
           - target: 'Web'
-            node-version: '22.2.0'
+            node-version: '22.4.1'
             browser: chromium
           - target: 'Web'
-            node-version: '22.2.0'
+            node-version: '22.4.1'
             browser: firefox
           - target: 'Web'
-            node-version: '22.2.0'
+            node-version: '22.4.1'
             browser: webkit
 
     steps:
@@ -210,7 +210,7 @@ jobs:
       - uses: 'volta-cli/action@v4'
         with:
           node-version: '${{ matrix.node-version }}'
-          yarn-version: '1.22.19'
+          yarn-version: '1.22.22'
 
       - uses: 'actions/cache@v4'
         id: cache-install
@@ -256,16 +256,16 @@ jobs:
     strategy:
       matrix:
         target: ['Node']
-        node-version: ['18.20.3', '20.13.1', '22.2.0']
+        node-version: ['18.20.4', '20.15.1', '22.4.1']
         include:
           - target: 'Web'
-            node-version: '22.2.0'
+            node-version: '22.4.1'
             browser: chromium
           - target: 'Web'
-            node-version: '22.2.0'
+            node-version: '22.4.1'
             browser: firefox
           - target: 'Web'
-            node-version: '22.2.0'
+            node-version: '22.4.1'
             browser: webkit
 
     steps:
@@ -274,7 +274,7 @@ jobs:
       - uses: 'volta-cli/action@v4'
         with:
           node-version: '${{ matrix.node-version }}'
-          yarn-version: '1.22.19'
+          yarn-version: '1.22.22'
 
       - uses: 'actions/cache@v4'
         id: cache-install
@@ -320,16 +320,16 @@ jobs:
     strategy:
       matrix:
         target: ['Node']
-        node-version: ['18.20.3', '20.13.1', '22.2.0']
+        node-version: ['18.20.4', '20.15.1', '22.4.1']
         include:
           - target: 'Web'
-            node-version: '22.2.0'
+            node-version: '22.4.1'
             browser: chromium
           - target: 'Web'
-            node-version: '22.2.0'
+            node-version: '22.4.1'
             browser: firefox
           - target: 'Web'
-            node-version: '22.2.0'
+            node-version: '22.4.1'
             browser: webkit
 
     steps:
@@ -338,7 +338,7 @@ jobs:
       - uses: 'volta-cli/action@v4'
         with:
           node-version: '${{ matrix.node-version }}'
-          yarn-version: '1.22.19'
+          yarn-version: '1.22.22'
 
       - uses: 'actions/cache@v4'
         id: cache-install
@@ -389,7 +389,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ['18.20.3', '20.13.1', '22.2.0']
+        node-version: ['18.20.4', '20.15.1', '22.4.1']
 
     steps:
       - uses: 'actions/checkout@v4'
@@ -397,7 +397,7 @@ jobs:
       - uses: 'volta-cli/action@v4'
         with:
           node-version: '${{ matrix.node-version }}'
-          yarn-version: '1.22.19'
+          yarn-version: '1.22.22'
 
       - uses: 'actions/cache@v4'
         id: cache-install
@@ -433,16 +433,16 @@ jobs:
     strategy:
       matrix:
         target: ['Node']
-        node-version: ['18.20.3', '20.13.1', '22.2.0']
+        node-version: ['18.20.4', '20.15.1', '22.4.1']
         include:
           - target: 'Web'
-            node-version: '22.2.0'
+            node-version: '22.4.1'
             browser: chromium
           - target: 'Web'
-            node-version: '22.2.0'
+            node-version: '22.4.1'
             browser: firefox
           - target: 'Web'
-            node-version: '22.2.0'
+            node-version: '22.4.1'
             browser: webkit
 
     steps:
@@ -451,7 +451,7 @@ jobs:
       - uses: 'volta-cli/action@v4'
         with:
           node-version: '${{ matrix.node-version }}'
-          yarn-version: '1.22.19'
+          yarn-version: '1.22.22'
 
       - uses: 'actions/cache@v4'
         id: cache-install
@@ -497,16 +497,16 @@ jobs:
     strategy:
       matrix:
         target: ['Node']
-        node-version: ['18.20.3', '20.13.1', '22.2.0']
+        node-version: ['18.20.4', '20.15.1', '22.4.1']
         include:
           - target: 'Web'
-            node-version: '22.2.0'
+            node-version: '22.4.1'
             browser: chromium
           - target: 'Web'
-            node-version: '22.2.0'
+            node-version: '22.4.1'
             browser: firefox
           - target: 'Web'
-            node-version: '22.2.0'
+            node-version: '22.4.1'
             browser: webkit
 
     steps:
@@ -515,7 +515,7 @@ jobs:
       - uses: 'volta-cli/action@v4'
         with:
           node-version: '${{ matrix.node-version }}'
-          yarn-version: '1.22.19'
+          yarn-version: '1.22.22'
 
       - uses: 'actions/cache@v4'
         id: cache-install
