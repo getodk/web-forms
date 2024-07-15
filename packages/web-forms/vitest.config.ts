@@ -34,9 +34,6 @@ const globalSetup: string[] = [];
 export default mergeConfig(
 	viteConfig,
 	defineConfig({
-		optimizeDeps: {
-			noDiscovery: true,
-		},
 		test: {
 			browser: {
 				enabled: BROWSER_ENABLED,

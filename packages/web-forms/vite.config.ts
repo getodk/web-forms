@@ -37,6 +37,9 @@ export default defineConfig({
 			},
 		},
 	},
+	optimizeDeps: {
+		force: true,
+	},
 	css: {
 		postcss: {
 			plugins: [

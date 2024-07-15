@@ -102,7 +102,7 @@ export default defineConfig({
 		 * Serve dev mode: for testing with demo/fixtures
 		 */
 		{
-			command: 'yarn vite dev --force',
+			command: 'yarn vite dev',
 			port: 5173,
 			reuseExistingServer: !process.env.CI,
 		},
