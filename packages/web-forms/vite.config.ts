@@ -37,6 +37,10 @@ export default defineConfig({
 			},
 		},
 	},
+	optimizeDeps: {
+		// Without this flag, `test:e2e` fails for every other execution
+		force: true,
+	},
 	css: {
 		postcss: {
 			plugins: [
