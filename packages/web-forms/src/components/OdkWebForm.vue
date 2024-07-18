@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { initializeForm, type RootNode } from '@getodk/xforms-engine';
-import Button from 'primevue/button';
+import PrimeButton from 'primevue/button';
 import Card from 'primevue/card';
 import PrimeMessage from 'primevue/message';
 import { computed, provide, reactive, ref, watchEffect, type ComponentPublicInstance } from 'vue';
@@ -62,7 +62,8 @@ watchEffect(() => {
 		<div class="form-wrapper">
 			<div v-show="submitPressed && formErrorMessage" class="error-banner-placeholder" />
 			<PrimeMessage ref="errorMessagePopover" popover="manual" severity="error" icon="icon-error_outline" class="form-error-message" :closable="false">
-				{{ formErrorMessage }}
+				<div>{{ formErrorMessage }}</div>
+				<!-- <PrimeButton class="fix-errors" label="Fix errors" text @click="scrollToFirstInvalidQuestion()" /> -->
 			</PrimeMessage>
 
 			<FormHeader :form="odkForm" />
@@ -79,7 +80,7 @@ watchEffect(() => {
 
 			<div class="footer flex justify-content-end flex-wrap gap-3">
 				<!-- maybe current state is in odkForm.state.something -->
-				<Button label="Send" rounded @click="handleSubmit()" />
+				<PrimeButton label="Send" rounded @click="handleSubmit()" />
 			</div>
 		</div>
 	</div>
@@ -127,13 +128,28 @@ watchEffect(() => {
 			top: 1rem;
 
 			:deep(.p-message-wrapper) {
-				padding: 0.75rem 0.75rem;
+				padding: 0.25rem 0.75rem;
 				flex-grow: 1;
 			}
 
 			:deep(.p-message-text){
 				font-weight: 400;
-				flex-grow: 1;
+				display: flex;
+				width: 100%;
+				align-items: center;
+				div {
+					flex-grow: 1;
+				}
+				.fix-errors {
+					color: var(--error-text-color);
+					font-weight: 400;
+					&:hover, &:focus {
+						background: #F9DEDC;
+					}
+					&:active {
+						background: var(--red-100);
+					}
+				}
 			}
 
 		}
