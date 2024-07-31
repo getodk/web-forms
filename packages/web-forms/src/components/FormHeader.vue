@@ -160,7 +160,7 @@ const handleLanguageChange = (event: FormLanguage) => {
 			}
 		}
 
-		@container formOptionsContainer (min-width: 240px) {			
+		@container formOptionsContainer (min-width: 260px) {			
 			.multilingual{
 				.btn-menu{
 					display: none;
@@ -170,7 +170,7 @@ const handleLanguageChange = (event: FormLanguage) => {
 				}
 				.language-changer {
 					display: flex;
-					max-width: 180px;
+					max-width: 220px;
 				}
 			}
 		}
