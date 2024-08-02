@@ -3,7 +3,7 @@ import type { SelectItem, SelectNode } from '@getodk/xforms-engine';
 import PrimeDropdown from 'primevue/dropdown';
 
 const props = defineProps<{ question: SelectNode, style?: string}>();
-defineEmits(['update:modelValue']);
+defineEmits(['update:modelValue', 'change']);
 
 const setSelect1Value = (item: SelectItem) => {
 	props.question.select(item);	
@@ -23,6 +23,7 @@ const getOptionLabel = (o:SelectItem) => {
 		:options="question.currentState.valueOptions" 
 		:option-label="getOptionLabel" 
 		@update:model-value="setSelect1Value"
+		@change="$emit('change')"
 	/>
 </template>
 
@@ -33,6 +34,7 @@ const getOptionLabel = (o:SelectItem) => {
 	width: 100%;
 	border-radius: 10px;
 	border-color: var(--surface-300);
+	margin-top: 0.5rem;
 
 	&:not(.p-disabled):hover {
 		border-color: var(--primary-500);

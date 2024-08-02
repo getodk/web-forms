@@ -42,21 +42,24 @@ const handleLanguageChange = (event: FormLanguage) => {
 
 <template>
 	<!-- for desktop -->
-	<div class="hidden lg:flex justify-content-end flex-wrap gap-3 larger-screens">
-		<PrimeButton class="print-button" severity="secondary" rounded icon="icon-local_printshop" @click="print" />
-		<FormLanguageMenu 
-			:active-language="form.currentState.activeLanguage" 
-			:languages="languages" 
-			@update:active-language="handleLanguageChange"
-		/>
-	</div>
-	<PrimeCard class="form-title hidden lg:block">
-		<template #content>
-			<!-- TODO/q: should the title be on the definition or definition.form be accessible instead of definition.bind.form -->
-			<h1>{{ form.definition.bind.form.title }}</h1>
+	<div class="hidden lg:inline larger-screens">
+		<div class="flex justify-content-end flex-wrap gap-3">
+			<PrimeButton class="print-button" severity="secondary" rounded icon="icon-local_printshop" @click="print" />
+			<FormLanguageMenu 
+				:active-language="form.currentState.activeLanguage" 
+				:languages="languages" 
+				@update:active-language="handleLanguageChange"
+			/>
+		</div>
+		<PrimeCard class="form-title">
+			<template #content>
+				<!-- TODO/q: should the title be on the definition or definition.form be accessible instead of definition.bind.form -->
+				<h1>{{ form.definition.bind.form.title }}</h1>
 			<!-- last saved timestamp -->
-		</template>
-	</PrimeCard>
+			</template>
+		</PrimeCard>
+	</div>
+	
 
 	<!-- for mobile and tablet -->
 	<div class="flex lg:hidden align-items-center smaller-screens">

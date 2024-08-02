@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import type { StringNode } from '@getodk/xforms-engine';
 import InputText from 'primevue/inputtext';
+import { computed, inject, ref } from 'vue';
 import ControlLabel from '../ControlLabel.vue';
+import ValidationMessage from '../ValidationMessage.vue';
 
 const props = defineProps<{question: StringNode}>();
 
@@ -9,23 +11,37 @@ const setValue = (value = '') => {
 	props.question.setValue(value);
 };
 
+const doneAnswering = ref(false);
+const submitPressed = inject<boolean>('submitPressed');
+const invalid = computed(() => props.question.validationState.violation?.valid === false);
 </script>
 
 <template>
 	<ControlLabel :question="question" />
 
-	<InputText
-		:id="question.nodeId"
-		:required="question.currentState.required" 
-		:disabled="question.currentState.readonly"
-		variant="filled"
-		:model-value="question.currentState.value"
-		@update:model-value="setValue"
-	/>
+	<div class="textbox-container">
+		<InputText
+			:id="question.nodeId"
+			:required="question.currentState.required" 
+			:disabled="question.currentState.readonly"
+			variant="filled"
+			:model-value="question.currentState.value"			
+			@update:model-value="setValue"
+			@input="doneAnswering = false"
+			@blur="doneAnswering = true"
+		/>
+		<i v-show="invalid && (doneAnswering || submitPressed)" class="icon-error" />
+	</div>
+	<ValidationMessage :message="question.validationState.violation?.message.asString" :show-message="doneAnswering || submitPressed" />
 </template>
 
 <style scoped lang="scss">
-input.p-inputtext {
+.textbox-container {
+	position: relative;
+	margin-top: 0.5rem;
+
+	input.p-inputtext {
+		width: 100%;
 		&:read-only {
 			cursor: not-allowed;
 		}
@@ -34,4 +50,13 @@ input.p-inputtext {
 			background-color: var(--surface-100);
 		}
 	}
+
+	.icon-error {
+		position: absolute;
+		inset-inline-end: 10px;
+		top: 15px;
+		color: var(--error-text-color);
+		font-size: 1.2rem;
+	}
+}
 </style>
