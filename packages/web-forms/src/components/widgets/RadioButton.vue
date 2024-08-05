@@ -3,7 +3,7 @@ import type { SelectItem, SelectNode } from '@getodk/xforms-engine';
 import PrimeRadioButton from 'primevue/radiobutton';
 
 const props = defineProps<{ question: SelectNode}>();
-defineEmits(['update:modelValue']);
+defineEmits(['update:modelValue', 'change']);
 
 const setSelect1Value = (item: SelectItem) => {
 	props.question.select(item);
@@ -30,6 +30,7 @@ const setSelect1Value = (item: SelectItem) => {
 			:disabled="question.currentState.readonly"
 			:model-value="question.currentState.value[0]"
 			@update:model-value="setSelect1Value"
+			@change="$emit('change')"
 		/>
 		<span class="label-text">
 			{{ option.label?.asString }} 
@@ -45,8 +46,9 @@ const setSelect1Value = (item: SelectItem) => {
   outline: 1px solid var(--surface-300);
 	border-radius: 10px;
   padding: 15px;
-	margin: 20px 0;
   cursor: pointer;
+	background: var(--surface-0);
+
 
   .label-text {
 		margin-left: 10px;
