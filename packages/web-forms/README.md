@@ -63,4 +63,12 @@ To update the icons using the [IcoMoon website](https://icomoon.io/app/):
 
 By following the steps above, you should minimize the diff. However, in the JSON file, you may still see changes for properties like `id`, `iconIdx`, `setId`, and `setIdx`.
 
-Material Icons are available under the Apache License Version 2.0. Copy of the license can be found at [`./src/assets/fonts/LICENSE-2.0.txt`](./src/assets/fonts/LICENSE-2.0.txt)
+Material Icons are available under the Apache License Version 2.0. Copy of the license can be found at [`./src/assets/fonts/icomoon/LICENSE-2.0.txt`](./src/assets/fonts/LICENSE-2.0.txt)
+
+
+================
+
+To download fonts from Google Fonts API:
+
+curl "https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap"  -H 'user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36' \
+ | grep src | cut -d\( -f2 | cut -d\) -f1 | xargs -I {} wget {}

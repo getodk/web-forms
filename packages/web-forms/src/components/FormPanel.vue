@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
-import Menu, { type MenuState } from 'primevue/menu';
+import Menu, { type MenuMethods, type MenuState } from 'primevue/menu';
 import { type MenuItem } from 'primevue/menuitem';
 import Panel from 'primevue/panel';
 import { computed, ref } from 'vue';
@@ -34,7 +34,7 @@ const toggle = () => {
 	panelState.value = !panelState.value;
 }
 
-const menu = ref<Menu & MenuState>();
+const menu = ref<MenuMethods & MenuState>();
 
 const toggleMenu = (event:  Event) => {
 	menu.value?.toggle(event);
@@ -96,10 +96,14 @@ h2 {
 
 .btn-context {
 	margin-top: -10px;
+	background: var(--surface-0);
+	border: none;
+	transition: none;
 
 	&.p-button.p-button-secondary:not(:disabled){
 		&:active, &:focus, &.p-focus {
 			background: var(--primary-50);
+			border: none;
 		}
 
 		&:hover {
@@ -115,6 +119,7 @@ h2 {
 .p-panel.p-panel-toggleable {	
 	background: var(--surface-0);
 	box-shadow: none;
+	border: none;
 
 	.p-panel {
 		margin-left: -10px;
@@ -134,7 +139,7 @@ h2 {
 		padding: 0 0 0 1.5rem;
 	}
 
-	:deep(.p-panel-toggler){
+	:deep(.p-panel-toggle-button){
 		display: none;
 	}
 	

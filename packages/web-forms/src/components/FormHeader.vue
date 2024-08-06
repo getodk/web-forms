@@ -9,7 +9,7 @@ import FormLanguageMenu from './FormLanguageMenu.vue';
 
 const props = defineProps<{form: RootNode}>();
 const languageDialogState = ref(false);
-const menu = ref<PrimeMenu>();
+const menu = ref<typeof PrimeMenu>();
 
 const isFormLanguage = (lang: FormLanguage | SyntheticDefaultLanguage) : lang is FormLanguage => {
 	return !lang.isSyntheticDefault;

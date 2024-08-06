@@ -54,9 +54,9 @@ if(location.pathname != '/'){
 }
 </script>
 
-<template>	
+<template>
 	<div v-if="!selectForm">
-		<h1>Demo Forms</h1>
+		<h1>Demo Forms </h1>
 		<ul class="form-list">
 			<li v-for="form in demoForms" :key="form[0]" @click="showForm(form)">
 				{{ form[0] }}

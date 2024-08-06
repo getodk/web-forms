@@ -15,7 +15,7 @@ $accentTextColor: #424242;
 $primary50: $lightBlue;
 $emphasis-high: $textColour;
 
-@import 'primevue-sass-theme/themes/material/material-light/standard/indigo/theme.scss';
+// @import 'primevue-sass-theme/themes/material/material-light/standard/indigo/theme.scss';
 
 // TODO maybe import icomoon here so if in future we can to introduce new theme with different iconset
 // Don't know how much future theme will be different from this??
@@ -27,4 +27,9 @@ $emphasis-high: $textColour;
 	--surface-300: #{$lightGray};
 	--error-text-color: #{$errorText};
 	--error-bg-color: #{$errorLight};
+}
+
+body {
+	font-family: "Roboto", sans-serif;
+	font-weight: 400;
 }

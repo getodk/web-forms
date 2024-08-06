@@ -30,7 +30,7 @@ if(props.question.appearances['no-buttons']) {
 		class="multi-select-dropdown"
 		:input-id="question.nodeId"
 		:filter="question.appearances.autocomplete"
-		:auto-filter-focus="true"
+		:auto-filter-focus="question.appearances.autocomplete"
 		:show-toggle-all="false"				
 		:options="question.currentState.valueOptions" 
 		:option-label="getOptionLabel" 
@@ -72,7 +72,7 @@ if(props.question.appearances['no-buttons']) {
 			margin-left: -20px;
 		}
 
-		.p-multiselect-item {
+		.p-multiselect-option {
 		
 			&[aria-selected=true]::after {
 					content: '\e916';
