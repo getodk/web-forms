@@ -1,4 +1,5 @@
 * text eol=lf
+*.png -text
 
 packages/tree-sitter-xpath/src/*.json linguist-generated
 packages/tree-sitter-xpath/src/parser.c linguist-generated
