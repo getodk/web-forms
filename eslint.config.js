@@ -362,7 +362,12 @@ export default tseslint.config(
 			'vue/html-indent': ['error', 'tab'],
 			// should be based on the printWidth
 			'vue/max-attributes-per-line': 'off',
-			'vue/no-undef-components': 'error',
+			'vue/no-undef-components': [
+				'error',
+				{
+					ignorePatterns: ['RouterView', 'RouterLink'],
+				},
+			],
 			'vue/html-comment-indent': ['error', 'tab'],
 			'vue/script-indent': ['error', 'tab'],
 			'vue/no-empty-component-block': 'error',
