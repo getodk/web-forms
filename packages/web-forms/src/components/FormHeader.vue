@@ -9,7 +9,7 @@ import FormLanguageMenu from './FormLanguageMenu.vue';
 
 const props = defineProps<{form: RootNode}>();
 const languageDialogState = ref(false);
-const menu = ref<PrimeMenu>();
+const menu = ref<typeof PrimeMenu>();
 
 const isFormLanguage = (lang: FormLanguage | SyntheticDefaultLanguage) : lang is FormLanguage => {
 	return !lang.isSyntheticDefault;
@@ -42,30 +42,8 @@ const handleLanguageChange = (event: FormLanguage) => {
 
 <template>
 	<!-- for desktop -->
-	<div class="hidden lg:flex justify-content-end flex-wrap gap-3 larger-screens">
-		<PrimeButton class="print-button" severity="secondary" rounded icon="icon-local_printshop" @click="print" />
-		<FormLanguageMenu 
-			:active-language="form.currentState.activeLanguage" 
-			:languages="languages" 
-			@update:active-language="handleLanguageChange"
-		/>
-	</div>
-	<PrimeCard class="form-title hidden lg:block">
-		<template #content>
-			<!-- TODO/q: should the title be on the definition or definition.form be accessible instead of definition.bind.form -->
-			<h1>{{ form.definition.bind.form.title }}</h1>
-			<!-- last saved timestamp -->
-		</template>
-	</PrimeCard>
-
-	<!-- for mobile and tablet -->
-	<div class="flex lg:hidden align-items-center smaller-screens">
-		<h1 class="flex-grow-1">
-			{{ form.definition.bind.form.title }}
-		</h1>
-
-		<!-- for tablet -->
-		<div class="form-options hidden md:flex justify-content-end gap-3">
+	<div class="hidden lg:inline larger-screens">
+		<div class="flex justify-content-end flex-wrap gap-3">
 			<PrimeButton class="print-button" severity="secondary" rounded icon="icon-local_printshop" @click="print" />
 			<FormLanguageMenu 
 				:active-language="form.currentState.activeLanguage" 
@@ -73,18 +51,44 @@ const handleLanguageChange = (event: FormLanguage) => {
 				@update:active-language="handleLanguageChange"
 			/>
 		</div>
-			
-		<!-- for mobile -->
-		<div class="form-options flex md:hidden">
-			<PrimeButton v-if="languages.length > 0" icon="icon-menu" class="btn-menu" text rounded aria-label="Menu" @click="menu?.toggle" />
-			<PrimeButton v-else class="print-button" severity="secondary" rounded icon="icon-local_printshop" @click="print" />
-			<PrimeMenu id="overlay_menu" ref="menu" :model="items" :popup="true" />
-			<FormLanguageDialog 
-				v-model:state="languageDialogState" 
-				:active-language="form.currentState.activeLanguage" 
-				:languages="languages" 
-				@update:active-language="handleLanguageChange"
-			/>
+		<PrimeCard class="form-title">
+			<template #content>
+				<!-- TODO/q: should the title be on the definition or definition.form be accessible instead of definition.bind.form -->
+				<h1>{{ form.definition.bind.form.title }}</h1>
+			<!-- last saved timestamp -->
+			</template>
+		</PrimeCard>
+	</div>
+	
+
+	<!-- for mobile and tablet -->
+	<div class="flex lg:hidden align-items-start smaller-screens">
+		<h1>
+			{{ form.definition.bind.form.title }}
+		</h1>
+
+		<div class="form-options">
+			<!-- if Form is not multilingual then we always show print button -->
+			<PrimeButton v-if="languages.length === 0" class="print-button" severity="secondary" rounded icon="icon-local_printshop" @click="print" />
+
+			<!-- show either hamburger or (print button and language changer) based on container size -->
+			<div v-else class="multilingual">
+				<PrimeButton icon="icon-menu" class="btn-menu" text rounded aria-label="Menu" @click="menu?.toggle" />
+				<PrimeMenu id="overlay_menu" ref="menu" :model="items" :popup="true" />
+				<FormLanguageDialog 
+					v-model:state="languageDialogState" 
+					:active-language="form.currentState.activeLanguage" 
+					:languages="languages" 
+					@update:active-language="handleLanguageChange"
+				/>
+
+				<PrimeButton class="print-button" severity="secondary" rounded icon="icon-local_printshop" @click="print" />
+				<FormLanguageMenu 
+					:active-language="form.currentState.activeLanguage" 
+					:languages="languages" 
+					@update:active-language="handleLanguageChange"
+				/>
+			</div>
 		</div>
 	</div>
 </template>
@@ -104,12 +108,9 @@ const handleLanguageChange = (event: FormLanguage) => {
 		}
 	}
 
-	
 .form-title {
-	// var(--light-elevation-1);
-
 	border-radius: 10px;
-	box-shadow: var(--light-elevation-1);
+	box-shadow: none;
 	border-top: none;
 	margin-top: 20px;
 
@@ -130,11 +131,49 @@ const handleLanguageChange = (event: FormLanguage) => {
 
 	h1 {
 		padding-left: 10px;
-		font-size: 1.5rem;
+		font-size: 1.25rem;
+		font-weight: 400;
 	}
 
 	.form-options{
 		padding-right: 10px;
+		flex-grow: 1;
+		min-width: 50px;
+		container-type: size;
+		container-name: formOptionsContainer;
+		height: 40px;
+		margin-top: 6px;
+
+		.multilingual{
+			display: flex;
+			justify-content: end;
+			gap: 0.5rem;
+
+			.btn-menu{
+				color: var(--surface-900);
+			}
+			.print-button {
+				display: none;
+			}
+			.language-changer {
+				display: none;
+			}
+		}
+
+		@container formOptionsContainer (min-width: 260px) {			
+			.multilingual{
+				.btn-menu{
+					display: none;
+				}
+				.print-button {
+					display: flex;
+				}
+				.language-changer {
+					display: flex;
+					max-width: 220px;
+				}
+			}
+		}
 	}
 	
 	.btn-menu{

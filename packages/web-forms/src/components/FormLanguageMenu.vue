@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ActiveLanguage, FormLanguage } from '@getodk/xforms-engine';
-import Dropdown from 'primevue/dropdown';
+import PrimeSelect from 'primevue/select';
 
 defineProps<{ languages: FormLanguage[], activeLanguage: ActiveLanguage }>();
 
@@ -9,12 +9,12 @@ defineEmits(['update:activeLanguage'])
 </script>
 
 <template>
-	<Dropdown
+	<PrimeSelect
 		v-if="languages.length > 0"
 		:model-value="activeLanguage"
 		:options="languages"
 		option-label="language"
-		class="flex align-items-center rounded with-icon language-changer"
+		class="align-items-center rounded with-icon language-changer"
 		aria-label="change language"
 		@update:model-value="$emit('update:activeLanguage', $event)"
 	>
@@ -27,14 +27,19 @@ defineEmits(['update:activeLanguage'])
 		<template #option="slotProps">
 			<span class="language-dd-label">{{ slotProps.option.language }}</span>
 		</template>
-	</Dropdown>
+	</PrimeSelect>
 </template>
 
 <style scoped lang="scss">
+.language-changer {
+	display: flex;
+}
+
 .p-dropdown.rounded {
 	border-radius: 30px;
 	border: none;
-	width: 160px;
+	width: max-content;
+	max-width: 220px;
 	color: #424242;
 
 	&.p-focus {

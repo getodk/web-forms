@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { initializeForm, type RootNode } from '@getodk/xforms-engine';
-import Button from 'primevue/button';
+import PrimeButton from 'primevue/button';
 import Card from 'primevue/card';
-import { reactive, ref } from 'vue';
+import PrimeMessage from 'primevue/message';
+import { computed, provide, reactive, ref } from 'vue';
 import FormHeader from './FormHeader.vue';
 
 import QuestionList from './QuestionList.vue';
@@ -10,6 +11,8 @@ import QuestionList from './QuestionList.vue';
 const props = defineProps<{ formXml: string }>();
 
 const odkForm = ref<RootNode>();
+
+const submitPressed = ref(false);
 
 const emit = defineEmits(['submit']);
 
@@ -22,19 +25,54 @@ initializeForm(props.formXml, {
   }).catch(() => {}); // eslint-disable-line -- noop
 
 const handleSubmit = () => {
-	emit('submit');
+	if(odkForm.value?.validationState.violations?.length === 0){
+		emit('submit');
+	}
+	else{
+		submitPressed.value = true;
+		scrollToFirstInvalidQuestion();
+	}
+}
+
+provide('submitPressed', submitPressed);
+
+const formErrorMessage = computed(() => {
+	const violationLength = odkForm.value!.validationState.violations.length;
+
+	if(violationLength === 0) return '';
+	else if(violationLength === 1) return '1 question with error';
+	else return `${violationLength} questions with errors`;
+});
+
+const isInputElement = (e: HTMLElement): e is HTMLInputElement => e.tagName === 'INPUT';
+
+const scrollToFirstInvalidQuestion = () => {
+	document.getElementById(odkForm.value!.validationState.violations[0].nodeId + '_container')?.scrollIntoView({
+		behavior: 'smooth'
+	});
+	
+	// If first invalid element is a textbox then focus it.
+	const firstInvalidElement = document.getElementById(odkForm.value!.validationState.violations[0].nodeId);
+	if(firstInvalidElement && isInputElement(firstInvalidElement) && firstInvalidElement.type === 'text'){
+		firstInvalidElement.focus({preventScroll: true});
+	}
 }
 </script>
 
 <template>
-	<div v-if="odkForm" class="odk-form">
+	<div v-if="odkForm" class="odk-form" :class="{ 'submit-pressed': submitPressed }">
 		<div class="form-wrapper">
+			<PrimeMessage v-if="formErrorMessage" v-show="submitPressed" severity="error" icon="icon-error_outline" class="form-error-message" :closable="false">
+				<div>{{ formErrorMessage }}</div>
+				<PrimeButton class="fix-errors" label="Fix errors" text @click="scrollToFirstInvalidQuestion()" />
+			</PrimeMessage>
+
 			<FormHeader :form="odkForm" />
 
 			<Card class="questions-card">
 				<template #content>
 					<div class="form-questions">
-						<div class="flex flex-column gap-5">
+						<div class="flex flex-column gap-2">
 							<QuestionList :nodes="odkForm.currentState.children" />
 						</div>
 					</div>
@@ -43,7 +81,7 @@ const handleSubmit = () => {
 
 			<div class="footer flex justify-content-end flex-wrap gap-3">
 				<!-- maybe current state is in odkForm.state.something -->
-				<Button label="Send" rounded raised @click="handleSubmit()" />
+				<PrimeButton label="Send" rounded @click="handleSubmit()" />
 			</div>
 		</div>
 	</div>
@@ -57,6 +95,8 @@ const handleSubmit = () => {
 	color: var(--text-color);
 
 	.form-wrapper {
+		display: flex;
+		flex-direction: column;
 		max-width: 900px;
 		margin: auto;
 		padding-top: 10px;
@@ -64,15 +104,54 @@ const handleSubmit = () => {
 
 		.questions-card {
 			border-radius: 10px;
-			box-shadow: var(--light-elevation-1);
+			box-shadow: none;
 			border-top: none;
 			margin-top: 20px;
 
 			:deep(.p-card-content) {
-				padding: 1rem;
+				padding: 0;
 			}
 		}
 
+		.form-error-message.p-message.p-message-error {
+			border-radius: 10px;
+			background-color: var(--error-bg-color);
+			border: 1px solid var(--error-text-color);
+			width: 70%;
+			margin: 0rem auto 1rem auto;
+			position: sticky;
+			top: 0;
+			// Some PrimeVue components use z-index.
+			// Default value for those are either 1000 or 1100
+			// So 5000 here is safe.
+			z-index: 5000;
+
+			:deep(.p-message-wrapper) {
+				padding: 0.25rem 0.75rem;
+				flex-grow: 1;
+			}
+
+			:deep(.p-message-text){
+				font-weight: 400;
+				display: flex;
+				width: 100%;
+				align-items: center;
+				div {
+					flex-grow: 1;
+				}
+				.fix-errors {
+					color: var(--error-text-color);
+					font-weight: 400;
+					&:hover, &:focus {
+						background: #F9DEDC;
+					}
+					&:active {
+						background: var(--red-100);
+					}
+				}
+			}
+
+		}
 	}
 
 	.print-button.p-button {
@@ -96,13 +175,25 @@ const handleSubmit = () => {
 			max-width: unset;
 			padding-top: unset;
 
+			:deep(.title-bar){
+				order: 1;
+			}
+
+			.form-error-message.p-message.p-message-error {
+				margin: 1rem 1rem 0 1rem;
+				order: 2;
+				width: calc(100% - 2rem);
+			}
+
 			.questions-card {
 				border-radius: unset;
 				box-shadow: unset;
 				margin-top: 0;
+				order: 3;
 			}
+			
 			.footer {
-
+				order: 4;
 				button {
 					margin-right: 20px;
 				}

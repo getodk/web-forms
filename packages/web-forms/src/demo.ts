@@ -5,13 +5,14 @@ import OdkWebFormDemo from './OdkWebFormDemo.vue';
 import { webFormsPlugin } from './WebFormsPlugin';
 
 import icomoon from './assets/css/icomoon.css?inline';
+import roboto from './assets/css/roboto.css?inline';
 import theme from './themes/2024-light/theme.scss?inline';
 // TODO/sk: Purge it - postcss-purgecss
 import primeflex from 'primeflex/primeflex.css?inline';
 
 import demoStyles from './assets/css/style.scss?inline';
 
-const styles = [icomoon, theme, primeflex, demoStyles].join('\n\n');
+const styles = [icomoon, roboto, theme, primeflex, demoStyles].join('\n\n');
 const stylesheet = new CSSStyleSheet();
 
 stylesheet.replaceSync(styles);

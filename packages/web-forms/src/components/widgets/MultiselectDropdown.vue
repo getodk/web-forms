@@ -3,7 +3,7 @@ import type { SelectItem, SelectNode } from '@getodk/xforms-engine';
 import PrimeMultiSelect from 'primevue/multiselect';
 
 const props = defineProps<{ question: SelectNode, style?: string}>();
-defineEmits(['update:modelValue']);
+defineEmits(['update:modelValue', 'change']);
 
 const setSelectNValue = (values: SelectItem[]) => {
 	for(const v of props.question.currentState.value){
@@ -24,18 +24,20 @@ if(props.question.appearances['no-buttons']) {
 }
 
 </script>
+
 <template>
 	<PrimeMultiSelect 
 		class="multi-select-dropdown"
 		:input-id="question.nodeId"
 		:filter="question.appearances.autocomplete"
-		:auto-filter-focus="true"
+		:auto-filter-focus="question.appearances.autocomplete"
 		:show-toggle-all="false"				
 		:options="question.currentState.valueOptions" 
 		:option-label="getOptionLabel" 
 		:panel-class="panelClass"
 		:model-value="question.currentState.value"		
 		@update:model-value="setSelectNValue"
+		@change="$emit('change')"
 	/>
 </template>
 
@@ -70,7 +72,7 @@ if(props.question.appearances['no-buttons']) {
 			margin-left: -20px;
 		}
 
-		.p-multiselect-item {
+		.p-multiselect-option {
 		
 			&[aria-selected=true]::after {
 					content: '\e916';

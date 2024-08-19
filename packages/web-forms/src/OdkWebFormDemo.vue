@@ -23,10 +23,15 @@ const handleSubmit = () => {
 const showForm = (form: [string, string]) => {
 	selectForm.value = form;
 	history.pushState({form: form }, "", "/" + form[0]);
+	window.scrollTo(0,0);
 }
 
 interface PopStateEventWithForm extends PopStateEvent {
 	state: {form: [string, string]};
+}
+
+if ('scrollRestoration' in history) {
+	history.scrollRestoration = 'manual';
 }
 
 window.addEventListener("popstate", (event:PopStateEventWithForm) => {
@@ -49,9 +54,9 @@ if(location.pathname != '/'){
 }
 </script>
 
-<template>	
+<template>
 	<div v-if="!selectForm">
-		<h1>Demo Forms</h1>
+		<h1>Demo Forms </h1>
 		<ul class="form-list">
 			<li v-for="form in demoForms" :key="form[0]" @click="showForm(form)">
 				{{ form[0] }}

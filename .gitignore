@@ -18,6 +18,7 @@ node_modules/
 
 # Build artifacts
 dist/
+dist-demo/
 examples/**/dist
 packages/**/dist
 

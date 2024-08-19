@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import type { SelectItem, SelectNode } from '@getodk/xforms-engine';
-import PrimeDropdown from 'primevue/dropdown';
+import PrimeSelect from 'primevue/select';
 
 const props = defineProps<{ question: SelectNode, style?: string}>();
-defineEmits(['update:modelValue']);
+defineEmits(['update:modelValue', 'change']);
 
 const setSelect1Value = (item: SelectItem) => {
 	props.question.select(item);	
@@ -14,15 +14,16 @@ const getOptionLabel = (o:SelectItem) => {
 </script>
 
 <template>
-	<PrimeDropdown 
+	<PrimeSelect 
 		:id="question.nodeId"
 		class="dropdown"
 		:filter="question.appearances.autocomplete"
-		:auto-filter-focus="true"
+		:auto-filter-focus="question.appearances.autocomplete"
 		:model-value="question.currentState.value[0]" 
 		:options="question.currentState.valueOptions" 
-		:option-label="getOptionLabel" 
+		:option-label="getOptionLabel"
 		@update:model-value="setSelect1Value"
+		@change="$emit('change')"
 	/>
 </template>
 

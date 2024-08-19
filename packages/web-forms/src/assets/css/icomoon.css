@@ -1,9 +1,9 @@
 @font-face {
 	font-family: 'owf-icomoon';
 	src:
-		url('/fonts/icomoon.ttf?d2anc2') format('truetype'),
-		url('/fonts/icomoon.woff?d2anc2') format('woff'),
-		url('/fonts/icomoon.svg?d2anc2#icomoon') format('svg');
+		url('/fonts/icomoon/icomoon.ttf?d2anc2') format('truetype'),
+		url('/fonts/icomoon/icomoon.woff?d2anc2') format('woff'),
+		url('/fonts/icomoon/icomoon.svg?d2anc2#icomoon') format('svg');
 	font-weight: normal;
 	font-style: normal;
 	font-display: block;
@@ -93,4 +93,13 @@
 }
 .icon-check:before {
 	content: '\e916';
+}
+.icon-error:before {
+	content: '\e917';
+}
+.icon-error_outline:before {
+	content: '\e918';
+}
+.icon-add:before {
+	content: '\e919';
 }
