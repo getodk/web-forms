@@ -3,7 +3,7 @@ import type { SelectItem, SelectNode } from '@getodk/xforms-engine';
 import PrimeMultiSelect from 'primevue/multiselect';
 
 const props = defineProps<{ question: SelectNode, style?: string}>();
-defineEmits(['update:modelValue']);
+defineEmits(['update:modelValue', 'change']);
 
 const setSelectNValue = (values: SelectItem[]) => {
 	for(const v of props.question.currentState.value){
@@ -24,6 +24,7 @@ if(props.question.appearances['no-buttons']) {
 }
 
 </script>
+
 <template>
 	<PrimeMultiSelect 
 		class="multi-select-dropdown"
@@ -36,6 +37,7 @@ if(props.question.appearances['no-buttons']) {
 		:panel-class="panelClass"
 		:model-value="question.currentState.value"		
 		@update:model-value="setSelectNValue"
+		@change="$emit('change')"
 	/>
 </template>
 

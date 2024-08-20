@@ -62,6 +62,7 @@ defineProps<{ appearances: SelectNodeAppearances}>();
 
   :deep(.value-option){
     border-radius: 35px;
+    background-color: transparent;
     .label-text {
       display: none;
     }
@@ -78,6 +79,8 @@ defineProps<{ appearances: SelectNodeAppearances}>();
     .p-checkbox {
       display: none;
     }
+
+    &:has(.p-checkbox-input:hover),
     &:has(.p-radiobutton-input:hover) {
       background-color: unset;
       outline: none;

@@ -3,7 +3,7 @@ import type { SelectItem, SelectNode } from '@getodk/xforms-engine';
 import PrimeCheckbox from 'primevue/checkbox';
 
 const props = defineProps<{ question: SelectNode, style?: string}>();
-defineEmits(['update:modelValue']);
+defineEmits(['update:modelValue', 'change']);
 
 const setSelectNValue = (values: SelectItem[]) => {
 	for(const v of props.question.currentState.value){
@@ -13,6 +13,7 @@ const setSelectNValue = (values: SelectItem[]) => {
 		props.question.select(v);
 	}
 }
+
 </script>
 
 <template>
@@ -33,6 +34,7 @@ const setSelectNValue = (values: SelectItem[]) => {
 			:disabled="question.currentState.readonly"
 			:model-value="question.currentState.value"
 			@update:model-value="setSelectNValue"
+			@change="$emit('change')"
 		/>
 		<span class="label-text">
 			{{ option.label?.asString }}
@@ -47,7 +49,7 @@ const setSelectNValue = (values: SelectItem[]) => {
 	outline: 1px solid var(--surface-300);
 	border-radius: 10px;
 	padding: 15px;
-	margin: 20px 0;
+	background: var(--surface-0);
 	cursor: pointer;
 
   &:has(.p-checkbox-input:hover),
