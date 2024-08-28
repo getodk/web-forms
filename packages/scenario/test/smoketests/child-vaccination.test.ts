@@ -586,7 +586,13 @@ const TEMPORARY_SKIP_DURATION_DAYS = 14;
 const TEMPORARY_SKIP_DURATION = TEMPORARY_SKIP_DURATION_DAYS * 24 * 60 * 60 * 1000;
 const TEMPORARY_SKIP_END = new Date(TEMPORARY_SKIP_START.getTime() + TEMPORARY_SKIP_DURATION);
 const IS_TEMPORARILY_SKIPPED = Date.now() < TEMPORARY_SKIP_END.getTime();
-const IS_CI_RERUN = Number(import.meta.env.GITHUB_ACTIONS_RUN_ATTEMPT ?? '0') > 1;
+const IS_CI_RERUN = GITHUB_ACTIONS_RUN_ATTEMPT ?? 0;
+
+describe('Quick confirmation', () => {
+	baseIt('gets the CI environment variable', () => {
+		expect(GITHUB_ACTIONS_RUN_ATTEMPT).toEqual(1);
+	});
+});
 
 describe.skipIf(IS_TEMPORARILY_SKIPPED || IS_CI_RERUN)('ChildVaccinationTest.java', () => {
 	afterEach(() => {
