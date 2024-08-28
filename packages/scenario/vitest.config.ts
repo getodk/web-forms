@@ -43,10 +43,14 @@ export default defineConfig(({ mode }) => {
 
 	const BROWSER_ENABLED = BROWSER_NAME != null;
 	const TEST_ENVIRONMENT = BROWSER_ENABLED ? 'node' : 'jsdom';
+	const GITHUB_ACTIONS_RUN_ATTEMPT = process.env.GITHUB_ACTIONS_RUN_ATTEMPT ?? '0';
 
 	return {
 		build: {
 			target: false as const,
+		},
+		define: {
+			GITHUB_ACTIONS_RUN_ATTEMPT,
 		},
 		esbuild: {
 			sourcemap: true,

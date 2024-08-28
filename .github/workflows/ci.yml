@@ -21,6 +21,7 @@ defaults:
 
 env:
   TZ: 'America/Phoenix'
+  GITHUB_ACTIONS_RUN_ATTEMPT: ${{ github.run_attempt }}
 
 jobs:
   install-and-build:
