@@ -39,7 +39,7 @@ Here is the feature matrix and the progress we have made so far:
 <!-- autogen: feature-matrix -->
 
 <details>
-  <summary>${\mathtt{Question \space \space types \space \space (basic \space \space functionality)\color{transparent}==== \color{green}███\color{LightGray}█████████████████ \space \color{initial} 15\%}}$</summary>
+  <summary>${\mathtt{Question \space \space types \space \space (basic \space \space functionality)\color{transparent}==== \color{green}███\color{LightGray}█████████████████ \space \color{initial} 18\%}}$</summary>
 
   <br/>
 
@@ -48,7 +48,7 @@ Here is the feature matrix and the progress we have made so far:
 | text                       |    ✅    |
 | integer                    |          |
 | decimal                    |          |
-| note                       |    🚧    |
+| note                       |    ✅    |
 | select_one                 |    ✅    |
 | select_multiple            |    ✅    |
 | repeat                     |    ✅    |
@@ -153,7 +153,7 @@ Here is the feature matrix and the progress we have made so far:
 </details>
 
 <details>
-  <summary>${\mathtt{Form \space \space Logic\color{transparent}============================== \color{green}██████████\color{LightGray}██████████ \space \color{initial} 50\%}}$</summary>
+  <summary>${\mathtt{Form \space \space Logic\color{transparent}============================== \color{green}████████████████\color{LightGray}████ \space \color{initial} 83\%}}$</summary>
 
   <br/>
 
@@ -162,27 +162,27 @@ Here is the feature matrix and the progress we have made so far:
 | calculate                  |    ✅    |
 | relevant                   |    ✅    |
 | required                   |    ✅    |
-| required message           |    🚧    |
-| custom constraint          |    🚧    |
-| constraint message         |    🚧    |
+| required message           |    ✅    |
+| custom constraint          |    ✅    |
+| constraint message         |    ✅    |
 | read only                  |    ✅    |
 | trigger                    |          |
 | choice filter              |    ✅    |
 | default                    |    ✅    |
 | query parameter            |          |
-| repeat_count               |          |
+| repeat_count               |    ✅    |
 
 </details>
 
 <details>
-  <summary>${\mathtt{Descriptions \space \space and \space \space Annotations\color{transparent}============ \color{green}██\color{LightGray}██████████████████ \space \color{initial} 13\%}}$</summary>
+  <summary>${\mathtt{Descriptions \space \space and \space \space Annotations\color{transparent}============ \color{green}████\color{LightGray}████████████████ \space \color{initial} 20\%}}$</summary>
 
   <br/>
 
 | Feature <img width=250px/>                     | Progress |
 | ---------------------------------------------- | :------: |
 | label                                          |    ✅    |
-| hint                                           |          |
+| hint                                           |    ✅    |
 | guidance hint                                  |          |
 | Translations                                   |    ✅    |
 | Translations with field/question value         |          |
@@ -236,7 +236,7 @@ Here is the feature matrix and the progress we have made so far:
 </details>
 
 <details>
-  <summary>${\mathtt{XPath\color{transparent}=================================== \color{green}██████████████████\color{LightGray}██ \space \color{initial} 94\%}}$</summary>
+  <summary>${\mathtt{XPath\color{transparent}=================================== \color{green}███████████████████\color{LightGray}█ \space \color{initial} 95\%}}$</summary>
 
   <br/>
 
@@ -311,7 +311,7 @@ Here is the feature matrix and the progress we have made so far:
 | count-selected(node node)                                                                                       |    ✅    |
 | jr:choice-name(node node, string value)                                                                         |          |
 | jr:itext(string id)                                                                                             |    ✅    |
-| indexed-repeat(node-set arg, node-set re<br/>peat1, number index1, [node-set repeatN,<br/> number indexN]{0,2}) |          |
+| indexed-repeat(node-set arg, node-set re<br/>peat1, number index1, [node-set repeatN,<br/> number indexN]{0,2}) |    ✅    |
 | area(node-set ns\|geoshape gs)                                                                                  |    ✅    |
 | distance(node-set ns\|geoshape gs\|geotr<br/>ace gt\|(geopoint\|string) arg\*)                                  |    ✅    |
 | base64-decode(base64Binary input)                                                                               |          |
