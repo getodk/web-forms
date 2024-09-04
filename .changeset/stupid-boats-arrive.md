@@ -1,5 +1,0 @@
----
-
----
-
-Update `@getodk/xpath` README
