@@ -27,6 +27,7 @@
     "types": "turbo run types",
     "bump": "changeset add",
     "format": "prettier -w \"**/*\" --ignore-unknown --cache",
+    "format:readme-only": "prettier -w README.md",
     "format:checkonly": "prettier -c \"**/*\" --ignore-unknown",
     "lint": "eslint . --report-unused-disable-directives",
     "feature-matrix": "node scripts/feature-matrix/render.js"
