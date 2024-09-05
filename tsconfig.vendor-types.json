@@ -1,5 +1,4 @@
 {
   "extends": "./tsconfig.json",
-  "files": ["./vendor-types/@eslint/eslintrc.d.ts"],
   "include": ["vendor-types/**/*.d.ts"]
 }
