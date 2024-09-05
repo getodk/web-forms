@@ -72,10 +72,14 @@
     "vitest": "^2.0.5"
   },
   "peerDependencies": {
-    "solid-js": "^1.8.18"
+    "solid-js": "^1.8.18",
+    "web-tree-sitter": "0.23.0"
   },
   "peerDependenciesMeta": {
     "solid-js": {
+      "optional": true
+    },
+    "web-tree-sitter": {
       "optional": true
     }
   }

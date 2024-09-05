@@ -189,14 +189,24 @@ export class TreeSitterXPathParser {
 		let webTreeSitterInitOptions: WebTreeSitterInitOptions = {};
 
 		if (webTreeSitterResource != null) {
-			const webTreeSitterLocator = await resolveWebAssemblyResource(
-				webTreeSitterResource,
-				'locator'
-			);
+			if (IS_NODE_RUNTIME) {
+				const { default: nodeModule } = await import('node:module');
 
-			webTreeSitterInitOptions = {
-				locateFile: () => webTreeSitterLocator,
-			};
+				const require = nodeModule.createRequire(import.meta.url);
+				const webTreeSitterPath = require.resolve('web-tree-sitter/tree-sitter.wasm');
+
+				webTreeSitterInitOptions = {
+					locateFile: () => webTreeSitterPath,
+				};
+			} else {
+				const webTreeSitterLocator = await resolveWebAssemblyResource(
+					webTreeSitterResource,
+					'locator'
+				);
+				webTreeSitterInitOptions = {
+					locateFile: () => webTreeSitterLocator,
+				};
+			}
 		}
 
 		let xpathLanguageResourceType: ResourceType;
