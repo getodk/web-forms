@@ -8,7 +8,6 @@
 // annotating with a date, but it'd be nice if we could just derive that from
 // git history or whatever.
 
-/// <reference path="./vendor-types/@eslint/eslintrc.d.ts" />
 /// <reference path="./vendor-types/@vue/eslint-config-typescript/index.d.ts" />
 /// <reference path="./vendor-types/eslint-plugin-no-only-tests.d.ts" />
 /// <reference path="./vendor-types/eslint-plugin-vue/lib/configs/base.d.ts" />
@@ -18,7 +17,6 @@
 /// <reference path="./vendor-types/eslint-plugin-vue/lib/index.d.ts" />
 /// <reference path="./vendor-types/eslint-plugin-vue/lib/processor.d.ts" />
 
-import { FlatCompat } from '@eslint/eslintrc';
 import eslint from '@eslint/js';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import jsdoc from 'eslint-plugin-jsdoc';
@@ -30,19 +28,8 @@ import vue3Recommended from 'eslint-plugin-vue/lib/configs/vue3-recommended.js';
 import vue3StronglyRecommended from 'eslint-plugin-vue/lib/configs/vue3-strongly-recommended.js';
 import vueProcessor from 'eslint-plugin-vue/lib/processor.js';
 import { builtinModules } from 'node:module';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import tseslint from 'typescript-eslint';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const compat = new FlatCompat({
-	baseDirectory: __dirname,
-	resolvePluginsRelativeTo: __dirname,
-	recommendedConfig: eslint.configs.recommended,
-	allConfig: eslint.configs.all,
-});
+import vueESLintParser from 'vue-eslint-parser';
 
 /**
  * @param {string} pathSansExtension
@@ -147,14 +134,11 @@ export default tseslint.config(
 			 * Note: Contrary to the defaults provided in a Vue template project, it
 			 * was found that linting applies most consistently by applying
 			 * Vue-specific parsing **after** TypeScript.
-			 *
-			 * TODO: after breaking up the parser and rule aspects, it seemed likely
-			 * that we could stop using `FlatCompat` for this. For reasons that are
-			 * unclear, I wasn't able to find a way to get that working.
 			 */
-			...compat
-				.config({
-					parser: 'vue-eslint-parser',
+			{
+				files: [vuePackageGlob],
+				languageOptions: {
+					parser: vueESLintParser,
 					parserOptions: {
 						/**
 						 * @see {@link https://github.com/vuejs/vue-eslint-parser/issues/173#issuecomment-1367298274}
@@ -172,17 +156,13 @@ export default tseslint.config(
 							'<template>': 'espree',
 						},
 					},
-				})
-				.map((vueConfig) => ({
-					files: [vuePackageGlob],
-					plugins: {
-						vue: vuePlugin,
-						'@typescript-eslint': tseslint.plugin,
-					},
-					processor: vueProcessor,
-
-					...vueConfig,
-				})),
+				},
+				plugins: {
+					vue: vuePlugin,
+					'@typescript-eslint': tseslint.plugin,
+				},
+				processor: vueProcessor,
+			},
 
 			eslintConfigPrettier,
 		],
@@ -325,6 +305,7 @@ export default tseslint.config(
 			'@typescript-eslint/no-unsafe-call': 'error',
 			'@typescript-eslint/no-unsafe-member-access': 'error',
 			'@typescript-eslint/no-unsafe-return': 'error',
+			'@typescript-eslint/only-throw-error': 'warn',
 			'@typescript-eslint/prefer-nullish-coalescing': 'error',
 			'@typescript-eslint/prefer-optional-chain': 'error',
 			'@typescript-eslint/prefer-string-starts-ends-with': 'error',
@@ -339,6 +320,12 @@ export default tseslint.config(
 				'error',
 				{
 					allowSingleExtends: true,
+				},
+			],
+			'@typescript-eslint/no-empty-object-type': [
+				'error',
+				{
+					allowInterfaces: 'with-single-extends',
 				},
 			],
 			'prefer-const': 'error',
@@ -399,15 +386,6 @@ export default tseslint.config(
 			'packages/xforms-engine/vite.*.config.ts',
 			'packages/*/tools/**/*',
 			'packages/tree-sitter-xpath/scripts/build/*.mjs',
-
-			// TODO: in theory, all e2e tests (if they continue to be run with
-			// Playwright) are technically run in a "Node" environment, although
-			// they will likely exercise non-Node code when calling into the
-			// Playwright-managed browser process. I'm adding this special case
-			// mainly to make note of this because it's unclear what the best
-			// solution will be for mixed Node-/browser-API code in terms of type
-			// safety and linting.
-			'packages/tree-sitter-xpath/e2e/sub-expression-queries.test.ts',
 		],
 		rules: {
 			'no-restricted-imports': 'off',
