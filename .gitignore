@@ -63,6 +63,7 @@ packages/tree-sitter-xpath/*.tgz
 packages/tree-sitter-xpath/.build/
 
 # Go artifacts
+packages/tree-sitter-xpath/go.mod
 packages/tree-sitter-xpath/go.sum
 packages/tree-sitter-xpath/_obj/
 
