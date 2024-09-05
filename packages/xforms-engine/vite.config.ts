@@ -48,7 +48,7 @@ export default defineConfig(({ mode }) => {
 
 	const entries = Object.values(libEntry);
 
-	const external = ['@getodk/common'];
+	const external = ['@getodk/common', 'fs', 'module', 'node:module', 'path'];
 
 	if (IS_SOLID_BUILD_TARGET) {
 		external.push('solid-js', 'solid-js/store');

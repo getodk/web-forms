@@ -63,6 +63,8 @@ export default defineConfig(({ mode }) => {
 		};
 	}
 
+	const external = ['fs', 'module', 'node:module', 'path'];
+
 	return {
 		assetsInclude: ['assets/**/*', 'fixtures/**/*.xml'],
 		build: {
@@ -72,12 +74,14 @@ export default defineConfig(({ mode }) => {
 			emptyOutDir: false,
 			outDir: './dist',
 			manifest: true,
+			rollupOptions: { external },
 		},
 		define: {
 			TZ: JSON.stringify(timeZoneId),
 		},
 		esbuild: {
 			target: 'esnext',
+			exclude: external,
 		},
 		optimizeDeps: {
 			esbuildOptions: {
