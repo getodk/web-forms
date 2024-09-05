@@ -79,7 +79,7 @@ export default defineConfig(({ mode }) => {
 				formats: ['es'],
 			},
 			rollupOptions: {
-				external: ['fs', 'module', 'node:module', 'path'],
+				external: ['fs', 'path'],
 			},
 		},
 		define: {

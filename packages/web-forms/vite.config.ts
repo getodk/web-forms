@@ -30,7 +30,7 @@ const bundleFonts = () =>
 
 export default defineConfig(() => {
 	/** @todo Standalone build should make 'vue' externalization conditional */
-	const external = ['vue', 'fs', 'module', 'node:module', 'path'];
+	const external = ['vue'];
 
 	const supportedBrowsers = new Set(['chromium', 'firefox', 'webkit'] as const);
 

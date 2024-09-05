@@ -113,6 +113,15 @@ const resolveWebAssemblyResource = async <T extends ResourceType>(
 	resource: string,
 	resourceType: T
 ): Promise<ResolvedResourceType<T>> => {
+	if (IS_NODE_RUNTIME && resourceType === 'locator' && resource.startsWith('data:')) {
+		const binary = resolveWebAssemblyDataURL(resource);
+
+		if (binary != null) {
+			return resource as ResolvedResourceType<T>;
+			// return (await getTempBinaryPath(binary)) as ResolvedResourceType<T>;
+		}
+	}
+
 	if (IS_NODE_RUNTIME && resourceType === 'binary' && resource.startsWith('data:')) {
 		const binary = resolveWebAssemblyDataURL(resource);
 
@@ -155,6 +164,7 @@ export interface WebAssemblyResourceSpecifiers {
 }
 
 interface WebTreeSitterInitOptions {
+	readonly wasmBinary?: Uint8Array;
 	readonly locateFile?: () => string;
 }
 
@@ -190,19 +200,20 @@ export class TreeSitterXPathParser {
 
 		if (webTreeSitterResource != null) {
 			if (IS_NODE_RUNTIME) {
-				const { default: nodeModule } = await import('node:module');
-
-				const require = nodeModule.createRequire(import.meta.url);
-				const webTreeSitterPath = require.resolve('web-tree-sitter/tree-sitter.wasm');
+				const webTreeSitterBinary = await resolveWebAssemblyResource(
+					webTreeSitterResource,
+					'binary'
+				);
 
 				webTreeSitterInitOptions = {
-					locateFile: () => webTreeSitterPath,
+					wasmBinary: webTreeSitterBinary,
 				};
 			} else {
 				const webTreeSitterLocator = await resolveWebAssemblyResource(
 					webTreeSitterResource,
 					'locator'
 				);
+
 				webTreeSitterInitOptions = {
 					locateFile: () => webTreeSitterLocator,
 				};
