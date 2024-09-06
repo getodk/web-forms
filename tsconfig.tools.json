@@ -1,6 +1,5 @@
 {
   "extends": "./tsconfig.json",
-  "files": ["./vendor-types/@eslint/eslintrc.d.ts"],
   // TODO: probably good if tools includes just go in the root config, otherwise
   // stuff starts getting conflicty and redundant fast
   "include": [
