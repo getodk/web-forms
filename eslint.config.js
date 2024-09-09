@@ -21,6 +21,7 @@ import eslint from '@eslint/js';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import jsdoc from 'eslint-plugin-jsdoc';
 import noOnlyTestsPlugin from 'eslint-plugin-no-only-tests';
+import prettierVuePlugin from 'eslint-plugin-prettier-vue';
 import vuePlugin from 'eslint-plugin-vue';
 import vueBase from 'eslint-plugin-vue/lib/configs/base.js';
 import vue3Essential from 'eslint-plugin-vue/lib/configs/vue3-essential.js';
@@ -160,9 +161,22 @@ export default tseslint.config(
 				},
 				plugins: {
 					vue: vuePlugin,
+					'prettier-vue': prettierVuePlugin,
 					'@typescript-eslint': tseslint.plugin,
 				},
 				processor: vueProcessor,
+				settings: {
+					'prettier-vue': {
+						SFCBlocks: {
+							template: false,
+							script: true,
+							style: true,
+						},
+						fileInfoOptions: {
+							ignorePath: './packages/ui-vue/.prettierignore',
+						},
+					},
+				},
 			},
 
 			eslintConfigPrettier,
@@ -359,13 +373,17 @@ export default tseslint.config(
 			...vue3StronglyRecommended.rules,
 			...vue3Recommended.rules,
 
+			// See explanation of typescript-eslint recommendation above
+			'no-undef': 'off',
+
 			// Consistent with all other source code
+			'prettier-vue/prettier': 'error',
 			'vue/html-indent': ['error', 'tab'],
+			'vue/html-comment-indent': ['error', 'tab'],
+			'vue/script-indent': ['error', 'tab'],
 			// should be based on the printWidth
 			'vue/max-attributes-per-line': 'off',
 			'vue/no-undef-components': 'error',
-			'vue/html-comment-indent': ['error', 'tab'],
-			'vue/script-indent': ['error', 'tab'],
 			'vue/no-empty-component-block': 'error',
 		},
 	},
