@@ -385,6 +385,11 @@ export default tseslint.config(
 			'vue/max-attributes-per-line': 'off',
 			'vue/no-undef-components': 'error',
 			'vue/no-empty-component-block': 'error',
+
+			// Consistent with Prettier behavior, in all other source code
+			'eol-last': ['error', 'always'],
+			'no-trailing-spaces': 'error',
+			'no-mixed-spaces-and-tabs': 'error',
 		},
 	},
 
