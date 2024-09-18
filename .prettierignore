@@ -1,16 +1,20 @@
 # Deep Directories
 **/node_modules
 **/dist
-**/fixtures
-!packages/xforms-engine/src/test/fixtures
 **/vendor
+
+# Fixtures
+packages/common/src/fixtures/*/**
+!packages/common/src/fixtures/README.md
+!packages/common/src/fixtures/xforms.ts
+packages/common/src/fixtures/test-javarosa/**
+packages/common/src/fixtures/test-scenario/**
 
 # Directories
 .github
 .changeset
 
-# Exclude Vue entirely. There are many conflicts with ESLint Vue rules, and some
-# of those appear to affect behavior.
+# Exclude Vue. Formatting is handled by ESLint.
 **/*.vue
 
 # Exclude test Forms in Scenario package, most of which came from JavaRosa
