@@ -39,8 +39,12 @@ Here is the feature matrix and the progress we have made so far:
 <!-- autogen: feature-matrix -->
 
 <details>
-  <summary>${\mathtt{Question \space \space types \space \space (basic \space \space functionality)\color{transparent}==== \color{green}███\color{LightGray}█████████████████ \space \color{initial} 18\%}}$</summary>
+  <summary>
 
+<!-- prettier-ignore -->
+  #####  $\texttt{Question types (basic functionality)\hspace{5mm}\color{green}██\color{LightGray}█████████████ \color{initial} 18\\%}$
+
+  </summary>
   <br/>
 
 | Feature <img width=250px/> | Progress |
@@ -82,8 +86,12 @@ Here is the feature matrix and the progress we have made so far:
 </details>
 
 <details>
-  <summary>${\mathtt{Appearances\color{transparent}============================= \color{green}████\color{LightGray}████████████████ \space \color{initial} 21\%}}$</summary>
+  <summary>
 
+<!-- prettier-ignore -->
+  #####  $\texttt{Appearances\hspace{41mm}\color{green}███\color{LightGray}████████████ \color{initial} 21\\%}$
+
+  </summary>
   <br/>
 
 | Feature <img width=250px/> | Progress |
@@ -134,8 +142,12 @@ Here is the feature matrix and the progress we have made so far:
 </details>
 
 <details>
-  <summary>${\mathtt{Parameters\color{transparent}============================== \color{green}████\color{LightGray}████████████████ \space \color{initial} 22\%}}$</summary>
+  <summary>
 
+<!-- prettier-ignore -->
+  #####  $\texttt{Parameters\hspace{43mm}\color{green}███\color{LightGray}████████████ \color{initial} 22\\%}$
+
+  </summary>
   <br/>
 
 | Feature <img width=250px/>                                                                                                       | Progress |
@@ -153,8 +165,12 @@ Here is the feature matrix and the progress we have made so far:
 </details>
 
 <details>
-  <summary>${\mathtt{Form \space \space Logic\color{transparent}============================== \color{green}████████████████\color{LightGray}████ \space \color{initial} 83\%}}$</summary>
+  <summary>
 
+<!-- prettier-ignore -->
+  #####  $\texttt{Form Logic\hspace{43mm}\color{green}████████████\color{LightGray}███ \color{initial} 83\\%}$
+
+  </summary>
   <br/>
 
 | Feature <img width=250px/> | Progress |
@@ -166,7 +182,7 @@ Here is the feature matrix and the progress we have made so far:
 | custom constraint          |    ✅    |
 | constraint message         |    ✅    |
 | read only                  |    ✅    |
-| trigger                    |          |
+| trigger                    |    🚧    |
 | choice filter              |    ✅    |
 | default                    |    ✅    |
 | query parameter            |          |
@@ -175,8 +191,12 @@ Here is the feature matrix and the progress we have made so far:
 </details>
 
 <details>
-  <summary>${\mathtt{Descriptions \space \space and \space \space Annotations\color{transparent}============ \color{green}████\color{LightGray}████████████████ \space \color{initial} 20\%}}$</summary>
+  <summary>
 
+<!-- prettier-ignore -->
+  #####  $\texttt{Descriptions and Annotations\hspace{14mm}\color{green}███\color{LightGray}████████████ \color{initial} 20\\%}$
+
+  </summary>
   <br/>
 
 | Feature <img width=250px/>                     | Progress |
@@ -200,8 +220,12 @@ Here is the feature matrix and the progress we have made so far:
 </details>
 
 <details>
-  <summary>${\mathtt{Theme \space \space and \space \space Layouts\color{transparent}======================= \color{green}█\color{LightGray}███████████████████ \space \color{initial} 9\%}}$</summary>
+  <summary>
 
+<!-- prettier-ignore -->
+  #####  $\texttt{Theme and Layouts\hspace{30mm}\color{green}█\color{LightGray}██████████████ \color{initial} 9\\%}$
+
+  </summary>
   <br/>
 
 | Feature <img width=250px/> | Progress |
@@ -221,8 +245,12 @@ Here is the feature matrix and the progress we have made so far:
 </details>
 
 <details>
-  <summary>${\mathtt{Offline \space \space capabilities\color{transparent}==================== \color{green}█\color{LightGray}███████████████████ \space \color{initial} 0\%}}$</summary>
+  <summary>
 
+<!-- prettier-ignore -->
+  #####  $\texttt{Offline capabilities\hspace{31mm}\color{green}█\color{LightGray}██████████████ \color{initial} 0\\%}$
+
+  </summary>
   <br/>
 
 | Feature <img width=250px/>   | Progress |
@@ -236,8 +264,12 @@ Here is the feature matrix and the progress we have made so far:
 </details>
 
 <details>
-  <summary>${\mathtt{XPath\color{transparent}=================================== \color{green}███████████████████\color{LightGray}█ \space \color{initial} 95\%}}$</summary>
+  <summary>
 
+<!-- prettier-ignore -->
+  #####  $\texttt{XPath\hspace{51mm}\color{green}██████████████\color{LightGray}█ \color{initial} 95\\%}$
+
+  </summary>
   <br/>
 
 | Feature <img width=250px/>                                                                                      | Progress |
