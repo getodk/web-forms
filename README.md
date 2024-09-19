@@ -182,7 +182,7 @@ Here is the feature matrix and the progress we have made so far:
 | custom constraint          |    ✅    |
 | constraint message         |    ✅    |
 | read only                  |    ✅    |
-| trigger                    |          |
+| trigger                    |    🚧    |
 | choice filter              |    ✅    |
 | default                    |    ✅    |
 | query parameter            |          |
