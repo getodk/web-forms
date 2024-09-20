@@ -57,6 +57,7 @@ jobs:
           path: |
             examples/*/dist
             packages/*/dist
+            packages/web-forms/dist-demo
             packages/tree-sitter-xpath/grammar.js
             packages/tree-sitter-xpath/src/grammar.json
             packages/tree-sitter-xpath/src/parser.c
@@ -107,6 +108,7 @@ jobs:
           path: |
             examples/*/dist
             packages/*/dist
+            packages/web-forms/dist-demo
             packages/tree-sitter-xpath/grammar.js
             packages/tree-sitter-xpath/src/grammar.json
             packages/tree-sitter-xpath/src/parser.c
@@ -163,6 +165,7 @@ jobs:
           path: |
             examples/*/dist
             packages/*/dist
+            packages/web-forms/dist-demo
             packages/tree-sitter-xpath/grammar.js
             packages/tree-sitter-xpath/src/grammar.json
             packages/tree-sitter-xpath/src/parser.c
@@ -227,6 +230,7 @@ jobs:
           path: |
             examples/*/dist
             packages/*/dist
+            packages/web-forms/dist-demo
             packages/tree-sitter-xpath/grammar.js
             packages/tree-sitter-xpath/src/grammar.json
             packages/tree-sitter-xpath/src/parser.c
@@ -291,6 +295,7 @@ jobs:
           path: |
             examples/*/dist
             packages/*/dist
+            packages/web-forms/dist-demo
             packages/tree-sitter-xpath/grammar.js
             packages/tree-sitter-xpath/src/grammar.json
             packages/tree-sitter-xpath/src/parser.c
@@ -355,6 +360,7 @@ jobs:
           path: |
             examples/*/dist
             packages/*/dist
+            packages/web-forms/dist-demo
             packages/tree-sitter-xpath/grammar.js
             packages/tree-sitter-xpath/src/grammar.json
             packages/tree-sitter-xpath/src/parser.c
@@ -414,6 +420,7 @@ jobs:
           path: |
             examples/*/dist
             packages/*/dist
+            packages/web-forms/dist-demo
             packages/tree-sitter-xpath/grammar.js
             packages/tree-sitter-xpath/src/grammar.json
             packages/tree-sitter-xpath/src/parser.c
@@ -468,6 +475,7 @@ jobs:
           path: |
             examples/*/dist
             packages/*/dist
+            packages/web-forms/dist-demo
             packages/tree-sitter-xpath/grammar.js
             packages/tree-sitter-xpath/src/grammar.json
             packages/tree-sitter-xpath/src/parser.c
@@ -532,6 +540,7 @@ jobs:
           path: |
             examples/*/dist
             packages/*/dist
+            packages/web-forms/dist-demo
             packages/tree-sitter-xpath/grammar.js
             packages/tree-sitter-xpath/src/grammar.json
             packages/tree-sitter-xpath/src/parser.c
@@ -558,3 +567,10 @@ jobs:
 
       - if: ${{ matrix.target == 'Web' && matrix.browser != 'webkit' }}
         run: 'yarn workspace @getodk/web-forms test-browser:${{ matrix.browser }}'
+
+      - if: ${{ matrix.node-version == '22.8.0' && matrix.target == 'Node' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-demo
+          path: packages/web-forms/dist-demo
+
