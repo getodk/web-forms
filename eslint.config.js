@@ -78,7 +78,7 @@ export default tseslint.config(
 			'packages/*/index.d.ts',
 			'packages/**/*.min.js',
 			'packages/**/dist/**/*',
-			'packages/**/fixtures/**/*',
+			'packages/common/fixtures/test-javarosa/**/*',
 			'packages/tree-sitter-xpath/grammar.js',
 			'packages/tree-sitter-xpath/bindings/**/*',
 			'packages/tree-sitter-xpath/types/**/*',
