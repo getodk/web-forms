@@ -89,7 +89,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  #####  $\texttt{Appearances\hspace{41mm}\color{green}███\color{LightGray}████████████ \color{initial} 21\\%}$
+  #####  $\texttt{Appearances\hspace{41mm}\color{green}███\color{LightGray}████████████ \color{initial} 24\\%}$
 
   </summary>
   <br/>
@@ -131,13 +131,12 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | columns-n                  |    ✅    |
 | no-buttons                 |    ✅    |
 | image-map                  |          |
-| likert                     |          |
+| likert                     |    ✅    |
 | map                        |          |
 | field-list                 |    ✅    |
 | label                      |    ✅    |
 | list-nolabel               |    ✅    |
 | list                       |    ✅    |
-| table-list                 |          |
 
 </details>
 
