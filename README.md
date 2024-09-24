@@ -32,9 +32,9 @@ Here are some of our high-level priorities to get to a production-ready state:
 - Implement all types and appearances defined in [XLSForm](https://xlsform.org/en/ref-table/)
 - Define a thoughtful interface for host applications that balances ease of use and flexibility
 
-Here is the feature matrix and the progress we have made so far:
+### Feature matrix
 
-<!-- Following section is auto generated. Please update the `feature-matrix.json` as more features are implemented and then run `yarn feature-matrix` from the repository's root to regenerate this section. -->
+This section is auto generated. Please update `feature-matrix.json` and then run `yarn feature-matrix` from the repository's root to update it.
 
 <!-- autogen: feature-matrix -->
 
@@ -73,7 +73,7 @@ Here is the feature matrix and the progress we have made so far:
 | datetime                   |          |
 | rank                       |          |
 | csv-external               |          |
-| acknowledge                |          |
+| acknowledge                |    🚧    |
 | start                      |          |
 | end                        |          |
 | today                      |          |
@@ -182,7 +182,7 @@ Here is the feature matrix and the progress we have made so far:
 | custom constraint          |    ✅    |
 | constraint message         |    ✅    |
 | read only                  |    ✅    |
-| trigger                    |    🚧    |
+| trigger                    |          |
 | choice filter              |    ✅    |
 | default                    |    ✅    |
 | query parameter            |          |
