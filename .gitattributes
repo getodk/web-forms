@@ -2,6 +2,8 @@
 *.png -text
 *.jpg -text
 
+*.xlsx binary
+
 packages/tree-sitter-xpath/src/*.json linguist-generated
 packages/tree-sitter-xpath/src/parser.c linguist-generated
 packages/tree-sitter-xpath/src/tree_sitter/* linguist-generated
