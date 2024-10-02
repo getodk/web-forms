@@ -72,7 +72,7 @@ const isDev = import.meta.env.DEV;
 							image-name="socio-economic"
 						>
 							<template #description>
-								Questions to understand the social and economic conditions of individuals within a population.
+								Questions to understand the social and economic conditions of individuals. Includes selects, calculations, repeats.
 							</template>
 						</DemoForm>
 					</div>
@@ -83,7 +83,12 @@ const isDev = import.meta.env.DEV;
 							image-name="who-va"
 						>
 							<template #description>
-								Questions about the interviewer, HIV-Malaria mortality, and background information.
+								Form used to identify likely cause of death. Long form with selects, required, relevance.
+								<a
+									class="inline-anchor"
+									href="https://www.who.int/standards/classifications/other-classifications/verbal-autopsy-standards-ascertaining-and-attributing-causes-of-death-tool"
+									target="_blank"
+								>Source</a>.
 							</template>
 						</DemoForm>
 					</div>
