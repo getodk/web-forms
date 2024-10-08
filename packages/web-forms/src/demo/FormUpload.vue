@@ -77,19 +77,23 @@ const uploadFile = async (file: File) => {
 	reset();
 	uploadedFilename.value = file.name;
 
-	const { data: response, error: conversionError } = await convertXlsForm(file);
+	if (file.name.endsWith('.xml')) {
+		xformUrl.value = URL.createObjectURL(file);
+	} else {
+		const { data: response, error: conversionError } = await convertXlsForm(file);
 
-	if (conversionError) {
-		error.value = conversionError;
-	} else if (response) {
-		if (response.error) {
-			error.value = response.error;
-		} else if (response.xform_url) {
-			xformUrl.value = response.xform_url;
-		}
+		if (conversionError) {
+			error.value = conversionError;
+		} else if (response) {
+			if (response.error) {
+				error.value = response.error;
+			} else if (response.xform_url) {
+				xformUrl.value = response.xform_url;
+			}
 
-		if (response.warnings && response.warnings.length > 0) {
-			warnings.value = response.warnings;
+			if (response.warnings && response.warnings.length > 0) {
+				warnings.value = response.warnings;
+			}
 		}
 	}
 
