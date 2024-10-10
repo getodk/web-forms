@@ -27,6 +27,10 @@ const { data: config, error: configErrors } = useConfiguration();
 
 const xlsformOnlineBaseUrl = computed(() => config.value?.['xlsform-online-url']);
 
+const inDevMode = import.meta.env.DEV;
+
+const bypassConverterForXml = ref<boolean>(false);
+
 watch(configErrors, (value) => {
 	if (value) {
 		error.value =
@@ -77,8 +81,8 @@ const uploadFile = async (file: File) => {
 	reset();
 	uploadedFilename.value = file.name;
 
-	if (file.name.endsWith('.xml')) {
-		xformUrl.value = URL.createObjectURL(file);
+	if (bypassConverterForXml.value && file.name.endsWith('.xml')) {
+		xformUrl.value = URL.createObjectURL(file); // leaks; in non-demo code, we might want to deallocate the object URL at some point.
 	} else {
 		const { data: response, error: conversionError } = await convertXlsForm(file);
 
@@ -149,6 +153,14 @@ document.addEventListener(
 						<span class="icon-insert_drive_file" />
 						Drag and drop XLSForm or <a href="javascript:;" class="upload-file-link" @click="fileInput.click()">upload form</a>
 					</span>
+					<template v-if="inDevMode">
+						<label>
+							<input
+								v-model="bypassConverterForXml" type="checkbox"
+							>
+							Bypass converter for <code>XML</code> upload
+						</label>
+					</template>
 				</template>
 				<template v-else>
 					<PrimeProgressSpinner class="spinner" />
