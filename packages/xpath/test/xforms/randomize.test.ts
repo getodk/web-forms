@@ -74,6 +74,11 @@ describe('randomize()', () => {
 			{ seed: 1, expected: 'BFEACD' },
 			{ seed: 11111111, expected: 'ACDBFE' },
 			{ seed: 'int(1)', expected: 'BFEACD' },
+			{ seed: 1.1, expected: 'BFEACD' },
+			{ seed: 0, expected: 'CBEAFD' },
+			{ seed: NaN, expected: 'CBEAFD' },
+			{ seed: Infinity, expected: 'CBEAFD' },
+			{ seed: -Infinity, expected: 'CBEAFD' },
 			{ seed: 'floor(1.1)', expected: 'BFEACD' },
 			{ seed: '//xhtml:div[@id="testFunctionNodeset2"]/xhtml:p', expected: 'BFEACD' },
 		].forEach(({ seed, expected }) => {
@@ -90,10 +95,9 @@ describe('randomize()', () => {
 
 	[
 		{ expression: 'randomize()' },
-		{ expression: `randomize(${SELECTOR}, 'a')` },
 		{ expression: `randomize(${SELECTOR}, 1, 2)` },
 	].forEach(({ expression }) => {
-		it.fails(`${expression} with invalid args, throws an error`, () => {
+		it.fails(`${expression} with invalid argument count, throws an error`, () => {
 			testContext.evaluate(expression);
 		});
 	});
