@@ -93,14 +93,13 @@ describe('randomize()', () => {
 		});
 	});
 
-	[
-		{ expression: 'randomize()' },
-		{ expression: `randomize(${SELECTOR}, 1, 2)` },
-	].forEach(({ expression }) => {
-		it.fails(`${expression} with invalid argument count, throws an error`, () => {
-			testContext.evaluate(expression);
-		});
-	});
+	[{ expression: 'randomize()' }, { expression: `randomize(${SELECTOR}, 1, 2)` }].forEach(
+		({ expression }) => {
+			it.fails(`${expression} with invalid argument count, throws an error`, () => {
+				testContext.evaluate(expression);
+			});
+		}
+	);
 
 	it('randomizes nodes', () => {
 		testContext = createXFormsTestContext(`
