@@ -1,6 +1,6 @@
 ---
-'@getodk/web-forms': patch
-'@getodk/common': patch
+'@getodk/web-forms': minor
+'@getodk/common': minor
 ---
 
 Basic presentation of form load failures
