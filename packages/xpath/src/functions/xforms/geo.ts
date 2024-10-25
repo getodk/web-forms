@@ -202,7 +202,7 @@ const sum = (values: readonly number[]) => {
 
 export const distance = new NumberFunction(
 	'distance',
-	[{ arityType: 'variadic' }],
+	[{ arityType: 'variadic+' }],
 	(context, args) => {
 		const lines = evaluateLines(context, args);
 
