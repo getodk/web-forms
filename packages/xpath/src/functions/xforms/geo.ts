@@ -78,8 +78,10 @@ const INVALID_LINE: Line = {
 	end: INVALID_POINT,
 };
 
-const evaluateLines = (context: EvaluationContext, expression: readonly EvaluableArgument[]): Line[] => {
-
+const evaluateLines = (
+	context: EvaluationContext,
+	expression: readonly EvaluableArgument[]
+): Line[] => {
 	const points = expression.flatMap((el) => evaluatePoints(context, el));
 	if (points.length < 2) {
 		return [INVALID_LINE];
