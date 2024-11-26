@@ -1822,6 +1822,13 @@
   dependencies:
     undici-types "~6.19.2"
 
+"@types/papaparse@^5.3.15":
+  version "5.3.15"
+  resolved "https://registry.yarnpkg.com/@types/papaparse/-/papaparse-5.3.15.tgz#7cafa16757a1d121422deefbb10b6310b224ecc4"
+  integrity sha512-JHe6vF6x/8Z85nCX4yFdDslN11d+1pr12E526X8WAfhadOeaOTx5AuIkvDKIBopfvlzpzkdMx4YyvSKCM9oqtw==
+  dependencies:
+    "@types/node" "*"
+
 "@types/ramda@^0.30.2":
   version "0.30.2"
   resolved "https://registry.yarnpkg.com/@types/ramda/-/ramda-0.30.2.tgz#70661b20c1bb969589a551b7134ae75008ffbfb6"
@@ -5196,6 +5203,11 @@ package-manager-detector@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/package-manager-detector/-/package-manager-detector-0.2.0.tgz#160395cd5809181f5a047222319262b8c2d8aaea"
   integrity sha512-E385OSk9qDcXhcM9LNSe4sdhx8a9mAPrZ4sMLW+tmxl5ZuGtPUcdFu+MPP2jbgiWAZ6Pfe5soGFMd+0Db5Vrog==
+
+papaparse@^5.4.1:
+  version "5.4.1"
+  resolved "https://registry.yarnpkg.com/papaparse/-/papaparse-5.4.1.tgz#f45c0f871853578bd3a30f92d96fdcfb6ebea127"
+  integrity sha512-HipMsgJkZu8br23pW15uvo6sib6wne/4woLZPlFf3rpDyMe9ywEXUsuD7+6K9PRkJlVT51j/sCOYDKGGS3ZJrw==
 
 parent-module@^1.0.0:
   version "1.0.1"
