@@ -48,7 +48,7 @@ export const seededRandomize = <T>(values: readonly T[], seed?: number): T[] => 
 		let finalSeed: number;
 		// Per issue #49 this is (to an extent) "bug-or-feature-compatible" with JavaRosa's implementation.
 		// org.javarosa.core.model.ItemsetBinding.resolveRandomSeed takes the .longValue() of
-		// the double produced by randomSeedPathExpr.eval().
+		// the double produced by randomSeedPathExpr.eval() — see https://github.com/getodk/javarosa/blob/6ce13527c/src/main/java/org/javarosa/core/model/ItemsetBinding.java#L311:L317 .
 		// That results in a 0L when the double is NaN, which happens (for instance) when there
 		// is a string that does not look like a number (which is a problem in itself, as any non-numeric
 		// looking string will then result in the same seed of 0 — see https://github.com/getodk/javarosa/issues/800).
