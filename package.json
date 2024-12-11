@@ -42,6 +42,7 @@
     "@types/eslint": "^9.6.1",
     "@types/eslint-config-prettier": "^6.11.3",
     "@types/eslint__js": "^8.42.3",
+    "@types/geojson": "^7946.0.14",
     "@types/jsdom": "^21.1.7",
     "@types/node": "^22.7.2",
     "@typescript-eslint/eslint-plugin": "^8.7.0",
