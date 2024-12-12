@@ -78,7 +78,7 @@ describe('randomize()', () => {
 			{ seed: 0, expected: 'CBEAFD' },
 			{ seed: NaN, expected: 'CBEAFD' },
 			{ seed: Infinity, expected: 'CBEAFD' },
-			{ seed: -Infinity, expected: 'CBEAFD' },
+			{ seed: -Infinity, expected: 'CFBEAD' },
 			{ seed: 'floor(1.1)', expected: 'BFEACD' },
 			{ seed: '//xhtml:div[@id="testFunctionNodeset2"]/xhtml:p', expected: 'BFEACD' },
 		].forEach(({ seed, expected }) => {

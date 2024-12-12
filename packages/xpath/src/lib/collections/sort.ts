@@ -18,9 +18,15 @@ class SeededPseudoRandomNumberGenerator implements PseudoRandomNumberGenerator {
 	// Park-Miller PRNG
 	protected seed: number;
 
-	constructor(seed: Int) {
-		let initialSeed = seed % SEED_MODULO_OPERAND;
-
+	constructor(seed: Int | bigint) {
+		let initialSeed: number;
+		if (typeof(seed) === ("bigint")) {
+			// the result of the modulo operation is always smaller than Number.MAX_SAFE_INTEGER,
+			// thus it's safe to convert to a Number.
+			initialSeed = Number(BigInt(seed) % BigInt(SEED_MODULO_OPERAND));
+		} else {
+			initialSeed = Number(seed) % Number(SEED_MODULO_OPERAND);
+		}
 		if (initialSeed <= 0) {
 			initialSeed += MAX_INT_32 - 1;
 		}
@@ -45,39 +51,26 @@ export const seededRandomize = <T>(values: readonly T[], seed?: number): T[] => 
 	if (seed == null) {
 		generator = new UnseededPseudoRandomNumberGenerator();
 	} else {
-		let finalSeed: number;
-		// Per issue #49 this is (to an extent) "bug-or-feature-compatible" with JavaRosa's implementation.
-		// org.javarosa.core.model.ItemsetBinding.resolveRandomSeed takes the .longValue() of
+		let finalSeed: number | bigint;
+		// Per issue #49 (https://github.com/getodk/web-forms/issues/49) this is intended to be "bug-or-feature-compatible"
+		// with JavaRosa's implementation; org.javarosa.core.model.ItemsetBinding.resolveRandomSeed takes the .longValue() of
 		// the double produced by randomSeedPathExpr.eval() — see https://github.com/getodk/javarosa/blob/6ce13527c/src/main/java/org/javarosa/core/model/ItemsetBinding.java#L311:L317 .
 		// That results in a 0L when the double is NaN, which happens (for instance) when there
 		// is a string that does not look like a number (which is a problem in itself, as any non-numeric
 		// looking string will then result in the same seed of 0 — see https://github.com/getodk/javarosa/issues/800).
 		// We'll emulate Java's Double -> Long conversion here (for NaN and some other double values)
 		// so that we produce the same randomization as JR.
-		if (Number.isNaN(seed)) {
-			finalSeed = 0;
-		} else if (seed === Infinity) {
-			// In Java's .longValue(), this converts to 2**63 -1.
-			// But that's larger than the JS Number.MAX_SAFE_INTEGER, and thus we cannot guarantee the same
-			// outcomes as OpenRosa.
-			// However. When Park-Miller is initialized, it takes the modulus of the seed and 2**31 -1 as
-			// the first step. This means that for Park-Miller we can use 2**31 (which is smaller than Number.MAX_SAFE_INTEGER)
-			// as a surrogate equivalent seed for Infinity, since
-			// ((2**63 -1) % (2**31 -1)) = ((2**31) % (2**31 -1))
-			// (because of JS Number imprecision (the problem to start with) don't use JS to convince of the above equality,
-			// or rewrite to use BigInt).
-			finalSeed = 2 ** 31;
-		} else if (seed === -Infinity) {
-			// Analogous with the above conversion for Infinity
-			finalSeed = -(2 ** 31 + 1);
-		} else if (!Number.isInteger(seed)) {
-			// We're not out of the woods yet — see issue: https://github.com/getodk/web-forms/issues/240.
-			// But one thing we know is that JR converts the double to a long, and thus drops the fractional part.
-			// We'll do the same here.
-			finalSeed = Math.floor(seed);
-		} else {
-			finalSeed = seed;
-		}
+
+		// In Java, a NaN double's .longValue is 0
+		if (Number.isNaN(seed)) finalSeed = 0;
+		// In Java, an Infinity double's .longValue() is 2**63 -1, which is larger than Number.MAX_SAFE_INTEGER, thus we'll need a BigInt.
+		else if (seed === Infinity) finalSeed = 2n ** 63n -1n;
+		// Analogous with the above conversion, but for -Infinity
+		else if (seed === -Infinity) finalSeed = -(2n ** 63n);
+		// A Java double's .longValue drops the fractional.
+		else if (typeof(seed) === "number" && !Number.isInteger(seed)) finalSeed = Math.trunc(seed);
+		// TODO: There's still more peculiarities to address: https://github.com/getodk/web-forms/issues/240
+		else finalSeed = seed;
 		generator = new SeededPseudoRandomNumberGenerator(finalSeed);
 	}
 
