@@ -2,6 +2,8 @@
 
 With ODK Web Forms, you can define forms with powerful logic using the spreadsheet-based [XLSForm standard](https://docs.getodk.org/xlsform/). Use [our Vue-based frontend](/packages/web-forms/) or build your own user experience around [the engine](/packages/xforms-engine/)!
 
+You can try a preview [on the ODK website](https://getodk.org/web-forms-preview/).
+
 > [!IMPORTANT]
 > ODK Web Forms is currently pre-release. We don't yet guarantee that its interfaces are stable and it is missing many features that are available in XLSForm form definitions.
 
@@ -17,6 +19,8 @@ https://github.com/getodk/web-forms/assets/447837/9b25e1bc-d209-462c-8e9e-3259bd
 - [xpath](/packages/xpath): XPath evaluator with ODK XForms extensions
 - [scenario](/packages/scenario): engine client used to express tests on forms
 - [ui-solid](/packages/ui-solid): form-filling frontend built with Solid, likely not as up-to-date as the Vue client
+
+Run the preview with `yarn workspace @getodk/web-forms dev`.
 
 ## Project status
 
@@ -42,7 +46,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  #####  $\texttt{Question types (basic functionality)\hspace{5mm}\color{green}██\color{LightGray}█████████████ \color{initial} 18\\%}$
+  #####  $\texttt{Question types (basic functionality)\hspace{5mm}\color{green}████\color{LightGray}███████████ \color{initial} 29\\%}$
 
   </summary>
   <br/>
@@ -50,11 +54,12 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | Feature <img width=250px/> | Progress |
 | -------------------------- | :------: |
 | text                       |    ✅    |
-| integer                    |          |
-| decimal                    |          |
+| integer                    |    ✅    |
+| decimal                    |    ✅    |
 | note                       |    ✅    |
 | select_one                 |    ✅    |
 | select_multiple            |    ✅    |
+| select\_\*\_from_file      |    ✅    |
 | repeat                     |    ✅    |
 | group                      |    ✅    |
 | geopoint                   |          |
@@ -72,7 +77,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | time                       |          |
 | datetime                   |          |
 | rank                       |          |
-| csv-external               |          |
+| csv-external               |    ✅    |
 | acknowledge                |    🚧    |
 | start                      |          |
 | end                        |          |
@@ -89,18 +94,18 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  #####  $\texttt{Appearances\hspace{41mm}\color{green}███\color{LightGray}████████████ \color{initial} 24\\%}$
+  #####  $\texttt{Appearances\hspace{41mm}\color{green}████\color{LightGray}███████████ \color{initial} 28\\%}$
 
   </summary>
   <br/>
 
 | Feature <img width=250px/> | Progress |
 | -------------------------- | :------: |
-| numbers                    |          |
+| numbers                    |    ✅    |
 | multiline                  |          |
 | url                        |          |
 | ex:                        |          |
-| thousands-sep              |          |
+| thousands-sep              |    ✅    |
 | bearing                    |          |
 | vertical                   |          |
 | no-ticks                   |          |
@@ -137,6 +142,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | label                      |    ✅    |
 | list-nolabel               |    ✅    |
 | list                       |    ✅    |
+| counter                    |          |
 
 </details>
 
