@@ -29,7 +29,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ['18.20.4', '20.17.0', '22.9.0']
+        node-version: ['18.20.5', '20.18.1', '22.12.0']
 
     steps:
       - uses: 'actions/checkout@v4'
@@ -83,7 +83,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ['22.9.0']
+        node-version: ['22.12.0']
 
     steps:
       - uses: 'actions/checkout@v4'
@@ -130,16 +130,16 @@ jobs:
     strategy:
       matrix:
         target: ['Node']
-        node-version: ['18.20.4', '20.17.0', '22.9.0']
+        node-version: ['18.20.5', '20.18.1', '22.12.0']
         include:
           - target: 'Web'
-            node-version: '22.9.0'
+            node-version: '22.12.0'
             browser: chromium
           - target: 'Web'
-            node-version: '22.9.0'
+            node-version: '22.12.0'
             browser: firefox
           - target: 'Web'
-            node-version: '22.9.0'
+            node-version: '22.12.0'
             browser: webkit
 
     steps:
@@ -195,16 +195,16 @@ jobs:
     strategy:
       matrix:
         target: ['Node']
-        node-version: ['18.20.4', '20.17.0', '22.9.0']
+        node-version: ['18.20.5', '20.18.1', '22.12.0']
         include:
           - target: 'Web'
-            node-version: '22.9.0'
+            node-version: '22.12.0'
             browser: chromium
           - target: 'Web'
-            node-version: '22.9.0'
+            node-version: '22.12.0'
             browser: firefox
           - target: 'Web'
-            node-version: '22.9.0'
+            node-version: '22.12.0'
             browser: webkit
 
     steps:
@@ -260,16 +260,16 @@ jobs:
     strategy:
       matrix:
         target: ['Node']
-        node-version: ['18.20.4', '20.17.0', '22.9.0']
+        node-version: ['18.20.5', '20.18.1', '22.12.0']
         include:
           - target: 'Web'
-            node-version: '22.9.0'
+            node-version: '22.12.0'
             browser: chromium
           - target: 'Web'
-            node-version: '22.9.0'
+            node-version: '22.12.0'
             browser: firefox
           - target: 'Web'
-            node-version: '22.9.0'
+            node-version: '22.12.0'
             browser: webkit
 
     steps:
@@ -325,16 +325,16 @@ jobs:
     strategy:
       matrix:
         target: ['Node']
-        node-version: ['18.20.4', '20.17.0', '22.9.0']
+        node-version: ['18.20.5', '20.18.1', '22.12.0']
         include:
           - target: 'Web'
-            node-version: '22.9.0'
+            node-version: '22.12.0'
             browser: chromium
           - target: 'Web'
-            node-version: '22.9.0'
+            node-version: '22.12.0'
             browser: firefox
           - target: 'Web'
-            node-version: '22.9.0'
+            node-version: '22.12.0'
             browser: webkit
 
     steps:
@@ -395,7 +395,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ['18.20.4', '20.17.0', '22.9.0']
+        node-version: ['18.20.5', '20.18.1', '22.12.0']
 
     steps:
       - uses: 'actions/checkout@v4'
@@ -440,16 +440,16 @@ jobs:
     strategy:
       matrix:
         target: ['Node']
-        node-version: ['18.20.4', '20.17.0', '22.9.0']
+        node-version: ['18.20.5', '20.18.1', '22.12.0']
         include:
           - target: 'Web'
-            node-version: '22.9.0'
+            node-version: '22.12.0'
             browser: chromium
           - target: 'Web'
-            node-version: '22.9.0'
+            node-version: '22.12.0'
             browser: firefox
           - target: 'Web'
-            node-version: '22.9.0'
+            node-version: '22.12.0'
             browser: webkit
 
     steps:
@@ -503,7 +503,7 @@ jobs:
       - if: ${{ matrix.target == 'Web' && matrix.browser != 'webkit' }}
         run: 'yarn workspace @getodk/web-forms test-browser:${{ matrix.browser }}'
 
-      - if: ${{ matrix.node-version == '22.9.0' && matrix.target == 'Node' }}
+      - if: ${{ matrix.node-version == '22.12.0' && matrix.target == 'Node' }}
         uses: actions/upload-artifact@v4
         with:
           name: dist-demo
