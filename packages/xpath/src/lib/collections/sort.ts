@@ -20,7 +20,7 @@ class SeededPseudoRandomNumberGenerator implements PseudoRandomNumberGenerator {
 
 	constructor(seed: Int | bigint) {
 		let initialSeed: number;
-		if (typeof(seed) === ("bigint")) {
+		if (typeof seed === 'bigint') {
 			// the result of the modulo operation is always smaller than Number.MAX_SAFE_INTEGER,
 			// thus it's safe to convert to a Number.
 			initialSeed = Number(BigInt(seed) % BigInt(SEED_MODULO_OPERAND));
@@ -45,7 +45,7 @@ class SeededPseudoRandomNumberGenerator implements PseudoRandomNumberGenerator {
 	}
 }
 
-export const seededRandomize = <T>(values: readonly T[], seed?: number): T[] => {
+export const seededRandomize = <T>(values: readonly T[], seed?: number | bigint): T[] => {
 	let generator: PseudoRandomNumberGenerator;
 
 	if (seed == null) {
@@ -64,12 +64,11 @@ export const seededRandomize = <T>(values: readonly T[], seed?: number): T[] => 
 		// In Java, a NaN double's .longValue is 0
 		if (Number.isNaN(seed)) finalSeed = 0;
 		// In Java, an Infinity double's .longValue() is 2**63 -1, which is larger than Number.MAX_SAFE_INTEGER, thus we'll need a BigInt.
-		else if (seed === Infinity) finalSeed = 2n ** 63n -1n;
+		else if (seed === Infinity) finalSeed = 2n ** 63n - 1n;
 		// Analogous with the above conversion, but for -Infinity
 		else if (seed === -Infinity) finalSeed = -(2n ** 63n);
-		// A Java double's .longValue drops the fractional.
-		else if (typeof(seed) === "number" && !Number.isInteger(seed)) finalSeed = Math.trunc(seed);
-		// TODO: There's still more peculiarities to address: https://github.com/getodk/web-forms/issues/240
+		// A Java double's .longValue drops the fractional part.
+		else if (typeof seed === 'number' && !Number.isInteger(seed)) finalSeed = Math.trunc(seed);
 		else finalSeed = seed;
 		generator = new SeededPseudoRandomNumberGenerator(finalSeed);
 	}

@@ -18,6 +18,9 @@ describe('randomize()', () => {
 	});
 
 	const SELECTOR = '//xhtml:div[@id="FunctionRandomize"]/xhtml:div';
+	const MIRROR = 'mirror';
+	const MIRROR_HASH_VALUE = 5989458117437254; // in Python: "from struct import unpack; from hashlib import sha256; unpack('>Q', sha256(b'mirror').digest()[:8])[0]"
+	const MIRROR_HASH_SORT_ORDER = 'ACBEDF';
 
 	describe('shuffles nodesets', () => {
 		beforeEach(() => {
@@ -44,7 +47,10 @@ describe('randomize()', () => {
               <p>3</p>
               <p>4</p>
             </div>
-          </body>
+            <div id="testFunctionNodeset3">
+              <p>${MIRROR}</p>
+            </div>
+					</body>
         </html>`,
 				{ namespaceResolver }
 			);
@@ -81,6 +87,8 @@ describe('randomize()', () => {
 			{ seed: -Infinity, expected: 'CFBEAD' },
 			{ seed: 'floor(1.1)', expected: 'BFEACD' },
 			{ seed: '//xhtml:div[@id="testFunctionNodeset2"]/xhtml:p', expected: 'BFEACD' },
+			{ seed: MIRROR_HASH_VALUE, expected: MIRROR_HASH_SORT_ORDER },
+			{ seed: '//xhtml:div[@id="testFunctionNodeset3"]/xhtml:p', expected: MIRROR_HASH_SORT_ORDER },
 		].forEach(({ seed, expected }) => {
 			it(`with a seed: ${seed}`, () => {
 				const expression = `randomize(${SELECTOR}, ${seed})`;
