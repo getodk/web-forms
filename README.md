@@ -199,28 +199,27 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  #####  $\texttt{Descriptions and Annotations\hspace{14mm}\color{green}███\color{LightGray}████████████ \color{initial} 20\\%}$
+  #####  $\texttt{Descriptions and Annotations\hspace{14mm}\color{green}███\color{LightGray}████████████ \color{initial} 21\\%}$
 
   </summary>
   <br/>
 
-| Feature <img width=250px/>                     | Progress |
-| ---------------------------------------------- | :------: |
-| label                                          |    ✅    |
-| hint                                           |    ✅    |
-| guidance hint                                  |          |
-| Translations                                   |    ✅    |
-| Translations with field/question value         |          |
-| Markdown                                       |          |
-| Inline HTML                                    |          |
-| Form attachments                               |          |
-| image                                          |          |
-| big-image                                      |          |
-| audio                                          |          |
-| video                                          |          |
-| secondary instance (external choice file<br/>) |          |
-| secondary instance (last saved)                |          |
-| autoplay                                       |          |
+| Feature <img width=250px/>             | Progress |
+| -------------------------------------- | :------: |
+| label                                  |    ✅    |
+| hint                                   |    ✅    |
+| guidance hint                          |          |
+| Translations                           |    ✅    |
+| Translations with field/question value |          |
+| Markdown                               |          |
+| Inline HTML                            |          |
+| Form attachments                       |          |
+| image                                  |          |
+| big-image                              |          |
+| audio                                  |          |
+| video                                  |          |
+| secondary instance (last saved)        |          |
+| autoplay                               |          |
 
 </details>
 
