@@ -82,6 +82,7 @@ export default tseslint.config(
 			'packages/tree-sitter-xpath/grammar.js',
 			'packages/tree-sitter-xpath/bindings/**/*',
 			'packages/tree-sitter-xpath/types/**/*',
+			'packages/ui-solid/**/*',
 			'packages/web-forms/dist-demo/**/*',
 			'packages/xforms-engine/api-docs/**/*',
 			'**/vendor',

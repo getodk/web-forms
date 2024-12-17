@@ -1,6 +1,6 @@
 {
   "name": "@getodk/xpath",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "license": "Apache-2.0",
   "description": "XPath implementation for ODK Web Forms",
   "type": "module",
@@ -49,10 +49,12 @@
     "test-watch:chromium": "BROWSER_NAME=chromium vitest",
     "test-watch:firefox": "BROWSER_NAME=firefox vitest",
     "test-watch:webkit": "BROWSER_NAME=webkit vitest",
-    "test:types": "tsc --project ./tsconfig.json --emitDeclarationOnly false --noEmit"
+    "test:types": "npm-run-all -nl test:types:*",
+    "test:types:main": "tsc --project ./tsconfig.json --emitDeclarationOnly false --noEmit",
+    "test:types:test": "tsc --project ./test/tsconfig.json --emitDeclarationOnly false --noEmit"
   },
   "dependencies": {
-    "@getodk/common": "0.4.0",
+    "@getodk/common": "0.5.0",
     "@js-temporal/polyfill": "^0.4.4",
     "crypto-js": "^4.2.0",
     "itertools-ts": "^1.27.1"

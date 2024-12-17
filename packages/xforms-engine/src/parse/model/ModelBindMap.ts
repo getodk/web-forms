@@ -1,6 +1,7 @@
 import type { XFormDefinition } from '../XFormDefinition.ts';
 import { BindDefinition } from './BindDefinition.ts';
 import type { BindElement, BindNodeset } from './BindElement.ts';
+import { DEFAULT_BIND_TYPE } from './BindTypeDefinition.ts';
 import type { ModelDefinition } from './ModelDefinition.ts';
 
 class ArtificialBindElement implements BindElement {
@@ -13,6 +14,10 @@ class ArtificialBindElement implements BindElement {
 	getAttribute(name: string) {
 		if (name === 'nodeset') {
 			return this.ancestorNodeset;
+		}
+
+		if (name === 'type') {
+			return DEFAULT_BIND_TYPE;
 		}
 
 		return null;
@@ -37,15 +42,8 @@ export class ModelBindMap extends Map<BindNodeset, BindDefinition> {
 		protected readonly form: XFormDefinition,
 		protected readonly model: ModelDefinition
 	) {
-		const bindElements = form.xformDOM.rootEvaluator.evaluateNodes<BindElement & Element>(
-			'./xf:bind[@nodeset]',
-			{
-				contextNode: form.xformDOM.model,
-			}
-		);
-
 		super(
-			bindElements.map((bindElement) => {
+			form.xformDOM.binds.map((bindElement) => {
 				const nodeset = bindElement.getAttribute('nodeset');
 				const bind = new BindDefinition(form, model, nodeset, bindElement);
 

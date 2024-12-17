@@ -1,12 +1,15 @@
+import type { JRResourceService } from '@getodk/common/jr-resources/JRResourceService.ts';
 import type { XFormsElement } from '@getodk/common/test/fixtures/xform-dsl/XFormsElement.ts';
-import {
-	initializeForm,
-	type EngineConfig,
-	type FormResource,
-	type RootNode,
+import type {
+	EngineConfig,
+	FormResource,
+	OpaqueReactiveObjectFactory,
+	RootNode,
 } from '@getodk/xforms-engine';
+import { initializeForm } from '@getodk/xforms-engine';
 import type { Owner } from 'solid-js';
 import { createRoot, getOwner, runWithOwner } from 'solid-js';
+import type { MissingResourceBehavior } from '../../../xforms-engine/dist/client/constants';
 import { FormDefinitionResource } from '../jr/resource/FormDefinitionResource.ts';
 
 /**
@@ -47,28 +50,19 @@ export const getFormResource = async (
  * @todo Currently we stub resource fetching. We can address this as needed
  * while we port existing tests and/or add new ones which require it.
  */
-const fetchResourceStub: typeof fetch = () => {
-	throw new Error('TODO: resource fetching not implemented');
+const fetchFormDefinitionStub: typeof fetch = () => {
+	throw new Error('TODO: fetching form definition not implemented');
 };
 
-/**
- * Satisfies the xforms-engine client `stateFactory` option. Currently this is
- * intentionally **not** reactive, as the current scenario tests (as
- * ported/derived from JavaRosa's test suite) do not explicitly exercise any
- * reactive aspects of the client interface.
- *
- * @todo It **is possible** to use Solid's `createMutable`, which would enable
- * expansion of the JavaRosa test suite to _also_ test reactivity. In local
- * testing during the migration to the new client interface, no additional
- * changes were necessary to make that change. For now this non-reactive factory
- * is supplied as a validation that reactivity is in fact optional.
- */
-const nonReactiveIdentityStateFactory = <T extends object>(value: T): T => value;
+export interface InitializeTestFormOptions {
+	readonly resourceService: JRResourceService;
+	readonly missingResourceBehavior: MissingResourceBehavior;
+	readonly stateFactory: OpaqueReactiveObjectFactory;
+}
 
 const defaultConfig = {
-	fetchResource: fetchResourceStub,
-	stateFactory: nonReactiveIdentityStateFactory,
-} as const satisfies EngineConfig;
+	fetchFormDefinition: fetchFormDefinitionStub,
+} as const satisfies Omit<EngineConfig, 'stateFactory'>;
 
 interface InitializedTestForm {
 	readonly instanceRoot: RootNode;
@@ -77,7 +71,8 @@ interface InitializedTestForm {
 }
 
 export const initializeTestForm = async (
-	testForm: TestFormResource
+	testForm: TestFormResource,
+	options: InitializeTestFormOptions
 ): Promise<InitializedTestForm> => {
 	return createRoot(async (dispose) => {
 		const owner = getOwner();
@@ -89,7 +84,12 @@ export const initializeTestForm = async (
 		const formResource = await getFormResource(testForm);
 		const instanceRoot = await runWithOwner(owner, async () => {
 			return initializeForm(formResource, {
-				config: defaultConfig,
+				config: {
+					...defaultConfig,
+					fetchFormAttachment: options.resourceService.handleRequest,
+					missingResourceBehavior: options.missingResourceBehavior,
+					stateFactory: options.stateFactory,
+				},
 			});
 		})!;
 

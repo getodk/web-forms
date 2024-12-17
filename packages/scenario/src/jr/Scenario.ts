@@ -1,24 +1,31 @@
 import type { XFormsElement } from '@getodk/common/test/fixtures/xform-dsl/XFormsElement.ts';
 import type {
 	AnyNode,
+	OpaqueReactiveObjectFactory,
 	RepeatRangeControlledNode,
 	RepeatRangeNode,
 	RepeatRangeUncontrolledNode,
 	RootNode,
 	SelectNode,
+	SubmissionChunkedType,
+	SubmissionOptions,
+	SubmissionResult,
 } from '@getodk/xforms-engine';
+import { constants as ENGINE_CONSTANTS } from '@getodk/xforms-engine';
 import type { Accessor, Setter } from 'solid-js';
 import { createMemo, createSignal, runWithOwner } from 'solid-js';
 import { afterEach, expect } from 'vitest';
 import { SelectValuesAnswer } from '../answer/SelectValuesAnswer.ts';
 import type { ValueNodeAnswer } from '../answer/ValueNodeAnswer.ts';
 import { answerOf } from '../client/answerOf.ts';
-import type { TestFormResource } from '../client/init.ts';
+import type { InitializeTestFormOptions, TestFormResource } from '../client/init.ts';
 import { initializeTestForm } from '../client/init.ts';
 import { isRepeatRange } from '../client/predicates.ts';
 import { getClosestRepeatRange, getNodeForReference } from '../client/traversal.ts';
 import { ImplementationPendingError } from '../error/ImplementationPendingError.ts';
 import { UnclearApplicabilityError } from '../error/UnclearApplicabilityError.ts';
+import type { ReactiveScenario } from '../reactive/ReactiveScenario.ts';
+import { SharedJRResourceService } from '../resources/SharedJRResourceService.ts';
 import type { JRFormEntryCaption } from './caption/JRFormEntryCaption.ts';
 import type { BeginningOfFormEvent } from './event/BeginningOfFormEvent.ts';
 import type { EndOfFormEvent } from './event/EndOfFormEvent.ts';
@@ -42,10 +49,34 @@ import { ValidateOutcome } from './validation/ValidateOutcome.ts';
 import { JREvaluationContext } from './xpath/JREvaluationContext.ts';
 import { JRTreeReference } from './xpath/JRTreeReference.ts';
 
-interface ScenarioConstructorOptions {
+/**
+ * Satisfies the xforms-engine client `stateFactory` option. Currently this is
+ * intentionally **not** reactive, as scenario tests ported/derived from
+ * JavaRosa's test suite do not explicitly exercise any reactive aspects of the
+ * engine/client interface.
+ *
+ * This identity function is used as the default
+ * {@link ScenarioConstructorOptions.stateFactory} for tests using
+ * {@link Scenario.init}.
+ *
+ * The {@link ReactiveScenario} subclass provides a default client reactivity
+ * implementation for tests directly exercising the engine's reactive APIs and
+ * behaviors.
+ */
+const nonReactiveIdentityStateFactory = <T extends object>(value: T): T => value;
+
+export interface ScenarioConstructorOptions {
 	readonly dispose: VoidFunction;
 	readonly formName: string;
 	readonly instanceRoot: RootNode;
+
+	/**
+	 * No reactivity is provided by default.
+	 *
+	 * @see {@link ReactiveScenario} for tests exercising reactive engine/client
+	 * functionality.
+	 */
+	readonly stateFactory?: OpaqueReactiveObjectFactory;
 }
 
 type FormFileName = `${string}.xml`;
@@ -57,7 +88,7 @@ const isFormFileName = (value: FormDefinitionResource | string): value is FormFi
 // prettier-ignore
 type ScenarioStaticInitParameters =
 	| readonly [formFileName: FormFileName]
-	| readonly [formName: string, form: XFormsElement]
+	| readonly [formName: string, form: XFormsElement, overrideOptions?: Partial<InitializeTestFormOptions>]
 	| readonly [resource: FormDefinitionResource];
 
 interface AssertCurrentReferenceOptions {
@@ -117,12 +148,29 @@ const isAnswerSelectParams = (args: AnswerParameters): args is AnswerSelectParam
  *    to clarify their branchiness at both call and implementation sites.
  */
 export class Scenario {
+	/**
+	 * To be overridden, e.g. by {@link ReactiveScenario}.
+	 */
+
+	static getInitializeTestFormOptions(
+		overrideOptions?: Partial<InitializeTestFormOptions>
+	): InitializeTestFormOptions {
+		return {
+			resourceService: overrideOptions?.resourceService ?? SharedJRResourceService.init(),
+			missingResourceBehavior:
+				overrideOptions?.missingResourceBehavior ??
+				ENGINE_CONSTANTS.MISSING_RESOURCE_BEHAVIOR.DEFAULT,
+			stateFactory: overrideOptions?.stateFactory ?? nonReactiveIdentityStateFactory,
+		};
+	}
+
 	static async init<This extends typeof Scenario>(
 		this: This,
 		...args: ScenarioStaticInitParameters
 	): Promise<This['prototype']> {
 		let resource: TestFormResource;
 		let formName: string;
+		let options: InitializeTestFormOptions;
 
 		if (isFormFileName(args[0])) {
 			return this.init(r(args[0]));
@@ -130,14 +178,16 @@ export class Scenario {
 			const [pathResource] = args;
 			resource = pathResource;
 			formName = pathResource.formName;
+			options = this.getInitializeTestFormOptions();
 		} else {
-			const [name, form] = args;
+			const [name, form, overrideOptions] = args;
 
 			formName = name;
 			resource = form;
+			options = this.getInitializeTestFormOptions(overrideOptions);
 		}
 
-		const { dispose, owner, instanceRoot } = await initializeTestForm(resource);
+		const { dispose, owner, instanceRoot } = await initializeTestForm(resource, options);
 
 		return runWithOwner(owner, () => {
 			return new this({
@@ -901,7 +951,20 @@ export class Scenario {
 	}
 
 	proposed_serializeInstance(): string {
-		throw new ImplementationPendingError('instance serialization');
+		return this.instanceRoot.submissionState.submissionXML;
+	}
+
+	/**
+	 * @todo Name is currently Web Forms-specific, pending question on whether
+	 * this feature set is novel to Web Forms. If it is novel, isn't clear whether
+	 * it would be appropriate to propose an equivalent JavaRosa method. Find out
+	 * more about Collect's responsibility for submission (beyond serialization,
+	 * already handled by {@link proposed_serializeInstance}).
+	 */
+	prepareWebFormsSubmission<ChunkedType extends SubmissionChunkedType>(
+		options?: SubmissionOptions<ChunkedType>
+	): Promise<SubmissionResult<ChunkedType>> {
+		return this.instanceRoot.prepareSubmission<ChunkedType>(options);
 	}
 
 	// TODO: consider adapting tests which use the following interfaces to use

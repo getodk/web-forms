@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { initializeForm, type RootNode } from '@getodk/xforms-engine';
+import type { MissingResourceBehavior } from '@getodk/xforms-engine';
+import { initializeForm, type FetchFormAttachment, type RootNode } from '@getodk/xforms-engine';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
 import PrimeMessage from 'primevue/message';
@@ -11,7 +12,11 @@ import QuestionList from './QuestionList.vue';
 
 const webFormsVersion = __WEB_FORMS_VERSION__;
 
-const props = defineProps<{ formXml: string }>();
+const props = defineProps<{
+	formXml: string;
+	fetchFormAttachment: FetchFormAttachment;
+	missingResourceBehavior?: MissingResourceBehavior;
+}>();
 const emit = defineEmits(['submit']);
 
 const odkForm = ref<RootNode>();
@@ -20,6 +25,8 @@ const initializeFormError = ref<FormInitializationError | null>();
 
 initializeForm(props.formXml, {
 	config: {
+		fetchFormAttachment: props.fetchFormAttachment,
+		missingResourceBehavior: props.missingResourceBehavior,
 		stateFactory: reactive,
 	},
 })
@@ -68,6 +75,15 @@ watchEffect(() => {
 	applicable for usage of a given tag.
 -->
 <template>
+	<div
+		:class="{
+			'form-initialization-status': true,
+			loading: odkForm == null && initializeFormError == null,
+			error: initializeFormError != null,
+			ready: odkForm != null,
+		}"
+	/>
+
 	<template v-if="initializeFormError != null">
 		<FormLoadFailureDialog
 			severity="error"
@@ -125,6 +141,10 @@ watchEffect(() => {
 
 <style scoped lang="scss">
 @import 'primeflex/core/_variables.scss';
+
+.form-initialization-status {
+	display: none;
+}
 
 .odk-form {
 	width: 100%;

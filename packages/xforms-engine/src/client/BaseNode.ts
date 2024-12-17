@@ -3,7 +3,9 @@ import type { AnyNodeDefinition } from '../parse/model/NodeDefinition.ts';
 import type { NodeAppearances } from './NodeAppearances.ts';
 import type { OpaqueReactiveObjectFactory } from './OpaqueReactiveObjectFactory.ts';
 import type { TextRange } from './TextRange.ts';
+import type { FormNodeID } from './identity.ts';
 import type { InstanceNodeType } from './node-types.ts';
+import type { SubmissionState } from './submission/SubmissionState.ts';
 import type {
 	AncestorNodeValidationState,
 	LeafNodeValidationState,
@@ -129,8 +131,6 @@ export interface BaseNodeState {
 	get value(): unknown;
 }
 
-type FormNodeID = string;
-
 /**
  * Base interface for common/shared aspects of any node type.
  */
@@ -189,15 +189,13 @@ export interface BaseNode {
 	// 2. If `parent` does become nullable state, how best to convey the same
 	//    information for removed descendants. Some ideas:
 	//
-	//    - Apply null-as-removed recursively. This wouldn't technically be true
-	//      for the engine's current use of a DOM backing store (but that's an
-	//      implementation detail clients don't/shouldn't care about).
+	//    - Apply null-as-removed recursively.
 	//
 	//    - Borrow the browser DOM's notion of node "connected"-ness. When a node
 	//      is removed, its `isConnected` property is `false`. The same is true
 	//      for any of its descendants, even though they retain their own direct
 	//      parent reference.
-	readonly parent: BaseNode | null;
+	readonly parent: unknown;
 
 	/**
 	 * Each node provides a discrete object representing the stateful aspects\* of
@@ -251,4 +249,16 @@ export interface BaseNode {
 	 * clients to explicitly pause and resume recomputation.
 	 */
 	readonly validationState: NodeValidationState;
+
+	/**
+	 * Represents the current submission state of the node.
+	 *
+	 * @see {@link SubmissionState.submissionXML} for additional detail.
+	 *
+	 * @todo Consider whether this can (should) be merged with
+	 * {@link currentState}, while providing the same client-reactivity
+	 * guarantees. (The challenge there is in defining client-reactive state which
+	 * self-referentially derives state from its own definition.)
+	 */
+	readonly submissionState: SubmissionState;
 }

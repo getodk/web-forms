@@ -1,24 +1,41 @@
-import { IS_NODE_RUNTIME } from '../env/detection.ts';
+import { JRResourceService } from '../jr-resources/JRResourceService.ts';
+import type { JRResourceURL } from '../jr-resources/JRResourceURL.ts';
 import { UpsertableMap } from '../lib/collections/UpsertableMap.ts';
+import type { GlobFixture } from './import-glob-helper.ts';
+import { toGlobLoaderEntries } from './import-glob-helper.ts';
 
 type XFormResourceType = 'local' | 'remote';
+
+type ResourceServiceFactory = () => JRResourceService;
 
 interface BaseXFormResourceOptions {
 	readonly localPath: string | null;
 	readonly identifier: string | null;
 	readonly category: string | null;
+	readonly initializeFormAttachmentService?: ResourceServiceFactory;
 }
 
 interface LocalXFormResourceOptions extends BaseXFormResourceOptions {
 	readonly localPath: string;
 	readonly identifier: string;
 	readonly category: string;
+	readonly initializeFormAttachmentService: ResourceServiceFactory;
 }
 
 interface RemoteXFormResourceOptions extends BaseXFormResourceOptions {
 	readonly category: string | null;
 	readonly localPath: null;
 	readonly identifier: string;
+
+	/**
+	 * @todo Note that {@link RemoteXFormResourceOptions} corresponds to an API
+	 * primarily serving
+	 * {@link https://getodk.org/web-forms-preview/ | Web Forms Preview}
+	 * functionality. In theory, we could allow a mechanism to support form
+	 * attachments in for that use case, but we'd need to design for it. Until
+	 * then, it doesn't make a whole lot of sense to accept arbitrary IO here.
+	 */
+	readonly initializeFormAttachmentService?: never;
 }
 
 type XFormResourceOptions<Type extends XFormResourceType> = {
@@ -71,20 +88,24 @@ const xformURLLoader = (url: URL): LoadXFormXML => {
 	};
 };
 
-export class XFormResource<Type extends XFormResourceType> {
-	static forLocalFixture(
-		importerURL: string,
-		relativePath: string,
-		localURL: URL | string,
-		loadXML?: LoadXFormXML
-	): XFormResource<'local'> {
-		const resourceURL = new URL(localURL, importerURL);
-		const localPath = new URL(relativePath, importerURL).pathname;
+const getNoopResourceService: ResourceServiceFactory = () => {
+	return new JRResourceService();
+};
 
-		return new XFormResource('local', resourceURL, loadXML ?? xformURLLoader(resourceURL), {
+export class XFormResource<Type extends XFormResourceType> {
+	static forLocalFixture(localPath: string, fixture: GlobFixture): XFormResource<'local'> {
+		return new XFormResource('local', fixture.url, fixture.load, {
 			category: localFixtureDirectoryCategory(localPath),
 			localPath,
 			identifier: pathToFileName(localPath),
+			initializeFormAttachmentService: () => {
+				const service = new JRResourceService();
+				const parentPath = localPath.replace(/\/[^/]+$/, '');
+
+				service.activateFixtures(parentPath, ['file', 'file-csv']);
+
+				return service;
+			},
 		});
 	}
 
@@ -96,6 +117,8 @@ export class XFormResource<Type extends XFormResourceType> {
 		const loadXML = xformURLLoader(resourceURL);
 
 		return new XFormResource('remote', resourceURL, loadXML, {
+			...options,
+
 			category: options?.category ?? 'other',
 			identifier: options?.identifier ?? extractURLIdentifier(resourceURL),
 			localPath: options?.localPath ?? null,
@@ -105,6 +128,7 @@ export class XFormResource<Type extends XFormResourceType> {
 	readonly category: string;
 	readonly localPath: XFormResourceOptions<Type>['localPath'];
 	readonly identifier: XFormResourceOptions<Type>['identifier'];
+	readonly fetchFormAttachment: (url: JRResourceURL) => Promise<Response>;
 
 	private constructor(
 		readonly resourceType: Type,
@@ -115,37 +139,34 @@ export class XFormResource<Type extends XFormResourceType> {
 		this.category = options.category ?? 'other';
 		this.localPath = options.localPath;
 		this.identifier = options.identifier;
+
+		const initializeFormAttachmentService =
+			options.initializeFormAttachmentService ?? getNoopResourceService;
+
+		let resourceService: JRResourceService | null = null;
+
+		this.fetchFormAttachment = (url) => {
+			resourceService = resourceService ?? initializeFormAttachmentService();
+
+			return resourceService.handleRequest(url);
+		};
 	}
 }
+
+const xformFixtureLoaderEntries = toGlobLoaderEntries(
+	import.meta,
+	import.meta.glob<true, 'url', string>('./**/*.xml', {
+		query: '?url',
+		import: 'default',
+		eager: true,
+	})
+);
 
 export type XFormFixture = XFormResource<'local'>;
 
 const buildXFormFixtures = (): readonly XFormFixture[] => {
-	if (IS_NODE_RUNTIME) {
-		const fixtureXMLByRelativePath = import.meta.glob<false, 'raw', string>('./**/*.xml', {
-			query: '?raw',
-			import: 'default',
-			eager: false,
-		});
-
-		return Object.entries(fixtureXMLByRelativePath).map(([path, loadXML]) => {
-			const localURL = new URL(path, import.meta.url);
-			const fixture = XFormResource.forLocalFixture(import.meta.url, path, localURL, loadXML);
-
-			return fixture;
-		});
-	}
-
-	const fixtureURLByRelativePath = import.meta.glob<true, 'url', string>('./**/*.xml', {
-		query: '?url',
-		import: 'default',
-		eager: true,
-	});
-
-	return Object.entries(fixtureURLByRelativePath).map(([path, url]) => {
-		const fixture = XFormResource.forLocalFixture(import.meta.url, path, url);
-
-		return fixture;
+	return xformFixtureLoaderEntries.map(([path, fixture]) => {
+		return XFormResource.forLocalFixture(path, fixture);
 	});
 };
 

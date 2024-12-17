@@ -1,9 +1,8 @@
+import type { FormNodeID } from '../../client/identity.ts';
 import type { AnyViolation } from '../../client/validation.ts';
 import type { BindComputationExpression } from '../../parse/expression/BindComputationExpression.ts';
 import type { MessageDefinition } from '../../parse/text/MessageDefinition.ts';
-import type { NodeID } from '../identity.ts';
 import type { EvaluationContext } from './EvaluationContext.ts';
-import type { SubscribableDependency } from './SubscribableDependency.ts';
 
 interface ValidationContextCurrentState {
 	get reference(): string;
@@ -20,8 +19,8 @@ interface ValidationContextDefinition {
 	readonly bind: ValidationContextDefinitionBind;
 }
 
-export interface ValidationContext extends EvaluationContext, SubscribableDependency {
-	readonly nodeId: NodeID;
+export interface ValidationContext extends EvaluationContext {
+	readonly nodeId: FormNodeID;
 	readonly definition: ValidationContextDefinition;
 	readonly currentState: ValidationContextCurrentState;
 
