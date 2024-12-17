@@ -17,8 +17,7 @@
   },
   "packageManager": "yarn@1.22.22",
   "workspaces": [
-    "packages/*",
-    "scripts"
+    "packages/*"
   ],
   "scripts": {
     "preinstall": "npx only-allow yarn",
