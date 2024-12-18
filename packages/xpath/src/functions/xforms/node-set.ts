@@ -409,7 +409,7 @@ export const randomize = new NodeSetFunction(
 	}
 );
 
-function toBigIntHash(text: string): bigint {
+const toBigIntHash = (text: string): bigint => {
 	// hash text with sha256, and interpret the first 64 bits of output
 	// (the first and second int32s ("words") of CryptoJS digest output)
 	// as a BigInt. Thus the entropy of the hash is reduced to 64 bits, which
