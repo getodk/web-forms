@@ -386,7 +386,9 @@ export const randomize = new NodeSetFunction(
 
 		const nodeResults = Array.from(results.values());
 		const nodes = nodeResults.map(({ value }) => value);
+
 		if (seedExpression === undefined) return seededRandomize(nodes);
+
 		const seed = seedExpression.evaluate(context);
 		const asNumber = seed.toNumber(); // TODO: There are some peculiarities to address: https://github.com/getodk/web-forms/issues/240
 		let finalSeed: number | bigint | undefined;
