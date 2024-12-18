@@ -58,12 +58,6 @@ jobs:
             examples/*/dist
             packages/*/dist
             packages/web-forms/dist-demo
-            packages/tree-sitter-xpath/grammar.js
-            packages/tree-sitter-xpath/src/grammar.json
-            packages/tree-sitter-xpath/src/parser.c
-            packages/tree-sitter-xpath/src/tree_sitter/parser.h
-            packages/tree-sitter-xpath/tree-sitter-xpath.wasm
-            packages/tree-sitter-xpath/types
           key: build-${{ matrix.node-version }}-${{ github.sha }}
 
       # `@getodk/xpath` tests (currently) expect this time zone
@@ -109,12 +103,6 @@ jobs:
             examples/*/dist
             packages/*/dist
             packages/web-forms/dist-demo
-            packages/tree-sitter-xpath/grammar.js
-            packages/tree-sitter-xpath/src/grammar.json
-            packages/tree-sitter-xpath/src/parser.c
-            packages/tree-sitter-xpath/src/tree_sitter/parser.h
-            packages/tree-sitter-xpath/tree-sitter-xpath.wasm
-            packages/tree-sitter-xpath/types
           key: build-${{ matrix.node-version }}-${{ github.sha }}
           fail-on-cache-miss: true
 
@@ -166,12 +154,6 @@ jobs:
             examples/*/dist
             packages/*/dist
             packages/web-forms/dist-demo
-            packages/tree-sitter-xpath/grammar.js
-            packages/tree-sitter-xpath/src/grammar.json
-            packages/tree-sitter-xpath/src/parser.c
-            packages/tree-sitter-xpath/src/tree_sitter/parser.h
-            packages/tree-sitter-xpath/tree-sitter-xpath.wasm
-            packages/tree-sitter-xpath/types
           key: build-${{ matrix.node-version }}-${{ github.sha }}
           fail-on-cache-miss: true
 
@@ -231,12 +213,6 @@ jobs:
             examples/*/dist
             packages/*/dist
             packages/web-forms/dist-demo
-            packages/tree-sitter-xpath/grammar.js
-            packages/tree-sitter-xpath/src/grammar.json
-            packages/tree-sitter-xpath/src/parser.c
-            packages/tree-sitter-xpath/src/tree_sitter/parser.h
-            packages/tree-sitter-xpath/tree-sitter-xpath.wasm
-            packages/tree-sitter-xpath/types
           key: build-${{ matrix.node-version }}-${{ github.sha }}
           fail-on-cache-miss: true
 
@@ -296,12 +272,6 @@ jobs:
             examples/*/dist
             packages/*/dist
             packages/web-forms/dist-demo
-            packages/tree-sitter-xpath/grammar.js
-            packages/tree-sitter-xpath/src/grammar.json
-            packages/tree-sitter-xpath/src/parser.c
-            packages/tree-sitter-xpath/src/tree_sitter/parser.h
-            packages/tree-sitter-xpath/tree-sitter-xpath.wasm
-            packages/tree-sitter-xpath/types
           key: build-${{ matrix.node-version }}-${{ github.sha }}
           fail-on-cache-miss: true
 
@@ -361,12 +331,6 @@ jobs:
             examples/*/dist
             packages/*/dist
             packages/web-forms/dist-demo
-            packages/tree-sitter-xpath/grammar.js
-            packages/tree-sitter-xpath/src/grammar.json
-            packages/tree-sitter-xpath/src/parser.c
-            packages/tree-sitter-xpath/src/tree_sitter/parser.h
-            packages/tree-sitter-xpath/tree-sitter-xpath.wasm
-            packages/tree-sitter-xpath/types
           key: build-${{ matrix.node-version }}-${{ github.sha }}
           fail-on-cache-miss: true
 
@@ -421,12 +385,6 @@ jobs:
             examples/*/dist
             packages/*/dist
             packages/web-forms/dist-demo
-            packages/tree-sitter-xpath/grammar.js
-            packages/tree-sitter-xpath/src/grammar.json
-            packages/tree-sitter-xpath/src/parser.c
-            packages/tree-sitter-xpath/src/tree_sitter/parser.h
-            packages/tree-sitter-xpath/tree-sitter-xpath.wasm
-            packages/tree-sitter-xpath/types
           key: build-${{ matrix.node-version }}-${{ github.sha }}
           fail-on-cache-miss: true
 
@@ -476,12 +434,6 @@ jobs:
             examples/*/dist
             packages/*/dist
             packages/web-forms/dist-demo
-            packages/tree-sitter-xpath/grammar.js
-            packages/tree-sitter-xpath/src/grammar.json
-            packages/tree-sitter-xpath/src/parser.c
-            packages/tree-sitter-xpath/src/tree_sitter/parser.h
-            packages/tree-sitter-xpath/tree-sitter-xpath.wasm
-            packages/tree-sitter-xpath/types
           key: build-${{ matrix.node-version }}-${{ github.sha }}
           fail-on-cache-miss: true
 
