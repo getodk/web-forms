@@ -1,4 +1,4 @@
-import sha256 from 'crypto-js/sha256';
+import { SHA256 } from 'crypto-js';
 
 import type { XPathNode } from '../../adapter/interface/XPathNode.ts';
 import type { XPathDOMProvider } from '../../adapter/xpathDOMProvider.ts';
@@ -410,17 +410,18 @@ export const randomize = new NodeSetFunction(
 );
 
 const toBigIntHash = (text: string): bigint => {
-	// hash text with sha256, and interpret the first 64 bits of output
+	// Hash text with sha256, and interpret the first 64 bits of output
 	// (the first and second int32s ("words") of CryptoJS digest output)
-	// as a BigInt. Thus the entropy of the hash is reduced to 64 bits, which
+	// as an int64 (in JS represented in a BigInt).
+	// Thus the entropy of the hash is reduced to 64 bits, which
 	// for some applications is sufficient.
 	// The underlying representations are big-endian regardless of the endianness
 	// of the machine this runs on, as is the equivalent JavaRosa implementation
 	// at https://github.com/getodk/javarosa/blob/ab0e8f4da6ad8180ac7ede5bc939f3f261c16edf/src/main/java/org/javarosa/xpath/expr/XPathFuncExpr.java#L718-L726
 	const buffer = new ArrayBuffer(8);
 	const dataview = new DataView(buffer);
-	sha256(text)
+	SHA256(text)
 		.words.slice(0, 2)
-		.forEach((val, ix) => dataview.setInt32(ix * 4, val));
+		.forEach((val, ix) => dataview.setInt32(ix * Int32Array.BYTES_PER_ELEMENT, val));
 	return dataview.getBigInt64(0);
-}
+};

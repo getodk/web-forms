@@ -19,7 +19,7 @@ describe('randomize()', () => {
 
 	const SELECTOR = '//xhtml:div[@id="FunctionRandomize"]/xhtml:div';
 	const MIRROR = 'mirror';
-	const MIRROR_HASH_VALUE = 5989458117437254; // in Python: "from struct import unpack; from hashlib import sha256; unpack('>Q', sha256(b'mirror').digest()[:8])[0]"
+	const MIRROR_HASH_VALUE = 5989458117437254;
 	const MIRROR_HASH_SORT_ORDER = 'ACBEDF';
 
 	describe('shuffles nodesets', () => {
