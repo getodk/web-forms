@@ -25,7 +25,7 @@ class SeededPseudoRandomNumberGenerator implements PseudoRandomNumberGenerator {
 			// thus it's safe to convert to a Number.
 			initialSeed = Number(BigInt(seed) % BigInt(SEED_MODULO_OPERAND));
 		} else {
-			initialSeed = Number(seed) % Number(SEED_MODULO_OPERAND);
+			initialSeed = seed % SEED_MODULO_OPERAND;
 		}
 		if (initialSeed <= 0) {
 			initialSeed += MAX_INT_32 - 1;
