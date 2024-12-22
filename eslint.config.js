@@ -380,7 +380,13 @@ export default tseslint.config(
 			'prettier-vue/prettier': 'error',
 			'vue/html-indent': ['error', 'tab'],
 			'vue/html-comment-indent': ['error', 'tab'],
-			'vue/script-indent': ['error', 'tab'],
+			'vue/script-indent': [
+				'error',
+				'tab',
+				{
+					switchCase: 1,
+				},
+			],
 			// should be based on the printWidth
 			'vue/max-attributes-per-line': 'off',
 			'vue/no-undef-components': 'error',
