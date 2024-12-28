@@ -268,7 +268,7 @@ const hasLocalNamedAttributeFactory = <T extends XPathNode>(
 type LocalNamedChildElementsLookup<T extends XPathNode> = (
 	node: AdapterParentNode<T>,
 	localName: string
-) => Iterable<AdapterElement<T>>;
+) => ReadonlyArray<AdapterElement<T>>;
 
 const getChildrenByLocalNameFactory = <T extends XPathNode>(
 	adapter: XPathDOMAdapter<T>
@@ -280,7 +280,7 @@ const getChildrenByLocalNameFactory = <T extends XPathNode>(
 	}
 
 	return (node, localName) => {
-		return Array.from(adapter.getChildElements(node)).filter((element) => {
+		return adapter.getChildElements(node).filter((element) => {
 			return adapter.getLocalName(element) === localName;
 		});
 	};
@@ -346,7 +346,7 @@ const getLastChildElementFactory = <T extends XPathNode>(
 	}
 
 	return (node) => {
-		return Array.from(adapter.getChildElements(node)).at(-1) ?? null;
+		return adapter.getChildElements(node).at(-1) ?? null;
 	};
 };
 
