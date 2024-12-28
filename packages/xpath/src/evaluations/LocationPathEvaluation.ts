@@ -22,15 +22,9 @@ import type { LocationPathEvaluator } from '../evaluator/expression/LocationPath
 import type { LocationPathExpressionEvaluator } from '../evaluator/expression/LocationPathExpressionEvaluator.ts';
 import type { FunctionLibraryCollection } from '../evaluator/functions/FunctionLibraryCollection.ts';
 import type { NodeSetFunction } from '../evaluator/functions/NodeSetFunction.ts';
-import type { AnyStep, AxisType } from '../evaluator/step/Step.ts';
+import type { AnyStep } from '../evaluator/step/Step.ts';
 import type { Evaluation } from './Evaluation.ts';
 import { NodeEvaluation } from './NodeEvaluation.ts';
-
-function* concat<T>(...iterables: Array<Iterable<T>>): IterableIterator<T> {
-	for (const iterable of iterables) {
-		yield* iterable;
-	}
-}
 
 // prettier-ignore
 type LocationPathParentContext<T extends XPathNode> =
@@ -115,21 +109,25 @@ type SiblingMethodName =
 	| 'getNextSiblingNode'
 	| 'getNextSiblingElement';
 
-function* siblings<T extends XPathNode>(
+const siblings = <T extends XPathNode>(
 	context: AxisEvaluationContext<T>,
 	methodName: SiblingMethodName
-): Iterable<T> {
+): readonly T[] => {
 	const method = context.domProvider[methodName];
+	const results: T[] = [];
+
 	let currentNode: T | null = context.contextNode;
 
 	while (currentNode != null) {
 		currentNode = method(currentNode);
 
 		if (currentNode != null) {
-			yield currentNode;
+			results.push(currentNode);
 		}
 	}
-}
+
+	return results;
+};
 
 /**
  * Addresses a nuance of XPath DOM tree structural semantics, affecting the
@@ -175,13 +173,9 @@ const getDocumentOrderTraversalContextNode = <T extends XPathNode>(
 	return contextNode;
 };
 
-function* filterValues<T>(iter: Iterable<T | null | undefined>): IterableIterator<T> {
-	for (const item of iter) {
-		if (item != null) {
-			yield item;
-		}
-	}
-}
+const filterValues = <T>(iter: ReadonlyArray<T | null | undefined>): readonly T[] => {
+	return iter.filter((item) => item != null);
+};
 
 /**
  * **!!! HERE BE DRAGONS !!!**
@@ -212,67 +206,69 @@ function* filterValues<T>(iter: Iterable<T | null | undefined>): IterableIterato
  *
  * @see {@link UnspecifiedNonXPathNodeKind}
  */
-function* documentRootPrecedingSiblings<T extends XPathNode>(
+const documentRootPrecedingSiblings = <T extends XPathNode>(
 	domAdapter: XPathDOMAdapter<T>,
 	precedingContext: AxisEvaluationContext<T>,
 	documentRoot: T,
 	step: AnyStep
-): Iterable<T> {
+): readonly T[] => {
 	const documentRootContext = axisEvaluationContext(precedingContext, documentRoot);
 	const precedingSiblings = axisEvaluators['preceding-sibling'](documentRootContext, step);
 
-	for (const node of precedingSiblings) {
+	return precedingSiblings.flatMap((node) => {
 		// Note: this is likely to be fallible in adapter implementations…
 		try {
 			if (domAdapter.getNodeKind(node) != null) {
-				yield node;
+				return node;
 			}
+
+			return [];
 		} catch {
 			// … and if it does fail, we should assume the node value is invalid!
+			return [];
 		}
-	}
-}
+	});
+};
 
-type EvaluateAxisNodes = <T extends XPathNode>(
-	context: AxisEvaluationContext<T>,
-	step: AnyStep
-) => Iterable<T>;
+const axisEvaluators = {
+	ancestor: <T extends XPathNode>(
+		context: AxisEvaluationContext<T>,
+		step: AnyStep
+	): readonly T[] => {
+		const { rootNode, contextNode } = context;
 
-type AxisEvaluators = Readonly<Record<AxisType, EvaluateAxisNodes>>;
-
-const axisEvaluators: AxisEvaluators = {
-	ancestor: function* ancestor(context, step) {
-		const { rootNode } = context;
-		const parentNodes = axisEvaluators.parent(context, step);
-
-		for (const parentNode of parentNodes) {
-			if (parentNode !== rootNode) {
-				const parentContext = axisEvaluationContext(context, parentNode);
-
-				yield* axisEvaluators.ancestor(parentContext, step);
-			}
-
-			yield parentNode;
+		if (contextNode === rootNode) {
+			return [];
 		}
+
+		return axisEvaluators.parent(context).flatMap((parentNode) => {
+			const parentContext = axisEvaluationContext(context, parentNode);
+
+			return [...axisEvaluators.ancestor(parentContext, step), parentNode];
+		});
 	},
 
-	'ancestor-or-self': function* ancestorOrSelf(context, step) {
+	'ancestor-or-self': <T extends XPathNode>(
+		context: AxisEvaluationContext<T>,
+		step: AnyStep
+	): readonly T[] => {
 		const { contextNode } = context;
 		const isNamedStep = step.stepType !== 'NodeTypeTest';
 		const currentContext = axisEvaluationContext(context, contextNode);
-
-		yield* axisEvaluators.ancestor(currentContext, step);
+		const ancestors = axisEvaluators.ancestor(currentContext, step);
 
 		if (!isNamedStep || context.domProvider.isElement(contextNode)) {
-			yield contextNode;
+			return ancestors.concat(contextNode);
 		}
+
+		return ancestors;
 	},
 
-	attribute: (context) => {
+	attribute: <T extends XPathNode>(context: AxisEvaluationContext<T>): readonly T[] => {
 		return context.domProvider.getAttributes(context.contextNode);
 	},
 
-	child: (context, step) => {
+	child: <T extends XPathNode>(context: AxisEvaluationContext<T>, step: AnyStep): readonly T[] => {
 		const { contextNode, domProvider } = context;
 
 		if (step.nodeType === '__NAMED__') {
@@ -282,35 +278,33 @@ const axisEvaluators: AxisEvaluators = {
 		return domProvider.getChildNodes(contextNode);
 	},
 
-	descendant: function* descendant(context, step) {
-		for (const childNode of axisEvaluators.child(context, step)) {
-			yield childNode;
-
-			const childContext = axisEvaluationContext(context, childNode);
-
-			yield* axisEvaluators.descendant(childContext, step);
-		}
-	},
-
-	'descendant-or-self': function* descendantOrSelf(context, step) {
-		const { contextNode } = context;
-
-		yield contextNode;
-
-		const selfContext = axisEvaluationContext(context, contextNode);
-
-		yield* axisEvaluators.descendant(selfContext, step);
-	},
-
-	following: function* following<T extends XPathNode>(
+	descendant: <T extends XPathNode>(
 		context: AxisEvaluationContext<T>,
 		step: AnyStep
-	): Iterable<T> {
+	): readonly T[] => {
+		return axisEvaluators.child(context, step).flatMap((childNode) => {
+			const childContext = axisEvaluationContext(context, childNode);
+
+			return [childNode, ...axisEvaluators.descendant(childContext, step)];
+		});
+	},
+
+	'descendant-or-self': <T extends XPathNode>(
+		context: AxisEvaluationContext<T>,
+		step: AnyStep
+	): readonly T[] => {
+		return [context.contextNode].concat(axisEvaluators.descendant(context, step));
+	},
+
+	following: <T extends XPathNode>(
+		context: AxisEvaluationContext<T>,
+		step: AnyStep
+	): readonly T[] => {
 		const { domProvider, contextDocument, rootNode } = context;
 		const contextNode = getDocumentOrderTraversalContextNode(domProvider, context.contextNode);
 
 		if (context.visited.has(contextNode)) {
-			return;
+			return [];
 		}
 
 		context.visited.add(contextNode);
@@ -318,7 +312,7 @@ const axisEvaluators: AxisEvaluators = {
 		const parentNode = domProvider.getParentNode(contextNode);
 
 		if (contextNode === rootNode || parentNode === contextDocument) {
-			return;
+			return [];
 		}
 
 		let firstChild: T | null;
@@ -341,19 +335,20 @@ const axisEvaluators: AxisEvaluators = {
 				step
 			);
 
-			currentNodes = concat(currentNodes, followingParentSiblings);
+			currentNodes = currentNodes.concat(followingParentSiblings);
 		}
 
-		for (const currentNode of currentNodes) {
-			yield currentNode;
-
+		return currentNodes.flatMap((currentNode) => {
 			const currentContext = axisEvaluationContext(context, currentNode);
 
-			yield* axisEvaluators.following(currentContext, step);
-		}
+			return [currentNode].concat(axisEvaluators.following(currentContext, step));
+		});
 	},
 
-	'following-sibling': (context, step) => {
+	'following-sibling': <T extends XPathNode>(
+		context: AxisEvaluationContext<T>,
+		step: AnyStep
+	): readonly T[] => {
 		if (step.nodeType === '__NAMED__') {
 			return siblings(context, 'getNextSiblingElement');
 		}
@@ -361,47 +356,47 @@ const axisEvaluators: AxisEvaluators = {
 		return siblings(context, 'getNextSiblingNode');
 	},
 
-	namespace: (context) => {
+	namespace: <T extends XPathNode>(context: AxisEvaluationContext<T>): readonly T[] => {
 		return context.domProvider.getNamespaceDeclarations(context.contextNode);
 	},
 
-	parent: function* parent(context) {
+	parent: <T extends XPathNode>(context: AxisEvaluationContext<T>): readonly [] | readonly [T] => {
 		const { rootNode, contextNode } = context;
 
 		if (contextNode === rootNode) {
-			return;
+			return [];
 		}
 
 		const parentNode = context.domProvider.getParentNode(contextNode);
 
 		if (parentNode != null) {
-			yield parentNode;
+			return [parentNode];
 		}
+
+		return [];
 	},
 
-	preceding: function* preceding<T extends XPathNode>(
+	preceding: <T extends XPathNode>(
 		context: AxisEvaluationContext<T>,
 		step: AnyStep
-	): Iterable<T> {
+	): readonly T[] => {
 		const { domProvider, rootNode, contextDocument, visited } = context;
 		const contextNode = getDocumentOrderTraversalContextNode(domProvider, context.contextNode);
 
 		if (visited.has(contextNode)) {
-			return;
+			return [];
 		}
 
 		visited.add(contextNode);
 
 		if (contextNode === rootNode) {
-			return;
+			return [];
 		}
 
 		const parentNode = domProvider.getParentNode(contextNode);
 
 		if (parentNode === contextDocument) {
-			yield* documentRootPrecedingSiblings(domProvider, context, contextNode, step);
-
-			return;
+			return documentRootPrecedingSiblings(domProvider, context, contextNode, step);
 		}
 
 		let lastChild: T | null;
@@ -428,19 +423,20 @@ const axisEvaluators: AxisEvaluators = {
 				step
 			);
 
-			currentNodes = concat(currentNodes, precedingParentSiblings);
+			currentNodes = currentNodes.concat(precedingParentSiblings);
 		}
 
-		for (const currentNode of currentNodes) {
-			yield currentNode;
-
+		return currentNodes.flatMap((currentNode) => {
 			const currentContext = axisEvaluationContext(context, currentNode);
 
-			yield* preceding(currentContext, step);
-		}
+			return [currentNode].concat(axisEvaluators.preceding(currentContext, step));
+		});
 	},
 
-	'preceding-sibling': (context, step) => {
+	'preceding-sibling': <T extends XPathNode>(
+		context: AxisEvaluationContext<T>,
+		step: AnyStep
+	): readonly T[] => {
 		if (step.nodeType === '__NAMED__') {
 			return siblings(context, 'getPreviousSiblingElement');
 		}
@@ -448,15 +444,14 @@ const axisEvaluators: AxisEvaluators = {
 		return siblings(context, 'getPreviousSiblingNode');
 	},
 
-	self: function* self(context) {
-		yield context.contextNode;
+	self: <T extends XPathNode>(context: AxisEvaluationContext<T>): readonly [T] => {
+		return [context.contextNode];
 	},
 };
 
 interface LocationPathEvaluationOptions {
 	readonly contextPosition?: number;
-
-	contextSize?: () => number;
+	readonly contextSize?: number;
 }
 
 type ArbitraryNodesTemporaryCallee =
@@ -549,11 +544,9 @@ export class LocationPathEvaluation<T extends XPathNode>
 	readonly rootNode: AdapterParentNode<T>;
 
 	readonly nodes: ReadonlySet<T>;
-	readonly contextNodes: ReadonlySet<T>;
 
 	protected computedContextSize: number;
 
-	protected readonly optionsContextSize?: () => number;
 	protected readonly initializedContextPosition: number;
 
 	readonly functions: FunctionLibraryCollection;
@@ -576,37 +569,28 @@ export class LocationPathEvaluation<T extends XPathNode>
 		nodes: readonly T[],
 		_temporaryCallee: ArbitraryNodesTemporaryCallee
 	): LocationPathEvaluation<T> {
-		return new this(currentContext, nodes);
+		return new this(currentContext, new Set(nodes));
 	}
 
 	static fromCurrentContext<T extends XPathNode>(
 		evaluationContext: EvaluationContext<T>
 	): LocationPathEvaluation<T> {
-		let options: LocationPathEvaluationOptions | undefined;
-
-		if (evaluationContext instanceof LocationPathEvaluation) {
-			options = {
-				get contextPosition() {
-					return evaluationContext.contextPosition();
-				},
-				contextSize() {
-					return evaluationContext.contextSize();
-				},
-			};
+		if (LocationPathEvaluation.isInstance(evaluationContext, evaluationContext)) {
+			return evaluationContext;
 		}
 
-		return new this(evaluationContext, evaluationContext.contextNodes, options);
+		return new this(evaluationContext, evaluationContext.contextNodes);
 	}
 
 	static fromRoot<T extends XPathNode>(
 		parentContext: LocationPathParentContext<T>
 	): LocationPathEvaluation<T> {
-		return new this(parentContext, [parentContext.rootNode]);
+		return new this(parentContext, new Set([parentContext.rootNode]));
 	}
 
 	protected constructor(
 		readonly parentContext: LocationPathParentContext<T>,
-		contextNodes: Iterable<T>,
+		readonly contextNodes: ReadonlySet<T>,
 		options: LocationPathEvaluationOptions = {}
 	) {
 		this.domProvider = parentContext.domProvider;
@@ -629,20 +613,18 @@ export class LocationPathEvaluation<T extends XPathNode>
 		this.rootNode = rootNode;
 		this.timeZone = timeZone;
 
-		const nodes = new Set(contextNodes);
+		this.nodes = contextNodes;
 
-		this.nodes = nodes;
-		this.contextNodes = nodes;
-
-		this.nodeEvaluations = Array.from(nodes).map((node) => {
+		this.nodeEvaluations = Array.from(contextNodes).map((node) => {
 			return new NodeEvaluation(this, node);
 		});
-		this.computedContextSize = options.contextSize?.() ?? nodes.size;
+		this.computedContextSize = options.contextSize ?? contextNodes.size;
 		this.initializedContextPosition = options.contextPosition ?? 1;
 	}
 
 	[Symbol.iterator]() {
 		const nodes = this.contextNodes[Symbol.iterator]();
+		const contextSize = this.contextSize();
 
 		let contextPosition = this.contextPosition();
 
@@ -654,11 +636,9 @@ export class LocationPathEvaluation<T extends XPathNode>
 					return next;
 				}
 
-				const value = new LocationPathEvaluation(this, [next.value], {
+				const value = new LocationPathEvaluation(this, new Set([next.value]), {
 					contextPosition,
-					contextSize: () => {
-						return this.computedContextSize;
-					},
+					contextSize,
 				});
 
 				contextPosition += 1;
@@ -680,22 +660,7 @@ export class LocationPathEvaluation<T extends XPathNode>
 	}
 
 	contextSize(): number {
-		const { optionsContextSize } = this;
-
-		if (optionsContextSize != null) {
-			return optionsContextSize();
-		}
-
-		let { computedContextSize } = this;
-
-		if (computedContextSize == null) {
-			const { contextNodes } = this;
-
-			computedContextSize = [...contextNodes].length;
-			this.computedContextSize = computedContextSize;
-		}
-
-		return computedContextSize;
+		return this.computedContextSize;
 	}
 
 	currentContext<U extends XPathNode>(this: LocationPathEvaluation<U>): LocationPathEvaluation<U> {
@@ -897,10 +862,10 @@ export class LocationPathEvaluation<T extends XPathNode>
 		if (axisType === 'preceding' || axisType === 'preceding-sibling') {
 			const sorted = domProvider.sortInDocumentOrder(nodes);
 
-			return new LocationPathEvaluation(this, sorted);
+			return new LocationPathEvaluation(this, new Set(sorted));
 		}
 
-		return new LocationPathEvaluation(this, nodes);
+		return new LocationPathEvaluation(this, new Set(nodes));
 	}
 
 	evaluateLocationPathExpression(
