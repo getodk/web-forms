@@ -1,5 +1,4 @@
 import type { UpsertableMap } from '@getodk/common/lib/collections/UpsertableMap.ts';
-import { filter } from '../lib/iterators/common.ts';
 import type { XPathDOMAdapter } from './interface/XPathDOMAdapter.ts';
 import type { XPathDOMOptimizableOperations } from './interface/XPathDOMOptimizableOperations.ts';
 import type { XPathNode } from './interface/XPathNode.ts';
@@ -118,21 +117,12 @@ const extendNodeKindGuards = <T extends XPathNode>(
 	return Object.assign(base, extensions);
 };
 
-type IterableNodeFilter<T extends XPathNode, U extends T> = (nodes: Iterable<T>) => Iterable<U>;
-
 /**
  * Provides frequently used operations, such as filtering and sorting, on
  * {@link Iterable} sequences of an {@link XPathDOMAdapter}'s node
  * representation.
  */
 interface IterableOperations<T extends XPathNode> {
-	readonly filterAttributes: IterableNodeFilter<T, AdapterAttribute<T>>;
-	readonly filterQualifiedNamedNodes: IterableNodeFilter<T, AdapterQualifiedNamedNode<T>>;
-	readonly filterComments: IterableNodeFilter<T, AdapterComment<T>>;
-	readonly filterNamespaceDeclarations: IterableNodeFilter<T, AdapterNamespaceDeclaration<T>>;
-	readonly filterProcessingInstructions: IterableNodeFilter<T, AdapterProcessingInstruction<T>>;
-	readonly filterTextNodes: IterableNodeFilter<T, AdapterText<T>>;
-
 	// Note: iterable -> array is intentional. Can't sort a lazy, arbitrary-order
 	// sequence without iterating every item!
 	readonly sortInDocumentOrder: (nodes: Iterable<T>) => readonly T[];
@@ -151,12 +141,6 @@ const extendIterableOperations = <T extends XPathNode>(
 	base: ExtendedNodeKindGuards<T>
 ): ExtendedIterableOperations<T> => {
 	const extensions: IterableOperations<T> = {
-		filterAttributes: filter(base.isAttribute),
-		filterQualifiedNamedNodes: filter(base.isQualifiedNamedNode),
-		filterComments: filter(base.isComment),
-		filterNamespaceDeclarations: filter(base.isNamespaceDeclaration),
-		filterProcessingInstructions: filter(base.isProcessingInstruction),
-		filterTextNodes: filter(base.isText),
 		sortInDocumentOrder: (nodes: Iterable<T>): readonly T[] => {
 			return Array.from(nodes).sort((a, b) => base.compareDocumentOrder(a, b));
 		},

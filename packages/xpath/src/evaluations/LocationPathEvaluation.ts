@@ -1,5 +1,4 @@
 import { UnreachableError } from '@getodk/common/lib/error/UnreachableError.ts';
-import { identity } from '@getodk/common/lib/identity.ts';
 import type { Temporal } from '@js-temporal/polyfill';
 import type { XPathDOMAdapter } from '../adapter/interface/XPathDOMAdapter.ts';
 import type {
@@ -24,8 +23,6 @@ import type { LocationPathExpressionEvaluator } from '../evaluator/expression/Lo
 import type { FunctionLibraryCollection } from '../evaluator/functions/FunctionLibraryCollection.ts';
 import type { NodeSetFunction } from '../evaluator/functions/NodeSetFunction.ts';
 import type { AnyStep, AxisType } from '../evaluator/step/Step.ts';
-import { Reiterable } from '../lib/iterators/Reiterable.ts';
-import { distinct, filter, tee } from '../lib/iterators/common.ts';
 import type { Evaluation } from './Evaluation.ts';
 import { NodeEvaluation } from './NodeEvaluation.ts';
 
@@ -49,32 +46,25 @@ type LocationPathParentContext<T extends XPathNode> =
 	| EvaluationContext<T>
 	| LocationPathEvaluation<T>;
 
-function* toNodeEvaluations<T extends XPathNode>(
-	context: LocationPathEvaluation<T>,
-	nodes: Iterable<T>
-): Iterable<NodeEvaluation<T>> {
-	for (const node of nodes) {
-		yield new NodeEvaluation(context, node);
-	}
-}
-
 type EvaluationComparator<T extends XPathNode> = (
 	lhs: Evaluation<T>,
 	rhs: Evaluation<T>
 ) => boolean;
 
-type NodeTypeFilter<T extends XPathNode> = (nodes: Iterable<T>) => Iterable<T>;
+type NodeTypePredicate<T extends XPathNode> = (node: T) => boolean;
 
-const getNodeTypeFilter = <T extends XPathNode>(
+const anyNodeTypePredicate = <T extends XPathNode>(_: T): true => true;
+
+const getNodeTypePredicate = <T extends XPathNode>(
 	domProvider: XPathDOMProvider<T>,
 	step: AnyStep
-): NodeTypeFilter<T> => {
+): NodeTypePredicate<T> => {
 	switch (step.axisType) {
 		case 'attribute':
-			return domProvider.filterAttributes;
+			return domProvider.isAttribute;
 
 		case 'namespace':
-			return domProvider.filterNamespaceDeclarations;
+			return domProvider.isNamespaceDeclaration;
 
 		default:
 			break;
@@ -82,19 +72,19 @@ const getNodeTypeFilter = <T extends XPathNode>(
 
 	switch (step.nodeType) {
 		case '__NAMED__':
-			return domProvider.filterQualifiedNamedNodes;
+			return domProvider.isQualifiedNamedNode;
 
 		case 'processing-instruction':
-			return domProvider.filterProcessingInstructions;
+			return domProvider.isProcessingInstruction;
 
 		case 'comment':
-			return domProvider.filterComments;
+			return domProvider.isComment;
 
 		case 'node':
-			return identity;
+			return anyNodeTypePredicate<T>;
 
 		case 'text':
-			return domProvider.filterTextNodes;
+			return domProvider.isText;
 
 		default:
 			throw new UnreachableError(step);
@@ -553,7 +543,7 @@ export class LocationPathEvaluation<T extends XPathNode>
 	// --- Evaluation ---
 	readonly type = 'NODE';
 
-	protected readonly nodeEvaluations: Reiterable<NodeEvaluation<T>>;
+	protected readonly nodeEvaluations: ReadonlyArray<NodeEvaluation<T>>;
 
 	// --- Context ---
 	readonly evaluator: Evaluator<T>;
@@ -567,21 +557,17 @@ export class LocationPathEvaluation<T extends XPathNode>
 	readonly contextDocument: AdapterDocument<T>;
 	readonly rootNode: AdapterParentNode<T>;
 
-	private _nodes: Iterable<T>;
+	private _nodes: ReadonlySet<T>;
 
 	get nodes(): Iterable<T> {
 		return this._nodes;
 	}
 
 	get contextNodes(): IterableIterator<T> {
-		const [nodes, contextNodes] = tee(this._nodes);
-
-		this._nodes = nodes;
-
-		return contextNodes;
+		return this._nodes.values();
 	}
 
-	protected computedContextSize: number | null = null;
+	protected computedContextSize: number;
 
 	protected readonly optionsContextSize?: () => number;
 	protected readonly initializedContextPosition: number;
@@ -659,18 +645,14 @@ export class LocationPathEvaluation<T extends XPathNode>
 		this.rootNode = rootNode;
 		this.timeZone = timeZone;
 
-		const nodes = distinct(contextNodes);
+		const nodes = new Set(contextNodes);
 
 		this._nodes = nodes;
 
-		this.nodeEvaluations = Reiterable.from(toNodeEvaluations(this, contextNodes));
-
-		if (options.contextSize != null) {
-			this.optionsContextSize = options.contextSize;
-		} else if (Array.isArray(contextNodes)) {
-			this.computedContextSize = contextNodes.length;
-		}
-
+		this.nodeEvaluations = Array.from(nodes).map((node) => {
+			return new NodeEvaluation(this, node);
+		});
+		this.computedContextSize = options.contextSize?.() ?? nodes.size;
 		this.initializedContextPosition = options.contextPosition ?? 1;
 	}
 
@@ -690,7 +672,7 @@ export class LocationPathEvaluation<T extends XPathNode>
 				const value = new LocationPathEvaluation(this, [next.value], {
 					contextPosition,
 					contextSize: () => {
-						return this.contextSize();
+						return this.computedContextSize;
 					},
 				});
 
@@ -704,8 +686,8 @@ export class LocationPathEvaluation<T extends XPathNode>
 		};
 	}
 
-	values(): Iterable<NodeEvaluation<T>> {
-		return this.nodeEvaluations;
+	values(): IterableIterator<NodeEvaluation<T>> {
+		return this.nodeEvaluations.values();
 	}
 
 	contextPosition(): number {
@@ -748,7 +730,7 @@ export class LocationPathEvaluation<T extends XPathNode>
 			return result;
 		}
 
-		result = this.nodeEvaluations.first() ?? null;
+		[result = null] = this.nodeEvaluations;
 		this._first = result;
 
 		return result;
@@ -770,7 +752,13 @@ export class LocationPathEvaluation<T extends XPathNode>
 	}
 
 	some(predicate: (evaluation: NodeEvaluation<T>) => boolean): boolean {
-		return this.nodeEvaluations.some(predicate);
+		for (const evaluation of this.nodeEvaluations) {
+			if (predicate(evaluation)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	toBoolean(): boolean {
@@ -828,19 +816,19 @@ export class LocationPathEvaluation<T extends XPathNode>
 	step(step: AnyStep): LocationPathEvaluation<T> {
 		const { domProvider, namespaceResolver } = this;
 
-		let nodesFilter: (nodes: Iterable<T>) => Iterable<T>;
+		let nodePredicate: (node: T) => boolean;
 
 		switch (step.stepType) {
 			case 'NodeTypeTest':
 			case 'UnqualifiedWildcardTest':
-				nodesFilter = getNodeTypeFilter(domProvider, step);
+				nodePredicate = getNodeTypePredicate(domProvider, step);
 				break;
 
 			case 'NodeNameTest': {
 				const { nodeName } = step;
 				const nullNamespaceURI = namespaceResolver.lookupNamespaceURI(null);
 
-				nodesFilter = filter((node: T) => {
+				nodePredicate = (node: T) => {
 					if (!domProvider.isQualifiedNamedNode(node)) {
 						return false;
 					}
@@ -851,7 +839,7 @@ export class LocationPathEvaluation<T extends XPathNode>
 						domProvider.getLocalName(node) === nodeName &&
 						(namespaceURI == null || namespaceURI === nullNamespaceURI)
 					);
-				});
+				};
 
 				break;
 			}
@@ -859,12 +847,12 @@ export class LocationPathEvaluation<T extends XPathNode>
 			case 'ProcessingInstructionNameTest': {
 				const { processingInstructionName } = step;
 
-				nodesFilter = filter((node: T) => {
+				nodePredicate = (node: T) => {
 					return (
 						domProvider.isProcessingInstruction(node) &&
 						domProvider.getProcessingInstructionName(node) === processingInstructionName
 					);
-				});
+				};
 
 				break;
 			}
@@ -873,13 +861,13 @@ export class LocationPathEvaluation<T extends XPathNode>
 				const { prefix, localName } = step;
 				const namespaceURI = namespaceResolver.lookupNamespaceURI(prefix);
 
-				nodesFilter = filter((node: T) => {
+				nodePredicate = (node: T) => {
 					return (
 						domProvider.isQualifiedNamedNode(node) &&
 						domProvider.getLocalName(node) === localName &&
 						domProvider.getNamespaceURI(node) === namespaceURI
 					);
-				});
+				};
 
 				break;
 			}
@@ -888,12 +876,12 @@ export class LocationPathEvaluation<T extends XPathNode>
 				const { prefix } = step;
 				const namespaceURI = namespaceResolver.lookupNamespaceURI(prefix);
 
-				nodesFilter = filter((node: T) => {
+				nodePredicate = (node: T) => {
 					return (
 						domProvider.isQualifiedNamedNode(node) &&
 						domProvider.getNamespaceURI(node) === namespaceURI
 					);
-				});
+				};
 
 				break;
 			}
@@ -915,7 +903,11 @@ export class LocationPathEvaluation<T extends XPathNode>
 			const currentContext = axisEvaluationContext(context, contextNode);
 			const axisNodes = axisEvaluator(currentContext, step);
 
-			yield* nodesFilter(axisNodes);
+			for (const axisNode of axisNodes) {
+				if (nodePredicate(axisNode)) {
+					yield axisNode;
+				}
+			}
 		});
 
 		// TODO: this is out of spec! Tests currently depend on it. We could update

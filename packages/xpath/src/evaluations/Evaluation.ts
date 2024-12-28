@@ -8,7 +8,7 @@ export interface Evaluation<T extends XPathNode, Type extends EvaluationType = E
 	readonly type: Type;
 
 	first(): Evaluation<T, Type> | null;
-	values(): Iterable<Evaluation<T, Type>>;
+	values(): IterableIterator<Evaluation<T, Type>>;
 
 	eq(operand: Evaluation<T>): boolean;
 	ne(operand: Evaluation<T>): boolean;
