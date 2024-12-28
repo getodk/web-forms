@@ -162,29 +162,26 @@ const getElementByUniqueIdFactory = <T extends XPathNode>(
 		return adapterImplementation;
 	}
 
-	function* getElementDescendants(node: AdapterParentNode<T>): Iterable<AdapterElement<T>> {
-		if (adapter.isElement(node)) {
-			yield node;
+	const getElementByUniqueId = (
+		node: AdapterParentNode<T>,
+		id: string
+	): AdapterElement<T> | null => {
+		if (adapter.isElement(node) && getNamedAttributeValue(node, 'id') === id) {
+			return node;
 		}
 
-		for (const element of adapter.getChildElements(node)) {
-			yield element;
+		for (const childElement of adapter.getChildElements(node)) {
+			const element = getElementByUniqueId(childElement, id);
 
-			yield* getElementDescendants(element);
-		}
-	}
-
-	return (node, id) => {
-		const containingDocument = adapter.getContainingDocument(node);
-
-		for (const element of getElementDescendants(containingDocument)) {
-			if (getNamedAttributeValue(element, 'id') === id) {
+			if (element != null) {
 				return element;
 			}
 		}
 
 		return null;
 	};
+
+	return getElementByUniqueId;
 };
 
 type QualifiedNamedAttributeValueLookup<T extends XPathNode> = (
