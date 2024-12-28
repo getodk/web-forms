@@ -21,5 +21,5 @@ export interface Evaluation<T extends XPathNode, Type extends EvaluationType = E
 	toNumber(): number;
 	toString(): string;
 
-	readonly nodes: Type extends 'NODE' ? Iterable<T> : null;
+	readonly nodes: Type extends 'NODE' ? ReadonlySet<T> : null;
 }

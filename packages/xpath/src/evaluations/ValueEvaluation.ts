@@ -11,7 +11,7 @@ export abstract class ValueEvaluation<T extends XPathNode, Type extends Evaluati
 
 	abstract readonly type: Type;
 	abstract readonly value: EvaluationTypes<T>[Type];
-	abstract readonly nodes: Type extends 'NODE' ? Iterable<T> : null;
+	abstract readonly nodes: Type extends 'NODE' ? ReadonlySet<T> : null;
 
 	protected abstract readonly booleanValue: boolean;
 	protected abstract readonly numberValue: number;

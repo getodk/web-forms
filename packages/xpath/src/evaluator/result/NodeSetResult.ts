@@ -14,7 +14,7 @@ export abstract class NodeSetResult<T extends XPathNode>
 	extends BaseResult<T>
 	implements XPathEvaluationResult<T>
 {
-	protected readonly nodes: readonly T[];
+	protected readonly nodes: ReadonlySet<T>;
 
 	protected computedBooleanValue: boolean | null = null;
 	protected computedNumberValue: number | null = null;
@@ -44,10 +44,10 @@ export abstract class NodeSetResult<T extends XPathNode>
 
 	constructor(
 		protected readonly domProvider: XPathDOMProvider<T>,
-		value: Iterable<T>
+		value: ReadonlySet<T>
 	) {
 		super();
-		this.nodes = Array.from(value);
+		this.nodes = value;
 	}
 
 	protected compute(): ComputedNodeSetResult {
@@ -99,13 +99,13 @@ export class NodeSetSnapshotResult<T extends XPathNode>
 	constructor(
 		domProvider: XPathDOMProvider<T>,
 		readonly resultType: NodeSetResultType,
-		nodes: Iterable<T>
+		nodes: ReadonlySet<T>
 	) {
 		const snapshot = Array.from(nodes);
 
-		super(domProvider, snapshot);
+		super(domProvider, nodes);
 
-		const snapshotIterator = snapshot.values();
+		const snapshotIterator = nodes.values();
 
 		this.snapshot = snapshot;
 		this.snapshotIterator = snapshotIterator;
@@ -138,7 +138,7 @@ export class NodeSetIteratorResult<T extends XPathNode>
 	extends NodeSetResult<T>
 	implements XPathEvaluationResult<T>
 {
-	protected activeIterator: IterableIterator<T> | null = null;
+	protected readonly activeIterator: IterableIterator<T>;
 
 	// TODO: validity in spec/native likely refers to DOM mutation...?
 	readonly invalidIteratorState: boolean = false;
@@ -169,26 +169,15 @@ export class NodeSetIteratorResult<T extends XPathNode>
 	constructor(
 		domProvider: XPathDOMProvider<T>,
 		readonly resultType: NodeSetResultType,
-		nodes: Iterable<T>
+		nodes: ReadonlySet<T>
 	) {
 		super(domProvider, nodes);
-	}
 
-	protected activateIterator(): IterableIterator<T> {
-		let { activeIterator } = this;
-
-		if (activeIterator == null) {
-			activeIterator = this.nodes.values();
-			this.activeIterator = activeIterator;
-		}
-
-		return activeIterator;
+		this.activeIterator = nodes.values();
 	}
 
 	iterateNext(): T | null {
-		const iterator = this.activateIterator();
-
-		const next = iterator.next();
+		const next = this.activeIterator.next();
 
 		if (next.done) {
 			return null;

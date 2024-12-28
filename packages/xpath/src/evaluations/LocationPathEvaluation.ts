@@ -557,15 +557,8 @@ export class LocationPathEvaluation<T extends XPathNode>
 	readonly contextDocument: AdapterDocument<T>;
 	readonly rootNode: AdapterParentNode<T>;
 
-	private _nodes: ReadonlySet<T>;
-
-	get nodes(): Iterable<T> {
-		return this._nodes;
-	}
-
-	get contextNodes(): IterableIterator<T> {
-		return this._nodes.values();
-	}
+	readonly nodes: ReadonlySet<T>;
+	readonly contextNodes: ReadonlySet<T>;
 
 	protected computedContextSize: number;
 
@@ -589,7 +582,7 @@ export class LocationPathEvaluation<T extends XPathNode>
 	 */
 	static fromArbitraryNodes<T extends XPathNode>(
 		currentContext: LocationPathParentContext<T>,
-		nodes: Iterable<T>,
+		nodes: readonly T[],
 		_temporaryCallee: ArbitraryNodesTemporaryCallee
 	): LocationPathEvaluation<T> {
 		return new this(currentContext, nodes);
@@ -647,7 +640,8 @@ export class LocationPathEvaluation<T extends XPathNode>
 
 		const nodes = new Set(contextNodes);
 
-		this._nodes = nodes;
+		this.nodes = nodes;
+		this.contextNodes = nodes;
 
 		this.nodeEvaluations = Array.from(nodes).map((node) => {
 			return new NodeEvaluation(this, node);
@@ -657,7 +651,7 @@ export class LocationPathEvaluation<T extends XPathNode>
 	}
 
 	[Symbol.iterator]() {
-		const nodes = this.contextNodes;
+		const nodes = this.contextNodes[Symbol.iterator]();
 
 		let contextPosition = this.contextPosition();
 

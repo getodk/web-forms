@@ -19,7 +19,7 @@ export class UnionExpressionEvaluator extends LocationPathExpressionEvaluator {
 		this.rhs = createExpression(rhsNode);
 	}
 
-	evaluateNodes<T extends XPathNode>(context: EvaluationContext<T>): Iterable<T> {
+	evaluateNodes<T extends XPathNode>(context: EvaluationContext<T>): ReadonlySet<T> {
 		const lhs = this.lhs.evaluate(context);
 
 		if (!(lhs instanceof LocationPathEvaluation)) {
@@ -36,6 +36,6 @@ export class UnionExpressionEvaluator extends LocationPathExpressionEvaluator {
 		// TODO: iter stuff cleanup (TODO doesn't belong here, just noting as I fix the import)
 		const nodes = new Set([...lhs.nodes, ...rhs.nodes]);
 
-		return context.domProvider.sortInDocumentOrder(nodes);
+		return new Set(context.domProvider.sortInDocumentOrder(nodes));
 	}
 }
