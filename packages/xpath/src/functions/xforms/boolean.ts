@@ -84,25 +84,22 @@ export const weightedChecklist = new BooleanFunction(
 			const results = expression.evaluate(context).values();
 			const weights = weightExpression.evaluate(context).values();
 
-			while (true) {
-				const next = results.next();
-				const nextWeight = weights.next();
+			const length = Math.max(results.length, weights.length);
 
-				if (nextWeight.done) {
+			for (let j = 0; j < length; j += 1) {
+				const weight = weights[j];
+
+				if (weight == null) {
 					break;
 				}
 
-				const weight = nextWeight.value;
+				const result = results[j];
 
-				let result: boolean;
-
-				if (next.done) {
-					result = false;
-				} else {
-					result = next.value.toBoolean();
+				if (result == null) {
+					return false;
 				}
 
-				if (result) {
+				if (result.toBoolean()) {
 					satisfied += weight.toNumber();
 
 					if (satisfied > max) {

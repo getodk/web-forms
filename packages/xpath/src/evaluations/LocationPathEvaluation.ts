@@ -651,8 +651,8 @@ export class LocationPathEvaluation<T extends XPathNode>
 		};
 	}
 
-	values(): IterableIterator<NodeEvaluation<T>> {
-		return this.nodeEvaluations.values();
+	values(): ReadonlyArray<NodeEvaluation<T>> {
+		return this.nodeEvaluations;
 	}
 
 	contextPosition(): number {
