@@ -32,10 +32,8 @@ export class UnionExpressionEvaluator extends LocationPathExpressionEvaluator {
 			throw 'todo rhs not node-set result';
 		}
 
-		// TODO: sort in result
-		// TODO: iter stuff cleanup (TODO doesn't belong here, just noting as I fix the import)
 		const nodes = Array.from(new Set([...lhs.nodes, ...rhs.nodes]));
 
-		return new Set(context.domProvider.sortInDocumentOrder(nodes));
+		return new Set(nodes.slice().sort(context.domProvider.compareDocumentOrder));
 	}
 }

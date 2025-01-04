@@ -51,7 +51,7 @@ export const id = new NodeSetFunction(
 			return element;
 		});
 
-		return context.domProvider.sortInDocumentOrder(elements);
+		return elements.slice().sort(context.domProvider.compareDocumentOrder);
 	}
 );
 

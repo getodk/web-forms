@@ -173,10 +173,6 @@ const getDocumentOrderTraversalContextNode = <T extends XPathNode>(
 	return contextNode;
 };
 
-const filterValues = <T>(iter: ReadonlyArray<T | null | undefined>): readonly T[] => {
-	return iter.filter((item) => item != null);
-};
-
 /**
  * **!!! HERE BE DRAGONS !!!**
  *
@@ -326,7 +322,7 @@ const axisEvaluators = {
 			nextSibling = domProvider.getNextSiblingNode(contextNode);
 		}
 
-		let currentNodes = filterValues([firstChild, nextSibling]);
+		let currentNodes = [firstChild, nextSibling].filter((node) => node != null);
 
 		if (parentNode != null && parentNode !== rootNode) {
 			const followingParentSiblingsContext = axisEvaluationContext(context, parentNode);
@@ -414,7 +410,7 @@ const axisEvaluators = {
 			lastChild = null;
 		}
 
-		let currentNodes = filterValues([lastChild, previousSibling]);
+		let currentNodes = [lastChild, previousSibling].filter((node) => node != null);
 
 		if (contextNode !== rootNode && parentNode != null && parentNode !== rootNode) {
 			const precedingParentSiblingsContext = axisEvaluationContext(context, parentNode);
@@ -860,7 +856,7 @@ export class LocationPathEvaluation<T extends XPathNode>
 		// the tests, but making the minimal change necessary for refactor to
 		// eliminate use of TreeWalker
 		if (axisType === 'preceding' || axisType === 'preceding-sibling') {
-			const sorted = domProvider.sortInDocumentOrder(nodes);
+			const sorted = nodes.slice().sort(context.domProvider.compareDocumentOrder);
 
 			return new LocationPathEvaluation(this, new Set(sorted));
 		}

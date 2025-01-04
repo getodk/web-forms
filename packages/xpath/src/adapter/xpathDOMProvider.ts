@@ -117,36 +117,6 @@ const extendNodeKindGuards = <T extends XPathNode>(
 	return Object.assign(base, extensions);
 };
 
-/**
- * Provides frequently used operations, such as filtering and sorting, on
- * {@link Iterable} sequences of an {@link XPathDOMAdapter}'s node
- * representation.
- */
-interface IterableOperations<T extends XPathNode> {
-	readonly sortInDocumentOrder: (nodes: readonly T[]) => readonly T[];
-}
-
-interface ExtendedIterableOperations<T extends XPathNode>
-	extends ExtendedNodeKindGuards<T>,
-		IterableOperations<T> {}
-
-/**
- * Derives frequently used {@link IterableOperations | iterable operations} from an
- * {@link XPathDOMAdapter} and its derived
- * {@link NodeKindGuards | node kind predicates}.
- */
-const extendIterableOperations = <T extends XPathNode>(
-	base: ExtendedNodeKindGuards<T>
-): ExtendedIterableOperations<T> => {
-	const extensions: IterableOperations<T> = {
-		sortInDocumentOrder: (nodes: readonly T[]): readonly T[] => {
-			return nodes.slice().sort((a, b) => base.compareDocumentOrder(a, b));
-		},
-	};
-
-	return Object.assign(base, extensions);
-};
-
 type UniqueIDElementLookup<T extends XPathNode> = (
 	node: AdapterDocument<T>,
 	id: string
@@ -355,7 +325,7 @@ const getLastChildElementFactory = <T extends XPathNode>(
 type OmitOptionalOptimizableOperations<T> = Omit<T, keyof XPathDOMOptimizableOperations<XPathNode>>;
 
 interface ExtendedOptimizableOperations<T extends XPathNode>
-	extends OmitOptionalOptimizableOperations<ExtendedIterableOperations<T>>,
+	extends OmitOptionalOptimizableOperations<ExtendedNodeKindGuards<T>>,
 		XPathDOMOptimizableOperations<T> {}
 
 /**
@@ -370,7 +340,7 @@ interface ExtendedOptimizableOperations<T extends XPathNode>
  *    will be derived from other aspects of the adapter's required APIs.
  */
 const extendOptimizableOperations = <T extends XPathNode>(
-	base: ExtendedIterableOperations<T>
+	base: ExtendedNodeKindGuards<T>
 ): ExtendedOptimizableOperations<T> => {
 	const getLocalNamedAttributeValue = getLocalNamedAttributeValueFactory(base);
 
@@ -430,7 +400,6 @@ const derivedDOMProvider = <T>(base: T): DerivedDOMProvider & T => {
 export interface XPathDOMProvider<T extends XPathNode>
 	extends OmitOptionalOptimizableOperations<XPathDOMAdapter<T>>,
 		NodeKindGuards<T>,
-		IterableOperations<T>,
 		XPathDOMOptimizableOperations<T>,
 		DerivedDOMProvider {}
 
@@ -456,8 +425,7 @@ export const xpathDOMProvider = <T extends XPathNode>(
 	}
 
 	const extendedGuards = extendNodeKindGuards(adapter);
-	const extendedIterableOperations = extendIterableOperations(extendedGuards);
-	const exended = extendOptimizableOperations(extendedIterableOperations);
+	const exended = extendOptimizableOperations(extendedGuards);
 
 	return derivedDOMProvider(exended);
 };
