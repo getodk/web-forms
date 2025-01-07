@@ -18,7 +18,6 @@ https://github.com/getodk/web-forms/assets/447837/9b25e1bc-d209-462c-8e9e-3259bd
 - [xforms-engine](/packages/xforms-engine): implementation of the [ODK XForms specification](https://getodk.github.io/xforms-spec/)
 - [xpath](/packages/xpath): XPath evaluator with ODK XForms extensions
 - [scenario](/packages/scenario): engine client used to express tests on forms
-- [ui-solid](/packages/ui-solid): form-filling frontend built with Solid, likely not as up-to-date as the Vue client
 
 Run the preview with `yarn workspace @getodk/web-forms dev`.
 
