@@ -410,14 +410,16 @@ export const randomize = new NodeSetFunction(
 );
 
 const toBigIntHash = (text: string): bigint => {
-	// Hash text with sha256, and interpret the first 64 bits of output
-	// (the first and second int32s ("words") of CryptoJS digest output)
-	// as an int64 (in JS represented in a BigInt).
-	// Thus the entropy of the hash is reduced to 64 bits, which
-	// for some applications is sufficient.
-	// The underlying representations are big-endian regardless of the endianness
-	// of the machine this runs on, as is the equivalent JavaRosa implementation
-	// at https://github.com/getodk/javarosa/blob/ab0e8f4da6ad8180ac7ede5bc939f3f261c16edf/src/main/java/org/javarosa/xpath/expr/XPathFuncExpr.java#L718-L726
+	/**
+	Hash text with sha256, and interpret the first 64 bits of output
+	(the first and second int32s ("words") of CryptoJS digest output)
+	as an int64 (in JS represented in a BigInt).
+	Thus the entropy of the hash is reduced to 64 bits, which
+	for some applications is sufficient.
+	The underlying representations are big-endian regardless of the endianness
+	of the machine this runs on, as is the equivalent JavaRosa implementation.
+	({@link https://github.com/getodk/javarosa/blob/ab0e8f4da6ad8180ac7ede5bc939f3f261c16edf/src/main/java/org/javarosa/xpath/expr/XPathFuncExpr.java#L718-L726 | see here}).
+	*/
 	const buffer = new ArrayBuffer(8);
 	const dataview = new DataView(buffer);
 	SHA256(text)
