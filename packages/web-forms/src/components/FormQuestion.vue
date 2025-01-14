@@ -4,6 +4,7 @@ import type {
 	AnyInputNode,
 	AnyUnsupportedControlNode,
 	NoteNode,
+	RankNode,
 	SelectNode,
 } from '@getodk/xforms-engine';
 import { inject } from 'vue';
@@ -12,6 +13,7 @@ import NoteControl from './controls/NoteControl.vue';
 import SelectControl from './controls/SelectControl.vue';
 import TriggerControl from './controls/TriggerControl.vue';
 import UnsupportedControl from './controls/UnsupportedControl.vue';
+import RankControl from '@/components/controls/RankControl.vue';
 
 type ControlNode = AnyControlNode | AnyUnsupportedControlNode;
 
@@ -19,6 +21,7 @@ defineProps<{ question: ControlNode }>();
 
 const isInputNode = (n: ControlNode): n is AnyInputNode => n.nodeType === 'input';
 const isSelectNode = (n: ControlNode): n is SelectNode => n.nodeType === 'select';
+const isRankNode = (n: ControlNode): n is RankNode => n.nodeType === 'rank';
 const isNoteNode = (n: ControlNode): n is NoteNode => n.nodeType === 'note';
 const isTriggerNode = (node: ControlNode) => node.nodeType === 'trigger';
 
@@ -36,6 +39,8 @@ const submitPressed = inject('submitPressed');
 		<InputControl v-if="isInputNode(question)" :node="question" />
 
 		<SelectControl v-else-if="isSelectNode(question)" :question="question" />
+
+		<RankControl v-else-if="isRankNode(question)" :question="question" />
 
 		<NoteControl v-else-if="isNoteNode(question)" :question="question" />
 
