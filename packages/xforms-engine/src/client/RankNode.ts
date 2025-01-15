@@ -3,6 +3,7 @@ import type { ValueType } from './ValueType.ts';
 import type { LeafNodeDefinition } from '../parse/model/LeafNodeDefinition.ts';
 import { RankControlDefinition } from '../parse/body/control/RankControlDefinition.ts';
 import type { BaseValueNode } from './BaseValueNode.ts';
+import type { RuntimeValue } from '../lib/codecs/getSharedValueCodec.ts';
 
 export type RankItemValue<V extends ValueType> = NonNullable<RuntimeValue<V>>;
 

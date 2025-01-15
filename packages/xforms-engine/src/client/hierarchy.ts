@@ -11,13 +11,11 @@ import type { SelectNode } from './SelectNode.ts';
 import type { SubtreeNode } from './SubtreeNode.ts';
 import type { TriggerNode } from './TriggerNode.ts';
 import type { RangeNode } from './unsupported/RangeNode.ts';
-import type { RankNode } from './unsupported/RankNode.ts';
 import type { UploadNode } from './unsupported/UploadNode.ts';
 
 // prettier-ignore
 export type AnyUnsupportedControlNode =
 	| RangeNode
-	| RankNode
 	| UploadNode;
 
 // prettier-ignore

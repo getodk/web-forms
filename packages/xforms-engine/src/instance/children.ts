@@ -5,7 +5,6 @@ import type { ModelValueDefinition } from '../client/ModelValueNode.ts';
 import type { SubtreeDefinition } from '../client/SubtreeNode.ts';
 import type { TriggerNodeDefinition } from '../client/TriggerNode.ts';
 import type { RangeNodeDefinition } from '../client/unsupported/RangeNode.ts';
-import type { RankNodeDefinition } from '../client/unsupported/RankNode.ts';
 import type { UnsupportedControlDefinition } from '../client/unsupported/UnsupportedControlNode.ts';
 import type { UploadNodeDefinition } from '../client/unsupported/UploadNode.ts';
 import type { LeafNodeDefinition } from '../parse/model/LeafNodeDefinition.ts';
@@ -23,8 +22,9 @@ import { SelectField } from './SelectField.ts';
 import { Subtree } from './Subtree.ts';
 import { TriggerControl } from './TriggerControl.ts';
 import { RangeControl } from './unsupported/RangeControl.ts';
-import { RankControl } from './unsupported/RankControl.ts';
 import { UploadControl } from './unsupported/UploadControl.ts';
+import type { RankDefinition } from '../client/RankNode.ts';
+import { RankControl } from './RankControl.ts';
 
 const isSubtreeDefinition = (
 	definition: ModelSubtreeDefinition
@@ -34,7 +34,6 @@ const isSubtreeDefinition = (
 
 type AnyUnsupportedControlDefinition =
 	| RangeNodeDefinition
-	| RankNodeDefinition
 	| UploadNodeDefinition;
 
 // prettier-ignore
@@ -70,7 +69,7 @@ const isRangeNodeDefinition = (
 };
 
 const isRankNodeDefinition = (
-	definition: UnsupportedControlDefinition
+	definition: RankDefinition
 ): definition is RankNodeDefinition => {
 	return definition.bodyElement.type === 'rank';
 };

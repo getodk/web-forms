@@ -11,15 +11,14 @@ import type { SelectField } from './SelectField.ts';
 import type { Subtree } from './Subtree.ts';
 import type { TriggerControl } from './TriggerControl.ts';
 import type { RangeControl } from './unsupported/RangeControl.ts';
-import type { RankControl } from './unsupported/RankControl.ts';
 import type { UploadControl } from './unsupported/UploadControl.ts';
+import type { RankControl } from './RankControl.ts';
 
 export type RepeatRange = RepeatRangeControlled | RepeatRangeUncontrolled;
 
 // prettier-ignore
 export type AnyUnsupportedControl =
 	| RangeControl
-	| RankControl
 	| UploadControl;
 
 // prettier-ignore
@@ -35,6 +34,7 @@ export type AnyNode =
 	| AnyModelValue
 	| AnyInputControl
 	| SelectField
+	| RankControl
 	| TriggerControl
 	| AnyUnsupportedControl;
 
@@ -68,6 +68,7 @@ export type AnyChildNode =
 	| Note
 	| AnyInputControl
 	| SelectField
+	| RankControl
 	| TriggerControl
 	| AnyUnsupportedControl;
 
@@ -81,6 +82,7 @@ export type GeneralChildNode =
 	| Note
 	| AnyInputControl
 	| SelectField
+	| RankControl
 	| TriggerControl
 	| AnyUnsupportedControl;
 
@@ -91,5 +93,6 @@ export type AnyValueNode =
 	| Note
 	| AnyInputControl
 	| SelectField
+	| RankControl
 	| TriggerControl
 	| AnyUnsupportedControl;
