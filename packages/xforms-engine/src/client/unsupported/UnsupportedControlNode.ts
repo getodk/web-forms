@@ -1,5 +1,4 @@
 import type { UnknownAppearanceDefinition } from '../../parse/body/appearance/unknownAppearanceParser.ts';
-import type { RangeControlDefinition } from '../../parse/body/control/RangeControlDefinition.ts';
 import type { UploadControlDefinition } from '../../parse/body/control/UploadControlDefinition.ts';
 import type { LeafNodeDefinition } from '../../parse/model/LeafNodeDefinition.ts';
 import type { BaseNode, BaseNodeState } from '../BaseNode.ts';
@@ -14,9 +13,7 @@ export interface UnsupportedControlNodeState extends BaseNodeState {
 	get value(): unknown;
 }
 
-export type UnsupportedControlElementDefinition =
-	| RangeControlDefinition
-	| UploadControlDefinition;
+export type UnsupportedControlElementDefinition = UploadControlDefinition;
 
 export interface UnsupportedControlDefinition extends LeafNodeDefinition {
 	readonly bodyElement: UnsupportedControlElementDefinition;
