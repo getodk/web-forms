@@ -19,6 +19,8 @@ https://github.com/getodk/web-forms/assets/447837/9b25e1bc-d209-462c-8e9e-3259bd
 - [xpath](/packages/xpath): XPath evaluator with ODK XForms extensions
 - [scenario](/packages/scenario): engine client used to express tests on forms
 
+We use [Volta](https://volta.sh/) to ensure consistent `node` and `yarn` versions.
+
 Run the preview with `yarn workspace @getodk/web-forms dev`.
 
 ## Project status
