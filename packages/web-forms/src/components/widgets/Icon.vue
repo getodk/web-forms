@@ -30,6 +30,7 @@ $default-size: 24px;
 
 	/* Support for all WebKit browsers. */
 	-webkit-font-smoothing: antialiased;
+
 	/* Support for Safari and Chrome. */
 	text-rendering: optimizeLegibility;
 
