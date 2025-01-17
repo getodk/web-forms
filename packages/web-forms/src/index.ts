@@ -3,6 +3,7 @@ import OdkWebForm from './components/OdkWebForm.vue';
 
 import '@fontsource/roboto/300.css';
 import './assets/css/icomoon.css';
+import './assets/css/material-icons.css';
 import './themes/2024-light/theme.scss';
 
 // TODO/sk: Purge it - using postcss-purgecss
