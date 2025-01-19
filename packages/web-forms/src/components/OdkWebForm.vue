@@ -39,7 +39,7 @@ initializeForm(props.formXml, {
 
 const handleSubmit = () => {
 	if (odkForm.value?.validationState.violations?.length === 0) {
-		emit('submit');
+		emit('submit', odkForm.value.prepareSubmission());
 	} else {
 		submitPressed.value = true;
 		document.scrollingElement?.scrollTo(0, 0);
