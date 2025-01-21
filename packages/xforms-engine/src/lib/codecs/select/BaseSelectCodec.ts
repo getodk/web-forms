@@ -4,8 +4,10 @@ import { ValueArrayCodec } from '../ValueArrayCodec.ts';
 import type { CodecDecoder, CodecEncoder } from '../ValueCodec.ts';
 
 export type SelectValueType = 'string';
+export type RankValueType = 'string';
 
 export type UnsupportedSelectValueType = Exclude<ValueType, SelectValueType>;
+export type UnsupportedRankValueType = Exclude<ValueType, RankValueType>;
 
 export abstract class BaseSelectCodec<
 	Values extends readonly string[] = readonly string[],

@@ -52,7 +52,7 @@ export class SelectControlDefinition<Type extends SelectType> extends ControlDef
 		const itemsetElement = getItemsetElement(element);
 		const itemElements = getItemElements(element);
 
-		if (itemsetElement == null) {
+		if (itemsetElement === null) {
 			this.itemset = null;
 			this.items = itemElements.map((itemElement) => {
 				return new ItemDefinition(form, this, itemElement);

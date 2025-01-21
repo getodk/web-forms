@@ -1,7 +1,7 @@
 import type { SharedValueCodec } from '../getSharedValueCodec.ts';
 import { type CodecDecoder, type CodecEncoder } from '../ValueCodec.ts';
 import { BaseSelectCodec } from './BaseSelectCodec.ts';
-import type { MultipleValueSelectCodec } from './MultipleValueSelectCodec.ts';
+import type { ItemCollectionCodec } from '../ItemCollectionCodec.ts';
 
 // prettier-ignore
 export type SingleValueSelectRuntimeValues =
@@ -41,7 +41,7 @@ const encodeValueFactory = (
  * Value codec implementation for `<select1>` controls.
  *
  * Note: this implementation is a specialization of the same principles
- * underlying {@link MultipleValueSelectCodec}. It is implemented separately:
+ * underlying {@link ItemCollectionCodec}. It is implemented separately:
  *
  * 1. to address a semantic difference between `<select>` and `<select1>`
  *    values: the former are serialized as a space-separated list, but that does
