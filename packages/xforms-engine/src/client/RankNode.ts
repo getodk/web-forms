@@ -39,7 +39,7 @@ export interface RankNode extends BaseValueNode<'string', readonly string[]> {
 	/**
 	 * Convenience API to get the value which is an ordered collection of {@link RankItem}s.
 	 */
-	getValueOption(value: string): RankItem | null; // ToDo: do we need this ?
+	getValueOption(value: string): RankItem | null;
 
 	/**
 	 * Set the value which is an ordered collection of {@link RankItem}s.

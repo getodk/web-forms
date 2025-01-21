@@ -1,48 +1,46 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { inject, ref, watch } from 'vue';
 import { VueDraggable } from 'vue-draggable-plus';
-import type { RankNode } from '@getodk/xforms-engine';
+import type { RankItem, RankNode } from '@getodk/xforms-engine';
 import ControlText from '@/components/ControlText.vue';
+import ValidationMessage from '@/components/ValidationMessage.vue';
 
 interface RankControlProps {
 	readonly question: RankNode;
 }
 
-// ToDo: remove eslint-disable-next-line comment
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const props = defineProps<RankControlProps>();
+interface DraggableOption {
+	label: string;
+	value: string;
+}
 
-const originalList = [
-	{
-		name: 'Career Growth and Learning Opportunities',
-		id: 1,
-	},
-	{
-		name: 'Time Management and Work-Life Balance',
-		id: 2,
-	},
-	{
-		name: 'Building a Supportive Community',
-		id: 3,
-	},
-	{
-		name: 'Personal Development and Mindfulness',
-		id: 4,
-	},
-	{
-		name: 'Financial Stability',
-		id: 5,
-	},
-	{
-		name: 'Family and Friends',
-		id: 6,
-	},
-];
-const list = ref([...originalList]);
-const disabled = ref(false); // ToDo: implement
+const props = defineProps<RankControlProps>();
+const options = ref<DraggableOption[]>([]);
+const touched = ref(false);
+const submitPressed = inject<boolean>('submitPressed');
 const highlight = {
 	index: ref(null),
 	timeoutID: null,
+};
+
+const transformOptions = (rankOptions: RankItem[]) => {
+	options.value = rankOptions.map((option: RankItem) => {
+		const value = option.value;
+		const valueOption = props.question.getValueOption(value);
+
+		if (valueOption == null) {
+			throw new Error(`Failed to find option for value: ${value}`);
+		}
+
+		return { value, label: valueOption.label.asString };
+	});
+};
+
+watch(props.question.currentState.valueOptions, transformOptions, { immediate: true });
+
+const setValues = () => {
+	touched.value = true;
+	props.question.setValues(options.value.map((option) => option.value));
 };
 
 const setHighlight = (index: number) => {
@@ -68,7 +66,7 @@ const moveUp = (index: number) => {
 
 const moveDown = (index: number) => {
 	const newPosition = index + 1;
-	if (newPosition >= list.value.length) {
+	if (newPosition >= options.value.length) {
 		return;
 	}
 	swapItems(index, newPosition);
@@ -76,9 +74,9 @@ const moveDown = (index: number) => {
 
 const swapItems = (index: number, newPosition: number) => {
 	setHighlight(index);
-	const temp = list.value[index];
-	list.value[index] = list.value[newPosition];
-	list.value[newPosition] = temp;
+	const temp = options.value[index];
+	options.value[index] = options.value[newPosition];
+	options.value[newPosition] = temp;
 	setHighlight(newPosition);
 };
 </script>
@@ -87,41 +85,48 @@ const swapItems = (index: number, newPosition: number) => {
 	<ControlText :question="question" />
 
 	<VueDraggable
-		v-model="list"
-		:disabled="disabled"
-		:delay="100"
-		ghostClass="fade-moving"
-		class="rank-control">
+		v-model="options"
+		:id="question.nodeId"
+		:delay="60"
+		:disabled="question.currentState.readonly"
+		ghost-class="fade-moving"
+		class="rank-control"
+		@update="setValues">
 		<div
-			v-for="(item, index) in list"
-			:key="item.id"
-			class="rank-item"
+			v-for="(option, index) in options"
+			:key="option.value"
+			class="rank-option"
 			:class="{ 'moving': highlight.index.value === index }"
 			tabindex="0"
 			@keydown.up.prevent="moveUp(index)"
 			@keydown.down.prevent="moveDown(index)">
 			<div class="rank-label">
 				<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 768 768">
-					<path d="M480 511.5q25.5 0 45 19.5t19.5 45-19.5 45-45 19.5-45-19.5-19.5-45 19.5-45 45-19.5zM480 319.5q25.5 0 45 19.5t19.5 45-19.5 45-45 19.5-45-19.5-19.5-45 19.5-45 45-19.5zM480 256.5q-25.5 0-45-19.5t-19.5-45 19.5-45 45-19.5 45 19.5 19.5 45-19.5 45-45 19.5zM288 127.5q25.5 0 45 19.5t19.5 45-19.5 45-45 19.5-45-19.5-19.5-45 19.5-45 45-19.5zM288 319.5q25.5 0 45 19.5t19.5 45-19.5 45-45 19.5-45-19.5-19.5-45 19.5-45 45-19.5zM352.5 576q0 25.5-19.5 45t-45 19.5-45-19.5-19.5-45 19.5-45 45-19.5 45 19.5 19.5 45z"/>
+					<path d="M480 511.5q25.5 0 45 19.5t19.5 45-19.5 45-45 19.5-45-19.5-19.5-45 19.5-45 45-19.5zM480 319.5q25.5 0 45 19.5t19.5 45-19.5 45-45 19.5-45-19.5-19.5-45 19.5-45 45-19.5zM480 256.5q-25.5 0-45-19.5t-19.5-45 19.5-45 45-19.5 45 19.5 19.5 45-19.5 45-45 19.5zM288 127.5q25.5 0 45 19.5t19.5 45-19.5 45-45 19.5-45-19.5-19.5-45 19.5-45 45-19.5zM288 319.5q25.5 0 45 19.5t19.5 45-19.5 45-45 19.5-45-19.5-19.5-45 19.5-45 45-19.5zM352.5 576q0 25.5-19.5 45t-45 19.5-45-19.5-19.5-45 19.5-45 45-19.5 45 19.5 19.5 45z" />
 				</svg>
-				<span>{{ item.name }}</span>
+				<span>{{ option.label }}</span>
 			</div>
 
 			<div class="rank-buttons">
 				<button @click="moveUp(index)" @mousedown="setHighlight(index)">
 					<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 768 768">
-						<path d="M384 256.5l192 192-45 45-147-147-147 147-45-45z"/>
+						<path d="M384 256.5l192 192-45 45-147-147-147 147-45-45z" />
 					</svg>
 				</button>
 
 				<button @click="moveDown(index)" @mousedown="setHighlight(index)">
 					<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 768 768">
-						<path d="M531 274.5l45 45-192 192-192-192 45-45 147 147z"/>
+						<path d="M531 274.5l45 45-192 192-192-192 45-45 147 147z" />
 					</svg>
 				</button>
 			</div>
 		</div>
 	</VueDraggable>
+
+	<ValidationMessage
+		:message="question.validationState.violation?.message.asString"
+		:show-message="touched || submitPressed"
+	/>
 </template>
 
 <style scoped lang="scss">
@@ -145,7 +150,7 @@ $rankBorderRadius: 10px;
 	gap: $rankSpacing;
 }
 
-.rank-item {
+.rank-option {
 	display: flex;
 	flex-wrap: nowrap;
 	align-items: center;
