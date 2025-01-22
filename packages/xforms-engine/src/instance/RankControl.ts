@@ -75,11 +75,9 @@ export class RankControl
 
 	private constructor(parent: GeneralParentNode, definition: RankDefinition<'string'>) {
 		const codec = new ItemCollectionCodec(sharedValueCodecs.string);
-
 		super(parent, definition, codec);
 
 		const valueOptions = createSelectItems(this); // ToDo extract to reuse function
-
 		const mapOptionsByValue: Accessor<RankItemMap> = this.scope.runTask(() => {
 			return createMemo(() => {
 				return new Map(valueOptions().map((item) => [item.value, item]));
@@ -93,18 +91,13 @@ export class RankControl
 		const getValue = this.scope.runTask(() => {
 			return createMemo(() => {
 				const optionsByValue = mapOptionsByValue();
-
-				return baseGetValue().filter((value) => {
-					return optionsByValue.has(value);
-				});
+				return baseGetValue().filter((value) => optionsByValue.has(value));
 			});
 		});
 		const valueState: SimpleAtomicState<readonly string[]> = [getValue, setValue];
 
 		this.getInstanceValue = this.scope.runTask(() => {
-			return createMemo(() => {
-				return codec.encodeValue(getValue());
-			});
+			return createMemo(() => codec.encodeValue(getValue()));
 		});
 
 		const sharedStateOptions = {
@@ -118,7 +111,6 @@ export class RankControl
 				readonly: this.isReadonly,
 				relevant: this.isRelevant,
 				required: this.isRequired,
-
 				label: createNodeLabel(this, definition as AnyNodeDefinition),
 				hint: createFieldHint(this, definition as AnyNodeDefinition),
 				children: null,
@@ -147,7 +139,6 @@ export class RankControl
 		}
 
 		this.setValueState(valuesInOrder);
-
 		return this.root;
 	}
 }
