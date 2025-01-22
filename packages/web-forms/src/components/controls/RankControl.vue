@@ -9,9 +9,14 @@ interface RankControlProps {
 	readonly question: RankNode;
 }
 
+interface RankDraggableOption {
+	value: string;
+	label: string;
+}
+
 const props = defineProps<RankControlProps>();
 const HOLD_DELAY = 60; // Delay in ms to hold an item before dragging, avoids accidental reordering on swipe.
-const options = ref([]);
+const options = ref<RankDraggableOption[]>([]);
 const touched = ref(false);
 const submitPressed = inject<boolean>('submitPressed');
 const highlight = {
@@ -20,18 +25,15 @@ const highlight = {
 };
 
 const transformOptions = (rankOptions: RankItem[]) => {
+	if (options.value.length) {
+		options.value.forEach((option) => {
+			option.label = props.question.getValueLabel(option.value);
+		});
+		return;
+	}
+
 	options.value = rankOptions.map((option) => {
-		const value = option.value;
-		const valueOption = props.question.getValueOption(value);
-
-		if (valueOption == null) {
-			throw new RankFunctionalityError(`Failed to find option for value: ${value}`);
-		}
-
-		return {
-			value,
-			label: valueOption.label.asString,
-		};
+		return { value: option.value, label: props.question.getValueLabel(option.value) };
 	});
 };
 

@@ -134,14 +134,9 @@ export class RankControl
 		this.currentState = state.currentState;
 	}
 
-	/**
-	 * This method is a client-facing convenience API for reading state,
-	 * so it **MUST** read from client-reactive state!
-	 * @param value
-	 */
-	getValueOption(value: string): RankItem | null {
+	getValueLabel(value: string): string {
 		const valueOption = this.currentState.valueOptions.find(item => item.value === value);
-		return valueOption ?? null;
+		return valueOption.label.asString;
 	}
 
 	setValues(valuesInOrder: readonly string[]): Root {

@@ -17,8 +17,8 @@ export interface RankNodeState extends BaseValueNodeState<readonly string[]> {
 	get valueOptions(): RankValueOptions;
 
 	/**
-	 * This value is an ordered collection of {@link RankItem}s.
-	 * The order of the items is important and should be preserved during processing.
+	 * An ordered collection of values from {@link RankItem}.
+	 * The order of the items is important and must be preserved during processing.
 	 */
 	get value(): readonly string[];
 }
@@ -37,12 +37,12 @@ export interface RankNode extends BaseValueNode<'string', readonly string[]> {
 	readonly validationState: LeafNodeValidationState;
 
 	/**
-	 * Convenience API to get the value which is an ordered collection of {@link RankItem}s.
+	 * Convenience API to get the {@link RankItem}'s label.
 	 */
-	getValueOption(value: string): RankItem | null;
+	getValueLabel(value: string): string;
 
 	/**
-	 * Set the value which is an ordered collection of {@link RankItem}s.
+	 * Set the value which is an ordered collection of values from {@link RankItem}.
 	 * Calling this setter replaces the currently value.
 	 * If called with an empty array, the current is cleared.
 	 */
