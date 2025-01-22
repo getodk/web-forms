@@ -10,6 +10,7 @@ interface RankControlProps {
 }
 
 const props = defineProps<RankControlProps>();
+const HOLD_DELAY = 60; // Delay in ms to hold an item before dragging, avoids accidental reordering on swipe.
 const options = ref([]);
 const touched = ref(false);
 const submitPressed = inject<boolean>('submitPressed');
@@ -85,7 +86,7 @@ const swapItems = (index: number, newPosition: number) => {
 	<VueDraggable
 		v-model="options"
 		:id="question.nodeId"
-		:delay="60"
+		:delay="HOLD_DELAY"
 		:disabled="question.currentState.readonly"
 		ghost-class="fade-moving"
 		class="rank-control"
