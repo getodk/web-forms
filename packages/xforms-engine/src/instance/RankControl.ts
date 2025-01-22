@@ -24,7 +24,7 @@ import type { GeneralParentNode } from './hierarchy.ts';
 import type { EvaluationContext } from './internal-api/EvaluationContext.ts';
 import type { ValidationContext } from './internal-api/ValidationContext.ts';
 import type { ClientReactiveSubmittableValueNode } from './internal-api/submission/ClientReactiveSubmittableValueNode.ts';
-import { RankValueTypeError } from '../error/RankValueTypeError.ts';
+import { RankFunctionalityError, RankValueTypeError } from '../error/RankValueTypeError.ts';
 import { ItemCollectionCodec } from '../lib/codecs/ItemCollectionCodec.ts';
 import { sharedValueCodecs } from '../lib/codecs/getSharedValueCodec.ts';
 import type { AnyNodeDefinition } from '../parse/model/NodeDefinition.ts';
@@ -135,51 +135,23 @@ export class RankControl
 	}
 
 	/**
-	 * Filters {@link values} to include only those values which are currently
-	 * available in the mapping produced by {@link mapOptionsByValue}, i.e. within
-	 * a potentially filtered itemset.
-	 *
-	 * Note: this method effectively produces an intersection of
-	 * {@link sourceValues} and {@link values}. **Importantly**, ordering of the
-	 * results is deterministic, preserving the order of values as yielded _by
-	 * {@link sourceValues}_.
-	 *
-	 * At time of writing, there are several tests (in `@getodk/scenario`, ported
-	 * from JavaRosa) which expect the values of a `<select>` to match the order
-	 * they appear in the control's (potentially filtered) `<itemset>` (or list of
-	 * `<item>`s, for forms defining those inline).
-	 *
-	 * @todo The `<odk:rank>` control, having semantics very similar to
-	 * `<select>`, will likely perform similar filtering logic. However, one of
-	 * the important distinctions between these controls is that `<odk:rank>`
-	 * exists explicitly to control the order of values. It's quite likely that
-	 * would be achieved by invoking the same logic with the parameter order
-	 * reversed.
+	 * This method is a client-facing convenience API for reading state,
+	 * so it **MUST** read from client-reactive state!
+	 * @param value
 	 */
-	private filterValues(
-		sourceValues: Iterable<string>,
-		values: Iterable<string>
-	): readonly string[] {
-		const selectedValues = new Set(values);
-
-		return Array
-			.from(sourceValues)
-			.filter(sourceValue => selectedValues.has(sourceValue));
-	}
-
-	// RankNode
 	getValueOption(value: string): RankItem | null {
-		// Note: this method is a client-facing convenience API for reading state,
-		// so it **MUST** read from client-reactive state!
 		const valueOption = this.currentState.valueOptions.find(item => item.value === value);
 		return valueOption ?? null;
 	}
 
-	setValues(values: readonly string[]): Root {
+	setValues(valuesInOrder: readonly string[]): Root {
 		const sourceValues = this.mapOptionsByValue().keys();
-		const effectiveValues = this.filterValues(sourceValues, values);
+		const hasAllValues = !sourceValues.some((sourceValue) => valuesInOrder.includes(sourceValue));
+		if (hasAllValues) {
+			throw new RankFunctionalityError('There are missing options. Rank should have all options');
+		}
 
-		this.setValueState(effectiveValues);
+		this.setValueState(valuesInOrder);
 
 		return this.root;
 	}

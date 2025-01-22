@@ -9,13 +9,8 @@ interface RankControlProps {
 	readonly question: RankNode;
 }
 
-interface DraggableOption {
-	label: string;
-	value: string;
-}
-
 const props = defineProps<RankControlProps>();
-const options = ref<DraggableOption[]>([]);
+const options = ref([]);
 const touched = ref(false);
 const submitPressed = inject<boolean>('submitPressed');
 const highlight = {
@@ -24,15 +19,18 @@ const highlight = {
 };
 
 const transformOptions = (rankOptions: RankItem[]) => {
-	options.value = rankOptions.map((option: RankItem) => {
+	options.value = rankOptions.map((option) => {
 		const value = option.value;
 		const valueOption = props.question.getValueOption(value);
 
 		if (valueOption == null) {
-			throw new Error(`Failed to find option for value: ${value}`);
+			throw new RankFunctionalityError(`Failed to find option for value: ${value}`);
 		}
 
-		return { value, label: valueOption.label.asString };
+		return {
+			value,
+			label: valueOption.label.asString,
+		};
 	});
 };
 
