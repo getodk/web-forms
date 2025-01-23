@@ -19,7 +19,7 @@ export class RankControlDefinition extends ControlDefinition<RankType> {
 
 	readonly type: RankType = 'rank';
 	readonly element: RankElement;
-	readonly itemset: ItemsetDefinition | null;
+	readonly itemset: ItemsetDefinition;
 
 	constructor(form: XFormDefinition, parent: BodyElementParentContext, element: Element) {
 		if (!RankControlDefinition.isRankElement(element)) {

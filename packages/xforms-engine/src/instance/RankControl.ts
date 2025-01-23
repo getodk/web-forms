@@ -9,7 +9,7 @@ import type {
 } from '../client/RankNode.ts';
 import type { TextRange } from '../client/TextRange.ts';
 import type { XFormsXPathElement } from '../integration/xpath/adapter/XFormsXPathNode.ts';
-import { createSelectItems } from '../lib/reactivity/createSelectItems.ts';
+import { createItemset } from '../lib/reactivity/createBaseItemset.ts';
 import type { CurrentState } from '../lib/reactivity/node-state/createCurrentState.ts';
 import type { EngineState } from '../lib/reactivity/node-state/createEngineState.ts';
 import type { SharedNodeState } from '../lib/reactivity/node-state/createSharedNodeState.ts';
@@ -25,7 +25,7 @@ import type { EvaluationContext } from './internal-api/EvaluationContext.ts';
 import type { ValidationContext } from './internal-api/ValidationContext.ts';
 import type { ClientReactiveSubmittableValueNode } from './internal-api/submission/ClientReactiveSubmittableValueNode.ts';
 import { RankFunctionalityError, RankValueTypeError } from '../error/RankValueTypeError.ts';
-import { ItemCollectionCodec } from '../lib/codecs/ItemCollectionCodec.ts';
+import { BaseItemCollectionCodec } from '../lib/codecs/BaseItemCollectionCodec.ts';
 import { sharedValueCodecs } from '../lib/codecs/getSharedValueCodec.ts';
 import type { AnyNodeDefinition } from '../parse/model/NodeDefinition.ts';
 
@@ -74,10 +74,10 @@ export class RankControl
 	readonly currentState: CurrentState<RankControlStateSpec>;
 
 	private constructor(parent: GeneralParentNode, definition: RankDefinition<'string'>) {
-		const codec = new ItemCollectionCodec(sharedValueCodecs.string);
+		const codec = new BaseItemCollectionCodec(sharedValueCodecs.string);
 		super(parent, definition, codec);
 
-		const valueOptions = createSelectItems(this); // ToDo extract to reuse function
+		const valueOptions = createItemset(this, definition.bodyElement.itemset);
 		const mapOptionsByValue: Accessor<RankItemMap> = this.scope.runTask(() => {
 			return createMemo(() => {
 				return new Map(valueOptions().map((item) => [item.value, item]));
