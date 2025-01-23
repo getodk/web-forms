@@ -22,8 +22,8 @@ export type AnyControlNode =
 	| AnyInputNode
 	| AnyNoteNode
 	| AnyRangeNode
-	| SelectNode
 	| RankNode
+	| SelectNode
 	| TriggerNode;
 
 // prettier-ignore

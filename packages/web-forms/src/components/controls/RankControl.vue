@@ -92,7 +92,8 @@ const swapItems = (index: number, newPosition: number) => {
 		:disabled="question.currentState.readonly"
 		ghost-class="fade-moving"
 		class="rank-control"
-		@update="setValues">
+		@update="setValues"
+	>
 		<div
 			v-for="(option, index) in options"
 			:id="option.value"
@@ -101,7 +102,8 @@ const swapItems = (index: number, newPosition: number) => {
 			:class="{ 'moving': highlight.index.value === index }"
 			tabindex="0"
 			@keydown.up.prevent="moveUp(index)"
-			@keydown.down.prevent="moveDown(index)">
+			@keydown.down.prevent="moveDown(index)"
+		>
 			<div class="rank-label">
 				<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 768 768">
 					<path d="M480 511.5q25.5 0 45 19.5t19.5 45-19.5 45-45 19.5-45-19.5-19.5-45 19.5-45 45-19.5zM480 319.5q25.5 0 45 19.5t19.5 45-19.5 45-45 19.5-45-19.5-19.5-45 19.5-45 45-19.5zM480 256.5q-25.5 0-45-19.5t-19.5-45 19.5-45 45-19.5 45 19.5 19.5 45-19.5 45-45 19.5zM288 127.5q25.5 0 45 19.5t19.5 45-19.5 45-45 19.5-45-19.5-19.5-45 19.5-45 45-19.5zM288 319.5q25.5 0 45 19.5t19.5 45-19.5 45-45 19.5-45-19.5-19.5-45 19.5-45 45-19.5zM352.5 576q0 25.5-19.5 45t-45 19.5-45-19.5-19.5-45 19.5-45 45-19.5 45 19.5 19.5 45z" />

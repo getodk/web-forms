@@ -1,9 +1,10 @@
 import type { LocalNamedElement } from '@getodk/common/types/dom.ts';
-import { getItemsetElement } from '../../../lib/dom/query.ts';
+import { getItemElements, getItemsetElement } from '../../../lib/dom/query.ts';
 import type { XFormDefinition } from '../../XFormDefinition.ts';
 import type { BodyElementParentContext } from '../BodyDefinition.ts';
 import { ControlDefinition } from './ControlDefinition.ts';
 import { ItemsetDefinition } from './ItemsetDefinition.ts';
+import { ItemDefinition } from './ItemDefinition.ts';
 
 export type RankType = 'rank';
 export interface RankElement extends LocalNamedElement<RankType> {}
@@ -17,9 +18,10 @@ export class RankControlDefinition extends ControlDefinition<RankType> {
 		return RankControlDefinition.isRankElement(element);
 	}
 
-	readonly type: RankType = 'rank';
+	readonly type: RankType;
 	readonly element: RankElement;
-	readonly itemset: ItemsetDefinition;
+	readonly itemset: ItemsetDefinition | null;
+	readonly items: readonly ItemDefinition[];
 
 	constructor(form: XFormDefinition, parent: BodyElementParentContext, element: Element) {
 		if (!RankControlDefinition.isRankElement(element)) {
@@ -30,7 +32,20 @@ export class RankControlDefinition extends ControlDefinition<RankType> {
 
 		this.type = element.localName as RankType;
 		this.element = element;
-		this.itemset = new ItemsetDefinition(form, this, getItemsetElement(element));
+		const itemsetElement = getItemsetElement(element);
+		const itemElements = getItemElements(element);
+
+		if (itemsetElement === null) {
+			this.itemset = null;
+			this.items = itemElements.map((itemElement) => new ItemDefinition(form, this, itemElement));
+		} else {
+			if (itemElements.length > 0) {
+				throw new Error(`<${element.nodeName}> has both <itemset> and <item> children`);
+			}
+
+			this.items = [];
+			this.itemset = new ItemsetDefinition(form, this, itemsetElement);
+		}
 	}
 
 	override toJSON() {

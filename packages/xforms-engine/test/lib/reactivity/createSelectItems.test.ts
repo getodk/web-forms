@@ -15,16 +15,16 @@ import {
 import { describe, expect, it } from 'vitest';
 import { initializeForm } from '../../../src/instance/index.ts';
 import type { SelectControl } from '../../../src/instance/SelectControl.ts';
-import type { createSelectItems } from '../../../src/lib/reactivity/createSelectItems.ts';
+import type { createItemCollection } from '../../../src/lib/reactivity/createItemCollection.ts';
 import { reactiveTestScope } from '../../helpers/reactive/internal.ts';
 
 /**
  * @todo Consider these alternative testing strategies:
  *
- * - Reducing tests of reactive internals like {@link createSelectItems} to more
+ * - Reducing tests of reactive internals like {@link createItemCollection} to more
  *   conventional unit tests: If there's a reasonable way to do that, it would
  *   probably begin (especially in this case) with relaxing the
- *   {@link createSelectItems} signature to accept something more minimal than a
+ *   {@link createItemCollection} signature to accept something more minimal than a
  *   {@link SelectControl}. However, after some reflection on the efforts to port
  *   JavaRosa tests, there's quite a lot of value in form-level integration
  *   tests. We might benefit instead from...

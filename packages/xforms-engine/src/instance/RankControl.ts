@@ -9,7 +9,6 @@ import type {
 } from '../client/RankNode.ts';
 import type { TextRange } from '../client/TextRange.ts';
 import type { XFormsXPathElement } from '../integration/xpath/adapter/XFormsXPathNode.ts';
-import { createItemset } from '../lib/reactivity/createBaseItemset.ts';
 import type { CurrentState } from '../lib/reactivity/node-state/createCurrentState.ts';
 import type { EngineState } from '../lib/reactivity/node-state/createEngineState.ts';
 import type { SharedNodeState } from '../lib/reactivity/node-state/createSharedNodeState.ts';
@@ -28,6 +27,7 @@ import { RankFunctionalityError, RankValueTypeError } from '../error/RankError.t
 import { BaseItemCollectionCodec } from '../lib/codecs/BaseItemCollectionCodec.ts';
 import { sharedValueCodecs } from '../lib/codecs/getSharedValueCodec.ts';
 import type { AnyNodeDefinition } from '../parse/model/NodeDefinition.ts';
+import { createItemCollection } from '../lib/reactivity/createItemCollection.ts';
 
 type AssertRangeNodeDefinition = (definition: RankDefinition) => asserts definition is RankDefinition<'string'>;
 const assertRangeNodeDefinition: AssertRangeNodeDefinition = (definition) => {
@@ -77,7 +77,7 @@ export class RankControl
 		const codec = new BaseItemCollectionCodec(sharedValueCodecs.string);
 		super(parent, definition, codec);
 
-		const valueOptions = createItemset(this, definition.bodyElement.itemset);
+		const valueOptions = createItemCollection(this);
 		const mapOptionsByValue: Accessor<RankItemMap> = this.scope.runTask(() => {
 			return createMemo(() => {
 				return new Map(valueOptions().map((item) => [item.value, item]));
