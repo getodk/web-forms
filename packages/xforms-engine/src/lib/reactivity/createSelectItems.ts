@@ -6,7 +6,7 @@ import type { EvaluationContext } from '../../instance/internal-api/EvaluationCo
 import type { SelectControl } from '../../instance/SelectControl.ts';
 import type { ItemDefinition } from '../../parse/body/control/ItemDefinition.ts';
 import { createTextRange } from './text/createTextRange.ts';
-import type { SourceValueItem, createItemset, derivedItemLabel } from './createBaseItemset.ts';
+import { type SourceValueItem, createItemset, derivedItemLabel } from './createBaseItemset.ts';
 
 const createSelectItemLabel = (
 	context: EvaluationContext,

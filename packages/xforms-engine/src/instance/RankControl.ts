@@ -132,7 +132,7 @@ export class RankControl
 	}
 
 	setValues(valuesInOrder: readonly string[]): Root {
-		const sourceValues: string[] = this.mapOptionsByValue().keys();
+		const sourceValues: string[] = Array.from(this.mapOptionsByValue().keys());
 		const hasAllValues = !sourceValues.some((sourceValue) => valuesInOrder.includes(sourceValue));
 		if (hasAllValues) {
 			throw new RankFunctionalityError('There are missing options. Rank should have all options.', 'Rank Control');
