@@ -24,7 +24,7 @@ import type { GeneralParentNode } from './hierarchy.ts';
 import type { EvaluationContext } from './internal-api/EvaluationContext.ts';
 import type { ValidationContext } from './internal-api/ValidationContext.ts';
 import type { ClientReactiveSubmittableValueNode } from './internal-api/submission/ClientReactiveSubmittableValueNode.ts';
-import { RankFunctionalityError, RankValueTypeError } from '../error/RankValueTypeError.ts';
+import { RankFunctionalityError, RankValueTypeError } from '../error/RankError.ts';
 import { BaseItemCollectionCodec } from '../lib/codecs/BaseItemCollectionCodec.ts';
 import { sharedValueCodecs } from '../lib/codecs/getSharedValueCodec.ts';
 import type { AnyNodeDefinition } from '../parse/model/NodeDefinition.ts';

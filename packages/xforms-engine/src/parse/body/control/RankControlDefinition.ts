@@ -9,12 +9,12 @@ export type RankType = 'rank';
 export interface RankElement extends LocalNamedElement<RankType> {}
 
 export class RankControlDefinition extends ControlDefinition<RankType> {
-	static override isCompatible(localName: string, element: Element): boolean {
-		return RankControlDefinition.isRankElement(element);
-	}
-
 	private static isRankElement(element: Element): element is RankElement {
 		return element.localName === 'rank';
+	}
+
+	static override isCompatible(localName: string, element: Element): boolean {
+		return RankControlDefinition.isRankElement(element);
 	}
 
 	readonly type: RankType = 'rank';
