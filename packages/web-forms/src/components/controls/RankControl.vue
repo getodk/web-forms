@@ -86,8 +86,8 @@ const swapItems = (index: number, newPosition: number) => {
 	<ControlText :question="question" />
 
 	<VueDraggable
-		v-model="options"
 		:id="question.nodeId"
+		v-model="options"
 		:delay="HOLD_DELAY"
 		:disabled="question.currentState.readonly"
 		ghost-class="fade-moving"
@@ -95,6 +95,7 @@ const swapItems = (index: number, newPosition: number) => {
 		@update="setValues">
 		<div
 			v-for="(option, index) in options"
+			:id="option.value"
 			:key="option.value"
 			class="rank-option"
 			:class="{ 'moving': highlight.index.value === index }"
