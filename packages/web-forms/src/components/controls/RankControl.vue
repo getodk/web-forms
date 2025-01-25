@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { inject, ref, watch } from 'vue';
 import { VueDraggable } from 'vue-draggable-plus';
-import type { RankItem, RankNode } from '@getodk/xforms-engine';
+import type { RankNode, RankNodeState } from '@getodk/xforms-engine';
 import ControlText from '@/components/ControlText.vue';
 import ValidationMessage from '@/components/ValidationMessage.vue';
 
@@ -24,20 +24,30 @@ const highlight = {
 	timeoutID: null,
 };
 
-const transformOptions = (rankOptions: RankItem[]) => {
-	if (options.value.length) {
-		options.value.forEach((option) => {
-			option.label = props.question.getValueLabel(option.value);
-		});
-		return;
-	}
+const transformOptions = (currentState: RankNodeState) => {
+	const currentOrder = new Map(options.value.map((option, index) => [option.value, index]));
+	const exitingOptions: RankDraggableOption[] = [];
+	const newOptionsForRank: RankDraggableOption[] = [];
 
-	options.value = rankOptions.map((option) => {
-		return { value: option.value, label: props.question.getValueLabel(option.value) };
+	currentState.valueOptions.forEach((item) => {
+		const option = {
+			label: props.question.getValueLabel(item.value),
+			value: item.value,
+		};
+		const index = currentOrder.get(option.value);
+
+		if (index !== undefined) {
+			exitingOptions[index] = option;
+			return;
+		}
+
+		newOptionsForRank.push(option);
 	});
+
+	options.value = [...exitingOptions.filter(Boolean), ...newOptionsForRank];
 };
 
-watch(props.question.currentState.valueOptions, transformOptions, { immediate: true });
+watch(props.question.currentState, transformOptions, { immediate: true });
 
 const setValues = () => {
 	touched.value = true;
