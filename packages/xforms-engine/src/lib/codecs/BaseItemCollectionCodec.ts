@@ -4,7 +4,7 @@ import type { CodecDecoder, CodecEncoder } from './ValueCodec.ts';
 import { BaseItemCodec } from './BaseItemCodec.ts';
 
 /**
- * Value codec implementation for `<select>` and `<rank>` controls.
+ * Value codec implementation for `<select>` and `<odk:rank>` controls.
  *
  * This generalizes the application of a {@link SharedValueCodec} implementation
  * over individual select and rank values, where those values are serialized as a

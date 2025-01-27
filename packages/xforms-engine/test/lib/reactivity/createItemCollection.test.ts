@@ -14,8 +14,7 @@ import {
 } from '@getodk/common/test/fixtures/xform-dsl/index.ts';
 import { describe, expect, it } from 'vitest';
 import { initializeForm } from '../../../src/instance/index.ts';
-import type { SelectControl } from '../../../src/instance/SelectControl.ts';
-import type { createItemCollection } from '../../../src/lib/reactivity/createItemCollection.ts';
+import type { createItemCollection, ItemCollectionControl } from '../../../src/lib/reactivity/createItemCollection.ts';
 import { reactiveTestScope } from '../../helpers/reactive/internal.ts';
 
 /**
@@ -25,7 +24,7 @@ import { reactiveTestScope } from '../../helpers/reactive/internal.ts';
  *   conventional unit tests: If there's a reasonable way to do that, it would
  *   probably begin (especially in this case) with relaxing the
  *   {@link createItemCollection} signature to accept something more minimal than a
- *   {@link SelectControl}. However, after some reflection on the efforts to port
+ *   {@link ItemCollectionControl}. However, after some reflection on the efforts to port
  *   JavaRosa tests, there's quite a lot of value in form-level integration
  *   tests. We might benefit instead from...
  *
@@ -42,7 +41,7 @@ import { reactiveTestScope } from '../../helpers/reactive/internal.ts';
  * 2. Exploring some aspects of what we might want to consider if we move toward
  *    testing reactivity in the `scenario` integration test client package.
  */
-describe('createSelectItems - reactive `<select>`/`<select1>` items and itemsets', () => {
+describe('createItemCollection - reactive `<select>`/`<select1>`/`<odk:rank>` items and itemsets', () => {
 	interface LabelTranslationSuite {
 		readonly description: string;
 		readonly fixture: HtmlXFormsElement;

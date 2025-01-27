@@ -19,8 +19,8 @@ import { createComputedExpression } from './createComputedExpression.ts';
 import type { ReactiveScope } from './scope.ts';
 import { createTextRange } from './text/createTextRange.ts';
 
-type ItemCollectionControl = SelectControl | RankControl;
-type ItemType = SelectItem | RankItem
+export type ItemCollectionControl = SelectControl | RankControl;
+type Item = SelectItem | RankItem
 type DerivedItemLabel = ClientTextRange<'item-label', 'form-derived'>;
 
 const derivedItemLabel = (context: TranslationContext, value: string): DerivedItemLabel => {
@@ -154,7 +154,7 @@ const createItemset = (
 
 /**
  * Creates a reactive computation of a {@link ItemCollectionControl}'s
- * {@link ItemType}s, in support of the field's `valueOptions`.
+ * {@link Item}s, in support of the field's `valueOptions`.
  *
  * - The control defined with static `<item>`s will compute to an corresponding
  *   static list of items.
@@ -164,7 +164,7 @@ const createItemset = (
  *   their appropriate dependencies (whether relative to the itemset item node,
  *   referencing a form's `itext` translations, etc).
  */
-export const createItemCollection = (control: ItemCollectionControl): Accessor<readonly ItemType[]> => {
+export const createItemCollection = (control: ItemCollectionControl): Accessor<readonly Item[]> => {
 	const { items, itemset } = control.definition.bodyElement;
 
 	if (itemset != null) {
