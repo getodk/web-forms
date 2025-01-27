@@ -26,12 +26,11 @@ import type { ClientReactiveSubmittableValueNode } from './internal-api/submissi
 import { RankFunctionalityError, RankValueTypeError } from '../error/RankError.ts';
 import { BaseItemCollectionCodec } from '../lib/codecs/BaseItemCollectionCodec.ts';
 import { sharedValueCodecs } from '../lib/codecs/getSharedValueCodec.ts';
-import type { AnyNodeDefinition } from '../parse/model/NodeDefinition.ts';
 import { createItemCollection } from '../lib/reactivity/createItemCollection.ts';
 import type { UnknownAppearanceDefinition } from '../parse/body/appearance/unknownAppearanceParser.ts';
 
-type AssertRangeNodeDefinition = (definition: RankDefinition) => asserts definition is RankDefinition<'string'>;
-const assertRangeNodeDefinition: AssertRangeNodeDefinition = (definition) => {
+type AssertRankNodeDefinition = (definition: AnyRankDefinition) => asserts definition is RankDefinition<'string'>;
+const assertRankNodeDefinition: AssertRankNodeDefinition = (definition) => {
 	if (definition.valueType !== 'string') {
 		throw new RankValueTypeError(definition);
 	}
@@ -54,8 +53,9 @@ export class RankControl
 		ValidationContext,
 		ClientReactiveSubmittableValueNode
 {
-	static from(parent: GeneralParentNode, definition: RankDefinition): RankControl {
-		assertRangeNodeDefinition(definition);
+	static from(parent: GeneralParentNode, definition: RankDefinition): RankControl;
+	static from(parent: GeneralParentNode, definition: AnyRankDefinition): RankControl {
+		assertRankNodeDefinition(definition);
 		return new this(parent, definition);
 	}
 
@@ -115,8 +115,8 @@ export class RankControl
 				readonly: this.isReadonly,
 				relevant: this.isRelevant,
 				required: this.isRequired,
-				label: createNodeLabel(this, definition as AnyNodeDefinition),
-				hint: createFieldHint(this, definition as AnyNodeDefinition),
+				label: createNodeLabel(this, definition),
+				hint: createFieldHint(this, definition),
 				children: null,
 				valueOptions,
 				value: valueState,
@@ -130,15 +130,15 @@ export class RankControl
 		this.currentState = state.currentState;
 	}
 
-	getValueLabel(value: string): string {
-		const valueOption = this.currentState.valueOptions.find(item => item.value === value);
-		return valueOption.label.asString;
+	getValueLabel(value: string): TextRange<'item-label'> | null {
+		const valueOption = this.currentState.valueOptions.find((item) => item.value === value);
+		return valueOption.label ?? null;
 	}
 
 	setValues(valuesInOrder: readonly string[]): Root {
 		const sourceValues: string[] = Array.from(this.mapOptionsByValue().keys());
-		const hasAllValues = !sourceValues.some((sourceValue) => valuesInOrder.includes(sourceValue));
-		if (hasAllValues) {
+		const hasAllValues = sourceValues.some((sourceValue) => valuesInOrder.includes(sourceValue));
+		if (!hasAllValues) {
 			throw new RankFunctionalityError('There are missing options. Rank should have all options.', 'Rank Control');
 		}
 

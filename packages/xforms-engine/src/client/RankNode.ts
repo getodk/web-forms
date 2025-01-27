@@ -6,6 +6,7 @@ import type { TextRange } from './TextRange.ts';
 import type { GeneralParentNode } from './hierarchy.ts';
 import type { LeafNodeValidationState } from './validation.ts';
 import type { UnknownAppearanceDefinition } from '../parse/body/appearance/unknownAppearanceParser.ts';
+import type { ValueType } from './ValueType.ts';
 
 export interface RankItem {
 	get label(): TextRange<'item-label'>;
@@ -24,7 +25,7 @@ export interface RankNodeState extends BaseValueNodeState<readonly string[]> {
 	get value(): readonly string[];
 }
 
-export interface RankDefinition extends LeafNodeDefinition<V> {
+export interface RankDefinition<V extends ValueType = ValueType> extends LeafNodeDefinition<V> {
 	readonly bodyElement: RankControlDefinition;
 }
 
@@ -41,7 +42,7 @@ export interface RankNode extends BaseValueNode<'string', readonly string[]> {
 	/**
 	 * Convenience API to get the {@link RankItem}'s label.
 	 */
-	getValueLabel(value: string): string;
+	getValueLabel(value: string): TextRange<'item-label'> | null;
 
 	/**
 	 * Set the value which is an ordered collection of values from {@link RankItem}.
