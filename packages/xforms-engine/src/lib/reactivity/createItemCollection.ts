@@ -42,15 +42,10 @@ const createItemLabel = (
 	return createTextRange(context, 'item-label', label);
 };
 
-interface SourceValueItem {
-	readonly value: string;
-	readonly label: ClientTextRange<'item-label'>;
-}
-
 const createTranslatedStaticItems = (
 	control: ItemCollectionControl,
 	items: readonly ItemDefinition[]
-): Accessor<readonly SourceValueItem[]> => {
+): Accessor<readonly Item[]> => {
 	return control.scope.runTask(() => {
 		const labeledItems = items.map((item) => {
 			const { value } = item;
@@ -137,7 +132,7 @@ const createItemsetItems = (
 const createItemset = (
 	control: ItemCollectionControl,
 	itemset: ItemsetDefinition
-): Accessor<readonly SourceValueItem[]> => {
+): Accessor<readonly Item[]> => {
 	return control.scope.runTask(() => {
 		const itemsetItems = createItemsetItems(control, itemset);
 
