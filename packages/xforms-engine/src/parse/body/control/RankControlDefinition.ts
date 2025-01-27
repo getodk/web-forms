@@ -1,4 +1,3 @@
-import type { LocalNamedElement } from '@getodk/common/types/dom.ts';
 import { getItemElements, getItemsetElement } from '../../../lib/dom/query.ts';
 import type { XFormDefinition } from '../../XFormDefinition.ts';
 import type { BodyElementParentContext } from '../BodyDefinition.ts';

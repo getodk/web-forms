@@ -19,8 +19,8 @@ import { createComputedExpression } from './createComputedExpression.ts';
 import type { ReactiveScope } from './scope.ts';
 import { createTextRange } from './text/createTextRange.ts';
 
-export type ItemCollectionControl = SelectControl | RankControl;
-type Item = SelectItem | RankItem
+export type ItemCollectionControl = RankControl | SelectControl;
+type Item = RankItem | SelectItem;
 type DerivedItemLabel = ClientTextRange<'item-label', 'form-derived'>;
 
 const derivedItemLabel = (context: TranslationContext, value: string): DerivedItemLabel => {
