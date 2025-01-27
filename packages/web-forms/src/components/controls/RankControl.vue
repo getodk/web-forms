@@ -127,7 +127,7 @@ const swapItems = (index: number, newPosition: number) => {
 
 			<div class="rank-buttons">
 				<button
-					v-if="index > 0"
+					:class="{ 'invisible': index === 0 }"
 					@click="moveUp(index)"
 					@mousedown="setHighlight(index)"
 				>
@@ -137,7 +137,7 @@ const swapItems = (index: number, newPosition: number) => {
 				</button>
 
 				<button
-					v-if="index < options.length - 1"
+					:class="{ 'invisible': index === options.length - 1 }"
 					@click="moveDown(index)"
 					@mousedown="setHighlight(index)"
 				>
@@ -223,6 +223,10 @@ const swapItems = (index: number, newPosition: number) => {
 
 	button:hover {
 		background: var(--primary-50);
+	}
+
+	button.invisible {
+		visibility: hidden;
 	}
 }
 
