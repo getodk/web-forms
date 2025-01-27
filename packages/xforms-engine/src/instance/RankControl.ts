@@ -28,8 +28,14 @@ import { MultipleValueItemCodec } from '../lib/codecs/items/MultipleValueItemCod
 import { sharedValueCodecs } from '../lib/codecs/getSharedValueCodec.ts';
 import { createItemCollection } from '../lib/reactivity/createItemCollection.ts';
 import type { UnknownAppearanceDefinition } from '../parse/body/appearance/unknownAppearanceParser.ts';
+import type { ValueType } from '../client/ValueType.ts';
+
+export type AnyRankDefinition = {
+	[V in ValueType]: RankDefinition<V>;
+}[ValueType];
 
 type AssertRankNodeDefinition = (definition: AnyRankDefinition) => asserts definition is RankDefinition<'string'>;
+
 const assertRankNodeDefinition: AssertRankNodeDefinition = (definition) => {
 	if (definition.valueType !== 'string') {
 		throw new RankValueTypeError(definition);
