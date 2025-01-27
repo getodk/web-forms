@@ -1,6 +1,6 @@
 import { xmlXPathWhitespaceSeparatedList } from '@getodk/common/lib/string/whitespace.ts';
-import type { SharedValueCodec } from './getSharedValueCodec.ts';
-import type { CodecDecoder, CodecEncoder } from './ValueCodec.ts';
+import type { SharedValueCodec } from '../getSharedValueCodec.ts';
+import type { CodecDecoder, CodecEncoder } from '../ValueCodec.ts';
 import { BaseItemCodec } from './BaseItemCodec.ts';
 
 /**
@@ -12,7 +12,7 @@ import { BaseItemCodec } from './BaseItemCodec.ts';
  * to the provided {@link baseCodec}, ensuring that select and rank value types are
  * treated consistently with the same underlying data types for other controls.
  */
-export class BaseItemCollectionCodec extends BaseItemCodec<readonly string[]> {
+export class MultipleValueItemCodec extends BaseItemCodec<readonly string[]> {
 	constructor(baseCodec: SharedValueCodec<'string'>) {
 		const encodeValue: CodecEncoder<readonly string[]> = (value) => {
 			return value.join(' ');

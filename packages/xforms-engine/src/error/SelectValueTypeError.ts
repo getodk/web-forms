@@ -1,5 +1,5 @@
 import type { SelectDefinition } from '../client/SelectNode.ts';
-import type { UnsupportedBaseItemValueType } from '../lib/codecs/BaseItemCodec.ts';
+import type { UnsupportedBaseItemValueType } from '../lib/codecs/items/BaseItemCodec.ts';
 import { XFormsSpecViolationError } from './XFormsSpecViolationError.ts';
 
 /**

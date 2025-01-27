@@ -12,7 +12,7 @@ import type { TextRange } from '../client/TextRange.ts';
 import type { ValueType } from '../client/ValueType.ts';
 import { SelectValueTypeError } from '../error/SelectValueTypeError.ts';
 import type { XFormsXPathElement } from '../integration/xpath/adapter/XFormsXPathNode.ts';
-import { getSelectCodec } from '../lib/codecs/select/getSelectCodec.ts';
+import { getSelectCodec } from '../lib/codecs/getSelectCodec.ts';
 import { createItemCollection } from '../lib/reactivity/createItemCollection.ts';
 import type { CurrentState } from '../lib/reactivity/node-state/createCurrentState.ts';
 import type { EngineState } from '../lib/reactivity/node-state/createEngineState.ts';

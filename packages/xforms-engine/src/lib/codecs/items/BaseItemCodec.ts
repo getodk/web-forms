@@ -1,7 +1,7 @@
-import type { ValueType } from '../../client/ValueType.ts';
-import type { SharedValueCodec } from './getSharedValueCodec.ts';
-import { ValueArrayCodec } from './ValueArrayCodec.ts';
-import type { CodecDecoder, CodecEncoder } from './ValueCodec.ts';
+import type { ValueType } from '../../../client/ValueType.ts';
+import type { SharedValueCodec } from '../getSharedValueCodec.ts';
+import { ValueArrayCodec } from '../ValueArrayCodec.ts';
+import type { CodecDecoder, CodecEncoder } from '../ValueCodec.ts';
 
 export type BaseItemValueType = 'string';
 

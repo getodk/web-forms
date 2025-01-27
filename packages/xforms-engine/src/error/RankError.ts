@@ -1,6 +1,6 @@
 import { XFormsSpecViolationError } from './XFormsSpecViolationError.ts';
 import type { RankDefinition } from '../client/RankNode.ts';
-import type { UnsupportedBaseItemValueType } from '../lib/codecs/BaseItemCodec.ts';
+import type { UnsupportedBaseItemValueType } from '../lib/codecs/items/BaseItemCodec.ts';
 import { XPathFunctionalityError, type XPathFunctionalityErrorCategory } from './XPathFunctionalityError.ts';
 
 export class RankValueTypeError extends XFormsSpecViolationError {

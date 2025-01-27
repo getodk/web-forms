@@ -24,7 +24,7 @@ import type { EvaluationContext } from './internal-api/EvaluationContext.ts';
 import type { ValidationContext } from './internal-api/ValidationContext.ts';
 import type { ClientReactiveSubmittableValueNode } from './internal-api/submission/ClientReactiveSubmittableValueNode.ts';
 import { RankFunctionalityError, RankValueTypeError } from '../error/RankError.ts';
-import { BaseItemCollectionCodec } from '../lib/codecs/BaseItemCollectionCodec.ts';
+import { MultipleValueItemCodec } from '../lib/codecs/items/MultipleValueItemCodec.ts';
 import { sharedValueCodecs } from '../lib/codecs/getSharedValueCodec.ts';
 import { createItemCollection } from '../lib/reactivity/createItemCollection.ts';
 import type { UnknownAppearanceDefinition } from '../parse/body/appearance/unknownAppearanceParser.ts';
@@ -76,7 +76,7 @@ export class RankControl
 	readonly currentState: CurrentState<RankControlStateSpec>;
 
 	private constructor(parent: GeneralParentNode, definition: RankDefinition<'string'>) {
-		const codec = new BaseItemCollectionCodec(sharedValueCodecs.string);
+		const codec = new MultipleValueItemCodec(sharedValueCodecs.string);
 		super(parent, definition, codec);
 
 		this.appearances = definition.bodyElement.appearances;
