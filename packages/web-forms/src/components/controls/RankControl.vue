@@ -25,26 +25,29 @@ const highlight = {
 };
 
 const transformOptions = (currentState: RankNodeState) => {
-	const currentOrder = new Map(options.value.map((option, index) => [option.value, index]));
-	const exitingOptions: RankDraggableOption[] = [];
-	const newOptionsForRank: RankDraggableOption[] = [];
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-call
+	const orderedValues: string[] = props.question.getOrderedValues(
+		currentState.valueOptions,
+		currentState.value
+	);
 
-	currentState.valueOptions.forEach((item) => {
-		const option = {
+	if (orderedValues.length) {
+		options.value = orderedValues.map((item): RankDraggableOption => {
+			return {
+				label: props.question.getValueLabel(item),
+				value: item,
+			};
+		});
+
+		return;
+	}
+
+	options.value = currentState.valueOptions.map((item) => {
+		return {
 			label: props.question.getValueLabel(item.value),
 			value: item.value,
 		};
-		const index = currentOrder.get(option.value);
-
-		if (index !== undefined) {
-			exitingOptions[index] = option;
-			return;
-		}
-
-		newOptionsForRank.push(option);
 	});
-
-	options.value = [...exitingOptions.filter(Boolean), ...newOptionsForRank];
 };
 
 watch(props.question.currentState, transformOptions, { immediate: true });

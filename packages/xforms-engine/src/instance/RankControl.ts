@@ -91,7 +91,7 @@ export class RankControl
 		const getValue = this.scope.runTask(() => {
 			return createMemo(() => {
 				const optionsByValue = mapOptionsByValue();
-				return baseGetValue().filter((value) => optionsByValue.has(value));
+				return this.getOrderedValues(optionsByValue, baseGetValue());
 			});
 		});
 		const valueState: SimpleAtomicState<readonly string[]> = [getValue, setValue];
@@ -140,5 +140,28 @@ export class RankControl
 
 		this.setValueState(valuesInOrder);
 		return this.root;
+	}
+
+	getOrderedValues(valueOptions: RankValueOptions, values: readonly string[]): string[] {
+		if (!values?.length) {
+			return [];
+		}
+
+		const currentOrder = new Map(values.map((option, index) => [option, index]));
+		const exitingOptions: string[] = [];
+		const newOptionsForRank: string[] = [];
+
+		valueOptions.forEach((item: RankItem) => {
+			const index = currentOrder.get(item.value);
+
+			if (index !== undefined) {
+				exitingOptions[index] = item.value;
+				return;
+			}
+
+			newOptionsForRank.push(item.value);
+		});
+
+		return [...exitingOptions.filter(Boolean), ...newOptionsForRank];
 	}
 }
