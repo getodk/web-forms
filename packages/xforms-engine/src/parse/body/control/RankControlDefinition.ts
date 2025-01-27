@@ -23,7 +23,7 @@ export class RankControlDefinition extends ControlDefinition<'rank'> {
 		const itemsetElement = getItemsetElement(element);
 		const itemElements = getItemElements(element);
 
-		if (!itemsetElement) {
+		if (itemsetElement === null || itemElements === undefined) {
 			this.itemset = null;
 			this.items = itemElements.map((itemElement) => new ItemDefinition(form, this, itemElement));
 		} else {

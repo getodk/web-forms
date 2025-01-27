@@ -23,12 +23,13 @@ import type { GeneralParentNode } from './hierarchy.ts';
 import type { EvaluationContext } from './internal-api/EvaluationContext.ts';
 import type { ValidationContext } from './internal-api/ValidationContext.ts';
 import type { ClientReactiveSubmittableValueNode } from './internal-api/submission/ClientReactiveSubmittableValueNode.ts';
-import { RankFunctionalityError, RankValueTypeError } from '../error/RankError.ts';
 import { MultipleValueItemCodec } from '../lib/codecs/items/MultipleValueItemCodec.ts';
 import { sharedValueCodecs } from '../lib/codecs/getSharedValueCodec.ts';
 import { createItemCollection } from '../lib/reactivity/createItemCollection.ts';
 import type { UnknownAppearanceDefinition } from '../parse/body/appearance/unknownAppearanceParser.ts';
 import type { ValueType } from '../client/ValueType.ts';
+import { RankMissingValueError } from '../error/RankMissingValueError.ts';
+import { RankValueTypeError } from '../error/RankValueTypeError.ts';
 
 export type AnyRankDefinition = {
 	[V in ValueType]: RankDefinition<V>;
@@ -145,7 +146,7 @@ export class RankControl
 		const sourceValues: string[] = Array.from(this.mapOptionsByValue().keys());
 		const hasAllValues = sourceValues.some((sourceValue) => valuesInOrder.includes(sourceValue));
 		if (!hasAllValues) {
-			throw new RankFunctionalityError('There are missing options. Rank should have all options.', 'Rank Control');
+			throw new RankMissingValueError('There are missing options. Rank should have all options.');
 		}
 
 		this.setValueState(valuesInOrder);
