@@ -88,6 +88,7 @@ const swapItems = (index: number, newPosition: number) => {
 	const temp = options.value[index];
 	options.value[index] = options.value[newPosition];
 	options.value[newPosition] = temp;
+	setValues();
 	setHighlight(newPosition);
 };
 </script>
