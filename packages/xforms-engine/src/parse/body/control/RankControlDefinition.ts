@@ -14,7 +14,6 @@ export class RankControlDefinition extends ControlDefinition<'rank'> {
 
 	readonly type = 'rank';
 	readonly appearances: UnknownAppearanceDefinition;
-	readonly element: LocalNamedElement<'rank'>;
 	readonly itemset: ItemsetDefinition | null;
 	readonly items: readonly ItemDefinition[];
 
@@ -22,11 +21,10 @@ export class RankControlDefinition extends ControlDefinition<'rank'> {
 		super(form, parent, element);
 
 		this.appearances = unknownAppearanceParser.parseFrom(element, 'appearance');
-		this.element = element;
 		const itemsetElement = getItemsetElement(element);
 		const itemElements = getItemElements(element);
 
-		if (itemsetElement === null) {
+		if (!itemsetElement) {
 			this.itemset = null;
 			this.items = itemElements.map((itemElement) => new ItemDefinition(form, this, itemElement));
 		} else {
