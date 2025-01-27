@@ -15,7 +15,7 @@ interface RankDraggableOption {
 }
 
 const props = defineProps<RankControlProps>();
-const HOLD_DELAY = 60; // Delay in ms to hold an item before dragging, avoids accidental reordering on swipe.
+const HOLD_DELAY = 200; // Delay in ms to hold an item before dragging, avoids accidental reordering on swipe.
 const options = ref<RankDraggableOption[]>([]);
 const touched = ref(false);
 const submitPressed = inject<boolean>('submitPressed');
@@ -102,6 +102,7 @@ const swapItems = (index: number, newPosition: number) => {
 		:id="question.nodeId"
 		v-model="options"
 		:delay="HOLD_DELAY"
+		:delay-on-touch-only="true"
 		:disabled="question.currentState.readonly"
 		ghost-class="fade-moving"
 		class="rank-control"
