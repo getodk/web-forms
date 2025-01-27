@@ -25,7 +25,6 @@ const highlight = {
 };
 
 const transformOptions = (currentState: RankNodeState) => {
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 	const orderedValues: string[] = props.question.getOrderedValues(
 		currentState.valueOptions,
 		currentState.value
@@ -34,7 +33,7 @@ const transformOptions = (currentState: RankNodeState) => {
 	if (orderedValues.length) {
 		options.value = orderedValues.map((item): RankDraggableOption => {
 			return {
-				label: props.question.getValueLabel(item),
+				label: props.question.getValueLabel(item)?.asString,
 				value: item,
 			};
 		});
@@ -44,7 +43,7 @@ const transformOptions = (currentState: RankNodeState) => {
 
 	options.value = currentState.valueOptions.map((item) => {
 		return {
-			label: props.question.getValueLabel(item.value),
+			label: props.question.getValueLabel(item.value)?.asString,
 			value: item.value,
 		};
 	});
@@ -126,13 +125,21 @@ const swapItems = (index: number, newPosition: number) => {
 			</div>
 
 			<div class="rank-buttons">
-				<button @click="moveUp(index)" @mousedown="setHighlight(index)">
+				<button
+					v-if="index > 0"
+					@click="moveUp(index)"
+					@mousedown="setHighlight(index)"
+				>
 					<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 768 768">
 						<path d="M384 256.5l192 192-45 45-147-147-147 147-45-45z" />
 					</svg>
 				</button>
 
-				<button @click="moveDown(index)" @mousedown="setHighlight(index)">
+				<button
+					v-if="index < options.length - 1"
+					@click="moveDown(index)"
+					@mousedown="setHighlight(index)"
+				>
 					<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 768 768">
 						<path d="M531 274.5l45 45-192 192-192-192 45-45 147 147z" />
 					</svg>
@@ -150,9 +157,12 @@ const swapItems = (index: number, newPosition: number) => {
 <style scoped lang="scss">
 @import 'primeflex/core/_variables.scss';
 
-$rankSpacing: 7px;
-$rankBorder: 1px solid var(--surface-200);
-$rankBorderRadius: 10px;
+// Variable definition to root element
+.rank-control {
+	--rankSpacing: 7px;
+	--rankBorder: 1px solid var(--surface-200);
+	--rankBorderRadius: 10px;
+}
 
 .sortable-chosen {
 	// Overriding VueDraggable's sortable-chosen class
@@ -165,7 +175,7 @@ $rankBorderRadius: 10px;
 	flex-direction: column;
 	flex-wrap: nowrap;
 	align-items: flex-start;
-	gap: $rankSpacing;
+	gap: var(--rankSpacing);
 }
 
 .rank-option {
@@ -174,9 +184,9 @@ $rankBorderRadius: 10px;
 	align-items: center;
 	justify-content: space-between;
 	width: 100%;
-	padding: $rankSpacing;
-	border: $rankBorder;
-	border-radius: $rankBorderRadius;
+	padding: var(--rankSpacing);
+	border: var(--rankBorder);
+	border-radius: var(--rankBorderRadius);
 	font-size: 14px;
 	line-height: 17px;
 	color: var(--surface-600);
@@ -185,7 +195,7 @@ $rankBorderRadius: 10px;
 	.rank-label {
 		display: flex;
 		align-items: center;
-		gap: $rankSpacing;
+		gap: var(--rankSpacing);
 	}
 }
 
@@ -200,13 +210,13 @@ $rankBorderRadius: 10px;
 
 .rank-buttons {
 	display: flex;
-	gap: $rankSpacing;
+	gap: var(--rankSpacing);
 
 	button {
-		border: $rankBorder;
-		border-radius: $rankBorderRadius;
+		border: var(--rankBorder);
+		border-radius: var(--rankBorderRadius);
 		background: var(--surface-0);
-		padding: $rankSpacing;
+		padding: var(--rankSpacing);
 		line-height: 0;
 	}
 
