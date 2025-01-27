@@ -31,6 +31,7 @@
     "build:clean": "rimraf dist/ dist-demo/",
     "build:demo": "vite build --mode demo --outDir dist-demo",
     "build:js": "vite build",
+    "build:wc": "vite build --mode web-component --outDir dist-web-component",
     "dev": "vite",
     "dist-demo": "yarn build && yarn vite serve dist-demo --port 5174",
     "test": "npm-run-all -nl test:*",
@@ -68,10 +69,10 @@
     "vite-plugin-css-injected-by-js": "^3.5.2",
     "vite-plugin-static-copy": "^2.2.0",
     "vitest": "^2.1.8",
-    "vue": "3.3.4",
+    "vue": "3.5.13",
     "vue-router": "^4.5.0"
   },
   "peerDependencies": {
-    "vue": "^3.3.4"
+    "vue": "^3.5.13"
   }
 }
