@@ -5,32 +5,23 @@ import type { BodyElementParentContext } from '../BodyDefinition.ts';
 import { ControlDefinition } from './ControlDefinition.ts';
 import { ItemsetDefinition } from './ItemsetDefinition.ts';
 import { ItemDefinition } from './ItemDefinition.ts';
+import { type UnknownAppearanceDefinition, unknownAppearanceParser } from '../appearance/unknownAppearanceParser.ts';
 
-export type RankType = 'rank';
-export interface RankElement extends LocalNamedElement<RankType> {}
-
-export class RankControlDefinition extends ControlDefinition<RankType> {
-	private static isRankElement(element: Element): element is RankElement {
-		return element.localName === 'rank';
+export class RankControlDefinition extends ControlDefinition<'rank'> {
+	static override isCompatible(localName: string): boolean {
+		return localName === 'rank';
 	}
 
-	static override isCompatible(localName: string, element: Element): boolean {
-		return RankControlDefinition.isRankElement(element);
-	}
-
-	readonly type: RankType;
-	readonly element: RankElement;
+	readonly type = 'rank';
+	readonly appearances: UnknownAppearanceDefinition;
+	readonly element: LocalNamedElement<'rank'>;
 	readonly itemset: ItemsetDefinition | null;
 	readonly items: readonly ItemDefinition[];
 
 	constructor(form: XFormDefinition, parent: BodyElementParentContext, element: Element) {
-		if (!RankControlDefinition.isRankElement(element)) {
-			throw new Error(`Invalid rank element: <${element.nodeName}>`);
-		}
-
 		super(form, parent, element);
 
-		this.type = element.localName as RankType;
+		this.appearances = unknownAppearanceParser.parseFrom(element, 'appearance');
 		this.element = element;
 		const itemsetElement = getItemsetElement(element);
 		const itemElements = getItemElements(element);

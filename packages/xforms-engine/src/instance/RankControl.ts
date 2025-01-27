@@ -28,6 +28,7 @@ import { BaseItemCollectionCodec } from '../lib/codecs/BaseItemCollectionCodec.t
 import { sharedValueCodecs } from '../lib/codecs/getSharedValueCodec.ts';
 import type { AnyNodeDefinition } from '../parse/model/NodeDefinition.ts';
 import { createItemCollection } from '../lib/reactivity/createItemCollection.ts';
+import type { UnknownAppearanceDefinition } from '../parse/body/appearance/unknownAppearanceParser.ts';
 
 type AssertRangeNodeDefinition = (definition: RankDefinition) => asserts definition is RankDefinition<'string'>;
 const assertRangeNodeDefinition: AssertRangeNodeDefinition = (definition) => {
@@ -71,11 +72,14 @@ export class RankControl
 
 	// RankNode
 	readonly nodeType = 'rank';
+	readonly appearances: UnknownAppearanceDefinition;
 	readonly currentState: CurrentState<RankControlStateSpec>;
 
 	private constructor(parent: GeneralParentNode, definition: RankDefinition<'string'>) {
 		const codec = new BaseItemCollectionCodec(sharedValueCodecs.string);
 		super(parent, definition, codec);
+
+		this.appearances = definition.bodyElement.appearances;
 
 		const valueOptions = createItemCollection(this);
 		const mapOptionsByValue: Accessor<RankItemMap> = this.scope.runTask(() => {
