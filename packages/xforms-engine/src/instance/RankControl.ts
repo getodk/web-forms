@@ -1,12 +1,7 @@
 import { XPathNodeKindKey } from '@getodk/xpath';
 import type { Accessor } from 'solid-js';
 import { createMemo } from 'solid-js';
-import type {
-	RankDefinition,
-	RankItem,
-	RankNode,
-	RankValueOptions,
-} from '../client/RankNode.ts';
+import type { RankDefinition, RankItem, RankNode, RankValueOptions } from '../client/RankNode.ts';
 import type { TextRange } from '../client/TextRange.ts';
 import type { XFormsXPathElement } from '../integration/xpath/adapter/XFormsXPathNode.ts';
 import type { CurrentState } from '../lib/reactivity/node-state/createCurrentState.ts';
@@ -35,7 +30,9 @@ export type AnyRankDefinition = {
 	[V in ValueType]: RankDefinition<V>;
 }[ValueType];
 
-type AssertRankNodeDefinition = (definition: AnyRankDefinition) => asserts definition is RankDefinition<'string'>;
+type AssertRankNodeDefinition = (
+	definition: AnyRankDefinition
+) => asserts definition is RankDefinition<'string'>;
 
 const assertRankNodeDefinition: AssertRankNodeDefinition = (definition) => {
 	if (definition.valueType !== 'string') {

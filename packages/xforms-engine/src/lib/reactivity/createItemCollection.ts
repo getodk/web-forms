@@ -70,7 +70,10 @@ class ItemsetItemEvaluationContext implements EvaluationContext {
 	readonly contextReference: Accessor<string>;
 	readonly getActiveLanguage: Accessor<ActiveLanguage>;
 
-	constructor(control: ItemCollectionControl, readonly contextNode: EngineXPathNode) {
+	constructor(
+		control: ItemCollectionControl,
+		readonly contextNode: EngineXPathNode
+	) {
 		this.isAttached = control.isAttached;
 		this.scope = control.scope;
 		this.evaluator = control.evaluator;

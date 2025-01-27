@@ -4,7 +4,10 @@ import type { BodyElementParentContext } from '../BodyDefinition.ts';
 import { ControlDefinition } from './ControlDefinition.ts';
 import { ItemsetDefinition } from './ItemsetDefinition.ts';
 import { ItemDefinition } from './ItemDefinition.ts';
-import { type UnknownAppearanceDefinition, unknownAppearanceParser } from '../appearance/unknownAppearanceParser.ts';
+import {
+	type UnknownAppearanceDefinition,
+	unknownAppearanceParser,
+} from '../appearance/unknownAppearanceParser.ts';
 
 export class RankControlDefinition extends ControlDefinition<'rank'> {
 	static override isCompatible(localName: string): boolean {
