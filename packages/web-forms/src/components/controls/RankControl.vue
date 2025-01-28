@@ -132,7 +132,7 @@ const swapItems = (index: number, newPosition: number) => {
 
 			<div class="rank-buttons">
 				<button
-					:class="{ 'invisible': index === 0 }"
+					:disabled="index === 0"
 					@click="moveUp(index)"
 					@mousedown="setHighlight(index)"
 				>
@@ -142,7 +142,7 @@ const swapItems = (index: number, newPosition: number) => {
 				</button>
 
 				<button
-					:class="{ 'invisible': index === options.length - 1 }"
+					:disabled="index === options.length - 1"
 					@click="moveDown(index)"
 					@mousedown="setHighlight(index)"
 				>
@@ -166,12 +166,14 @@ const swapItems = (index: number, newPosition: number) => {
 // Variable definition to root element
 .rank-control {
 	--rankSpacing: 7px;
-	--rankBorder: 1px solid var(--surface-200);
+	--rankBorder: 1px solid var(--surface-300);
 	--rankBorderRadius: 10px;
+	--rankHighlightBackground: var(--primary-50);
+	--rankHighlightBorder: var(--primary-500);
 }
 
+// Overriding VueDraggable's sortable-chosen class
 .sortable-chosen {
-	// Overriding VueDraggable's sortable-chosen class
 	opacity: 0.9;
 	background-color: var(--surface-0);
 }
@@ -190,12 +192,12 @@ const swapItems = (index: number, newPosition: number) => {
 	align-items: center;
 	justify-content: space-between;
 	width: 100%;
-	padding: var(--rankSpacing);
+	padding: 8px;
 	border: var(--rankBorder);
 	border-radius: var(--rankBorderRadius);
-	font-size: 14px;
+	font-size: 1rem;
 	line-height: 17px;
-	color: var(--surface-600);
+	color: var(--surface-900);
 	cursor: move;
 
 	.rank-label {
@@ -207,7 +209,8 @@ const swapItems = (index: number, newPosition: number) => {
 
 .moving,
 .fade-moving {
-	background: var(--primary-50);
+	background: var(--rankHighlightBackground);
+	border: 2px solid var(--rankHighlightBorder);
 }
 
 .fade-moving {
@@ -226,12 +229,13 @@ const swapItems = (index: number, newPosition: number) => {
 		line-height: 0;
 	}
 
-	button:hover {
-		background: var(--primary-50);
+	button:hover:not(:disabled) {
+		background: var(--rankHighlightBackground);
+		border: 1px solid var(--rankHighlightBorder);
 	}
 
-	button.invisible {
-		visibility: hidden;
+	button:disabled {
+		background: var(--surface-200);
 	}
 }
 
