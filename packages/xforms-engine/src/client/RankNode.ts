@@ -54,5 +54,5 @@ export interface RankNode extends BaseValueNode<'string', readonly string[]> {
 	/**
 	 * Returns the value which is an ordered collection of values from {@link RankItem}.
 	 */
-	getOrderedValues(valueOptions: RankValueOptions, values: readonly string[]): string[];
+	getOrderedValues(valueOptions: RankValueOptions, values: readonly string[]): readonly string[];
 }

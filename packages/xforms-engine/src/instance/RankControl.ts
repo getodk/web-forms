@@ -40,7 +40,7 @@ const assertRankNodeDefinition: AssertRankNodeDefinition = (definition) => {
 	}
 };
 
-type RankItemMap = ReadonlyMap<string, RankItem>;
+export type RankItemMap = ReadonlyMap<string, RankItem>;
 
 interface RankControlStateSpec extends ValueNodeStateSpec<readonly string[]> {
 	readonly label: Accessor<TextRange<'label'> | null>;
@@ -98,8 +98,7 @@ export class RankControl
 		const [baseGetValue, setValue] = baseValueState;
 		const getValue = this.scope.runTask(() => {
 			return createMemo(() => {
-				const optionsByValue = mapOptionsByValue();
-				return this.getOrderedValues(optionsByValue, baseGetValue());
+				return this.getOrderedValues(valueOptions(), baseGetValue());
 			});
 		});
 		const valueState: SimpleAtomicState<readonly string[]> = [getValue, setValue];
@@ -150,7 +149,7 @@ export class RankControl
 		return this.root;
 	}
 
-	getOrderedValues(valueOptionsMap: RankItemMap, values: readonly string[]): string[] {
+	getOrderedValues(valueOptions: RankValueOptions, values: readonly string[]): readonly string[] {
 		if (!values?.length) {
 			return [];
 		}
@@ -159,7 +158,7 @@ export class RankControl
 		const exitingOptions: string[] = [];
 		const newOptionsForRank: string[] = [];
 
-		valueOptionsMap.forEach((item: RankItem) => {
+		valueOptions.forEach((item: RankItem) => {
 			const index = currentOrder.get(item.value);
 
 			if (index !== undefined) {

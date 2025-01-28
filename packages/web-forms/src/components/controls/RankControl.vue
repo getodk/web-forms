@@ -30,7 +30,7 @@ const highlight: HighlightOption = {
 };
 
 const transformOptions = (currentState: RankNodeState) => {
-	const orderedValues: string[] = props.question.getOrderedValues(
+	const orderedValues: readonly string[] = props.question.getOrderedValues(
 		currentState.valueOptions,
 		currentState.value
 	);
