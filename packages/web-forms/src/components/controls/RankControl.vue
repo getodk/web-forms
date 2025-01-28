@@ -15,8 +15,8 @@ interface RankDraggableOption {
 }
 
 interface HighlightOption {
-	index: Ref<null | number>;
-	timeoutID: null | NodeJS.Timeout;
+	index: Ref<number | null>;
+	timeoutID: NodeJS.Timeout | null;
 }
 
 const props = defineProps<RankControlProps>();

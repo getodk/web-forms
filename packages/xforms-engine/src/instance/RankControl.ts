@@ -40,7 +40,7 @@ const assertRankNodeDefinition: AssertRankNodeDefinition = (definition) => {
 	}
 };
 
-export type RankItemMap = ReadonlyMap<string, RankItem>;
+type RankItemMap = ReadonlyMap<string, RankItem>;
 
 interface RankControlStateSpec extends ValueNodeStateSpec<readonly string[]> {
 	readonly label: Accessor<TextRange<'label'> | null>;
