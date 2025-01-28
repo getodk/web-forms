@@ -64,7 +64,7 @@
     "turbo": "^2.3.3",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.18.1",
-    "vue": "3.3.4",
+    "vue": "3.5.13",
     "vue-tsc": "^2.1.10"
   },
   "resolutions": {
