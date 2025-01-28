@@ -136,7 +136,7 @@ export class RankControl
 
 	getValueLabel(value: string): TextRange<'item-label'> | null {
 		const valueOption = this.currentState.valueOptions.find((item) => item.value === value);
-		return valueOption.label ?? null;
+		return valueOption?.label ?? null;
 	}
 
 	setValues(valuesInOrder: readonly string[]): Root {
@@ -150,7 +150,7 @@ export class RankControl
 		return this.root;
 	}
 
-	getOrderedValues(valueOptions: RankValueOptions, values: readonly string[]): string[] {
+	getOrderedValues(valueOptionsMap: RankItemMap, values: readonly string[]): string[] {
 		if (!values?.length) {
 			return [];
 		}
@@ -159,7 +159,7 @@ export class RankControl
 		const exitingOptions: string[] = [];
 		const newOptionsForRank: string[] = [];
 
-		valueOptions.forEach((item: RankItem) => {
+		valueOptionsMap.forEach((item: RankItem) => {
 			const index = currentOrder.get(item.value);
 
 			if (index !== undefined) {
