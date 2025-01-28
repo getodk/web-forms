@@ -132,6 +132,7 @@ const swapItems = (index: number, newPosition: number) => {
 
 			<div class="rank-buttons">
 				<button
+					v-if="options.length > 1"
 					:disabled="index === 0"
 					@click="moveUp(index)"
 					@mousedown="setHighlight(index)"
@@ -142,6 +143,7 @@ const swapItems = (index: number, newPosition: number) => {
 				</button>
 
 				<button
+					v-if="options.length > 1"
 					:disabled="index === options.length - 1"
 					@click="moveDown(index)"
 					@mousedown="setHighlight(index)"
