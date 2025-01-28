@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { inject, ref, watch } from 'vue';
+import { inject, type Ref, ref, watch } from 'vue';
 import { VueDraggable } from 'vue-draggable-plus';
 import type { RankNode, RankNodeState } from '@getodk/xforms-engine';
 import ControlText from '@/components/ControlText.vue';
@@ -11,7 +11,12 @@ interface RankControlProps {
 
 interface RankDraggableOption {
 	value: string;
-	label: string;
+	label: string | null;
+}
+
+interface HighlightOption {
+	index: Ref<null | number>;
+	timeoutID: null | NodeJS.Timeout;
 }
 
 const props = defineProps<RankControlProps>();
@@ -19,7 +24,7 @@ const HOLD_DELAY = 200; // Delay in ms to hold an item before dragging, avoids a
 const options = ref<RankDraggableOption[]>([]);
 const touched = ref(false);
 const submitPressed = inject<boolean>('submitPressed');
-const highlight = {
+const highlight: HighlightOption = {
 	index: ref(null),
 	timeoutID: null,
 };
@@ -33,7 +38,7 @@ const transformOptions = (currentState: RankNodeState) => {
 	if (orderedValues.length) {
 		options.value = orderedValues.map((item): RankDraggableOption => {
 			return {
-				label: props.question.getValueLabel(item)?.asString,
+				label: props.question.getValueLabel(item)?.asString ?? null,
 				value: item,
 			};
 		});
@@ -43,7 +48,7 @@ const transformOptions = (currentState: RankNodeState) => {
 
 	options.value = currentState.valueOptions.map((item) => {
 		return {
-			label: props.question.getValueLabel(item.value)?.asString,
+			label: props.question.getValueLabel(item.value)?.asString ?? null,
 			value: item.value,
 		};
 	});
@@ -56,7 +61,7 @@ const setValues = () => {
 	props.question.setValues(options.value.map((option) => option.value));
 };
 
-const setHighlight = (index: number) => {
+const setHighlight = (index: number | null) => {
 	highlight.index.value = index;
 
 	if (highlight.timeoutID) {

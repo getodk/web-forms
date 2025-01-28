@@ -3,7 +3,7 @@ import { DOMWrapper, mount, VueWrapper } from '@vue/test-utils';
 import { getReactiveForm, globalMountOptions } from '../helpers';
 import FormQuestion from '@/components/FormQuestion.vue';
 import RankControl from '@/components/controls/RankControl.vue';
-import { RankNode } from '@getodk/xforms-engine';
+import type { RankNode } from '@getodk/xforms-engine';
 
 describe('RankControl', () => {
 	const getAllOptions = (rankControl: VueWrapper): string[] => {
