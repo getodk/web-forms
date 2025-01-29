@@ -237,7 +237,11 @@ const swapItems = (index: number, newPosition: number) => {
 	}
 
 	button:disabled {
-		background: var(--surface-200);
+		background: var(--surface-100);
+		border: none;
+		svg path {
+			fill: var(--surface-300);
+		}
 	}
 }
 

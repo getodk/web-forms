@@ -122,7 +122,9 @@ type AnswerParameters =
 	| readonly [reference: string, value: unknown]
 	| readonly [value: unknown];
 
-const isAnswerItemCollectionParams = (args: AnswerParameters): args is AnswerItemCollectionParameters => {
+const isAnswerItemCollectionParams = (
+	args: AnswerParameters
+): args is AnswerItemCollectionParameters => {
 	return args.length > 2 && args.every((arg) => typeof arg === 'string');
 };
 
@@ -380,7 +382,10 @@ export class Scenario {
 		return this.setNonTerminalEventPosition(() => index, reference);
 	}
 
-	private answerItemCollectionQuestion(reference: string, ...selectionValues: string[]): ValueNodeAnswer {
+	private answerItemCollectionQuestion(
+		reference: string,
+		...selectionValues: string[]
+	): ValueNodeAnswer {
 		const event = this.setPositionalStateToReference(reference);
 		const isSelect = isQuestionEventOfType(event, 'select');
 		const isRank = isQuestionEventOfType(event, 'rank');
@@ -391,7 +396,7 @@ export class Scenario {
 			);
 		}
 
-		if(isRank) {
+		if (isRank) {
 			return event.answerQuestion(new RankValuesAnswer(selectionValues));
 		}
 

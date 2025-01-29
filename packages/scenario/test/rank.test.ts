@@ -32,12 +32,7 @@ describe('Rank', () => {
 					)
 				)
 			),
-			body(
-				rank(
-					'/data/rankQuestion',
-					"instance('options')/root/item"
-				)
-			)
+			body(rank('/data/rankQuestion', "instance('options')/root/item"))
 		);
 	};
 
@@ -59,10 +54,7 @@ describe('Rank', () => {
 				)
 			),
 			body(
-				selectDynamic(
-					'/data/selectQuestion',
-					"instance('options')/root/item"
-				),
+				selectDynamic('/data/selectQuestion', "instance('options')/root/item"),
 
 				rank(
 					'/data/rankQuestion',

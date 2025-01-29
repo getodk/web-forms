@@ -7,7 +7,6 @@ import { ComparableAnswer } from './ComparableAnswer.ts';
  * as part of a test's "act" phase.
  */
 export class RankValuesAnswer extends ComparableAnswer {
-
 	readonly stringValue: string;
 
 	constructor(readonly values: readonly string[]) {
