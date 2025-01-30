@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { DOMWrapper, mount, VueWrapper } from '@vue/test-utils';
 import { getReactiveForm, globalMountOptions } from '../helpers';
+import QuestionList from '@/components/QuestionList.vue';
 import FormQuestion from '@/components/FormQuestion.vue';
+import SelectControl from '@/components/controls/SelectControl.vue';
 import RankControl from '@/components/controls/RankControl.vue';
 import type { RankNode } from '@getodk/xforms-engine';
 
@@ -10,7 +12,7 @@ describe('RankControl', () => {
 		return rankControl.findAll('.rank-label').map((element) => element.text());
 	};
 
-	const getRankControl = async () => {
+	const getRankControlWithRandomize = async () => {
 		const xform = await getReactiveForm('1-rank.xml');
 
 		const component = mount(FormQuestion, {
@@ -20,7 +22,18 @@ describe('RankControl', () => {
 			global: globalMountOptions,
 		});
 
-		return component.findComponent(RankControl);
+		return component.findComponent(RankControl) as VueWrapper;
+	};
+
+	const getQuestionListWithChoiceFilter = async () => {
+		const xform = await getReactiveForm('2-rank-with-choice-filter.xml');
+
+		return mount(QuestionList, {
+			props: {
+				nodes: xform.currentState.children,
+			},
+			global: globalMountOptions,
+		}) as VueWrapper;
 	};
 
 	const swapItems = (options: string[], indexA: number, indexB: number) => {
@@ -45,6 +58,11 @@ describe('RankControl', () => {
 		await buttonMoveUp.trigger('click');
 	};
 
+	const selectOption = async (element: DOMWrapper<Element>) => {
+		const checkbox: DOMWrapper<HTMLInputElement> = element.find('input[type=checkbox]');
+		await checkbox.setValue(true);
+	};
+
 	it('should render all options', async () => {
 		const expectedOptions = [
 			'Career Growth and Learning Opportunities',
@@ -59,18 +77,16 @@ describe('RankControl', () => {
 			'Time Management and Work-Life Balance',
 		];
 
-		const rankControl = (await getRankControl()) as VueWrapper;
+		const rankControl = await getRankControlWithRandomize();
 		expect(rankControl.exists()).toBe(true);
 
 		const allOptions = getAllOptions(rankControl);
 		expect(allOptions.length).toEqual(10);
-
-		const allOptionsExist = expectedOptions.every((option) => allOptions.includes(option));
-		expect(allOptionsExist).toBe(true);
+		expect(allOptions).have.all.members(expectedOptions);
 	});
 
 	it('should rank options using buttons', async () => {
-		const rankControl = (await getRankControl()) as VueWrapper;
+		const rankControl = await getRankControlWithRandomize();
 		expect(rankControl.exists()).toBe(true);
 
 		const expectedOptions = getAllOptions(rankControl);
@@ -81,12 +97,11 @@ describe('RankControl', () => {
 		await moveOptionDown(rankControl, 7);
 
 		const allRankedOptions = getAllOptions(rankControl);
-		const sameOrder = expectedOptions.every((value, index) => value === allRankedOptions[index]);
-		expect(sameOrder).toBe(true);
+		expect(allRankedOptions).toEqual(expectedOptions);
 	});
 
 	it('should not move options if they are the first or last one', async () => {
-		const rankControl = (await getRankControl()) as VueWrapper;
+		const rankControl = await getRankControlWithRandomize();
 		expect(rankControl.exists()).toBe(true);
 
 		const expectedOptions = getAllOptions(rankControl);
@@ -97,7 +112,40 @@ describe('RankControl', () => {
 		await moveOptionDown(rankControl, 10);
 
 		const allRankedOptions = getAllOptions(rankControl);
-		const sameOrder = expectedOptions.every((value, index) => value === allRankedOptions[index]);
-		expect(sameOrder).toBe(true);
+		expect(allRankedOptions).toEqual(expectedOptions);
+	});
+
+	it('should render filtered options when rank has choice-filter configured', async () => {
+		const questionListControl = await getQuestionListWithChoiceFilter();
+		const formQuestions = questionListControl.findAllComponents(FormQuestion);
+		expect(formQuestions).length(1);
+
+		const selectControl = formQuestions[0].findComponent(SelectControl) as VueWrapper;
+		expect(selectControl.exists()).toBe(true);
+		const selectOptions = selectControl.findAll('.value-option');
+		expect(selectOptions).length(10);
+
+		await selectOption(selectOptions[5]);
+		await selectOption(selectOptions[9]);
+
+		const refreshedFormQuestions = questionListControl.findAllComponents(FormQuestion);
+		expect(refreshedFormQuestions).length(2);
+		const rankControl = refreshedFormQuestions[1].findComponent(RankControl) as VueWrapper;
+		expect(rankControl.exists()).toBe(true);
+
+		const rankOptions = getAllOptions(rankControl);
+		expect(rankOptions).length(2);
+		expect(rankOptions).toEqual(['Environmental Sustainability', 'Creativity and Innovation']);
+
+		await moveOptionUp(rankControl, 2);
+		await selectOption(selectOptions[1]);
+
+		const orderedRankOptions = getAllOptions(rankControl);
+		expect(orderedRankOptions).length(3);
+		expect(orderedRankOptions).toEqual([
+			'Creativity and Innovation',
+			'Environmental Sustainability',
+			'Family and Friends',
+		]);
 	});
 });
