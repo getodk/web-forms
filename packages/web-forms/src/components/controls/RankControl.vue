@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { inject, type Ref, ref, watch } from 'vue';
+import { computed, inject, type Ref, ref, watch } from 'vue';
 import { VueDraggable } from 'vue-draggable-plus';
 import type { RankNode, RankNodeState } from '@getodk/xforms-engine';
 import ControlText from '@/components/ControlText.vue';
@@ -24,6 +24,7 @@ const HOLD_DELAY = 200; // Delay in ms to hold an item before dragging, avoids a
 const options = ref<RankDraggableOption[]>([]);
 const touched = ref(false);
 const submitPressed = inject<boolean>('submitPressed');
+const disabled = computed(() => props.question.currentState.readonly === true);
 const highlight: HighlightOption = {
 	index: ref(null),
 	timeoutID: null,
@@ -91,6 +92,10 @@ const moveDown = (index: number) => {
 };
 
 const swapItems = (index: number, newPosition: number) => {
+	if (disabled.value) {
+		return;
+	}
+
 	setHighlight(index);
 	const temp = options.value[index];
 	options.value[index] = options.value[newPosition];
@@ -108,9 +113,10 @@ const swapItems = (index: number, newPosition: number) => {
 		v-model="options"
 		:delay="HOLD_DELAY"
 		:delay-on-touch-only="true"
-		:disabled="question.currentState.readonly"
+		:disabled="disabled"
 		ghost-class="fade-moving"
 		class="rank-control"
+		:class="{ 'disabled': disabled }"
 		@update="setValues"
 	>
 		<div
@@ -133,7 +139,7 @@ const swapItems = (index: number, newPosition: number) => {
 			<div class="rank-buttons">
 				<button
 					v-if="options.length > 1"
-					:disabled="index === 0"
+					:disabled="disabled || (index === 0)"
 					@click="moveUp(index)"
 					@mousedown="setHighlight(index)"
 				>
@@ -144,7 +150,7 @@ const swapItems = (index: number, newPosition: number) => {
 
 				<button
 					v-if="options.length > 1"
-					:disabled="index === options.length - 1"
+					:disabled="disabled || (index === options.length - 1)"
 					@click="moveDown(index)"
 					@mousedown="setHighlight(index)"
 				>
@@ -243,6 +249,11 @@ const swapItems = (index: number, newPosition: number) => {
 			fill: var(--surface-300);
 		}
 	}
+}
+
+.disabled .rank-option,
+.disabled button {
+	cursor: not-allowed;
 }
 
 @media screen and (max-width: #{$sm}) {
