@@ -3,7 +3,13 @@ import type { Accessor } from 'solid-js';
 import { createMemo } from 'solid-js';
 import type { RankDefinition, RankItem, RankNode, RankValueOptions } from '../client/RankNode.ts';
 import type { TextRange } from '../client/TextRange.ts';
+import type { ValueType } from '../client/ValueType.ts';
+import { RankMissingValueError } from '../error/RankMissingValueError.ts';
+import { RankValueTypeError } from '../error/RankValueTypeError.ts';
 import type { XFormsXPathElement } from '../integration/xpath/adapter/XFormsXPathNode.ts';
+import { sharedValueCodecs } from '../lib/codecs/getSharedValueCodec.ts';
+import { MultipleValueItemCodec } from '../lib/codecs/items/MultipleValueItemCodec.ts';
+import { createItemCollection } from '../lib/reactivity/createItemCollection.ts';
 import type { CurrentState } from '../lib/reactivity/node-state/createCurrentState.ts';
 import type { EngineState } from '../lib/reactivity/node-state/createEngineState.ts';
 import type { SharedNodeState } from '../lib/reactivity/node-state/createSharedNodeState.ts';
@@ -11,6 +17,7 @@ import { createSharedNodeState } from '../lib/reactivity/node-state/createShared
 import { createFieldHint } from '../lib/reactivity/text/createFieldHint.ts';
 import { createNodeLabel } from '../lib/reactivity/text/createNodeLabel.ts';
 import type { SimpleAtomicState } from '../lib/reactivity/types.ts';
+import type { UnknownAppearanceDefinition } from '../parse/body/appearance/unknownAppearanceParser.ts';
 import type { Root } from './Root.ts';
 import type { ValueNodeStateSpec } from './abstract/ValueNode.ts';
 import { ValueNode } from './abstract/ValueNode.ts';
@@ -18,13 +25,6 @@ import type { GeneralParentNode } from './hierarchy.ts';
 import type { EvaluationContext } from './internal-api/EvaluationContext.ts';
 import type { ValidationContext } from './internal-api/ValidationContext.ts';
 import type { ClientReactiveSubmittableValueNode } from './internal-api/submission/ClientReactiveSubmittableValueNode.ts';
-import { MultipleValueItemCodec } from '../lib/codecs/items/MultipleValueItemCodec.ts';
-import { sharedValueCodecs } from '../lib/codecs/getSharedValueCodec.ts';
-import { createItemCollection } from '../lib/reactivity/createItemCollection.ts';
-import type { UnknownAppearanceDefinition } from '../parse/body/appearance/unknownAppearanceParser.ts';
-import type { ValueType } from '../client/ValueType.ts';
-import { RankMissingValueError } from '../error/RankMissingValueError.ts';
-import { RankValueTypeError } from '../error/RankValueTypeError.ts';
 
 export type AnyRankDefinition = {
 	[V in ValueType]: RankDefinition<V>;
@@ -47,6 +47,18 @@ interface RankControlStateSpec extends ValueNodeStateSpec<readonly string[]> {
 	readonly hint: Accessor<TextRange<'hint'> | null>;
 	readonly valueOptions: Accessor<RankValueOptions>;
 }
+
+/**
+ * @todo We currently represent a blank value for `<odk:rank>` as an empty
+ * array. This is ambiguous, and likely to change.
+ *
+ * @see {@link https://github.com/getodk/web-forms/issues/295}
+ */
+type TempBlankValueState = readonly [];
+
+const isBlankValueState = (values: readonly string[]): values is TempBlankValueState => {
+	return values.length === 0;
+};
 
 export class RankControl
 	extends ValueNode<'string', RankDefinition<'string'>, readonly string[], readonly string[]>
@@ -96,9 +108,40 @@ export class RankControl
 
 		const baseValueState = this.valueState;
 		const [baseGetValue, setValue] = baseValueState;
+
+		/**
+		 * @todo as new value options become available, they're not yet in the
+		 * `currentValues` state. This appends them. We intend to change this
+		 * behavior, likely clearing the previous state instead.
+		 *
+		 * However, there's an open question about what we should do when a filter
+		 * change **only removes values**.
+		 */
 		const getValue = this.scope.runTask(() => {
 			return createMemo(() => {
-				return this.getOrderedValues(valueOptions(), baseGetValue());
+				const options = valueOptions();
+				const values = baseGetValue();
+
+				if (isBlankValueState(values)) {
+					return values;
+				}
+
+				const optionValues = new Set(options.map((option) => option.value));
+
+				/**
+				 * @see {@link getValue} todo paragraph 2.
+				 */
+				const currentValues = values.filter((value) => optionValues.has(value));
+
+				return Array.from(
+					new Set([
+						...currentValues,
+						/**
+						 * @see {@link getValue} todo paragraph 1.
+						 */
+						...optionValues,
+					])
+				);
 			});
 		});
 		const valueState: SimpleAtomicState<readonly string[]> = [getValue, setValue];
@@ -139,6 +182,12 @@ export class RankControl
 	}
 
 	setValues(valuesInOrder: readonly string[]): Root {
+		if (isBlankValueState(valuesInOrder)) {
+			this.setValueState(valuesInOrder);
+
+			return this.root;
+		}
+
 		const sourceValues: string[] = Array.from(this.mapOptionsByValue().keys());
 		const hasAllValues = sourceValues.some((sourceValue) => valuesInOrder.includes(sourceValue));
 		if (!hasAllValues) {
@@ -147,28 +196,5 @@ export class RankControl
 
 		this.setValueState(valuesInOrder);
 		return this.root;
-	}
-
-	getOrderedValues(valueOptions: RankValueOptions, values: readonly string[]): readonly string[] {
-		if (!values?.length) {
-			return [];
-		}
-
-		const currentOrder = new Map(values.map((option, index) => [option, index]));
-		const exitingOptions: string[] = [];
-		const newOptionsForRank: string[] = [];
-
-		valueOptions.forEach((item: RankItem) => {
-			const index = currentOrder.get(item.value);
-
-			if (index !== undefined) {
-				exitingOptions[index] = item.value;
-				return;
-			}
-
-			newOptionsForRank.push(item.value);
-		});
-
-		return [...exitingOptions.filter(Boolean), ...newOptionsForRank];
 	}
 }
