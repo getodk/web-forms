@@ -6,7 +6,7 @@ import {
 	item,
 	mainInstance,
 	model,
-	rank,
+	rankDynamic,
 	selectDynamic,
 	t,
 	title,
@@ -32,7 +32,7 @@ describe('Rank', () => {
 					)
 				)
 			),
-			body(rank('/data/rankQuestion', "instance('options')/root/item"))
+			body(rankDynamic('/data/rankQuestion', "instance('options')/root/item"))
 		);
 	};
 
@@ -56,7 +56,7 @@ describe('Rank', () => {
 			body(
 				selectDynamic('/data/selectQuestion', "instance('options')/root/item"),
 
-				rank(
+				rankDynamic(
 					'/data/rankQuestion',
 					"instance('options')/root/item[selected(/data/selectQuestion, value)]"
 				)

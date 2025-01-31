@@ -5,4 +5,4 @@
 '@getodk/common': patch
 ---
 
-Support for `<rank>`
+Support for rank question types (`<odk:rank>`)
