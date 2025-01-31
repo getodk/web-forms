@@ -1,17 +1,13 @@
 <script setup lang="ts">
-import { computed, inject, type Ref, ref, watch } from 'vue';
-import { VueDraggable } from 'vue-draggable-plus';
-import type { RankNode, RankNodeState } from '@getodk/xforms-engine';
 import ControlText from '@/components/ControlText.vue';
 import ValidationMessage from '@/components/ValidationMessage.vue';
+import type { RankNode } from '@getodk/xforms-engine';
+import type { Ref } from 'vue';
+import { computed, inject, ref } from 'vue';
+import { VueDraggable } from 'vue-draggable-plus';
 
 interface RankControlProps {
 	readonly question: RankNode;
-}
-
-interface RankDraggableOption {
-	value: string;
-	label: string | null;
 }
 
 interface HighlightOption {
@@ -21,7 +17,6 @@ interface HighlightOption {
 
 const props = defineProps<RankControlProps>();
 const HOLD_DELAY = 200; // Delay in ms to hold an item before dragging, avoids accidental reordering on swipe.
-const options = ref<RankDraggableOption[]>([]);
 const touched = ref(false);
 const submitPressed = inject<boolean>('submitPressed');
 const disabled = computed(() => props.question.currentState.readonly === true);
@@ -30,37 +25,21 @@ const highlight: HighlightOption = {
 	timeoutID: null,
 };
 
-const transformOptions = (currentState: RankNodeState) => {
-	const orderedValues: readonly string[] = props.question.getOrderedValues(
-		currentState.valueOptions,
-		currentState.value
-	);
+const values = computed<string[]>({
+	get: () => {
+		const currentValues = props.question.currentState.value;
 
-	if (orderedValues.length) {
-		options.value = orderedValues.map((item): RankDraggableOption => {
-			return {
-				label: props.question.getValueLabel(item)?.asString ?? null,
-				value: item,
-			};
-		});
+		if (currentValues.length > 0) {
+			return currentValues.slice();
+		}
 
-		return;
-	}
-
-	options.value = currentState.valueOptions.map((item) => {
-		return {
-			label: props.question.getValueLabel(item.value)?.asString ?? null,
-			value: item.value,
-		};
-	});
-};
-
-watch(props.question.currentState, transformOptions, { immediate: true });
-
-const setValues = () => {
-	touched.value = true;
-	props.question.setValues(options.value.map((option) => option.value));
-};
+		return props.question.currentState.valueOptions.map((option) => option.value);
+	},
+	set: (orderedValues) => {
+		touched.value = true;
+		props.question.setValues(orderedValues);
+	},
+});
 
 const setHighlight = (index: number | null) => {
 	highlight.index.value = index;
@@ -85,7 +64,7 @@ const moveUp = (index: number) => {
 
 const moveDown = (index: number) => {
 	const newPosition = index + 1;
-	if (newPosition >= options.value.length) {
+	if (newPosition >= values.value.length) {
 		return;
 	}
 	swapItems(index, newPosition);
@@ -97,10 +76,14 @@ const swapItems = (index: number, newPosition: number) => {
 	}
 
 	setHighlight(index);
-	const temp = options.value[index];
-	options.value[index] = options.value[newPosition];
-	options.value[newPosition] = temp;
-	setValues();
+
+	const swappedValues = values.value.slice();
+	const movedValue = swappedValues[index];
+
+	swappedValues[index] = swappedValues[newPosition];
+	swappedValues[newPosition] = movedValue;
+	values.value = swappedValues;
+
 	setHighlight(newPosition);
 };
 </script>
@@ -110,19 +93,18 @@ const swapItems = (index: number, newPosition: number) => {
 
 	<VueDraggable
 		:id="question.nodeId"
-		v-model="options"
+		v-model="values"
 		:delay="HOLD_DELAY"
 		:delay-on-touch-only="true"
 		:disabled="disabled"
 		ghost-class="fade-moving"
 		class="rank-control"
 		:class="{ 'disabled': disabled }"
-		@update="setValues"
 	>
 		<div
-			v-for="(option, index) in options"
-			:id="option.value"
-			:key="option.value"
+			v-for="(value, index) in values"
+			:id="value"
+			:key="value"
 			class="rank-option"
 			:class="{ 'moving': highlight.index.value === index }"
 			tabindex="0"
@@ -133,12 +115,12 @@ const swapItems = (index: number, newPosition: number) => {
 				<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 768 768">
 					<path d="M480 511.5q25.5 0 45 19.5t19.5 45-19.5 45-45 19.5-45-19.5-19.5-45 19.5-45 45-19.5zM480 319.5q25.5 0 45 19.5t19.5 45-19.5 45-45 19.5-45-19.5-19.5-45 19.5-45 45-19.5zM480 256.5q-25.5 0-45-19.5t-19.5-45 19.5-45 45-19.5 45 19.5 19.5 45-19.5 45-45 19.5zM288 127.5q25.5 0 45 19.5t19.5 45-19.5 45-45 19.5-45-19.5-19.5-45 19.5-45 45-19.5zM288 319.5q25.5 0 45 19.5t19.5 45-19.5 45-45 19.5-45-19.5-19.5-45 19.5-45 45-19.5zM352.5 576q0 25.5-19.5 45t-45 19.5-45-19.5-19.5-45 19.5-45 45-19.5 45 19.5 19.5 45z" />
 				</svg>
-				<span>{{ option.label }}</span>
+				<span>{{ props.question.getValueLabel(value)?.asString }}</span>
 			</div>
 
 			<div class="rank-buttons">
 				<button
-					v-if="options.length > 1"
+					v-if="values.length > 1"
 					:disabled="disabled || (index === 0)"
 					@click="moveUp(index)"
 					@mousedown="setHighlight(index)"
@@ -149,8 +131,8 @@ const swapItems = (index: number, newPosition: number) => {
 				</button>
 
 				<button
-					v-if="options.length > 1"
-					:disabled="disabled || (index === options.length - 1)"
+					v-if="values.length > 1"
+					:disabled="disabled || (index === values.length - 1)"
 					@click="moveDown(index)"
 					@mousedown="setHighlight(index)"
 				>

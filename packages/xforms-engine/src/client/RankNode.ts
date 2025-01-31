@@ -50,9 +50,4 @@ export interface RankNode extends BaseValueNode<'string', readonly string[]> {
 	 * If called with an empty array, the current is cleared.
 	 */
 	setValues(values: readonly string[]): RootNode;
-
-	/**
-	 * Returns the value which is an ordered collection of values from {@link RankItem}.
-	 */
-	getOrderedValues(valueOptions: RankValueOptions, values: readonly string[]): readonly string[];
 }

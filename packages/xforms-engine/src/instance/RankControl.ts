@@ -48,6 +48,17 @@ interface RankControlStateSpec extends ValueNodeStateSpec<readonly string[]> {
 	readonly valueOptions: Accessor<RankValueOptions>;
 }
 
+/**
+ * @ToDo We currently represent a blank value for `<odk:rank>` as an empty array.
+ * This is ambiguous, and likely to change.
+ *
+ * @see {@link https://github.com/getodk/web-forms/issues/295}
+ */
+type TempBlankValueState = readonly [];
+const isBlankValueState = (values: readonly string[]): values is TempBlankValueState => {
+	return values.length === 0;
+};
+
 export class RankControl
 	extends ValueNode<'string', RankDefinition<'string'>, readonly string[], readonly string[]>
 	implements
@@ -96,9 +107,40 @@ export class RankControl
 
 		const baseValueState = this.valueState;
 		const [baseGetValue, setValue] = baseValueState;
+
+		/**
+		 * @ToDo As new value options become available, they're not yet in the
+		 * `currentValues` state. This appends them. We intend to change this
+		 * behavior, likely clearing the previous state instead.
+		 *
+		 * However, there's an open question about what we should do when a filter
+		 * change **only removes values**.
+		 */
 		const getValue = this.scope.runTask(() => {
 			return createMemo(() => {
-				return this.getOrderedValues(valueOptions(), baseGetValue());
+				const options = valueOptions();
+				const values = baseGetValue();
+
+				if (isBlankValueState(values)) {
+					return values;
+				}
+
+				const optionValues = new Set(options.map((option) => option.value));
+
+				/**
+				 * @see {@link getValue} ToDo paragraph 2.
+				 */
+				const currentValues = values.filter((value) => optionValues.has(value));
+
+				return Array.from(
+					new Set([
+						...currentValues,
+						/**
+						 * @see {@link getValue} ToDo paragraph 1.
+						 */
+						...optionValues,
+					])
+				);
 			});
 		});
 		const valueState: SimpleAtomicState<readonly string[]> = [getValue, setValue];
@@ -139,6 +181,11 @@ export class RankControl
 	}
 
 	setValues(valuesInOrder: readonly string[]): Root {
+		if (isBlankValueState(valuesInOrder)) {
+			this.setValueState(valuesInOrder);
+			return this.root;
+		}
+
 		const sourceValues: string[] = Array.from(this.mapOptionsByValue().keys());
 		const hasAllValues = sourceValues.some((sourceValue) => valuesInOrder.includes(sourceValue));
 		if (!hasAllValues) {
@@ -147,28 +194,5 @@ export class RankControl
 
 		this.setValueState(valuesInOrder);
 		return this.root;
-	}
-
-	getOrderedValues(valueOptions: RankValueOptions, values: readonly string[]): readonly string[] {
-		if (!values?.length) {
-			return [];
-		}
-
-		const currentOrder = new Map(values.map((option, index) => [option, index]));
-		const exitingOptions: string[] = [];
-		const newOptionsForRank: string[] = [];
-
-		valueOptions.forEach((item: RankItem) => {
-			const index = currentOrder.get(item.value);
-
-			if (index !== undefined) {
-				exitingOptions[index] = item.value;
-				return;
-			}
-
-			newOptionsForRank.push(item.value);
-		});
-
-		return [...exitingOptions.filter(Boolean), ...newOptionsForRank];
 	}
 }
