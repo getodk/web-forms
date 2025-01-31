@@ -16,7 +16,6 @@ interface HighlightOption {
 }
 
 const props = defineProps<RankControlProps>();
-const HOLD_DELAY = 200; // Delay in ms to hold an item before dragging, avoids accidental reordering on swipe.
 const touched = ref(false);
 const submitPressed = inject<boolean>('submitPressed');
 const disabled = computed(() => props.question.currentState.readonly === true);
@@ -24,6 +23,16 @@ const highlight: HighlightOption = {
 	index: ref(null),
 	timeoutID: null,
 };
+
+/**
+ * Delay in ms to show the highlight styles on rank's UI.
+ */
+const HIGHLIGHT_DELAY = 500;
+
+/**
+ * Delay in ms to hold an item before dragging, avoids accidental reordering on swipe.
+ */
+const HOLD_DELAY = 200;
 
 const values = computed<string[]>({
 	get: () => {
@@ -50,7 +59,7 @@ const setHighlight = (index: number | null) => {
 	}
 
 	if (highlight.index.value !== null) {
-		highlight.timeoutID = setTimeout(() => setHighlight(null), 1000);
+		highlight.timeoutID = setTimeout(() => setHighlight(null), HIGHLIGHT_DELAY);
 	}
 };
 

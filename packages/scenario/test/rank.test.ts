@@ -123,9 +123,7 @@ describe('Rank', () => {
 						item('option1', 'Option 1'),
 						item('option2', 'Option 2'),
 						item('option3', 'Option 3'),
-						item('option4', 'Option 4'),
-						item('option5', 'Option 5'),
-						item('option6', 'Option 6')
+						item('option4', 'Option 4')
 					)
 				)
 			),
@@ -143,23 +141,26 @@ describe('Rank', () => {
 		expect(scenario.answerOf(SELECT_QUESTION).getValue()).toBe('');
 		expect(scenario.answerOf(RANK_QUESTION).getValue()).toBe('');
 
-		scenario.answer(
-			SELECT_QUESTION,
-			'option1',
-			'option4',
-			'option3',
-			'option6',
-			'option5',
-			'option2'
-		);
-		expect(scenario.answerOf(SELECT_QUESTION).getValue()).toBe(
-			'option1 option2 option3 option4 option5 option6'
-		);
+		scenario.answer(SELECT_QUESTION, 'option1', 'option4', 'option3', 'option2');
+		expect(scenario.answerOf(SELECT_QUESTION).getValue()).toBe('option1 option2 option3 option4');
 		expect(scenario.answerOf(RANK_QUESTION).getValue()).toBe('');
 
-		scenario.answer(RANK_QUESTION, 'option6 option2 option5');
-		expect(scenario.answerOf(RANK_QUESTION).getValue()).toBe(
-			'option6 option2 option5 option1 option3 option4'
+		scenario.answer(RANK_QUESTION, 'option2', 'option1', 'option3', 'option4');
+		const RANK_EXPECTED_VALUE = 'option2 option1 option3 option4';
+		expect(scenario.answerOf(RANK_QUESTION).getValue()).toBe(RANK_EXPECTED_VALUE);
+
+		// Set an incomplete value is not allowed for rank.
+		// This is wrapped as a function to assert that this is enforced by the engine.
+		const answerWithMissingValues = () => {
+			scenario.answer(RANK_QUESTION, 'option4', 'option2');
+		};
+
+		// Assert: engine enforces requirement to set all available rank values.
+		expect(answerWithMissingValues).to.throw(
+			'There are missing options. Rank should have all options.'
 		);
+
+		// Assert: attempting failed incomplete answer doesn't change value state.
+		expect(scenario.answerOf(RANK_QUESTION).getValue()).toBe(RANK_EXPECTED_VALUE);
 	});
 });

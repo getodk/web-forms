@@ -187,7 +187,7 @@ export class RankControl
 		}
 
 		const sourceValues: string[] = Array.from(this.mapOptionsByValue().keys());
-		const hasAllValues = sourceValues.some((sourceValue) => valuesInOrder.includes(sourceValue));
+		const hasAllValues = sourceValues.every((sourceValue) => valuesInOrder.includes(sourceValue));
 		if (!hasAllValues) {
 			throw new RankMissingValueError('There are missing options. Rank should have all options.');
 		}
