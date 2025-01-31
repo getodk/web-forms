@@ -16,8 +16,20 @@ import { Scenario } from '../src/jr/Scenario.ts';
 import { r } from '../src/jr/resource/ResourcePathHelper.ts';
 
 describe('Rank', () => {
-	const getRankForm = () => {
-		return html(
+	it('should preserve the order of values when set, if the rank contains <item>s', async () => {
+		const RANK_QUESTION = '/data/rankWidget';
+		const scenario = await Scenario.init(r('rank-form.xml'));
+
+		expect(scenario.answerOf(RANK_QUESTION).getValue()).toBe('');
+
+		scenario.answer(RANK_QUESTION, 'A', 'E', 'C', 'B', 'D', 'F', 'G');
+
+		expect(scenario.answerOf(RANK_QUESTION).getValue()).toBe('A E C B D F G');
+	});
+
+	it('should preserve the order of values when set, if the rank contains an <itemset>', async () => {
+		const RANK_QUESTION = '/data/rankQuestion';
+		const form = html(
 			head(
 				title('Rank form'),
 				model(
@@ -34,10 +46,19 @@ describe('Rank', () => {
 			),
 			body(rankDynamic('/data/rankQuestion', "instance('options')/root/item"))
 		);
-	};
+		const scenario = await Scenario.init('Rank form', form);
 
-	const getRankWithChoiceFilterForm = () => {
-		return html(
+		expect(scenario.answerOf(RANK_QUESTION).getValue()).toBe('');
+
+		scenario.answer(RANK_QUESTION, 'option1', 'option4', 'option2', 'option3');
+
+		expect(scenario.answerOf(RANK_QUESTION).getValue()).toBe('option1 option4 option2 option3');
+	});
+
+	it('should order options correctly when the rank question becomes relevant', async () => {
+		const SELECT_QUESTION = '/data/selectQuestion';
+		const RANK_QUESTION = '/data/rankQuestion';
+		const form = html(
 			head(
 				title('Rank with choice filter'),
 				model(
@@ -62,34 +83,7 @@ describe('Rank', () => {
 				)
 			)
 		);
-	};
-
-	it('should update value when rank has <items>', async () => {
-		const RANK_QUESTION = '/data/rankWidget';
-		const scenario = await Scenario.init(r('rank-form.xml'));
-
-		expect(scenario.answerOf(RANK_QUESTION).getValue()).toBe('');
-
-		scenario.answer(RANK_QUESTION, 'A', 'E', 'C', 'B', 'D', 'F', 'G');
-
-		expect(scenario.answerOf(RANK_QUESTION).getValue()).toBe('A E C B D F G');
-	});
-
-	it('should update value when rank has <itemset>', async () => {
-		const RANK_QUESTION = '/data/rankQuestion';
-		const scenario = await Scenario.init('Rank form', getRankForm());
-
-		expect(scenario.answerOf(RANK_QUESTION).getValue()).toBe('');
-
-		scenario.answer(RANK_QUESTION, 'option1', 'option4', 'option2', 'option3');
-
-		expect(scenario.answerOf(RANK_QUESTION).getValue()).toBe('option1 option4 option2 option3');
-	});
-
-	it('should filter values when rank has choice-filter and it should update values when options are ranked', async () => {
-		const SELECT_QUESTION = '/data/selectQuestion';
-		const RANK_QUESTION = '/data/rankQuestion';
-		const scenario = await Scenario.init('Rank with choice filter', getRankWithChoiceFilterForm());
+		const scenario = await Scenario.init('Rank with choice filter', form);
 
 		expect(scenario.answerOf(SELECT_QUESTION).getValue()).toBe('');
 		expect(scenario.answerOf(RANK_QUESTION).getValue()).toBe('');
