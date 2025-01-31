@@ -108,4 +108,58 @@ describe('Rank', () => {
 		scenario.answer(RANK_QUESTION, 'option5', 'option1');
 		expect(scenario.answerOf(RANK_QUESTION).getValue()).toBe('option5 option1');
 	});
+
+	it('should include all values on write and preserve the order of options when rank is relevant', async () => {
+		const SELECT_QUESTION = '/data/selectQuestion';
+		const RANK_QUESTION = '/data/rankQuestion';
+		const form = html(
+			head(
+				title('Rank includes all values'),
+				model(
+					mainInstance(t("data id='rank'", t('rankQuestion'), t('selectQuestion'))),
+
+					instance(
+						'options',
+						item('option1', 'Option 1'),
+						item('option2', 'Option 2'),
+						item('option3', 'Option 3'),
+						item('option4', 'Option 4'),
+						item('option5', 'Option 5'),
+						item('option6', 'Option 6')
+					)
+				)
+			),
+			body(
+				selectDynamic('/data/selectQuestion', "instance('options')/root/item"),
+
+				rankDynamic(
+					'/data/rankQuestion',
+					"instance('options')/root/item[selected(/data/selectQuestion, value)]"
+				)
+			)
+		);
+		const scenario = await Scenario.init('Rank includes all values', form);
+
+		expect(scenario.answerOf(SELECT_QUESTION).getValue()).toBe('');
+		expect(scenario.answerOf(RANK_QUESTION).getValue()).toBe('');
+
+		scenario.answer(
+			SELECT_QUESTION,
+			'option1',
+			'option4',
+			'option3',
+			'option6',
+			'option5',
+			'option2'
+		);
+		expect(scenario.answerOf(SELECT_QUESTION).getValue()).toBe(
+			'option1 option2 option3 option4 option5 option6'
+		);
+		expect(scenario.answerOf(RANK_QUESTION).getValue()).toBe('');
+
+		scenario.answer(RANK_QUESTION, 'option6 option2 option5');
+		expect(scenario.answerOf(RANK_QUESTION).getValue()).toBe(
+			'option6 option2 option5 option1 option3 option4'
+		);
+	});
 });
