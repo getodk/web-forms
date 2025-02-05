@@ -2,11 +2,11 @@ import type { RuntimeInputValue, RuntimeValue } from '../lib/codecs/getSharedVal
 import type { InputControlDefinition } from '../parse/body/control/InputControlDefinition.ts';
 import type { LeafNodeDefinition } from '../parse/model/LeafNodeDefinition.ts';
 import type { BaseValueNode, BaseValueNodeState } from './BaseValueNode.ts';
+import type { GeneralParentNode } from './hierarchy.ts';
 import type { NodeAppearances } from './NodeAppearances.ts';
 import type { RootNode } from './RootNode.ts';
-import type { ValueType } from './ValueType.ts';
-import type { GeneralParentNode } from './hierarchy.ts';
 import type { LeafNodeValidationState } from './validation.ts';
+import type { ValueType } from './ValueType.ts';
 
 export type InputValue<V extends ValueType> = RuntimeValue<V>;
 
