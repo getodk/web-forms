@@ -51,7 +51,7 @@ const save = () => {
 	props.node.setValue([latitude, longitude, altitude, accuracy].join(' '));
 };
 
-const formatNumber = (num) => {
+const formatNumber = (num: number) => {
 	const decimals = Number.isInteger(num) ? 0 : 2;
 	return num.toFixed(decimals);
 };
