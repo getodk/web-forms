@@ -1,9 +1,8 @@
 import type { ParsedTokenList } from '../../lib/TokenListParser.ts';
 import { TokenListParser } from '../../lib/TokenListParser.ts';
-import type { XFormDefinition } from '../XFormDefinition.ts';
+import type { XFormDefinition } from '../../parse/XFormDefinition.ts';
 import { DependencyContext } from '../expression/abstract/DependencyContext.ts';
 import { ControlDefinition } from './control/ControlDefinition.ts';
-import { GeoControlDefinition } from './control/GeoControlDefinition.ts';
 import { InputControlDefinition } from './control/InputControlDefinition.ts';
 import { RangeControlDefinition } from './control/RangeControlDefinition.ts';
 import { RankControlDefinition } from './control/RankControlDefinition.ts';
@@ -27,7 +26,6 @@ export interface BodyElementParentContext {
 export type ControlElementDefinition =
 	| AnySelectControlDefinition
 	| InputControlDefinition
-	| GeoControlDefinition
 	| RangeControlDefinition
 	| RankControlDefinition
 	| TriggerControlDefinition
@@ -50,7 +48,6 @@ const BodyElementDefinitionConstructors = [
 	PresentationGroupDefinition,
 	StructuralGroupDefinition,
 	InputControlDefinition,
-	GeoControlDefinition,
 	SelectControlDefinition,
 	RangeControlDefinition,
 	RankControlDefinition,
