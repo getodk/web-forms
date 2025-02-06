@@ -89,13 +89,15 @@ export type GeopointInputValue = InputValue<'geopoint'>;
 export type StringInputNode = InputNode<'string'>;
 export type IntInputNode = InputNode<'int'>;
 export type DecimalInputNode = InputNode<'decimal'>;
+export type GeopointInputNode = InputNode<'geopoint'>;
 
 // prettier-ignore
 type SupportedInputValueType =
 	// eslint-disable-next-line @typescript-eslint/sort-type-constituents
 	| 'string'
 	| 'int'
-	| 'decimal';
+	| 'decimal'
+	| 'geopoint';
 
 type TemporaryStringValueType = Exclude<ValueType, SupportedInputValueType>;
 
@@ -107,4 +109,5 @@ export type AnyInputNode =
 	| StringInputNode
 	| IntInputNode
 	| DecimalInputNode
+	| GeopointInputNode
 	| TemporaryStringValueInputNode;
