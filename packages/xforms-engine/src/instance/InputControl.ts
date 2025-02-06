@@ -111,9 +111,6 @@ export type AnyInputControl =
 	| InputControl<'date'>
 	| InputControl<'dateTime'>
 	| InputControl<'decimal'>
-	| InputControl<'geopoint'>
-	| InputControl<'geoshape'>
-	| InputControl<'geotrace'>
 	| InputControl<'int'>
 	| InputControl<'intent'>
 	| InputControl<'string'>

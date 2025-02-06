@@ -35,9 +35,6 @@ interface RuntimeInputValuesByType {
 	readonly date: string;
 	readonly time: string;
 	readonly dateTime: string;
-	readonly geopoint: string;
-	readonly geotrace: string;
-	readonly geoshape: string;
 	readonly binary: string;
 	readonly barcode: string;
 	readonly intent: string;
@@ -64,9 +61,6 @@ export const sharedValueCodecs: SharedValueCodecs = {
 	date: new ValueTypePlaceholderCodec('date'),
 	time: new ValueTypePlaceholderCodec('time'),
 	dateTime: new ValueTypePlaceholderCodec('dateTime'),
-	geopoint: new ValueTypePlaceholderCodec('geopoint'),
-	geotrace: new ValueTypePlaceholderCodec('geotrace'),
-	geoshape: new ValueTypePlaceholderCodec('geoshape'),
 	binary: new ValueTypePlaceholderCodec('binary'),
 	barcode: new ValueTypePlaceholderCodec('barcode'),
 	intent: new ValueTypePlaceholderCodec('intent'),

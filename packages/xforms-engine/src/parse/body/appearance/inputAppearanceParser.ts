@@ -18,10 +18,6 @@ export const inputAppearanceParser = new TokenListParser([
 	'myanmar',
 	'persian',
 
-	// geo (TODO: data types)
-	'placement-map',
-	'maps',
-
 	// image/media (TODO: move to eventual `<upload>`?)
 	'hidden-answer',
 	'annotate',
