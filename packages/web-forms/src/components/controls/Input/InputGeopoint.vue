@@ -25,7 +25,7 @@ const start = () => {
 			coords.value = position.coords;
 		},
 		() => {
-			// ToDo: do we show a modal with throubleshooting for the user?
+			// ToDo: do we show a modal with troubleshooting for the user?
 		},
 		{ enableHighAccuracy: true }
 	);
@@ -59,10 +59,10 @@ const formatNumber = (num: number) => {
 
 <template>
 	<Button
-		rounded
 		v-if="!value?.length && watchID === null"
-		@click="start()"
+		rounded
 		class="get-location-button"
+		@click="start()"
 	>
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
@@ -84,30 +84,35 @@ const formatNumber = (num: number) => {
 	<div v-else class="geolocation-container">
 		<div class="geolocation-result">
 			<div class="geolocation-icons">
-				<PrimeProgressSpinner class="spinner" strokeWidth="4" />
+				<PrimeProgressSpinner class="spinner" stroke-width="4" />
 			</div>
 			<div class="geolocation-labels">
 				<!-- TODO: translations -->
 				<strong v-if="!coords?.accuracy">Getting location - please wait!</strong>
 				<strong v-else>{{ formatNumber(coords.accuracy) }}m - Good accuracy</strong>
-				<p v-if="watchID !== null">Location will be saved at 10m</p>
-				<p v-if="value.length">{{ value }}</p>
+				<p v-if="watchID !== null">
+					Location will be saved at 10m
+				</p>
+				<p v-if="value.length">
+					{{ value }}
+				</p>
 			</div>
 		</div>
 
 		<div class="geolocation-buttons">
 			<!-- TODO: translations -->
-			<Button text label="Cancel" v-if="watchID !== null" @click="stop()" />
+			<Button v-if="watchID !== null" text rounded label="Cancel" @click="stop()" />
 
 			<!-- TODO: translations -->
-			<Button label="Save location" rounded v-if="watchID !== null" @click="save()" />
+			<Button v-if="watchID !== null" label="Save location" rounded @click="save()" />
 
 			<Button
+				v-if="value?.length && watchID === null"
+				rounded
 				outlined
 				severity="contrast"
-				v-if="value?.length && watchID === null"
-				@click="start()"
 				class="retry-button"
+				@click="start()"
 			>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
