@@ -4,6 +4,24 @@ import { inputAppearanceParser } from '../appearance/inputAppearanceParser.ts';
 import type { BodyElementParentContext } from '../BodyDefinition.ts';
 import { ControlDefinition } from './ControlDefinition.ts';
 
+// ToDo: Move to a better place. /src/lib/NodeOptionsParser.ts?
+const parseInteger = (value: string | null) => {
+	const parsed = Number(value);
+	if (!Number.isInteger(parsed)) {
+		throw new Error(`Expected an integer, but got: ${value}`);
+	}
+	return parsed;
+};
+
+// ToDo: Move to a better place. /src/lib/NodeOptionsParser.ts?
+const parseFloatStrict = (value: string | null) => {
+	const parsed = Number(value);
+	if (isNaN(parsed)) {
+		throw new Error(`Expected a float, but got: ${value}`);
+	}
+	return parsed;
+};
+
 export class InputControlDefinition extends ControlDefinition<'input'> {
 	static override isCompatible(localName: string): boolean {
 		return localName === 'input';
@@ -19,8 +37,10 @@ export class InputControlDefinition extends ControlDefinition<'input'> {
 		super(form, parent, element);
 
 		this.appearances = inputAppearanceParser.parseFrom(element, 'appearance');
-		this.rows = Number(element.getAttribute('rows')); // ToDo: Make parser function, validate NaN
-		this.accuracyThreshold = Number(element.getAttribute('accuracyThreshold')); // ToDo: Make parser function, validate NaN
-		this.unacceptableAccuracyThreshold = Number(element.getAttribute('unacceptableAccuracyThreshold')); // ToDo: Make parser function, validate NaN
+		this.rows = parseInteger(element.getAttribute('rows'));
+		this.accuracyThreshold = parseFloatStrict(element.getAttribute('accuracyThreshold'));
+		this.unacceptableAccuracyThreshold = parseFloatStrict(
+			element.getAttribute('unacceptableAccuracyThreshold')
+		);
 	}
 }
