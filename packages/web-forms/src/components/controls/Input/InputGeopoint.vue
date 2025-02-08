@@ -4,15 +4,61 @@ import Button from 'primevue/button';
 import PrimeProgressSpinner from 'primevue/progressspinner';
 import { computed, ref } from 'vue';
 
+interface Coordinates {
+	latitude: string;
+	longitude: string;
+	altitude: string;
+	accuracy: string;
+}
+
 interface InputGeopointProps {
 	readonly node: GeopointInputNode;
 }
 
 const props = defineProps<InputGeopointProps>();
-const watchID = ref<number | null>(null);
 const coords = ref<GeolocationCoordinates | null>(null);
-const value = computed(() => {
-	return props.node.currentState.value;
+
+const value = computed((): Coordinates | null => {
+	if (!props.node.currentState.value?.length) {
+		return null;
+	}
+
+	const [latitude, longitude, altitude, accuracy] = props.node.currentState.value.trim().split(' ');
+	return { latitude, longitude, altitude, accuracy };
+});
+
+/**
+ * Target in meters that can usually be reached by modern devices given enough time.
+ */
+const ACCURACY_THRESHOLD_DEFAULT = 5;
+const accuracyThreshold = computed<number>(() => {
+	return props.node.nodeOptions.accuracyThreshold ?? ACCURACY_THRESHOLD_DEFAULT;
+});
+
+/**
+ * Target in meters, which is about the length of a city block.
+ */
+const UNACCEPTABLE_ACCURACY_THRESHOLD_DEFAULT = 100;
+const unacceptableAccuracyThreshold = computed<number>(() => {
+	return (
+		props.node.nodeOptions.unacceptableAccuracyThreshold ?? UNACCEPTABLE_ACCURACY_THRESHOLD_DEFAULT
+	);
+});
+
+const qualityCoordinates = computed<string>(() => {
+	const accuracy = coords.value?.accuracy;
+	if (accuracy == null || accuracy > unacceptableAccuracyThreshold.value) {
+		// TODO: translations
+		return 'poor';
+	}
+
+	// TODO: translations
+	return 'good';
+});
+
+const watchID = ref<number | null>(null);
+const isLocating = computed(() => {
+	return watchID.value !== null;
 });
 
 const start = () => {
@@ -23,6 +69,14 @@ const start = () => {
 	watchID.value = navigator.geolocation.watchPosition(
 		(position) => {
 			coords.value = position.coords;
+
+			if (
+				value.value === null &&
+				accuracyThreshold.value !== 0 &&
+				coords.value.accuracy <= accuracyThreshold.value
+			) {
+				save();
+			}
 		},
 		() => {
 			// ToDo: do we show a modal with troubleshooting for the user?
@@ -48,7 +102,9 @@ const save = () => {
 	}
 
 	const { latitude, longitude, altitude, accuracy } = coords.value;
-	props.node.setValue([latitude, longitude, altitude, accuracy].join(' '));
+	// ToDo: if one is missing, it still need to know the position of the others.
+	// ToDo: Change the value type to object? or default to negative / zero number?
+	props.node.setValue([latitude ?? 0, longitude ?? 0, altitude ?? 0, accuracy ?? 0].join(' '));
 };
 
 const formatNumber = (num: number) => {
@@ -59,7 +115,7 @@ const formatNumber = (num: number) => {
 
 <template>
 	<Button
-		v-if="!value?.length && watchID === null"
+		v-if="value === null && !isLocating"
 		rounded
 		class="get-location-button"
 		@click="start()"
@@ -89,25 +145,34 @@ const formatNumber = (num: number) => {
 			<div class="geolocation-labels">
 				<!-- TODO: translations -->
 				<strong v-if="!coords?.accuracy">Getting location - please wait!</strong>
-				<strong v-else>{{ formatNumber(coords.accuracy) }}m - Good accuracy</strong>
-				<p v-if="watchID !== null">
-					Location will be saved at 10m
+				<strong v-else>{{ formatNumber(coords.accuracy) }}m - {{ qualityCoordinates }} accuracy</strong>
+				<p v-if="value === null && isLocating">
+					Location will be saved at {{ accuracyThreshold }}m
 				</p>
-				<p v-if="value.length">
-					{{ value }}
+				<p v-if="value?.accuracy != null">
+					Accuracy: {{ formatNumber(Number(value.accuracy)) }}m
+				</p>
+				<p v-if="value?.latitude != null">
+					Latitude: {{ value.latitude }}
+				</p>
+				<p v-if="value?.longitude != null">
+					Longitude: {{ value.longitude }}
+				</p>
+				<p v-if="value?.altitude != null">
+					Altitude: {{ value.altitude }}
 				</p>
 			</div>
 		</div>
 
 		<div class="geolocation-buttons">
 			<!-- TODO: translations -->
-			<Button v-if="watchID !== null" text rounded label="Cancel" @click="stop()" />
+			<Button v-if="isLocating" text rounded label="Cancel" @click="stop()" />
 
 			<!-- TODO: translations -->
-			<Button v-if="watchID !== null" label="Save location" rounded @click="save()" />
+			<Button v-if="isLocating" label="Save location" rounded @click="save()" />
 
 			<Button
-				v-if="value?.length && watchID === null"
+				v-if="value !== null && !isLocating"
 				rounded
 				outlined
 				severity="contrast"
@@ -176,6 +241,10 @@ const formatNumber = (num: number) => {
 
 .retry-button svg path {
 	fill: var(--surface-900);
+}
+
+.geolocation-buttons button {
+	margin-left: 15px;
 }
 
 .geolocation-result {
