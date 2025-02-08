@@ -4,7 +4,7 @@ import { parseToFloat, parseToInteger } from '../../../src/parse/body/NodeOption
 describe('NodeOptionsParser', () => {
 	interface SuccessTestCase {
 		readonly input: string | null;
-		readonly expected: number;
+		readonly expected: number | null;
 	}
 
 	interface ErrorTestCase {
@@ -25,15 +25,22 @@ describe('NodeOptionsParser', () => {
 			}
 		});
 
+		it('should return null when node option is not specified', () => {
+			try {
+				expect(parseToInteger(null)).toEqual(null);
+			} catch {
+				assert.fail('Should not have thrown an error');
+			}
+		});
+
 		it.each<ErrorTestCase>([
 			{ input: '3.14159', expected: new Error('Expected an integer, but got: 3.14159') },
 			{ input: 'abc', expected: new Error('Expected an integer, but got: abc') },
-			{ input: '', expected: new Error('Expected a non-empty string, but got: ') },
-			{ input: NaN, expected: new Error('Expected a non-empty string, but got: NaN') },
-			{ input: null, expected: new Error('Expected a non-empty string, but got: null') },
-			{ input: false, expected: new Error('Expected a non-empty string, but got: false') },
-			{ input: true, expected: new Error('Expected a non-empty string, but got: true') },
-			{ input: undefined, expected: new Error('Expected a non-empty string, but got: undefined') },
+			{ input: '', expected: new Error('Expected an integer, but got: ') },
+			{ input: NaN, expected: new Error('Expected an integer, but got: NaN') },
+			{ input: false, expected: new Error('Expected an integer, but got: false') },
+			{ input: true, expected: new Error('Expected an integer, but got: true') },
+			{ input: undefined, expected: new Error('Expected an integer, but got: undefined') },
 		])('should throw error for non-integer numbers', ({ input, expected }) => {
 			try {
 				// @ts-expect-error Ignoring TS2345: Testing invalid input
@@ -59,14 +66,21 @@ describe('NodeOptionsParser', () => {
 			}
 		});
 
+		it('should return null when node option is not specified', () => {
+			try {
+				expect(parseToFloat(null)).toEqual(null);
+			} catch {
+				assert.fail('Should not have thrown an error');
+			}
+		});
+
 		it.each<ErrorTestCase>([
 			{ input: 'abc', expected: new Error('Expected a float, but got: abc') },
-			{ input: '', expected: new Error('Expected a non-empty string, but got: ') },
-			{ input: NaN, expected: new Error('Expected a non-empty string, but got: NaN') },
-			{ input: null, expected: new Error('Expected a non-empty string, but got: null') },
-			{ input: false, expected: new Error('Expected a non-empty string, but got: false') },
-			{ input: true, expected: new Error('Expected a non-empty string, but got: true') },
-			{ input: undefined, expected: new Error('Expected a non-empty string, but got: undefined') },
+			{ input: '', expected: new Error('Expected a float, but got: ') },
+			{ input: NaN, expected: new Error('Expected a float, but got: NaN') },
+			{ input: false, expected: new Error('Expected a float, but got: false') },
+			{ input: true, expected: new Error('Expected a float, but got: true') },
+			{ input: undefined, expected: new Error('Expected a float, but got: undefined') },
 		])('should throw error for non-float or non-integer numbers', ({ input, expected }) => {
 			try {
 				// @ts-expect-error Ignoring TS2345: Testing invalid input
