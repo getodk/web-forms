@@ -8,7 +8,7 @@ describe('NodeOptionsParser', () => {
 	}
 
 	interface ErrorTestCase {
-		readonly input: number | string | null | undefined | boolean;
+		readonly input: boolean | number | string | null | undefined;
 		readonly expected: Error;
 	}
 
