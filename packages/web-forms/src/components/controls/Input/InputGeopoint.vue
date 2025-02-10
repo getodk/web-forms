@@ -91,6 +91,7 @@ const isLocating = computed(() => {
 });
 
 const controlElement = ref<HTMLElement | null>(null);
+// Autosave geopoint when control leaves the viewport as the user scrolls.
 const observer = new IntersectionObserver(
 	([entry]) => {
 		if (!entry.isIntersecting) {
@@ -125,7 +126,9 @@ const start = () => {
 		{ enableHighAccuracy: true }
 	);
 
-	observer?.observe(controlElement.value);
+	if (observer && controlElement.value) {
+		observer.observe(controlElement.value);
+	}
 };
 
 const stop = () => {
