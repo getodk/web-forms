@@ -90,6 +90,16 @@ const isLocating = computed(() => {
 	return watchID.value !== null;
 });
 
+const controlElement = ref<HTMLElement | null>(null);
+const observer = new IntersectionObserver(
+	([entry]) => {
+		if (!entry.isIntersecting) {
+			save();
+		}
+	},
+	{ threshold: 0.6 }
+);
+
 const start = () => {
 	geoLocationError.value = false;
 	if (watchID.value) {
@@ -114,6 +124,8 @@ const start = () => {
 		},
 		{ enableHighAccuracy: true }
 	);
+
+	observer?.observe(controlElement.value);
 };
 
 const stop = () => {
@@ -123,6 +135,7 @@ const stop = () => {
 
 	navigator.geolocation.clearWatch(watchID.value);
 	watchID.value = null;
+	observer?.disconnect();
 };
 
 const save = () => {
@@ -145,7 +158,7 @@ const formatNumber = (num: number) => {
 </script>
 
 <template>
-	<div class="geolocation-control">
+	<div class="geolocation-control" ref="controlElement">
 		<Button
 			v-if="value === null && !isLocating"
 			rounded
