@@ -11,12 +11,6 @@ interface Coordinates {
 	accuracy: string;
 }
 
-const QUALITY = {
-	good: 'good',
-	poor: 'poor',
-	unknown: 'unknown',
-};
-
 interface InputGeopointProps {
 	readonly node: GeopointInputNode;
 }
@@ -51,33 +45,45 @@ const unacceptableAccuracyThreshold = computed<number>(() => {
 	);
 });
 
+/**
+ * Defines geolocation accuracy levels:
+ *  - 'good' if accuracy is <= unacceptableAccuracyThreshold
+ *  - 'poor' if accuracy > unacceptableAccuracyThreshold
+ *  - 'unknown' if accuracy is null or undefined
+ */
+const ACCURACY_QUALITY = {
+	good: 'good',
+	poor: 'poor',
+	unknown: 'unknown',
+};
+
 const qualityCoordinates = computed<string>(() => {
 	const accuracy = coords.value?.accuracy;
 	if (accuracy == null) {
-		return QUALITY.unknown;
+		return ACCURACY_QUALITY.unknown;
 	}
 
 	if (accuracy > unacceptableAccuracyThreshold.value) {
-		return QUALITY.poor;
+		return ACCURACY_QUALITY.poor;
 	}
 
-	return QUALITY.good;
+	return ACCURACY_QUALITY.good;
 });
 
 const qualityLabel = computed<string>(() => {
 	// TODO: translations
-
-	if (qualityCoordinates.value === QUALITY.good) {
+	if (qualityCoordinates.value === ACCURACY_QUALITY.good) {
 		return 'Good';
 	}
 
-	if (qualityCoordinates.value === QUALITY.poor) {
+	if (qualityCoordinates.value === ACCURACY_QUALITY.poor) {
 		return 'Poor';
 	}
 
 	return 'Unknown';
 });
 
+const disabled = computed(() => props.node.currentState.readonly === true);
 const watchID = ref<number | null>(null);
 const geoLocationError = ref<boolean>(false);
 const isLocating = computed(() => {
@@ -144,6 +150,7 @@ const formatNumber = (num: number) => {
 			v-if="value === null && !isLocating"
 			rounded
 			class="get-location-button"
+			:disabled="disabled"
 			@click="start()"
 		>
 			<svg
@@ -166,8 +173,7 @@ const formatNumber = (num: number) => {
 		<div v-else class="geolocation-container">
 			<div class="geolocation-result">
 				<div class="geolocation-icons">
-					<i v-if="qualityCoordinates === QUALITY.poor" class="icon-warning" />
-					<svg v-if="qualityCoordinates === QUALITY.good" class="icon-good-location" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28" fill="none">
+					<svg v-if="disabled || qualityCoordinates === ACCURACY_QUALITY.good" class="icon-good-location" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28" fill="none">
 						<g clip-path="url(#clip0_1090_14860)">
 							<path fill-rule="evenodd" clip-rule="evenodd" d="M13.381 27.8037C13.5611 27.9334 13.7779 28.0021 13.9999 27.9999C14.2218 28.0021 14.4386 27.9334 14.6187 27.8037C15.1319 27.5169 25.6979 20.3773 25.6979 11.6981C25.6979 8.59556 24.4655 5.62011 22.2717 3.42629C20.0778 1.23247 17.1024 0 13.9999 0C10.8973 0 7.92187 1.23247 5.72805 3.42629C3.53423 5.62011 2.30176 8.59556 2.30176 11.6981C2.30176 20.3773 12.9282 27.5169 13.381 27.8037ZM7.34685 5.06722C9.11563 3.31259 11.5084 2.33159 13.9999 2.33962C16.4913 2.33159 18.8841 3.31259 20.6528 5.06722C22.4216 6.82184 23.4218 9.20668 23.4338 11.6981C23.4338 18.0528 16.2036 23.8641 13.9999 25.4792C11.7961 23.8641 4.5659 18.0528 4.5659 11.6981C4.57789 9.20668 5.57807 6.82184 7.34685 5.06722ZM11.6937 14.4702C12.3763 14.9263 13.1788 15.1698 13.9998 15.1698C15.1007 15.1698 16.1565 14.7325 16.935 13.954C17.7134 13.1756 18.1508 12.1198 18.1508 11.0189C18.1508 10.1979 17.9073 9.39534 17.4512 8.71272C16.9951 8.0301 16.3468 7.49807 15.5883 7.18389C14.8298 6.86972 13.9952 6.78752 13.19 6.94768C12.3848 7.10785 11.6452 7.50318 11.0647 8.0837C10.4841 8.66422 10.0888 9.40385 9.92864 10.2091C9.76847 11.0143 9.85068 11.8489 10.1649 12.6074C10.479 13.3658 11.0111 14.0141 11.6937 14.4702ZM12.9516 9.45005C13.2619 9.24273 13.6266 9.13207 13.9998 9.13207C14.5002 9.13207 14.9801 9.33085 15.334 9.6847C15.6878 10.0385 15.8866 10.5184 15.8866 11.0189C15.8866 11.392 15.7759 11.7568 15.5686 12.0671C15.3613 12.3774 15.0666 12.6192 14.7219 12.762C14.3771 12.9048 13.9977 12.9422 13.6317 12.8694C13.2657 12.7966 12.9295 12.6169 12.6657 12.353C12.4018 12.0891 12.2221 11.753 12.1493 11.387C12.0765 11.021 12.1138 10.6416 12.2566 10.2968C12.3995 9.95205 12.6413 9.65737 12.9516 9.45005Z" fill="#3B82F6" />
 						</g>
@@ -177,14 +183,16 @@ const formatNumber = (num: number) => {
 							</clipPath>
 						</defs>
 					</svg>
-					<PrimeProgressSpinner v-if="qualityCoordinates === QUALITY.unknown" class="spinner" stroke-width="4" />
+					<i v-if="!disabled && qualityCoordinates === ACCURACY_QUALITY.poor" class="icon-warning" />
+					<PrimeProgressSpinner v-if="!disabled && qualityCoordinates === ACCURACY_QUALITY.unknown" class="spinner" stroke-width="4" />
 				</div>
 
 				<div class="geolocation-labels">
 					<!-- TODO: translations -->
-					<strong v-if="!coords?.accuracy">Getting location - please wait!</strong>
-					<strong v-else>{{ formatNumber(coords.accuracy) }}m - {{ qualityLabel }} accuracy</strong>
-					<p v-if="value === null && isLocating">
+					<strong v-if="disabled">Location captured</strong>
+					<strong v-if="!disabled && !coords?.accuracy">Getting location - please wait!</strong>
+					<strong v-if="!disabled && coords?.accuracy">{{ formatNumber(coords.accuracy) }}m - {{ qualityLabel }} accuracy</strong>
+					<p v-if="!disabled && value === null && isLocating">
 						Location will be saved at {{ accuracyThreshold }}m
 					</p>
 					<p>
@@ -206,7 +214,7 @@ const formatNumber = (num: number) => {
 				</div>
 			</div>
 
-			<div class="geolocation-buttons">
+			<div class="geolocation-buttons" v-if="!disabled">
 				<!-- TODO: translations -->
 				<Button v-if="isLocating" text rounded label="Cancel" @click="stop()" />
 
@@ -294,6 +302,10 @@ const formatNumber = (num: number) => {
 
 	svg {
 		fill: var(--surface-0);
+	}
+
+	&:disabled svg {
+		fill: var(--surface-500);
 	}
 }
 
