@@ -2,7 +2,7 @@
 import type { GeopointInputNode } from '@getodk/xforms-engine';
 import Button from 'primevue/button';
 import PrimeProgressSpinner from 'primevue/progressspinner';
-import { computed, ref } from 'vue';
+import { inject, computed, ref } from 'vue';
 
 interface Coordinates {
 	latitude: string;
@@ -100,6 +100,10 @@ const observer = new IntersectionObserver(
 	},
 	{ threshold: 0.6 }
 );
+
+const registerBeforeSubmit = inject<(callback: () => void) => void>('registerBeforeSubmit');
+// Autosave geopoint value before submitting the form.
+registerBeforeSubmit?.(() => save());
 
 const start = () => {
 	geoLocationError.value = false;
