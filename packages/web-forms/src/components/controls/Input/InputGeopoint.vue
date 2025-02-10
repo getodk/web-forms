@@ -4,19 +4,19 @@ import Button from 'primevue/button';
 import PrimeProgressSpinner from 'primevue/progressspinner';
 import { inject, computed, ref } from 'vue';
 
-interface Coordinates {
-	latitude: string;
-	longitude: string;
-	altitude: string;
-	accuracy: string;
-}
-
 interface InputGeopointProps {
 	readonly node: GeopointInputNode;
 }
 
 const props = defineProps<InputGeopointProps>();
 const coords = ref<GeolocationCoordinates | null>(null);
+
+interface Coordinates {
+	latitude: string;
+	longitude: string;
+	altitude: string;
+	accuracy: string;
+}
 
 const value = computed((): Coordinates | null => {
 	if (!props.node.currentState.value?.length) {
@@ -28,7 +28,7 @@ const value = computed((): Coordinates | null => {
 });
 
 /**
- * Target in meters that can usually be reached by modern devices given enough time.
+ * Default accuracy in meters that can usually be reached by modern devices given enough time.
  */
 const ACCURACY_THRESHOLD_DEFAULT = 5;
 const accuracyThreshold = computed<number>(() => {
@@ -36,7 +36,7 @@ const accuracyThreshold = computed<number>(() => {
 });
 
 /**
- * Target in meters, which is about the length of a city block.
+ * Default unacceptable accuracy in meters, which is about the length of a city block.
  */
 const UNACCEPTABLE_ACCURACY_THRESHOLD_DEFAULT = 100;
 const unacceptableAccuracyThreshold = computed<number>(() => {
@@ -84,15 +84,15 @@ const qualityLabel = computed<string>(() => {
 });
 
 const disabled = computed(() => props.node.currentState.readonly === true);
-const watchID = ref<number | null>(null);
 const geoLocationError = ref<boolean>(false);
+const watchID = ref<number | null>(null);
 const isLocating = computed(() => {
 	return watchID.value !== null;
 });
 
 const controlElement = ref<HTMLElement | null>(null);
 // Autosave geopoint when control leaves the viewport as the user scrolls.
-const observer = new IntersectionObserver(
+const controlElementObserver = new IntersectionObserver(
 	([entry]) => {
 		if (!entry.isIntersecting) {
 			save();
@@ -130,8 +130,8 @@ const start = () => {
 		{ enableHighAccuracy: true }
 	);
 
-	if (observer && controlElement.value) {
-		observer.observe(controlElement.value);
+	if (controlElementObserver && controlElement.value) {
+		controlElementObserver.observe(controlElement.value);
 	}
 };
 
@@ -142,7 +142,7 @@ const stop = () => {
 
 	navigator.geolocation.clearWatch(watchID.value);
 	watchID.value = null;
-	observer?.disconnect();
+	controlElementObserver?.disconnect();
 };
 
 const save = () => {
@@ -165,7 +165,7 @@ const formatNumber = (num: number) => {
 </script>
 
 <template>
-	<div class="geolocation-control" ref="controlElement">
+	<div ref="controlElement" class="geolocation-control">
 		<Button
 			v-if="value === null && !isLocating"
 			rounded
@@ -234,7 +234,7 @@ const formatNumber = (num: number) => {
 				</div>
 			</div>
 
-			<div class="geolocation-buttons" v-if="!disabled">
+			<div v-if="!disabled" class="geolocation-buttons">
 				<!-- TODO: translations -->
 				<Button v-if="isLocating" text rounded label="Cancel" @click="stop()" />
 
