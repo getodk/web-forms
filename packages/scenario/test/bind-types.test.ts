@@ -37,12 +37,14 @@ describe('Data (<bind type>) type support', () => {
 							t('implicit-string-value', 'implicit string'),
 							t('int-value', '123'),
 							t('decimal-value', '45.67'),
+							t('geopoint-value', '38.25146813817506 21.758421137528785 0 0'),
 						)
 					),
 					bind('/root/string-value').type('string').relevant(modelNodeRelevanceExpression),
 					bind('/root/implicit-string-value').relevant(modelNodeRelevanceExpression),
 					bind('/root/int-value').type('int').relevant(modelNodeRelevanceExpression),
-					bind('/root/decimal-value').type('decimal').relevant(modelNodeRelevanceExpression)
+					bind('/root/decimal-value').type('decimal').relevant(modelNodeRelevanceExpression),
+					bind('/root/geopoint-value').type('geopoint').relevant(modelNodeRelevanceExpression)
 				)
 			),
 			body(
@@ -182,6 +184,32 @@ describe('Data (<bind type>) type support', () => {
 				expect(answer.value).toBe(null);
 			});
 		});
+
+		describe('type="geopoint"', () => {
+			let answer: ModelValueNodeAnswer<'geopoint'>;
+
+			beforeEach(() => {
+				answer = getTypedModelValueNodeAnswer('/root/geopoint-value', 'geopoint');
+			});
+
+			it('has a string runtime value', () => {
+				expect(answer.value).toBeTypeOf('string');
+			});
+
+			it('has a string static type', () => {
+				expectTypeOf(answer.value).toBeString();
+			});
+
+			it('has a string populated value', () => {
+				expect(answer.value).toBe('38.25146813817506 21.758421137528785 0 0');
+			});
+
+			it('has an empty string blank value', () => {
+				scenario.answer(modelNodeRelevancePath, 'no');
+				answer = getTypedModelValueNodeAnswer('/root/geopoint-value', 'geopoint');
+				expect(answer.value).toBe('');
+			});
+		});
 	});
 
 	describe('inputs', () => {
@@ -202,12 +230,14 @@ describe('Data (<bind type>) type support', () => {
 							t('implicit-string-value', 'implicit string'),
 							t('int-value', '123'),
 							t('decimal-value', '45.67'),
+							t('geopoint-value', '38.25146813817506 21.758421137528785 1000 25'),
 						)
 					),
 					bind('/root/string-value').type('string').relevant(inputRelevanceExpression),
 					bind('/root/implicit-string-value').relevant(inputRelevanceExpression),
 					bind('/root/int-value').type('int').relevant(inputRelevanceExpression),
-					bind('/root/decimal-value').type('decimal').relevant(inputRelevanceExpression)
+					bind('/root/decimal-value').type('decimal').relevant(inputRelevanceExpression),
+					bind('/root/geopoint-value').type('geopoint').relevant(inputRelevanceExpression)
 				)
 			),
 			body(
@@ -216,6 +246,7 @@ describe('Data (<bind type>) type support', () => {
 				input('/root/implicit-string-value'),
 				input('/root/int-value'),
 				input('/root/decimal-value'),
+				input('/root/geopoint-value'),
 			)
 		);
 
@@ -478,6 +509,38 @@ describe('Data (<bind type>) type support', () => {
 						expect(answer.stringValue).toBe(`${expectedValue}`);
 					}
 				});
+			});
+		});
+
+		describe('type="geopoint"', () => {
+			let answer: InputNodeAnswer<'geopoint'>;
+
+			beforeEach(() => {
+				answer = getTypedInputNodeAnswer('/root/geopoint-value', 'geopoint');
+			});
+
+			it('has a string runtime value', () => {
+				expect(answer.value).toBeTypeOf('string');
+			});
+
+			it('has a string static type', () => {
+				expectTypeOf(answer.value).toBeString();
+			});
+
+			it('has a string populated value', () => {
+				expect(answer.value).toBe('38.25146813817506 21.758421137528785 1000 25');
+			});
+
+			it('has an empty string blank value', () => {
+				scenario.answer(inputRelevancePath, 'no');
+				answer = getTypedInputNodeAnswer('/root/geopoint-value', 'geopoint');
+				expect(answer.value).toBe('');
+			});
+
+			it('sets a string value', () => {
+				scenario.answer('/root/geopoint-value', '-1.2936673 36.7260063 1500 10');
+				answer = getTypedInputNodeAnswer('/root/geopoint-value', 'geopoint');
+				expect(answer.value).toBe('-1.2936673 36.7260063 1500 10');
 			});
 		});
 	});
