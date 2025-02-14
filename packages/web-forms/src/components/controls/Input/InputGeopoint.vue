@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { GeopointInputNode } from '@getodk/xforms-engine';
+import type { GeopointInputNode, InputValue } from '@getodk/xforms-engine';
 import Button from 'primevue/button';
 import PrimeProgressSpinner from 'primevue/progressspinner';
 import { inject, computed, ref } from 'vue';
@@ -11,20 +11,8 @@ interface InputGeopointProps {
 const props = defineProps<InputGeopointProps>();
 const coords = ref<GeolocationCoordinates | null>(null);
 
-interface Coordinates {
-	latitude: string;
-	longitude: string;
-	altitude: string;
-	accuracy: string;
-}
-
-const value = computed((): Coordinates | null => {
-	if (!props.node.currentState.value?.length) {
-		return null;
-	}
-
-	const [latitude, longitude, altitude, accuracy] = props.node.currentState.value.trim().split(' ');
-	return { latitude, longitude, altitude, accuracy };
+const value = computed((): InputValue<'geopoint'> => {
+	return props.node.currentState.value;
 });
 
 /**
@@ -152,10 +140,12 @@ const save = () => {
 		return;
 	}
 
-	const { latitude, longitude, altitude, accuracy } = coords.value;
-	// ToDo: if one is missing, it still need to know the position of the others.
-	// ToDo: Change the value type to object? or default to negative / zero number?
-	props.node.setValue([latitude ?? 0, longitude ?? 0, altitude ?? 0, accuracy ?? 0].join(' '));
+	props.node.setValue({
+		latitude: coords.value.latitude,
+		longitude: coords.value.longitude,
+		altitude: coords.value.altitude,
+		accuracy: coords.value.accuracy,
+	});
 };
 
 const formatNumber = (num: number) => {
