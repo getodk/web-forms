@@ -1,15 +1,27 @@
 <script setup lang="ts">
+import InputGeopointReadonly from '@/components/controls/Input/InputGeopointReadonly.vue';
 import type { GeopointInputNode, InputValue } from '@getodk/xforms-engine';
 import Button from 'primevue/button';
+import PrimeDialog from 'primevue/dialog';
 import PrimeProgressSpinner from 'primevue/progressspinner';
-import { inject, computed, ref } from 'vue';
+import { computed, inject, ref } from 'vue';
 
 interface InputGeopointProps {
 	readonly node: GeopointInputNode;
 }
 
 const props = defineProps<InputGeopointProps>();
+const submitPressed = inject<boolean>('submitPressed');
+const isInvalid = computed(() => props.node.validationState.violation?.valid === false);
 const coords = ref<GeolocationCoordinates | null>(null);
+const showDialog = ref(false);
+const disabled = computed(() => props.node.currentState.readonly === true);
+const geoLocationError = ref<boolean>(false);
+const watchID = ref<number | null>(null);
+const startTime = ref<number | null>(null);
+const elapsedTime = ref(0);
+// TODO: fix TypeScript check so it doesn't take types from NodeJS
+let intervalID: NodeJS.Timeout | undefined;
 
 const value = computed((): InputValue<'geopoint'> => {
 	return props.node.currentState.value;
@@ -71,33 +83,26 @@ const qualityLabel = computed<string>(() => {
 	return 'Unknown';
 });
 
-const disabled = computed(() => props.node.currentState.readonly === true);
-const geoLocationError = ref<boolean>(false);
-const watchID = ref<number | null>(null);
-const isLocating = computed(() => {
-	return watchID.value !== null;
+const formattedTime = computed(() => {
+	const minutes = Math.floor(elapsedTime.value / 60);
+	const seconds = (elapsedTime.value % 60).toString().padStart(2, '0');
+	return `${minutes}:${seconds}`;
 });
 
-const controlElement = ref<HTMLElement | null>(null);
-// Autosave geopoint when control leaves the viewport as the user scrolls.
-const controlElementObserver = new IntersectionObserver(
-	([entry]) => {
-		if (!entry.isIntersecting) {
-			save();
-		}
-	},
-	{ threshold: 0.6 }
-);
-
-const registerBeforeSubmit = inject<(callback: () => void) => void>('registerBeforeSubmit');
-// Autosave geopoint value before submitting the form.
-registerBeforeSubmit?.(() => save());
-
 const start = () => {
-	geoLocationError.value = false;
 	if (watchID.value) {
 		stop();
 	}
+
+	showDialog.value = true;
+	geoLocationError.value = false;
+
+	startTime.value = Date.now();
+	intervalID = setInterval(() => {
+		if (startTime.value !== null) {
+			elapsedTime.value = Math.floor((Date.now() - startTime.value) / 1000);
+		}
+	}, 1000);
 
 	watchID.value = navigator.geolocation.watchPosition(
 		(position) => {
@@ -112,15 +117,11 @@ const start = () => {
 			}
 		},
 		() => {
-			stop();
+			closeDialog();
 			geoLocationError.value = true;
 		},
 		{ enableHighAccuracy: true }
 	);
-
-	if (controlElementObserver && controlElement.value) {
-		controlElementObserver.observe(controlElement.value);
-	}
 };
 
 const stop = () => {
@@ -130,11 +131,13 @@ const stop = () => {
 
 	navigator.geolocation.clearWatch(watchID.value);
 	watchID.value = null;
-	controlElementObserver?.disconnect();
+
+	clearInterval(intervalID);
+	elapsedTime.value = 0;
 };
 
 const save = () => {
-	stop();
+	closeDialog();
 
 	if (!coords.value) {
 		return;
@@ -148,16 +151,16 @@ const save = () => {
 	});
 };
 
-const formatNumber = (num: number) => {
-	const decimals = Number.isInteger(num) ? 0 : 2;
-	return num.toFixed(decimals);
+const closeDialog = () => {
+	stop();
+	showDialog.value = false;
 };
 </script>
 
 <template>
 	<div ref="controlElement" class="geolocation-control">
 		<Button
-			v-if="value === null && !isLocating"
+			v-if="value == null"
 			rounded
 			class="get-location-button"
 			:disabled="disabled"
@@ -180,178 +183,196 @@ const formatNumber = (num: number) => {
 			<span>Get location</span>
 		</Button>
 
-		<div v-else class="geolocation-container">
-			<div class="geolocation-result">
-				<div class="geolocation-icons">
-					<i v-if="qualityCoordinates === ACCURACY_QUALITY.poor" class="icon-warning" />
-					<PrimeProgressSpinner v-else-if="isLocating && qualityCoordinates === ACCURACY_QUALITY.unknown" class="spinner" stroke-width="4" />
-					<svg v-else class="icon-good-location" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28" fill="none">
-						<g clip-path="url(#clip0_1090_14860)">
-							<path fill-rule="evenodd" clip-rule="evenodd" d="M13.381 27.8037C13.5611 27.9334 13.7779 28.0021 13.9999 27.9999C14.2218 28.0021 14.4386 27.9334 14.6187 27.8037C15.1319 27.5169 25.6979 20.3773 25.6979 11.6981C25.6979 8.59556 24.4655 5.62011 22.2717 3.42629C20.0778 1.23247 17.1024 0 13.9999 0C10.8973 0 7.92187 1.23247 5.72805 3.42629C3.53423 5.62011 2.30176 8.59556 2.30176 11.6981C2.30176 20.3773 12.9282 27.5169 13.381 27.8037ZM7.34685 5.06722C9.11563 3.31259 11.5084 2.33159 13.9999 2.33962C16.4913 2.33159 18.8841 3.31259 20.6528 5.06722C22.4216 6.82184 23.4218 9.20668 23.4338 11.6981C23.4338 18.0528 16.2036 23.8641 13.9999 25.4792C11.7961 23.8641 4.5659 18.0528 4.5659 11.6981C4.57789 9.20668 5.57807 6.82184 7.34685 5.06722ZM11.6937 14.4702C12.3763 14.9263 13.1788 15.1698 13.9998 15.1698C15.1007 15.1698 16.1565 14.7325 16.935 13.954C17.7134 13.1756 18.1508 12.1198 18.1508 11.0189C18.1508 10.1979 17.9073 9.39534 17.4512 8.71272C16.9951 8.0301 16.3468 7.49807 15.5883 7.18389C14.8298 6.86972 13.9952 6.78752 13.19 6.94768C12.3848 7.10785 11.6452 7.50318 11.0647 8.0837C10.4841 8.66422 10.0888 9.40385 9.92864 10.2091C9.76847 11.0143 9.85068 11.8489 10.1649 12.6074C10.479 13.3658 11.0111 14.0141 11.6937 14.4702ZM12.9516 9.45005C13.2619 9.24273 13.6266 9.13207 13.9998 9.13207C14.5002 9.13207 14.9801 9.33085 15.334 9.6847C15.6878 10.0385 15.8866 10.5184 15.8866 11.0189C15.8866 11.392 15.7759 11.7568 15.5686 12.0671C15.3613 12.3774 15.0666 12.6192 14.7219 12.762C14.3771 12.9048 13.9977 12.9422 13.6317 12.8694C13.2657 12.7966 12.9295 12.6169 12.6657 12.353C12.4018 12.0891 12.2221 11.753 12.1493 11.387C12.0765 11.021 12.1138 10.6416 12.2566 10.2968C12.3995 9.95205 12.6413 9.65737 12.9516 9.45005Z" fill="#3B82F6" />
-						</g>
-						<defs>
-							<clipPath id="clip0_1090_14860">
-								<rect width="28" height="28" fill="white" />
-							</clipPath>
-						</defs>
-					</svg>
-				</div>
-
-				<div class="geolocation-labels">
-					<!-- TODO: translations -->
-					<strong v-if="(disabled || !isLocating) && value">Location captured</strong>
-					<strong v-if="!disabled && isLocating && !coords?.accuracy">Getting location - please wait!</strong>
-					<strong v-if="!disabled && isLocating && coords?.accuracy">{{ formatNumber(coords.accuracy) }}m - {{ qualityLabel }} accuracy</strong>
-					<p v-if="!disabled && value === null && isLocating">
-						Location will be saved at {{ accuracyThreshold }}m
-					</p>
-					<p>
-						<span v-if="value?.latitude != null">
-							Latitude: {{ value.latitude }}
-						</span>
-						<span v-if="value?.longitude != null">
-							Longitude: {{ value.longitude }}
-						</span>
-					</p>
-					<p>
-						<span v-if="value?.altitude != null">
-							Altitude: {{ value.altitude }}
-						</span>
-						<span v-if="value?.accuracy != null">
-							Accuracy: {{ formatNumber(Number(value.accuracy)) }}m
-						</span>
-					</p>
-				</div>
+		<div v-if="value != null" class="geolocation-value">
+			<div class="geolocation-icons">
+				<i v-if="qualityCoordinates === ACCURACY_QUALITY.poor" class="icon-warning" />
+				<svg v-else class="icon-good-location" xmlns="http://www.w3.org/2000/svg" width="22" height="17" viewBox="0 0 22 17" fill="none">
+					<path d="M7.49994 12.8668L2.63494 8.00177L0.978271 9.64677L7.49994 16.1684L21.4999 2.16844L19.8549 0.523438L7.49994 12.8668Z" fill="#3B82F6" />
+				</svg>
 			</div>
-
-			<div v-if="!disabled" class="geolocation-buttons">
-				<!-- TODO: translations -->
-				<Button v-if="isLocating" text rounded label="Cancel" @click="stop()" />
-
-				<!-- TODO: translations -->
-				<Button v-if="isLocating" label="Save location" rounded @click="save()" />
-
-				<Button
-					v-if="value !== null && !isLocating"
-					rounded
-					outlined
-					severity="contrast"
-					class="retry-button"
-					@click="start()"
+			<!-- TODO: translations -->
+			<strong v-if="qualityLabel" class="geo-quality">{{ qualityLabel }} accuracy</strong>
+			<InputGeopointReadonly :value="value" />
+			<Button
+				rounded
+				outlined
+				severity="contrast"
+				class="retry-button"
+				:disabled="disabled"
+				@click="start()"
+			>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="15"
+					height="14"
+					viewBox="0 0 15 14"
+					fill="none"
 				>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="15"
-						height="14"
-						viewBox="0 0 15 14"
-						fill="none"
-					>
-						<g clip-path="url(#clip0_1092_687)">
-							<path
-								fill-rule="evenodd"
-								clip-rule="evenodd"
-								d="M7.27039 5.96336C7.34312 5.99355 7.42115 6.00891 7.4999 6.00854C7.57865 6.00891 7.65668 5.99355 7.72941 5.96336C7.80214 5.93317 7.86811 5.88876 7.92345 5.83273L10.3209 3.43529C10.4331 3.32291 10.4962 3.17058 10.4962 3.01175C10.4962 2.85292 10.4331 2.70058 10.3209 2.5882L7.92345 0.190763C7.86858 0.131876 7.80241 0.0846451 7.72889 0.0518865C7.65536 0.019128 7.576 0.00151319 7.49552 9.32772e-05C7.41505 -0.00132663 7.33511 0.0134773 7.26048 0.0436218C7.18585 0.0737664 7.11805 0.118634 7.06114 0.175548C7.00422 0.232462 6.95936 0.300257 6.92921 0.374888C6.89907 0.449519 6.88426 0.529456 6.88568 0.609933C6.8871 0.690409 6.90472 0.769775 6.93748 0.843296C6.97023 0.916817 7.01747 0.982986 7.07635 1.03786L8.45091 2.41241H7.49986C5.96325 2.41241 4.48957 3.02283 3.40302 4.10938C2.31647 5.19593 1.70605 6.66961 1.70605 8.20622C1.70605 9.74283 2.31647 11.2165 3.40302 12.3031C4.48957 13.3896 5.96325 14 7.49986 14C9.03582 13.9979 10.5083 13.3868 11.5944 12.3007C12.6805 11.2146 13.2916 9.74218 13.2937 8.20622C13.2937 8.04726 13.2305 7.89481 13.1181 7.78241C13.0057 7.67001 12.8533 7.60686 12.6943 7.60686C12.5353 7.60686 12.3829 7.67001 12.2705 7.78241C12.1581 7.89481 12.0949 8.04726 12.0949 8.20622C12.0949 9.11504 11.8255 10.0035 11.3205 10.7591C10.8156 11.5148 10.098 12.1037 9.25832 12.4515C8.41868 12.7993 7.49476 12.8903 6.6034 12.713C5.71204 12.5357 4.89328 12.0981 4.25064 11.4554C3.60801 10.8128 3.17037 9.99404 2.99307 9.10268C2.81576 8.21132 2.90676 7.2874 3.25455 6.44776C3.60234 5.60811 4.19131 4.89046 4.94697 4.38554C5.70263 3.88063 6.59104 3.61113 7.49986 3.61113H8.45086L7.07635 4.98564C6.96411 5.09802 6.90107 5.25035 6.90107 5.40918C6.90107 5.56801 6.96411 5.72035 7.07635 5.83273C7.13169 5.88876 7.19766 5.93317 7.27039 5.96336Z"
-								fill="#64748B"
-							/>
-						</g>
-						<defs>
-							<clipPath id="clip0_1092_687">
-								<rect width="14" height="14" fill="white" transform="translate(0.5)" />
-							</clipPath>
-						</defs>
-					</svg>
-					<!-- TODO: translations -->
-					<span>Try again</span>
-				</Button>
-			</div>
+					<g clip-path="url(#clip0_1092_687)">
+						<path
+							fill-rule="evenodd"
+							clip-rule="evenodd"
+							d="M7.27039 5.96336C7.34312 5.99355 7.42115 6.00891 7.4999 6.00854C7.57865 6.00891 7.65668 5.99355 7.72941 5.96336C7.80214 5.93317 7.86811 5.88876 7.92345 5.83273L10.3209 3.43529C10.4331 3.32291 10.4962 3.17058 10.4962 3.01175C10.4962 2.85292 10.4331 2.70058 10.3209 2.5882L7.92345 0.190763C7.86858 0.131876 7.80241 0.0846451 7.72889 0.0518865C7.65536 0.019128 7.576 0.00151319 7.49552 9.32772e-05C7.41505 -0.00132663 7.33511 0.0134773 7.26048 0.0436218C7.18585 0.0737664 7.11805 0.118634 7.06114 0.175548C7.00422 0.232462 6.95936 0.300257 6.92921 0.374888C6.89907 0.449519 6.88426 0.529456 6.88568 0.609933C6.8871 0.690409 6.90472 0.769775 6.93748 0.843296C6.97023 0.916817 7.01747 0.982986 7.07635 1.03786L8.45091 2.41241H7.49986C5.96325 2.41241 4.48957 3.02283 3.40302 4.10938C2.31647 5.19593 1.70605 6.66961 1.70605 8.20622C1.70605 9.74283 2.31647 11.2165 3.40302 12.3031C4.48957 13.3896 5.96325 14 7.49986 14C9.03582 13.9979 10.5083 13.3868 11.5944 12.3007C12.6805 11.2146 13.2916 9.74218 13.2937 8.20622C13.2937 8.04726 13.2305 7.89481 13.1181 7.78241C13.0057 7.67001 12.8533 7.60686 12.6943 7.60686C12.5353 7.60686 12.3829 7.67001 12.2705 7.78241C12.1581 7.89481 12.0949 8.04726 12.0949 8.20622C12.0949 9.11504 11.8255 10.0035 11.3205 10.7591C10.8156 11.5148 10.098 12.1037 9.25832 12.4515C8.41868 12.7993 7.49476 12.8903 6.6034 12.713C5.71204 12.5357 4.89328 12.0981 4.25064 11.4554C3.60801 10.8128 3.17037 9.99404 2.99307 9.10268C2.81576 8.21132 2.90676 7.2874 3.25455 6.44776C3.60234 5.60811 4.19131 4.89046 4.94697 4.38554C5.70263 3.88063 6.59104 3.61113 7.49986 3.61113H8.45086L7.07635 4.98564C6.96411 5.09802 6.90107 5.25035 6.90107 5.40918C6.90107 5.56801 6.96411 5.72035 7.07635 5.83273C7.13169 5.88876 7.19766 5.93317 7.27039 5.96336Z"
+							fill="#64748B"
+						/>
+					</g>
+					<defs>
+						<clipPath id="clip0_1092_687">
+							<rect width="14" height="14" fill="white" transform="translate(0.5)" />
+						</clipPath>
+					</defs>
+				</svg>
+				<!-- TODO: translations -->
+				<span>Try again</span>
+			</Button>
 		</div>
 
-		<div v-if="geoLocationError" class="geolocation-error">
+		<div v-if="geoLocationError" class="geolocation-error" :class="{ 'stack-errors': submitPressed && isInvalid }">
 			<i class="icon-warning" />
 			<!-- TODO: translations -->
 			<strong>Cannot access location</strong>&nbsp;<span>Grant location permission in the browser settings and make sure location is turned on.</span>
 		</div>
 	</div>
+
+	<PrimeDialog :visible="showDialog" modal class="geo-dialog" :closable="false" :draggable="false">
+		<template #header>
+			<div class="geo-dialog-header">
+				<div class="geo-dialog-header-title">
+					<PrimeProgressSpinner class="spinner" stroke-width="4" />
+					<!-- TODO: translations -->
+					<strong>Finding your location</strong>
+				</div>
+				<button class="close-icon" @click="closeDialog()">
+					<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+						<path d="M8.23648 6.99995L13.3931 1.84328C13.4791 1.76318 13.5481 1.66658 13.5959 1.55925C13.6437 1.45191 13.6694 1.33605 13.6715 1.21856C13.6736 1.10107 13.652 0.984374 13.608 0.875421C13.564 0.766468 13.4984 0.667495 13.4154 0.584407C13.3323 0.501318 13.2333 0.435816 13.1243 0.391808C13.0154 0.347801 12.8987 0.326188 12.7812 0.328261C12.6637 0.330334 12.5479 0.35605 12.4405 0.403874C12.3332 0.451698 12.2366 0.52065 12.1565 0.606618L6.99982 5.76328L1.84315 0.606618C1.67728 0.452058 1.45789 0.367914 1.23121 0.371914C1.00452 0.375913 0.788239 0.467744 0.627924 0.628059C0.467609 0.788375 0.375778 1.00466 0.371778 1.23134C0.367778 1.45803 0.451922 1.67741 0.606482 1.84328L5.76315 6.99995L0.606482 12.1566C0.442624 12.3207 0.350586 12.5431 0.350586 12.775C0.350586 13.0068 0.442624 13.2292 0.606482 13.3933C0.770545 13.5571 0.99294 13.6492 1.22482 13.6492C1.45669 13.6492 1.67909 13.5571 1.84315 13.3933L6.99982 8.23662L12.1565 13.3933C12.3205 13.5571 12.5429 13.6492 12.7748 13.6492C13.0067 13.6492 13.2291 13.5571 13.3931 13.3933C13.557 13.2292 13.649 13.0068 13.649 12.775C13.649 12.5431 13.557 12.3207 13.3931 12.1566L8.23648 6.99995Z" fill="#212121" />
+					</svg>
+				</button>
+			</div>
+		</template>
+
+		<template #default>
+			<div class="geo-dialog-body">
+				<div v-if="coords?.accuracy != null" class="geolocation-icons">
+					<i v-if="qualityCoordinates === ACCURACY_QUALITY.poor" class="icon-warning" />
+					<svg v-else class="icon-good-location" xmlns="http://www.w3.org/2000/svg" width="22" height="17" viewBox="0 0 22 17" fill="none">
+						<path d="M7.49994 12.8668L2.63494 8.00177L0.978271 9.64677L7.49994 16.1684L21.4999 2.16844L19.8549 0.523438L7.49994 12.8668Z" fill="#3B82F6" />
+					</svg>
+				</div>
+
+				<div class="geolocation-information">
+					<!-- TODO: translations -->
+					<strong v-if="coords?.accuracy != null" class="geo-quality">{{ coords.accuracy }}m - {{ qualityLabel }} accuracy</strong>
+					<p v-if="accuracyThreshold && value == null">
+						Location will be saved at {{ accuracyThreshold }}m
+					</p>
+					<p>Time taken to capture location: {{ formattedTime }}</p>
+					<p v-if="value?.accuracy">
+						Previous saved location at {{ value.accuracy }}m
+					</p>
+				</div>
+			</div>
+		</template>
+
+		<template #footer>
+			<div class="geo-dialog-footer">
+				<!-- TODO: translations -->
+				<Button text rounded severity="contrast" label="Cancel" @click="closeDialog()" />
+
+				<!-- TODO: translations -->
+				<Button label="Save location" rounded :disabled="coords?.accuracy == null" @click="save()" />
+			</div>
+		</template>
+	</PrimeDialog>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss">
 @import 'primeflex/core/_variables.scss';
 
-// Variable definition to root element
-.geolocation-control {
+// Variable definition
+.geolocation-control,
+.geo-dialog-header,
+.geo-dialog-body,
+.geo-dialog-footer {
 	--geo-spacing-s: 5px;
 	--geo-spacing-m: 10px;
 	--geo-spacing-l: 15px;
-	--geo-radius: 10px;
+	--geo-spacing-xl: 30px;
+	--geo-radius: 6px;
+	--geo-title-font-size: 1.07rem;
+	--geo-text-font-size: 0.9rem;
 }
 
-.geolocation-container {
+.geolocation-control {
+	.get-location-button,
+	.retry-button {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+
+		svg {
+			margin-right: var(--geo-spacing-s);
+		}
+	}
+
+	.get-location-button {
+		min-width: 270px;
+
+		svg {
+			fill: var(--surface-0);
+		}
+
+		&:disabled svg {
+			fill: var(--surface-500);
+		}
+	}
+
+	.retry-button {
+		margin-left: auto;
+		font-size: var(--geo-text-font-size);
+
+		svg path {
+			fill: var(--surface-900);
+		}
+
+		&:disabled svg path {
+			fill: var(--surface-500);
+		}
+	}
+}
+
+.geo-dialog-header {
 	display: flex;
-	flex-direction: column;
-	align-items: flex-end;
-	width: 50%;
-	background: var(--surface-50);
-	border: 1px solid var(--surface-200);
-	border-radius: var(--geo-radius);
-	padding: 22px;
-}
-
-.get-location-button,
-.retry-button {
-	display: inline-flex;
+	justify-content: space-between;
 	align-items: center;
-	justify-content: center;
-
-	svg {
-		margin-right: var(--geo-spacing-s);
-	}
-}
-
-.get-location-button {
-	min-width: 270px;
-
-	svg {
-		fill: var(--surface-0);
-	}
-
-	&:disabled svg {
-		fill: var(--surface-500);
-	}
-}
-
-.retry-button svg path {
-	fill: var(--surface-900);
-}
-
-.geolocation-buttons button {
-	margin-left: var(--geo-spacing-l);
-}
-
-.geolocation-result {
-	display: flex;
 	width: 100%;
-	margin-bottom: var(--geo-spacing-l);
-}
 
-.geolocation-labels {
-	margin-top: var(--geo-spacing-s);
-
-	p {
-		font-size: 0.85rem;
-	}
-
-	p > span {
-		margin-right: var(--geo-spacing-s);
+	.close-icon {
+		background: none;
+		border: none;
+		cursor: pointer;
 	}
 }
 
-.geolocation-icons {
-	margin-right: var(--geo-spacing-l);
+.geo-dialog-header-title {
+	display: flex;
+	font-size: var(--geo-title-font-size);
 
-	.icon-good-location,
 	.spinner {
-		width: 28px;
-		height: 28px;
+		width: 22px;
+		height: 22px;
+		margin-right: var(--geo-spacing-l);
+	}
+}
+
+.geolocation-value,
+.geo-dialog-body {
+	display: flex;
+	background: var(--surface-100);
+	border-radius: var(--geo-radius);
+
+	.geo-quality,
+	.geolocation-icons {
+		margin-right: var(--geo-spacing-l);
 	}
 
 	.icon-warning {
@@ -360,11 +381,52 @@ const formatNumber = (num: number) => {
 	}
 }
 
+.geolocation-value {
+	font-size: var(--geo-text-font-size);
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	flex-wrap: wrap;
+	padding: var(--geo-spacing-m) var(--geo-spacing-l);
+
+	.geolocation-icons svg {
+		width: 20px;
+	}
+
+	.icon-warning {
+		font-size: 1.2rem;
+	}
+}
+
+.geo-dialog-body {
+	padding: var(--geo-spacing-xl);
+	max-width: 450px;
+	width: 80vw;
+}
+
+.geolocation-information {
+	p {
+		font-size: var(--geo-text-font-size);
+		margin: var(--geo-spacing-s) 0;
+	}
+
+	strong {
+		font-size: var(--geo-title-font-size);
+		display: block;
+		margin-bottom: var(--geo-spacing-m);
+	}
+}
+
+.geo-dialog-footer button {
+	margin: 0 0 var(--geo-spacing-m) var(--geo-spacing-l);
+}
+
 .geolocation-error {
+	font-size: var(--geo-text-font-size);
 	color: var(--error-text-color);
 	background-color: var(--error-bg-color);
 	border-radius: var(--geo-radius);
-	margin-top: var(--geo-spacing-m);
+	margin-top: var(--geo-spacing-xl);
 	padding: 20px;
 
 	.icon-warning {
@@ -372,11 +434,14 @@ const formatNumber = (num: number) => {
 		margin-right: var(--geo-spacing-s);
 		vertical-align: text-bottom;
 	}
+
+	&.stack-errors {
+		padding-left: 0;
+	}
 }
 
-@media screen and (max-width: #{$md}) {
-	.geolocation-container {
-		width: 100%;
-	}
+// Overriding PrimeDialog's styles
+.p-dialog.geo-dialog {
+	background: var(--surface-0);
 }
 </style>

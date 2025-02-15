@@ -121,19 +121,10 @@ initializeForm(props.formXml, {
 		initializeFormError.value = new FormInitializationError(cause);
 	});
 
-type BeforeSubmitCallback = () => void;
-const beforeSubmitCallbacks: BeforeSubmitCallback[] = [];
-provide<(callback: BeforeSubmitCallback) => void>(
-	'registerBeforeSubmit',
-	(callback: BeforeSubmitCallback) => beforeSubmitCallbacks.push(callback)
-);
-
 const handleSubmit = () => {
 	const root = odkForm.value;
 
 	if (root?.validationState.violations?.length === 0) {
-		// Run all registered beforeSubmit functions
-		beforeSubmitCallbacks.forEach((callback) => callback());
 		// eslint-disable-next-line @typescript-eslint/no-floating-promises
 		emitSubmit(root);
 		// eslint-disable-next-line @typescript-eslint/no-floating-promises
