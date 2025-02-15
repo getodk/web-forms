@@ -80,13 +80,15 @@ export interface NoteNode<V extends ValueType = ValueType> extends BaseValueNode
 export type StringNoteNode = NoteNode<'string'>;
 export type IntNoteNode = NoteNode<'int'>;
 export type DecimalNoteNode = NoteNode<'decimal'>;
+export type GeopointNoteNode = NoteNode<'geopoint'>;
 
 // prettier-ignore
 type SupportedNoteValueType =
 	// eslint-disable-next-line @typescript-eslint/sort-type-constituents
 	| 'string'
 	| 'int'
-	| 'decimal';
+	| 'decimal'
+	| 'geopoint';
 
 type TemporaryStringValueType = Exclude<ValueType, SupportedNoteValueType>;
 
@@ -98,4 +100,5 @@ export type AnyNoteNode =
 	| StringNoteNode
 	| IntNoteNode
 	| DecimalNoteNode
+	| GeopointNoteNode
 	| TemporaryStringValueNoteNode;

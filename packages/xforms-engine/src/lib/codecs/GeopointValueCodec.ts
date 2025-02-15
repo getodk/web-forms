@@ -24,7 +24,7 @@ const isValidDegrees = (
 	);
 };
 
-const decodeStringValue = (value: GeopointInputValue) => {
+const decodeStringValue = (value: GeopointInputValue): GeopointValue | null => {
 	if (typeof value !== 'string' || value.trim() === '') {
 		return null;
 	}
@@ -69,13 +69,7 @@ export class GeopointValueCodec extends ValueCodec<
 		};
 
 		const decodeValue: CodecDecoder<GeopointRuntimeValue> = (value: string) => {
-			const geopointValue = decodeStringValue(value);
-
-			if (geopointValue == null) {
-				return null;
-			}
-
-			return geopointValue;
+			return decodeStringValue(value);
 		};
 
 		super('geopoint', encodeValue, decodeValue);

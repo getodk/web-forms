@@ -42,8 +42,6 @@ const value = computed((): TextRenderableValue => {
 		case 'string':
 		case 'int':
 		case 'decimal':
-			return question.currentState.value;
-
 		case 'geopoint':
 			return question.currentState.value;
 
