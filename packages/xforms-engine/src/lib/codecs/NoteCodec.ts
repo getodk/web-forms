@@ -20,11 +20,7 @@ export class NoteCodec<V extends ValueType> extends ValueCodec<
 > {
 	constructor(baseCodec: SharedValueCodec<V>) {
 		const encodeValue = (value: NoteInputValue<V>): string => {
-			if (value == null) {
-				return '';
-			}
-
-			return baseCodec.encodeValue(value);
+			return baseCodec.encodeValue(value ?? '');
 		};
 
 		const decodeValue = (value: string): NoteRuntimeValue<V> => {
