@@ -43,7 +43,7 @@ provide('isInvalid', isInvalid);
 			<InputText :node="node" />
 		</template>
 
-		<i v-show="isInvalid && (doneAnswering || submitPressed)" class="icon-error" />
+		<i v-show="isInvalid && (doneAnswering || submitPressed) && node.valueType !== 'geopoint'" class="icon-error" />
 	</div>
 	<ValidationMessage
 		:message="node.validationState.violation?.message.asString"

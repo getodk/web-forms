@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import InputGeopointReadonly from '@/components/controls/Input/InputGeopointReadonly.vue';
 import { UnreachableError } from '@getodk/common/lib/error/UnreachableError.ts';
 import type { AnyNoteNode } from '@getodk/xforms-engine';
 import { computed } from 'vue';
@@ -43,11 +44,13 @@ const value = computed((): TextRenderableValue => {
 		case 'decimal':
 			return question.currentState.value;
 
+		case 'geopoint':
+			return question.currentState.value;
+
 		case 'boolean':
 		case 'date':
 		case 'time':
 		case 'dateTime':
-		case 'geopoint':
 		case 'geotrace':
 		case 'geoshape':
 		case 'binary':
@@ -67,7 +70,9 @@ const value = computed((): TextRenderableValue => {
 	<div class="note-control">
 		<ControlText :question="question" />
 
-		<div v-if="value != null" class="note-value">
+		<InputGeopointReadonly v-if="question.valueType === 'geopoint'" :value="value" />
+
+		<div v-else-if="value != null" class="note-value">
 			{{ value }}
 		</div>
 	</div>
