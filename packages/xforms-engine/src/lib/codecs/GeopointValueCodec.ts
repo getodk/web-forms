@@ -8,7 +8,7 @@ export interface GeopointValue {
 }
 
 export type GeopointRuntimeValue = GeopointValue | null;
-export type GeopointInputValue = GeopointRuntimeValue;
+export type GeopointInputValue = GeopointRuntimeValue | string;
 
 const DEGREES_MAX = {
 	latitude: 90,
@@ -24,6 +24,29 @@ const isValidDegrees = (
 	);
 };
 
+const decodeStringValue = (value: GeopointInputValue) => {
+	if (typeof value !== 'string' || value.trim() === '') {
+		return null;
+	}
+
+	const coordinates = value.split(/\s+/).map((item) => Number(item));
+
+	const isGeopointRuntimeValue =
+		coordinates.length >= 2 && coordinates.length <= 4 && coordinates.every((item) => item != null);
+
+	if (!isGeopointRuntimeValue) {
+		return null;
+	}
+
+	const [latitude, longitude, altitude = 0, accuracy = 0] = coordinates;
+
+	if (!isValidDegrees('latitude', latitude) || !isValidDegrees('longitude', longitude)) {
+		return null;
+	}
+
+	return { latitude, longitude, altitude, accuracy };
+};
+
 export class GeopointValueCodec extends ValueCodec<
 	'geopoint',
 	GeopointRuntimeValue,
@@ -31,35 +54,28 @@ export class GeopointValueCodec extends ValueCodec<
 > {
 	constructor() {
 		const encodeValue: CodecEncoder<GeopointInputValue> = (value) => {
-			if (
-				value == null ||
-				!isValidDegrees('latitude', value.latitude) ||
-				!isValidDegrees('longitude', value.longitude)
-			) {
+			const geopointValue = typeof value === 'string' ? decodeStringValue(value) : value;
+
+			if (geopointValue == null) {
 				return '';
 			}
 
-			return [value.latitude, value.longitude, value.altitude ?? 0, value.accuracy ?? 0].join(' ');
+			return [
+				geopointValue.latitude,
+				geopointValue.longitude,
+				geopointValue.altitude ?? 0,
+				geopointValue.accuracy ?? 0,
+			].join(' ');
 		};
 
 		const decodeValue: CodecDecoder<GeopointRuntimeValue> = (value: string) => {
-			const coordinates = value.split(/\s+/).map((item) => Number(item));
+			const geopointValue = decodeStringValue(value);
 
-			const isGeopointRuntimeValue =
-				coordinates.length >= 2 &&
-				coordinates.length <= 4 &&
-				coordinates.every((item) => item != null);
-			if (!isGeopointRuntimeValue) {
+			if (geopointValue == null) {
 				return null;
 			}
 
-			const [latitude, longitude, altitude = 0, accuracy = 0] = coordinates;
-
-			if (!isValidDegrees('latitude', latitude) || !isValidDegrees('longitude', longitude)) {
-				return null;
-			}
-
-			return { latitude, longitude, altitude, accuracy };
+			return geopointValue;
 		};
 
 		super('geopoint', encodeValue, decodeValue);
