@@ -52,31 +52,35 @@ const unacceptableAccuracyThreshold = computed<number>(() => {
  *  - 'unknown' if accuracy is null or undefined
  */
 const ACCURACY_QUALITY = {
-	good: 'good',
-	poor: 'poor',
-	unknown: 'unknown',
-};
+	GOOD: 'GOOD',
+	POOR: 'POOR',
+	UNKNOWN: 'UNKNOWN',
+} as const;
 
-const qualityCoordinates = computed<string>(() => {
+type AccuracyQualityEnum = typeof ACCURACY_QUALITY;
+
+type AccuracyQualityValue = AccuracyQualityEnum[keyof AccuracyQualityEnum];
+
+const qualityCoordinates = computed<AccuracyQualityValue>(() => {
 	const accuracy = coords.value?.accuracy;
 	if (accuracy == null) {
-		return ACCURACY_QUALITY.unknown;
+		return ACCURACY_QUALITY.UNKNOWN;
 	}
 
 	if (accuracy > unacceptableAccuracyThreshold.value) {
-		return ACCURACY_QUALITY.poor;
+		return ACCURACY_QUALITY.POOR;
 	}
 
-	return ACCURACY_QUALITY.good;
+	return ACCURACY_QUALITY.GOOD;
 });
 
 const qualityLabel = computed<string>(() => {
 	// TODO: translations
-	if (qualityCoordinates.value === ACCURACY_QUALITY.good) {
+	if (qualityCoordinates.value === ACCURACY_QUALITY.GOOD) {
 		return 'Good';
 	}
 
-	if (qualityCoordinates.value === ACCURACY_QUALITY.poor) {
+	if (qualityCoordinates.value === ACCURACY_QUALITY.POOR) {
 		return 'Poor';
 	}
 
@@ -185,7 +189,7 @@ const closeDialog = () => {
 
 		<div v-if="value != null" class="geolocation-value">
 			<div class="geolocation-icons">
-				<i v-if="qualityCoordinates === ACCURACY_QUALITY.poor" class="icon-warning" />
+				<i v-if="qualityCoordinates === ACCURACY_QUALITY.POOR" class="icon-warning" />
 				<svg v-else class="icon-good-location" xmlns="http://www.w3.org/2000/svg" width="22" height="17" viewBox="0 0 22 17" fill="none">
 					<path d="M7.49994 12.8668L2.63494 8.00177L0.978271 9.64677L7.49994 16.1684L21.4999 2.16844L19.8549 0.523438L7.49994 12.8668Z" fill="#3B82F6" />
 				</svg>
@@ -253,7 +257,7 @@ const closeDialog = () => {
 		<template #default>
 			<div class="geo-dialog-body">
 				<div v-if="coords?.accuracy != null" class="geolocation-icons">
-					<i v-if="qualityCoordinates === ACCURACY_QUALITY.poor" class="icon-warning" />
+					<i v-if="qualityCoordinates === ACCURACY_QUALITY.POOR" class="icon-warning" />
 					<svg v-else class="icon-good-location" xmlns="http://www.w3.org/2000/svg" width="22" height="17" viewBox="0 0 22 17" fill="none">
 						<path d="M7.49994 12.8668L2.63494 8.00177L0.978271 9.64677L7.49994 16.1684L21.4999 2.16844L19.8549 0.523438L7.49994 12.8668Z" fill="#3B82F6" />
 					</svg>
