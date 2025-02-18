@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import InputGeopointReadonly from '@/components/controls/Input/InputGeopointReadonly.vue';
 import { UnreachableError } from '@getodk/common/lib/error/UnreachableError.ts';
-import type { AnyNoteNode } from '@getodk/xforms-engine';
+import type { AnyNoteNode, NoteValue } from '@getodk/xforms-engine';
 import { computed } from 'vue';
 import ControlText from '../ControlText.vue';
 
@@ -35,7 +35,9 @@ const assertTextRenderableValue: AssertTextRenderableValue = (value) => {
 	}
 };
 
-const value = computed((): TextRenderableValue => {
+type NoteRenderableValue = NoteValue<'geopoint'> | TextRenderableValue;
+
+const value = computed<NoteRenderableValue>(() => {
 	const { question } = props;
 
 	switch (question.valueType) {
@@ -55,7 +57,6 @@ const value = computed((): TextRenderableValue => {
 		case 'barcode':
 		case 'intent':
 			assertTextRenderableValue(question.currentState.value);
-
 			return question.currentState.value;
 
 		default:
@@ -68,7 +69,7 @@ const value = computed((): TextRenderableValue => {
 	<div class="note-control">
 		<ControlText :question="question" />
 
-		<InputGeopointReadonly v-if="question.valueType === 'geopoint'" :value="value" />
+		<InputGeopointReadonly v-if="question.valueType === 'geopoint'" :question="question" />
 
 		<div v-else-if="value != null" class="note-value">
 			{{ value }}

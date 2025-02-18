@@ -37,7 +37,7 @@ provide('isInvalid', isInvalid);
 			<InputNumbersAppearance :node="node" />
 		</template>
 		<template v-else-if="node.valueType === 'geopoint'">
-			<InputGeopoint :node="node" />
+			<InputGeopoint :question="node" />
 		</template>
 		<template v-else>
 			<InputText :node="node" />

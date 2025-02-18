@@ -1,11 +1,25 @@
 <script setup lang="ts">
-import type { InputValue } from '@getodk/xforms-engine';
+import type {
+	GeopointInputNode,
+	GeopointNoteNode,
+	InputValue,
+	NoteValue,
+} from '@getodk/xforms-engine';
+import { computed } from 'vue';
+
+type InputGeopointReadonly = GeopointInputNode | GeopointNoteNode;
+
+type InputGeopointReadonlyValue = InputValue<'geopoint'> | NoteValue<'geopoint'>;
 
 interface InputGeopointReadonlyProps {
-	readonly value: InputValue<'geopoint'>;
+	readonly question: InputGeopointReadonly;
 }
 
-defineProps<InputGeopointReadonlyProps>();
+const props = defineProps<InputGeopointReadonlyProps>();
+
+const value = computed<InputGeopointReadonlyValue>(() => {
+	return props.question.currentState.value;
+});
 </script>
 
 <template>

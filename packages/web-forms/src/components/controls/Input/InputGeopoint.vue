@@ -7,15 +7,15 @@ import PrimeProgressSpinner from 'primevue/progressspinner';
 import { computed, inject, ref } from 'vue';
 
 interface InputGeopointProps {
-	readonly node: GeopointInputNode;
+	readonly question: GeopointInputNode;
 }
 
 const props = defineProps<InputGeopointProps>();
 const submitPressed = inject<boolean>('submitPressed');
-const isInvalid = computed(() => props.node.validationState.violation?.valid === false);
+const isInvalid = computed(() => props.question.validationState.violation?.valid === false);
 const coords = ref<GeolocationCoordinates | null>(null);
 const showDialog = ref(false);
-const disabled = computed(() => props.node.currentState.readonly === true);
+const disabled = computed(() => props.question.currentState.readonly === true);
 const geoLocationError = ref<boolean>(false);
 const watchID = ref<number | null>(null);
 const startTime = ref<number | null>(null);
@@ -24,7 +24,7 @@ const elapsedTime = ref(0);
 let intervalID: NodeJS.Timeout | undefined;
 
 const value = computed((): InputValue<'geopoint'> => {
-	return props.node.currentState.value;
+	return props.question.currentState.value;
 });
 
 /**
@@ -32,7 +32,7 @@ const value = computed((): InputValue<'geopoint'> => {
  */
 const ACCURACY_THRESHOLD_DEFAULT = 5;
 const accuracyThreshold = computed<number>(() => {
-	return props.node.nodeOptions.accuracyThreshold ?? ACCURACY_THRESHOLD_DEFAULT;
+	return props.question.nodeOptions.accuracyThreshold ?? ACCURACY_THRESHOLD_DEFAULT;
 });
 
 /**
@@ -40,9 +40,8 @@ const accuracyThreshold = computed<number>(() => {
  */
 const UNACCEPTABLE_ACCURACY_THRESHOLD_DEFAULT = 100;
 const unacceptableAccuracyThreshold = computed<number>(() => {
-	return (
-		props.node.nodeOptions.unacceptableAccuracyThreshold ?? UNACCEPTABLE_ACCURACY_THRESHOLD_DEFAULT
-	);
+	const threshold = props.question.nodeOptions.unacceptableAccuracyThreshold;
+	return threshold ?? UNACCEPTABLE_ACCURACY_THRESHOLD_DEFAULT;
 });
 
 /**
@@ -147,7 +146,7 @@ const save = () => {
 		return;
 	}
 
-	props.node.setValue({
+	props.question.setValue({
 		latitude: coords.value.latitude,
 		longitude: coords.value.longitude,
 		altitude: coords.value.altitude,
@@ -196,7 +195,7 @@ const closeDialog = () => {
 			</div>
 			<!-- TODO: translations -->
 			<strong v-if="qualityLabel" class="geo-quality">{{ qualityLabel }} accuracy</strong>
-			<InputGeopointReadonly :value="value" />
+			<InputGeopointReadonly :question="question" />
 			<Button
 				rounded
 				outlined

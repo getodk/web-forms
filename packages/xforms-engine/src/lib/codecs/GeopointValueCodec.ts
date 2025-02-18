@@ -24,7 +24,7 @@ const isValidDegrees = (
 	);
 };
 
-const decodeStringValue = (value: GeopointInputValue): GeopointValue | null => {
+const decodeStringValue = (value: GeopointInputValue): GeopointRuntimeValue => {
 	if (typeof value !== 'string' || value.trim() === '') {
 		return null;
 	}
