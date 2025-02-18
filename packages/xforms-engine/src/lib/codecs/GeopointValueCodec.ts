@@ -38,7 +38,7 @@ const decodeStringValue = (value: GeopointInputValue): GeopointRuntimeValue => {
 		return null;
 	}
 
-	const [latitude, longitude, altitude = 0, accuracy = 0] = coordinates;
+	const [latitude, longitude, altitude = null, accuracy = null] = coordinates;
 
 	if (!isValidDegrees('latitude', latitude) || !isValidDegrees('longitude', longitude)) {
 		return null;
@@ -60,12 +60,18 @@ export class GeopointValueCodec extends ValueCodec<
 				return '';
 			}
 
-			return [
+			const geopointValues = [
 				geopointValue.latitude,
 				geopointValue.longitude,
-				geopointValue.altitude ?? 0,
-				geopointValue.accuracy ?? 0,
-			].join(' ');
+				geopointValue.altitude,
+				geopointValue.accuracy,
+			];
+
+			// Find the first missing value and return only the valid part
+			const missingIndex = geopointValues.findIndex((item) => item == null);
+			const endIndex = missingIndex === -1 ? geopointValues.length : missingIndex;
+
+			return geopointValues.slice(0, endIndex).join(' ');
 		};
 
 		const decodeValue: CodecDecoder<GeopointRuntimeValue> = (value: string) => {
