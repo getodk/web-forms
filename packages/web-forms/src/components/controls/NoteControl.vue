@@ -69,11 +69,15 @@ const value = computed<NoteRenderableValue>(() => {
 	<div class="note-control">
 		<ControlText :question="question" />
 
-		<InputGeopointReadonly v-if="question.valueType === 'geopoint'" :question="question" />
+		<template v-if="question.valueType === 'geopoint'">
+			<InputGeopointReadonly :question="question" />
+		</template>
 
-		<div v-else-if="value != null" class="note-value">
-			{{ value }}
-		</div>
+		<template v-else-if="value != null">
+			<div class="note-value">
+				{{ value }}
+			</div>
+		</template>
 	</div>
 </template>
 
