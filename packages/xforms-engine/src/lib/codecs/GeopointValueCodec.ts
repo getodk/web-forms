@@ -29,7 +29,7 @@ const decodeStringValue = (value: GeopointInputValue): GeopointRuntimeValue => {
 		return null;
 	}
 
-	const coordinates = value.split(/\s+/).map((item) => Number(item));
+	const coordinates = value.split(/\s+/).map(Number);
 
 	const isGeopointRuntimeValue =
 		coordinates.length >= 2 && coordinates.length <= 4 && coordinates.every((item) => item != null);
