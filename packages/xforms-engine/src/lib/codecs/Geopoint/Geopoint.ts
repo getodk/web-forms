@@ -1,6 +1,9 @@
+/**
+ * This abstract class defines the minimal behavior for a default geopoint.
+ * It can be expanded later to support units (e.g., degrees or meters),
+ * which would also serve as documentation to clarify what each value represents.
+ */
 abstract class SemanticValue<Semantic extends string, Value extends number | null> {
-	// @ts-expect-error TS6133: '_semanticType' is declared but its value is never read
-	private static readonly _semanticType: unique symbol;
 	abstract readonly semantic: Semantic;
 
 	constructor(readonly value: Value) {}

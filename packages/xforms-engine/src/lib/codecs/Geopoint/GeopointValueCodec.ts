@@ -1,6 +1,7 @@
 import { type CodecDecoder, type CodecEncoder, ValueCodec } from '../ValueCodec.ts';
 import { Geopoint, type GeopointRuntimeValue } from './Geopoint.ts';
 
+// TODO: Add support for GeoJSONValue
 export type GeopointInputValue = GeopointRuntimeValue | string;
 
 const decodeStringValue = (value: GeopointInputValue): GeopointRuntimeValue => {
