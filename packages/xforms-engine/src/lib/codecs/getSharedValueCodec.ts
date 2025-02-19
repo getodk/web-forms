@@ -8,7 +8,7 @@ import {
 	type GeopointInputValue,
 	type GeopointRuntimeValue,
 	GeopointValueCodec,
-} from './GeopointValueCodec.ts';
+} from './Geopoint/GeopointValueCodec.ts';
 import { IntValueCodec, type IntInputValue, type IntRuntimeValue } from './IntValueCodec.ts';
 import { StringValueCodec } from './StringValueCodec.ts';
 import type { ValueCodec } from './ValueCodec.ts';

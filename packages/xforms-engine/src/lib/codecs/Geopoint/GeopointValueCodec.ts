@@ -1,13 +1,8 @@
-import { type CodecDecoder, type CodecEncoder, ValueCodec } from './ValueCodec.ts';
-
-export interface GeopointValue {
-	readonly latitude: number;
-	readonly longitude: number;
-	readonly altitude: number | null;
-	readonly accuracy: number | null;
-}
+import { type CodecDecoder, type CodecEncoder, ValueCodec } from '../ValueCodec.ts';
+import { Geopoint, type GeopointValue } from './Geopoint.ts';
 
 export type GeopointRuntimeValue = GeopointValue | null;
+
 export type GeopointInputValue = GeopointRuntimeValue | string;
 
 const DEGREES_MAX = {
@@ -62,21 +57,11 @@ export class GeopointValueCodec extends ValueCodec<
 				return '';
 			}
 
-			const tuple = [geopointValue.latitude, geopointValue.longitude];
-
-			if (geopointValue.altitude == null && geopointValue.accuracy != null) {
-				tuple.push(0, geopointValue.accuracy);
-			} else {
-				if (geopointValue.altitude != null) {
-					tuple.push(geopointValue.altitude);
-				}
-
-				if (geopointValue.accuracy != null) {
-					tuple.push(geopointValue.accuracy);
-				}
-			}
-
-			return tuple.join(' ');
+			const geopoint =  new Geopoint(geopointValue);
+			return geopoint
+				.getTuple()
+				.map((item) => item.value)
+				.join(' ');
 		};
 
 		const decodeValue: CodecDecoder<GeopointRuntimeValue> = (value: string) => {
