@@ -526,10 +526,10 @@ describe('Data (<bind type>) type support', () => {
 
 			it('has a GeopointValue populated value', () => {
 				expect(answer.value).toEqual({
-					accuracy: 25,
-					altitude: 1000,
 					latitude: 38.25146813817506,
 					longitude: 21.758421137528785,
+					altitude: 1000,
+					accuracy: 25,
 				});
 			});
 
@@ -543,11 +543,35 @@ describe('Data (<bind type>) type support', () => {
 				scenario.answer('/root/geopoint-value', '-1.2936673 36.7260063 1500 10');
 				answer = getTypedInputNodeAnswer('/root/geopoint-value', 'geopoint');
 				expect(answer.value).toEqual({
-					accuracy: 10,
-					altitude: 1500,
 					latitude: -1.2936673,
 					longitude: 36.7260063,
+					altitude: 1500,
+					accuracy: 10,
 				});
+			});
+
+			it('sets altitude with value zero', () => {
+				scenario.answer('/root/geopoint-value', '-5.299 46.663 0 5');
+				answer = getTypedInputNodeAnswer('/root/geopoint-value', 'geopoint');
+				expect(answer.value).toEqual({
+					latitude: -5.299,
+					longitude: 46.663,
+					altitude: 0,
+					accuracy: 5,
+				});
+			});
+
+			it.each([
+				'ZYX %% ABC $$',
+				'-15.2936673 120.7260063 ABC $$',
+				'-2.33373 36.7260063 ABC 15',
+				'20.2936673 -16.7260063 1200 ABCD',
+				'99 179.99999 1200 0',
+				'89.999 180.1111 1300 0',
+			])('has an null when incorrect value is passed', (expression) => {
+				scenario.answer('/root/geopoint-value', expression);
+				answer = getTypedInputNodeAnswer('/root/geopoint-value', 'geopoint');
+				expect(answer.value).toBeNull();
 			});
 		});
 	});

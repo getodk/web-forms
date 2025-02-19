@@ -62,13 +62,13 @@ export class Geopoint {
 	private readonly internalValue: GeopointInternalValue;
 
 	constructor(coordinates: GeopointValue) {
+		const { latitude, longitude, altitude, accuracy } = coordinates;
+
 		this.internalValue = {
-			latitude: new Latitude(coordinates.latitude),
-			longitude: new Longitude(coordinates.longitude),
-			altitude:
-				coordinates.altitude == null ? new Altitude(null) : new Altitude(coordinates.altitude),
-			accuracy:
-				coordinates.accuracy == null ? new Accuracy(null) : new Accuracy(coordinates.accuracy),
+			latitude: new Latitude(latitude),
+			longitude: new Longitude(longitude),
+			altitude: this.isValidNumber(altitude) ? new Altitude(altitude) : new Altitude(null),
+			accuracy: this.isValidNumber(accuracy) ? new Accuracy(accuracy) : new Accuracy(null),
 		};
 	}
 
@@ -108,6 +108,10 @@ export class Geopoint {
 	}
 
 	private isValidDegrees(coordinate: CoordinateType, degrees: number): degrees is number {
-		return !isNaN(degrees) && Math.abs(degrees) <= DEGREES_MAX[coordinate];
+		return this.isValidNumber(degrees) && Math.abs(degrees) <= DEGREES_MAX[coordinate];
+	}
+
+	private isValidNumber(value: number | null | undefined) {
+		return value != null && !Number.isNaN(value);
 	}
 }

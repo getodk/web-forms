@@ -11,7 +11,7 @@ const decodeStringValue = (value: GeopointInputValue): GeopointRuntimeValue => {
 
 	const [latitude, longitude, altitude = null, accuracy = null] = value.split(/\s+/).map(Number);
 
-	if (latitude == null || longitude == null) {
+	if (latitude == null || longitude == null || Number.isNaN(altitude) || Number.isNaN(accuracy)) {
 		return null;
 	}
 
