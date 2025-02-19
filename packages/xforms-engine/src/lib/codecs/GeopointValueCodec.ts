@@ -24,17 +24,19 @@ const isValidDegrees = (
 	);
 };
 
+const isGeopointRuntimeValue = (coordinates: number[]) => {
+	return (
+		coordinates.length >= 2 && coordinates.length <= 4 && coordinates.every((item) => item != null)
+	);
+};
+
 const decodeStringValue = (value: GeopointInputValue): GeopointRuntimeValue => {
 	if (typeof value !== 'string' || value.trim() === '') {
 		return null;
 	}
 
 	const coordinates = value.split(/\s+/).map(Number);
-
-	const isGeopointRuntimeValue =
-		coordinates.length >= 2 && coordinates.length <= 4 && coordinates.every((item) => item != null);
-
-	if (!isGeopointRuntimeValue) {
+	if (!isGeopointRuntimeValue(coordinates)) {
 		return null;
 	}
 
@@ -60,18 +62,21 @@ export class GeopointValueCodec extends ValueCodec<
 				return '';
 			}
 
-			const geopointValues = [
-				geopointValue.latitude,
-				geopointValue.longitude,
-				geopointValue.altitude,
-				geopointValue.accuracy,
-			];
+			const tuple = [geopointValue.latitude, geopointValue.longitude];
 
-			// Find the first missing value and return only the valid part
-			const missingIndex = geopointValues.findIndex((item) => item == null);
-			const endIndex = missingIndex === -1 ? geopointValues.length : missingIndex;
+			if (geopointValue.altitude == null && geopointValue.accuracy != null) {
+				tuple.push(0, geopointValue.accuracy);
+			} else {
+				if (geopointValue.altitude != null) {
+					tuple.push(geopointValue.altitude);
+				}
 
-			return geopointValues.slice(0, endIndex).join(' ');
+				if (geopointValue.accuracy != null) {
+					tuple.push(geopointValue.accuracy);
+				}
+			}
+
+			return tuple.join(' ');
 		};
 
 		const decodeValue: CodecDecoder<GeopointRuntimeValue> = (value: string) => {

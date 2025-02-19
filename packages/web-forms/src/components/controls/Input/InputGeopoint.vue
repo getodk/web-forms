@@ -60,8 +60,7 @@ type AccuracyQualityEnum = typeof ACCURACY_QUALITY;
 
 type AccuracyQualityValue = AccuracyQualityEnum[keyof AccuracyQualityEnum];
 
-const qualityCoordinates = computed<AccuracyQualityValue>(() => {
-	const accuracy = coords.value?.accuracy;
+const getQualityCoordinates = (accuracy: number | null | undefined): AccuracyQualityValue => {
 	if (accuracy == null) {
 		return ACCURACY_QUALITY.UNKNOWN;
 	}
@@ -71,19 +70,35 @@ const qualityCoordinates = computed<AccuracyQualityValue>(() => {
 	}
 
 	return ACCURACY_QUALITY.GOOD;
-});
+};
 
-const qualityLabel = computed<string>(() => {
+const getQualityLabel = (quality: AccuracyQualityValue): string => {
 	// TODO: translations
-	if (qualityCoordinates.value === ACCURACY_QUALITY.GOOD) {
+	if (quality === ACCURACY_QUALITY.GOOD) {
 		return 'Good';
 	}
 
-	if (qualityCoordinates.value === ACCURACY_QUALITY.POOR) {
+	if (quality === ACCURACY_QUALITY.POOR) {
 		return 'Poor';
 	}
 
 	return 'Unknown';
+};
+
+const geolocationQuality = computed<AccuracyQualityValue>(() => {
+	return getQualityCoordinates(coords.value?.accuracy);
+});
+
+const geolocationQualityLabel = computed<string>(() => {
+	return getQualityLabel(geolocationQuality.value);
+});
+
+const savedValueQuality = computed<AccuracyQualityValue>(() => {
+	return getQualityCoordinates(value.value?.accuracy);
+});
+
+const savedValueQualityLabel = computed<string>(() => {
+	return getQualityLabel(savedValueQuality.value);
 });
 
 const formattedTime = computed(() => {
@@ -188,14 +203,14 @@ const closeDialog = () => {
 
 		<div v-if="value != null" class="geopoint-value-container">
 			<div class="geopoint-icons">
-				<i v-if="qualityCoordinates === ACCURACY_QUALITY.POOR" class="icon-warning" />
+				<i v-if="savedValueQuality === ACCURACY_QUALITY.POOR" class="icon-warning" />
 				<svg v-else class="icon-good-location" xmlns="http://www.w3.org/2000/svg" width="22" height="17" viewBox="0 0 22 17" fill="none">
 					<path d="M7.49994 12.8668L2.63494 8.00177L0.978271 9.64677L7.49994 16.1684L21.4999 2.16844L19.8549 0.523438L7.49994 12.8668Z" fill="#3B82F6" />
 				</svg>
 			</div>
 			<div class="geopoint-value">
 				<!-- TODO: translations -->
-				<strong v-if="qualityLabel" class="geo-quality">{{ qualityLabel }} accuracy</strong>
+				<strong v-if="savedValueQualityLabel" class="geo-quality">{{ savedValueQualityLabel }} accuracy</strong>
 				<InputGeopointReadonly :question="question" />
 				<Button
 					v-if="!disabled"
@@ -258,7 +273,7 @@ const closeDialog = () => {
 		<template #default>
 			<div class="geo-dialog-body">
 				<div v-if="coords?.accuracy != null" class="geopoint-icons">
-					<i v-if="qualityCoordinates === ACCURACY_QUALITY.POOR" class="icon-warning" />
+					<i v-if="geolocationQuality === ACCURACY_QUALITY.POOR" class="icon-warning" />
 					<svg v-else class="icon-good-location" xmlns="http://www.w3.org/2000/svg" width="22" height="17" viewBox="0 0 22 17" fill="none">
 						<path d="M7.49994 12.8668L2.63494 8.00177L0.978271 9.64677L7.49994 16.1684L21.4999 2.16844L19.8549 0.523438L7.49994 12.8668Z" fill="#3B82F6" />
 					</svg>
@@ -266,7 +281,7 @@ const closeDialog = () => {
 
 				<div class="geopoint-information">
 					<!-- TODO: translations -->
-					<strong v-if="coords?.accuracy != null" class="geo-quality">{{ coords.accuracy }}m - {{ qualityLabel }} accuracy</strong>
+					<strong v-if="coords?.accuracy != null" class="geo-quality">{{ coords.accuracy }}m - {{ geolocationQualityLabel }} accuracy</strong>
 					<p v-if="accuracyThreshold && value == null">
 						Location will be saved at {{ accuracyThreshold }}m
 					</p>
