@@ -24,7 +24,7 @@ const value = computed<InputGeopointReadonlyValue>(() => {
 
 <template>
 	<!-- TODO: translations -->
-	<p class="geopoint-value">
+	<p class="geopoint-readonly">
 		<span v-if="value?.accuracy != null">Accuracy: {{ value.accuracy }}m</span>
 		<span v-if="value?.latitude != null">Latitude: {{ value.latitude }}</span>
 		<span v-if="value?.longitude != null">Longitude: {{ value.longitude }}</span>
@@ -32,7 +32,17 @@ const value = computed<InputGeopointReadonlyValue>(() => {
 </template>
 
 <style scoped lang="scss">
-.geopoint-value > span {
+@import 'primeflex/core/_variables.scss';
+
+.geopoint-readonly > span {
 	margin-right: 10px;
+}
+
+@media screen and (max-width: #{$md}) {
+	.geopoint-readonly {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
 }
 </style>
