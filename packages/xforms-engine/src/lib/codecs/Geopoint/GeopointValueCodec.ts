@@ -60,7 +60,7 @@ export class GeopointValueCodec extends ValueCodec<
 			const geopoint =  new Geopoint(geopointValue);
 			return geopoint
 				.getTuple()
-				.map((item) => item.value)
+				.map((item) => item.value ?? 0)
 				.join(' ');
 		};
 
