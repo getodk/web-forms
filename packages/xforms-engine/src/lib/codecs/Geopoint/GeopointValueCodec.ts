@@ -1,47 +1,20 @@
 import { type CodecDecoder, type CodecEncoder, ValueCodec } from '../ValueCodec.ts';
-import { Geopoint, type GeopointValue } from './Geopoint.ts';
-
-export type GeopointRuntimeValue = GeopointValue | null;
+import { Geopoint, type GeopointRuntimeValue } from './Geopoint.ts';
 
 export type GeopointInputValue = GeopointRuntimeValue | string;
-
-const DEGREES_MAX = {
-	latitude: 90,
-	longitude: 180,
-} as const;
-
-const isValidDegrees = (
-	coordinate: keyof typeof DEGREES_MAX,
-	degrees: number | undefined
-): degrees is number => {
-	return (
-		typeof degrees === 'number' && !isNaN(degrees) && Math.abs(degrees) <= DEGREES_MAX[coordinate]
-	);
-};
-
-const isGeopointRuntimeValue = (coordinates: number[]) => {
-	return (
-		coordinates.length >= 2 && coordinates.length <= 4 && coordinates.every((item) => item != null)
-	);
-};
 
 const decodeStringValue = (value: GeopointInputValue): GeopointRuntimeValue => {
 	if (typeof value !== 'string' || value.trim() === '') {
 		return null;
 	}
 
-	const coordinates = value.split(/\s+/).map(Number);
-	if (!isGeopointRuntimeValue(coordinates)) {
+	const [latitude, longitude, altitude = null, accuracy = null] = value.split(/\s+/).map(Number);
+
+	if (latitude == null || longitude == null) {
 		return null;
 	}
 
-	const [latitude, longitude, altitude = null, accuracy = null] = coordinates;
-
-	if (!isValidDegrees('latitude', latitude) || !isValidDegrees('longitude', longitude)) {
-		return null;
-	}
-
-	return { latitude, longitude, altitude, accuracy };
+	return new Geopoint({ latitude, longitude, altitude, accuracy }).getRuntimeValue();
 };
 
 export class GeopointValueCodec extends ValueCodec<
@@ -57,8 +30,7 @@ export class GeopointValueCodec extends ValueCodec<
 				return '';
 			}
 
-			const geopoint =  new Geopoint(geopointValue);
-			return geopoint
+			return new Geopoint(geopointValue)
 				.getTuple()
 				.map((item) => item.value ?? 0)
 				.join(' ');

@@ -4,11 +4,8 @@ import {
 	type DecimalInputValue,
 	type DecimalRuntimeValue,
 } from './DecimalValueCodec.ts';
-import {
-	type GeopointInputValue,
-	type GeopointRuntimeValue,
-	GeopointValueCodec,
-} from './Geopoint/GeopointValueCodec.ts';
+import type { GeopointRuntimeValue } from './Geopoint/Geopoint.ts';
+import { type GeopointInputValue, GeopointValueCodec } from './Geopoint/GeopointValueCodec.ts';
 import { IntValueCodec, type IntInputValue, type IntRuntimeValue } from './IntValueCodec.ts';
 import { StringValueCodec } from './StringValueCodec.ts';
 import type { ValueCodec } from './ValueCodec.ts';

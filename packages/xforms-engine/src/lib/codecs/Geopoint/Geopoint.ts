@@ -1,6 +1,6 @@
 abstract class SemanticValue<Semantic extends string, Value extends number | null> {
-	// @ts-ignore
-	private declare readonly __semanticType: unique symbol;
+	// @ts-expect-error TS6133: '_semanticType' is declared but its value is never read
+	private static readonly _semanticType: unique symbol;
 	abstract readonly semantic: Semantic;
 
 	constructor(readonly value: Value) {}
@@ -29,6 +29,8 @@ export interface GeopointValue {
 	readonly accuracy: number | null;
 }
 
+export type GeopointRuntimeValue = GeopointValue | null;
+
 interface GeopointInternalValue {
 	readonly latitude: Latitude;
 	readonly longitude: Longitude;
@@ -37,23 +39,33 @@ interface GeopointInternalValue {
 }
 
 type GeopointTuple =
-	| readonly [latitude: Latitude, longitude: Longitude, altitude: Altitude<number> | Altitude<null>, accuracy: Accuracy]
+	| readonly [
+			latitude: Latitude,
+			longitude: Longitude,
+			altitude: Altitude<number> | Altitude<null>,
+			accuracy: Accuracy,
+	  ]
 	| readonly [latitude: Latitude, longitude: Longitude, altitude: Altitude]
 	| readonly [latitude: Latitude, longitude: Longitude];
+
+const DEGREES_MAX = {
+	latitude: 90,
+	longitude: 180,
+} as const;
+
+type CoordinateType = keyof typeof DEGREES_MAX;
 
 export class Geopoint {
 	private readonly internalValue: GeopointInternalValue;
 
 	constructor(coordinates: GeopointValue) {
-		if (coordinates == null) {
-			throw new Error(`Unable to parse geopoint: ${coordinates}`);
-		}
-
 		this.internalValue = {
 			latitude: new Latitude(coordinates.latitude),
 			longitude: new Longitude(coordinates.longitude),
-			altitude: coordinates.altitude == null ? new Altitude(null) : new Altitude(coordinates.altitude),
-			accuracy: coordinates.accuracy == null ? new Accuracy(null) : new Accuracy(coordinates.accuracy),
+			altitude:
+				coordinates.altitude == null ? new Altitude(null) : new Altitude(coordinates.altitude),
+			accuracy:
+				coordinates.accuracy == null ? new Accuracy(null) : new Accuracy(coordinates.accuracy),
 		};
 	}
 
@@ -75,4 +87,24 @@ export class Geopoint {
 		return [latitude, longitude];
 	}
 
+	getRuntimeValue(): GeopointRuntimeValue {
+		const { latitude, longitude, altitude, accuracy } = this.internalValue;
+		const isLatitude = this.isValidDegrees('latitude', latitude.value);
+		const isLongitude = this.isValidDegrees('longitude', longitude.value);
+
+		if (!isLatitude || !isLongitude) {
+			return null;
+		}
+
+		return {
+			latitude: latitude.value,
+			longitude: longitude.value,
+			altitude: altitude.value,
+			accuracy: accuracy.value,
+		};
+	}
+
+	private isValidDegrees(coordinate: CoordinateType, degrees: number): degrees is number {
+		return !isNaN(degrees) && Math.abs(degrees) <= DEGREES_MAX[coordinate];
+	}
 }
