@@ -583,7 +583,7 @@ describe('Data (<bind type>) type support', () => {
 				{
 					expression: { latitude: 20.663, longitude: 16.763 },
 					expectedAsObject: { latitude: 20.663, longitude: 16.763, altitude: null, accuracy: null },
-					expectedAsText: '20.2936673 16.7260063',
+					expectedAsText: '20.663 16.763',
 				},
 				{
 					expression: { latitude: 19.899, longitude: 100.55559, accuracy: 15 },
@@ -593,7 +593,7 @@ describe('Data (<bind type>) type support', () => {
 				{
 					expression: { latitude: 45.111, longitude: 127.23, altitude: 1350 },
 					expectedAsObject: { latitude: 45.111, longitude: 127.23, altitude: 1350, accuracy: null },
-					expectedAsText: '45.111 127.1234 1350',
+					expectedAsText: '45.111 127.23 1350',
 				},
 				{
 					expression: { latitude: 14.66599, longitude: 179.9009, altitude: 200, accuracy: 5 },
