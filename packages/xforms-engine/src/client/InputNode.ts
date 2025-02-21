@@ -81,6 +81,11 @@ export interface InputNode<V extends ValueType = ValueType>
 	setValue(value: InputNodeInputValue<V>): RootNode;
 }
 
+export type StringInputValue = InputValue<'string'>;
+export type IntInputValue = InputValue<'int'>;
+export type DecimalInputValue = InputValue<'decimal'>;
+export type GeopointInputValue = InputValue<'geopoint'>;
+
 export type StringInputNode = InputNode<'string'>;
 export type IntInputNode = InputNode<'int'>;
 export type DecimalInputNode = InputNode<'decimal'>;

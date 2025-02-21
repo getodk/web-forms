@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import InputGeopointReadonly from '@/components/controls/Input/InputGeopointReadonly.vue';
+import GeopointFormattedValue from '@/components/controls/GeopointFormattedValue.vue';
 import { UnreachableError } from '@getodk/common/lib/error/UnreachableError.ts';
-import type { AnyNoteNode, NoteValue } from '@getodk/xforms-engine';
+import type { AnyNoteNode, GeopointNoteValue } from '@getodk/xforms-engine';
 import { computed } from 'vue';
 import ControlText from '../ControlText.vue';
 
@@ -35,7 +35,7 @@ const assertTextRenderableValue: AssertTextRenderableValue = (value) => {
 	}
 };
 
-type NoteRenderableValue = NoteValue<'geopoint'> | TextRenderableValue;
+type NoteRenderableValue = GeopointNoteValue | TextRenderableValue;
 
 const value = computed<NoteRenderableValue>(() => {
 	const { question } = props;
@@ -70,7 +70,7 @@ const value = computed<NoteRenderableValue>(() => {
 		<ControlText :question="question" />
 
 		<template v-if="question.valueType === 'geopoint'">
-			<InputGeopointReadonly :question="question" />
+			<GeopointFormattedValue :question="question" />
 		</template>
 
 		<template v-else-if="value != null">

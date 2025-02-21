@@ -37,15 +37,15 @@ export type GeopointRuntimeValue = GeopointValue | null;
 interface GeopointInternalValue {
 	readonly latitude: Latitude;
 	readonly longitude: Longitude;
-	readonly altitude: Altitude<number> | Altitude<null>;
-	readonly accuracy: Accuracy<number> | Accuracy<null>;
+	readonly altitude: Altitude<null> | Altitude<number>;
+	readonly accuracy: Accuracy<null> | Accuracy<number>;
 }
 
 type GeopointTuple =
 	| readonly [
 			latitude: Latitude,
 			longitude: Longitude,
-			altitude: Altitude<number> | Altitude<null>,
+			altitude: Altitude<null> | Altitude<number>,
 			accuracy: Accuracy,
 	  ]
 	| readonly [latitude: Latitude, longitude: Longitude, altitude: Altitude]

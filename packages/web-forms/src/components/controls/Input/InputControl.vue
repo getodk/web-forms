@@ -43,6 +43,7 @@ provide('isInvalid', isInvalid);
 			<InputText :node="node" />
 		</template>
 
+		<!-- Excluding Geopoint since it doesn't display an error icon in the input box like other input types. TODO: Refactor to allow each input type to determine how errors are displayed. -->
 		<i v-show="isInvalid && (doneAnswering || submitPressed) && node.valueType !== 'geopoint'" class="icon-error" />
 	</div>
 	<ValidationMessage

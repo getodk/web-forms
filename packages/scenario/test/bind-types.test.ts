@@ -10,7 +10,7 @@ import {
 	t,
 	title,
 } from '@getodk/common/test/fixtures/xform-dsl/index.ts';
-import type { InputValue, ValueType } from '@getodk/xforms-engine';
+import type { ValueType } from '@getodk/xforms-engine';
 import { assert, beforeEach, describe, expect, expectTypeOf, it } from 'vitest';
 import { intAnswer } from '../src/answer/ExpectedIntAnswer.ts';
 import { InputNodeAnswer } from '../src/answer/InputNodeAnswer.ts';
@@ -192,8 +192,14 @@ describe('Data (<bind type>) type support', () => {
 				answer = getTypedModelValueNodeAnswer('/root/geopoint-value', 'geopoint');
 			});
 
-			it('has a GeopointValue | null static type', () => {
-				expectTypeOf(answer.value).toEqualTypeOf<InputValue<'geopoint'>>();
+			it('has a (nullable) structured geopoint static type', () => {
+				interface ExpectedGeopointValue {
+					readonly latitude: number;
+					readonly longitude: number;
+					readonly altitude: number | null;
+					readonly accuracy: number | null;
+				}
+				expectTypeOf(answer.value).toEqualTypeOf<ExpectedGeopointValue | null>();
 			});
 
 			it('has a GeopointValue populated value', () => {
@@ -520,8 +526,14 @@ describe('Data (<bind type>) type support', () => {
 				answer = getTypedInputNodeAnswer('/root/geopoint-value', 'geopoint');
 			});
 
-			it('has a GeopointValue | null static type', () => {
-				expectTypeOf(answer.value).toEqualTypeOf<InputValue<'geopoint'>>();
+			it('has a (nullable) structured geopoint static type', () => {
+				interface ExpectedGeopointValue {
+					readonly latitude: number;
+					readonly longitude: number;
+					readonly altitude: number | null;
+					readonly accuracy: number | null;
+				}
+				expectTypeOf(answer.value).toEqualTypeOf<ExpectedGeopointValue | null>();
 			});
 
 			it('has a GeopointValue populated value', () => {
@@ -531,12 +543,14 @@ describe('Data (<bind type>) type support', () => {
 					altitude: 1000,
 					accuracy: 25,
 				});
+				expect(answer.stringValue).toEqual('38.25146813817506 21.758421137528785 1000 25');
 			});
 
 			it('has an null as blank value', () => {
 				scenario.answer(inputRelevancePath, 'no');
 				answer = getTypedInputNodeAnswer('/root/geopoint-value', 'geopoint');
 				expect(answer.value).toBeNull();
+				expect(answer.stringValue).toBe('');
 			});
 
 			it('sets a new value', () => {
@@ -548,6 +562,7 @@ describe('Data (<bind type>) type support', () => {
 					altitude: 1500,
 					accuracy: 10,
 				});
+				expect(answer.stringValue).toEqual('-1.2936673 36.7260063 1500 10');
 			});
 
 			it('sets altitude with value zero', () => {
@@ -559,6 +574,7 @@ describe('Data (<bind type>) type support', () => {
 					altitude: 0,
 					accuracy: 5,
 				});
+				expect(answer.stringValue).toEqual('-5.299 46.663 0 5');
 			});
 
 			it.each([
@@ -568,10 +584,28 @@ describe('Data (<bind type>) type support', () => {
 				'20.2936673 -16.7260063 1200 ABCD',
 				'99 179.99999 1200 0',
 				'89.999 180.1111 1300 0',
-			])('has an null when incorrect value is passed', (expression) => {
+			])('has null when incorrect value is passed', (expression) => {
 				scenario.answer('/root/geopoint-value', expression);
 				answer = getTypedInputNodeAnswer('/root/geopoint-value', 'geopoint');
 				expect(answer.value).toBeNull();
+				expect(answer.stringValue).toBe('');
+			});
+
+			it('has null on second write when first write was correct', () => {
+				scenario.answer('/root/geopoint-value', '-5.299 46.663 0 5');
+				answer = getTypedInputNodeAnswer('/root/geopoint-value', 'geopoint');
+				expect(answer.value).toEqual({
+					latitude: -5.299,
+					longitude: 46.663,
+					altitude: 0,
+					accuracy: 5,
+				});
+				expect(answer.stringValue).toEqual('-5.299 46.663 0 5');
+
+				scenario.answer('/root/geopoint-value', 'ZYX %% ABC $$');
+				answer = getTypedInputNodeAnswer('/root/geopoint-value', 'geopoint');
+				expect(answer.value).toBeNull();
+				expect(answer.stringValue).toBe('');
 			});
 		});
 	});

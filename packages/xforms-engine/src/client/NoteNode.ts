@@ -77,6 +77,11 @@ export interface NoteNode<V extends ValueType = ValueType> extends BaseValueNode
 	readonly validationState: LeafNodeValidationState;
 }
 
+export type StringNoteValue = NoteValue<'string'>;
+export type IntNoteValue = NoteValue<'int'>;
+export type DecimalNoteValue = NoteValue<'decimal'>;
+export type GeopointNoteValue = NoteValue<'geopoint'>;
+
 export type StringNoteNode = NoteNode<'string'>;
 export type IntNoteNode = NoteNode<'int'>;
 export type DecimalNoteNode = NoteNode<'decimal'>;

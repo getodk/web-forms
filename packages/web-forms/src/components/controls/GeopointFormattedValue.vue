@@ -2,29 +2,29 @@
 import type {
 	GeopointInputNode,
 	GeopointNoteNode,
-	InputValue,
-	NoteValue,
+	GeopointInputValue,
+	GeopointNoteValue,
 } from '@getodk/xforms-engine';
 import { computed } from 'vue';
 
-type InputGeopointReadonly = GeopointInputNode | GeopointNoteNode;
+type GeopointNode = GeopointInputNode | GeopointNoteNode;
 
-type InputGeopointReadonlyValue = InputValue<'geopoint'> | NoteValue<'geopoint'>;
+type GeopointValue = GeopointInputValue | GeopointNoteValue;
 
-interface InputGeopointReadonlyProps {
-	readonly question: InputGeopointReadonly;
+interface GeopointFormattedValueProps {
+	readonly question: GeopointNode;
 }
 
-const props = defineProps<InputGeopointReadonlyProps>();
+const props = defineProps<GeopointFormattedValueProps>();
 
-const value = computed<InputGeopointReadonlyValue>(() => {
+const value = computed<GeopointValue>(() => {
 	return props.question.currentState.value;
 });
 </script>
 
 <template>
 	<!-- TODO: translations -->
-	<p class="geopoint-readonly">
+	<p class="geopoint-formatted-value">
 		<span v-if="value?.accuracy != null">Accuracy: {{ value.accuracy }}m</span>
 		<span v-if="value?.latitude != null">Latitude: {{ value.latitude }}</span>
 		<span v-if="value?.longitude != null">Longitude: {{ value.longitude }}</span>
@@ -34,12 +34,12 @@ const value = computed<InputGeopointReadonlyValue>(() => {
 <style scoped lang="scss">
 @import 'primeflex/core/_variables.scss';
 
-.geopoint-readonly > span {
+.geopoint-formatted-value > span {
 	margin-right: 10px;
 }
 
 @media screen and (max-width: #{$md}) {
-	.geopoint-readonly {
+	.geopoint-formatted-value {
 		display: flex;
 		flex-direction: column;
 		gap: 10px;
