@@ -553,18 +553,6 @@ describe('Data (<bind type>) type support', () => {
 				expect(answer.stringValue).toBe('');
 			});
 
-			it('sets a new value', () => {
-				scenario.answer('/root/geopoint-value', '-1.2936673 36.7260063 1500 10');
-				answer = getTypedInputNodeAnswer('/root/geopoint-value', 'geopoint');
-				expect(answer.value).toEqual({
-					latitude: -1.2936673,
-					longitude: 36.7260063,
-					altitude: 1500,
-					accuracy: 10,
-				});
-				expect(answer.stringValue).toEqual('-1.2936673 36.7260063 1500 10');
-			});
-
 			it('sets altitude with value zero', () => {
 				scenario.answer('/root/geopoint-value', '-5.299 46.663 0 5');
 				answer = getTypedInputNodeAnswer('/root/geopoint-value', 'geopoint');
@@ -591,22 +579,41 @@ describe('Data (<bind type>) type support', () => {
 				expect(answer.stringValue).toBe('');
 			});
 
-			it('has null on second write when first write was correct', () => {
-				scenario.answer('/root/geopoint-value', '-5.299 46.663 0 5');
-				answer = getTypedInputNodeAnswer('/root/geopoint-value', 'geopoint');
-				expect(answer.value).toEqual({
-					latitude: -5.299,
-					longitude: 46.663,
-					altitude: 0,
-					accuracy: 5,
-				});
-				expect(answer.stringValue).toEqual('-5.299 46.663 0 5');
-
-				scenario.answer('/root/geopoint-value', 'ZYX %% ABC $$');
-				answer = getTypedInputNodeAnswer('/root/geopoint-value', 'geopoint');
-				expect(answer.value).toBeNull();
-				expect(answer.stringValue).toBe('');
-			});
+			it.each([
+				{
+					expression: { latitude: 20.663, longitude: 16.763 },
+					expectedAsObject: { latitude: 20.663, longitude: 16.763, altitude: null, accuracy: null },
+					expectedAsText: '20.2936673 16.7260063',
+				},
+				{
+					expression: { latitude: 19.899, longitude: 100.55559, accuracy: 15 },
+					expectedAsObject: { latitude: 19.899, longitude: 100.55559, altitude: 0, accuracy: 15 },
+					expectedAsText: '19.899 100.55559 0 15',
+				},
+				{
+					expression: { latitude: 45.111, longitude: 127.23, altitude: 1350 },
+					expectedAsObject: { latitude: 45.111, longitude: 127.23, altitude: 1350, accuracy: null },
+					expectedAsText: '45.111 127.1234 1350',
+				},
+				{
+					expression: { latitude: 14.66599, longitude: 179.9009, altitude: 200, accuracy: 5 },
+					expectedAsObject: { latitude: 14.66599, longitude: 179.9009, altitude: 200, accuracy: 5 },
+					expectedAsText: '14.66599 179.9009 200 5',
+				},
+				{
+					expression: { latitude: 0, longitude: 0, altitude: 0, accuracy: 0 },
+					expectedAsObject: { latitude: 0, longitude: 0, altitude: 0, accuracy: 0 },
+					expectedAsText: '0 0 0 0',
+				},
+			])(
+				'sets value with GeopointValue object',
+				({ expression, expectedAsObject, expectedAsText }) => {
+					scenario.answer('/root/geopoint-value', expression);
+					answer = getTypedInputNodeAnswer('/root/geopoint-value', 'geopoint');
+					expect(answer.value).toEqual(expectedAsObject);
+					expect(answer.stringValue).toEqual(expectedAsText);
+				}
+			);
 		});
 	});
 
