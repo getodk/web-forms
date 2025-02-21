@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import InputGeopointReadonly from '@/components/controls/Input/InputGeopointReadonly.vue';
-import type { GeopointInputNode, InputValue } from '@getodk/xforms-engine';
+import GeopointFormattedValue from '@/components/controls/GeopointFormattedValue.vue';
+import type { GeopointInputNode, GeopointInputValue } from '@getodk/xforms-engine';
 import Button from 'primevue/button';
 import PrimeDialog from 'primevue/dialog';
 import PrimeProgressSpinner from 'primevue/progressspinner';
@@ -23,7 +23,7 @@ const elapsedTime = ref(0);
 // TODO: fix TypeScript check so it doesn't take types from NodeJS
 let intervalID: NodeJS.Timeout | undefined;
 
-const value = computed((): InputValue<'geopoint'> => {
+const value = computed((): GeopointInputValue => {
 	return props.question.currentState.value;
 });
 
@@ -46,9 +46,9 @@ const unacceptableAccuracyThreshold = computed<number>(() => {
 
 /**
  * Defines geolocation accuracy levels:
- *  - 'good' if accuracy is <= unacceptableAccuracyThreshold
- *  - 'poor' if accuracy > unacceptableAccuracyThreshold
- *  - 'unknown' if accuracy is null or undefined
+ *  - 'GOOD' if accuracy is <= unacceptableAccuracyThreshold
+ *  - 'POOR' if accuracy > unacceptableAccuracyThreshold
+ *  - 'UNKNOWN' if accuracy is null or undefined
  */
 const ACCURACY_QUALITY = {
 	GOOD: 'GOOD',
@@ -72,8 +72,8 @@ const getQualityCoordinates = (accuracy: number | null | undefined): AccuracyQua
 	return ACCURACY_QUALITY.GOOD;
 };
 
+// TODO: translations
 const getQualityLabel = (quality: AccuracyQualityValue): string => {
-	// TODO: translations
 	if (quality === ACCURACY_QUALITY.GOOD) {
 		return 'Good';
 	}
@@ -211,7 +211,7 @@ const closeDialog = () => {
 			<div class="geopoint-value">
 				<!-- TODO: translations -->
 				<strong v-if="savedValueQualityLabel" class="geo-quality">{{ savedValueQualityLabel }} accuracy</strong>
-				<InputGeopointReadonly :question="question" />
+				<GeopointFormattedValue :question="question" />
 				<Button
 					v-if="!disabled"
 					rounded
