@@ -4,27 +4,68 @@ import type { GeopointInputNode, GeopointInputValue } from '@getodk/xforms-engin
 import Button from 'primevue/button';
 import PrimeDialog from 'primevue/dialog';
 import PrimeProgressSpinner from 'primevue/progressspinner';
-import { computed, inject, ref } from 'vue';
+import { computed, inject, nextTick, ref } from 'vue';
 
 interface InputGeopointProps {
 	readonly question: GeopointInputNode;
 }
 
 const props = defineProps<InputGeopointProps>();
-const submitPressed = inject<boolean>('submitPressed');
-const isInvalid = computed(() => props.question.validationState.violation?.valid === false);
+
+/**
+ * @description Defines the possible states of the Geopoint input state machine.
+ * Each state represents a distinct phase in the geolocation capture process.
+ *
+ * @property {string} INITIAL - Idle state, no geolocation active.
+ * @property {Object} REQUESTED - Group of states for active geolocation attempts.
+ * @property {string} REQUESTED.PENDING - Awaiting geolocation data after starting the watch.
+ * @property {string} REQUESTED.SUCCESS - Position received, evaluating accuracy for commit.
+ * @property {string} REQUESTED.FAILURE - Geolocation errored out (e.g., permission denied).
+ * @property {string} DISMISSED - User canceled the operation, transitioning back to INITIAL.
+ * @property {string} COMMITTED - Location successfully saved, transitioning back to INITIAL.
+ */
+const STATES = {
+	INITIAL: 'INITIAL',
+	REQUESTED: {
+		PENDING: 'REQUESTED.PENDING',
+		SUCCESS: 'REQUESTED.SUCCESS',
+		FAILURE: 'REQUESTED.FAILURE',
+	},
+	DISMISSED: 'DISMISSED',
+	COMMITTED: 'COMMITTED',
+} as const;
+
+type StatesEnum = typeof STATES;
+type StatesValue =
+	| StatesEnum['INITIAL']
+	| StatesEnum['REQUESTED']['PENDING']
+	| StatesEnum['REQUESTED']['SUCCESS']
+	| StatesEnum['REQUESTED']['FAILURE']
+	| StatesEnum['DISMISSED']
+	| StatesEnum['COMMITTED'];
+
+const state = ref<StatesValue>(STATES.INITIAL);
 const coords = ref<GeolocationCoordinates | null>(null);
-const showDialog = ref(false);
-const disabled = computed(() => props.question.currentState.readonly === true);
-const geoLocationError = ref<boolean>(false);
-const watchID = ref<number | null>(null);
-const startTime = ref<number | null>(null);
 const elapsedTime = ref(0);
+const startTime = ref<number | null>(null);
+const submitPressed = inject<boolean>('submitPressed');
 // TODO: fix TypeScript check so it doesn't take types from NodeJS
-let intervalID: NodeJS.Timeout | undefined;
+let timerID: NodeJS.Timeout | null = null;
+let watchID: number | null = null;
 
 const value = computed((): GeopointInputValue => {
 	return props.question.currentState.value;
+});
+const isInvalid = computed(() => props.question.validationState.violation?.valid === false);
+const disabled = computed(() => props.question.currentState.readonly === true);
+const isLocationCaptureInProgress = computed(() => {
+	return state.value === STATES.REQUESTED.PENDING || state.value === STATES.REQUESTED.SUCCESS;
+});
+const hasError = computed(() => state.value === STATES.REQUESTED.FAILURE);
+const formattedTime = computed(() => {
+	const minutes = Math.floor(elapsedTime.value / 60);
+	const seconds = (elapsedTime.value % 60).toString().padStart(2, '0');
+	return `${minutes}:${seconds}`;
 });
 
 /**
@@ -46,18 +87,19 @@ const unacceptableAccuracyThreshold = computed<number>(() => {
 
 /**
  * Defines geolocation accuracy levels:
- *  - 'GOOD' if accuracy is <= unacceptableAccuracyThreshold
- *  - 'POOR' if accuracy > unacceptableAccuracyThreshold
- *  - 'UNKNOWN' if accuracy is null or undefined
+ * @property {string} GOOD - if accuracy is <= accuracyThreshold
+ * @property {string} ACCEPTABLE - if accuracy is > accuracyThreshold and <= unacceptableAccuracyThreshold
+ * @property {string} POOR - if accuracy > unacceptableAccuracyThreshold
+ * @property {string} UNKNOWN - if accuracy is null or undefined
  */
 const ACCURACY_QUALITY = {
 	GOOD: 'GOOD',
+	ACCEPTABLE: 'ACCEPTABLE',
 	POOR: 'POOR',
 	UNKNOWN: 'UNKNOWN',
 } as const;
 
 type AccuracyQualityEnum = typeof ACCURACY_QUALITY;
-
 type AccuracyQualityValue = AccuracyQualityEnum[keyof AccuracyQualityEnum];
 
 const getQualityCoordinates = (accuracy: number | null | undefined): AccuracyQualityValue => {
@@ -65,99 +107,94 @@ const getQualityCoordinates = (accuracy: number | null | undefined): AccuracyQua
 		return ACCURACY_QUALITY.UNKNOWN;
 	}
 
-	if (accuracy > unacceptableAccuracyThreshold.value) {
-		return ACCURACY_QUALITY.POOR;
+	if (accuracy <= accuracyThreshold.value) {
+		return ACCURACY_QUALITY.GOOD;
 	}
 
-	return ACCURACY_QUALITY.GOOD;
+	if (accuracy > accuracyThreshold.value && accuracy < unacceptableAccuracyThreshold.value) {
+		return ACCURACY_QUALITY.ACCEPTABLE;
+	}
+
+	return ACCURACY_QUALITY.POOR;
 };
 
 // TODO: translations
 const getQualityLabel = (quality: AccuracyQualityValue): string => {
-	if (quality === ACCURACY_QUALITY.GOOD) {
-		return 'Good';
-	}
+	switch (quality) {
+		case ACCURACY_QUALITY.GOOD:
+		case ACCURACY_QUALITY.ACCEPTABLE:
+			return 'Good';
 
-	if (quality === ACCURACY_QUALITY.POOR) {
-		return 'Poor';
-	}
+		case ACCURACY_QUALITY.POOR:
+			return 'Poor';
 
-	return 'Unknown';
+		default:
+			return 'Unknown';
+	}
 };
 
 const geolocationQuality = computed<AccuracyQualityValue>(() => {
 	return getQualityCoordinates(coords.value?.accuracy);
 });
-
 const geolocationQualityLabel = computed<string>(() => {
 	return getQualityLabel(geolocationQuality.value);
 });
-
 const savedValueQuality = computed<AccuracyQualityValue>(() => {
 	return getQualityCoordinates(value.value?.accuracy);
 });
-
 const savedValueQualityLabel = computed<string>(() => {
 	return getQualityLabel(savedValueQuality.value);
 });
 
-const formattedTime = computed(() => {
-	const minutes = Math.floor(elapsedTime.value / 60);
-	const seconds = (elapsedTime.value % 60).toString().padStart(2, '0');
-	return `${minutes}:${seconds}`;
-});
-
-const start = () => {
-	if (watchID.value) {
-		stop();
-	}
-
-	showDialog.value = true;
-	geoLocationError.value = false;
-
+const startElapsedTime = () => {
 	startTime.value = Date.now();
-	intervalID = setInterval(() => {
+	timerID = setInterval(() => {
 		if (startTime.value !== null) {
 			elapsedTime.value = Math.floor((Date.now() - startTime.value) / 1000);
 		}
 	}, 1000);
+};
 
-	watchID.value = navigator.geolocation.watchPosition(
+const start = () => {
+	if (isLocationCaptureInProgress.value) {
+		return;
+	}
+
+	state.value = STATES.REQUESTED.PENDING;
+	startElapsedTime();
+
+	watchID = navigator.geolocation.watchPosition(
 		(position) => {
 			coords.value = position.coords;
+			state.value = STATES.REQUESTED.SUCCESS;
 
 			if (
 				value.value === null &&
 				accuracyThreshold.value !== 0 &&
 				coords.value.accuracy <= accuracyThreshold.value
 			) {
-				save();
+				void commit();
 			}
 		},
 		() => {
-			closeDialog();
-			geoLocationError.value = true;
+			state.value = STATES.REQUESTED.FAILURE;
+			cleanup();
 		},
 		{ enableHighAccuracy: true }
 	);
 };
 
-const stop = () => {
-	if (watchID.value === null) {
+const stop = async () => {
+	if (!isLocationCaptureInProgress.value) {
 		return;
 	}
 
-	navigator.geolocation.clearWatch(watchID.value);
-	watchID.value = null;
-
-	clearInterval(intervalID);
-	elapsedTime.value = 0;
+	state.value = STATES.DISMISSED;
+	await transitionToInitialState();
 };
 
-const save = () => {
-	closeDialog();
-
-	if (!coords.value) {
+const commit = async () => {
+	if (state.value !== STATES.REQUESTED.SUCCESS || coords.value == null) {
 		return;
 	}
 
@@ -167,11 +204,32 @@ const save = () => {
 		altitude: coords.value.altitude,
 		accuracy: coords.value.accuracy,
 	});
+
+	state.value = STATES.COMMITTED;
+	await transitionToInitialState();
 };
 
-const closeDialog = () => {
-	stop();
-	showDialog.value = false;
+const cleanup = () => {
+	coords.value = null;
+	elapsedTime.value = 0;
+	startTime.value = null;
+
+	if (watchID !== null) {
+		navigator.geolocation.clearWatch(watchID);
+		watchID = null;
+	}
+
+	if (timerID !== null) {
+		clearInterval(timerID);
+		timerID = null;
+	}
+};
+
+const transitionToInitialState = () => {
+	return nextTick(() => {
+		cleanup();
+		state.value = STATES.INITIAL;
+	});
 };
 </script>
 
@@ -204,13 +262,26 @@ const closeDialog = () => {
 		<div v-if="value != null" class="geopoint-value-container">
 			<div class="geopoint-icons">
 				<i v-if="savedValueQuality === ACCURACY_QUALITY.POOR" class="icon-warning" />
-				<svg v-else class="icon-good-location" xmlns="http://www.w3.org/2000/svg" width="22" height="17" viewBox="0 0 22 17" fill="none">
-					<path d="M7.49994 12.8668L2.63494 8.00177L0.978271 9.64677L7.49994 16.1684L21.4999 2.16844L19.8549 0.523438L7.49994 12.8668Z" fill="#3B82F6" />
+				<svg
+					v-else
+					class="icon-good-location"
+					xmlns="http://www.w3.org/2000/svg"
+					width="22"
+					height="17"
+					viewBox="0 0 22 17"
+					fill="none"
+				>
+					<path
+						d="M7.49994 12.8668L2.63494 8.00177L0.978271 9.64677L7.49994 16.1684L21.4999 2.16844L19.8549 0.523438L7.49994 12.8668Z"
+						fill="#3B82F6"
+					/>
 				</svg>
 			</div>
 			<div class="geopoint-value">
 				<!-- TODO: translations -->
-				<strong v-if="savedValueQualityLabel" class="geo-quality">{{ savedValueQualityLabel }} accuracy</strong>
+				<strong v-if="savedValueQualityLabel" class="geo-quality">
+					{{ savedValueQualityLabel }} accuracy
+				</strong>
 				<GeopointFormattedValue :question="question" />
 				<Button
 					v-if="!disabled"
@@ -247,14 +318,18 @@ const closeDialog = () => {
 			</div>
 		</div>
 
-		<div v-if="geoLocationError" class="geopoint-error" :class="{ 'stack-errors': submitPressed && isInvalid }">
+		<div
+			v-if="hasError"
+			class="geopoint-error"
+			:class="{ 'stack-errors': submitPressed && isInvalid }"
+		>
 			<i class="icon-warning" />
 			<!-- TODO: translations -->
 			<strong>Cannot access location</strong>&nbsp;<span>Grant location permission in the browser settings and make sure location is turned on.</span>
 		</div>
 	</div>
 
-	<PrimeDialog :visible="showDialog" modal class="geo-dialog" :closable="false" :draggable="false">
+	<PrimeDialog :visible="isLocationCaptureInProgress" modal class="geo-dialog" :closable="false" :draggable="false">
 		<template #header>
 			<div class="geo-dialog-header">
 				<div class="geo-dialog-header-title">
@@ -262,9 +337,18 @@ const closeDialog = () => {
 					<!-- TODO: translations -->
 					<strong>Finding your location</strong>
 				</div>
-				<button class="close-icon" @click="closeDialog()">
-					<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
-						<path d="M8.23648 6.99995L13.3931 1.84328C13.4791 1.76318 13.5481 1.66658 13.5959 1.55925C13.6437 1.45191 13.6694 1.33605 13.6715 1.21856C13.6736 1.10107 13.652 0.984374 13.608 0.875421C13.564 0.766468 13.4984 0.667495 13.4154 0.584407C13.3323 0.501318 13.2333 0.435816 13.1243 0.391808C13.0154 0.347801 12.8987 0.326188 12.7812 0.328261C12.6637 0.330334 12.5479 0.35605 12.4405 0.403874C12.3332 0.451698 12.2366 0.52065 12.1565 0.606618L6.99982 5.76328L1.84315 0.606618C1.67728 0.452058 1.45789 0.367914 1.23121 0.371914C1.00452 0.375913 0.788239 0.467744 0.627924 0.628059C0.467609 0.788375 0.375778 1.00466 0.371778 1.23134C0.367778 1.45803 0.451922 1.67741 0.606482 1.84328L5.76315 6.99995L0.606482 12.1566C0.442624 12.3207 0.350586 12.5431 0.350586 12.775C0.350586 13.0068 0.442624 13.2292 0.606482 13.3933C0.770545 13.5571 0.99294 13.6492 1.22482 13.6492C1.45669 13.6492 1.67909 13.5571 1.84315 13.3933L6.99982 8.23662L12.1565 13.3933C12.3205 13.5571 12.5429 13.6492 12.7748 13.6492C13.0067 13.6492 13.2291 13.5571 13.3931 13.3933C13.557 13.2292 13.649 13.0068 13.649 12.775C13.649 12.5431 13.557 12.3207 13.3931 12.1566L8.23648 6.99995Z" fill="#212121" />
+				<button class="close-icon" @click="stop()">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="14"
+						height="14"
+						viewBox="0 0 14 14"
+						fill="none"
+					>
+						<path
+							d="M8.23648 6.99995L13.3931 1.84328C13.4791 1.76318 13.5481 1.66658 13.5959 1.55925C13.6437 1.45191 13.6694 1.33605 13.6715 1.21856C13.6736 1.10107 13.652 0.984374 13.608 0.875421C13.564 0.766468 13.4984 0.667495 13.4154 0.584407C13.3323 0.501318 13.2333 0.435816 13.1243 0.391808C13.0154 0.347801 12.8987 0.326188 12.7812 0.328261C12.6637 0.330334 12.5479 0.35605 12.4405 0.403874C12.3332 0.451698 12.2366 0.52065 12.1565 0.606618L6.99982 5.76328L1.84315 0.606618C1.67728 0.452058 1.45789 0.367914 1.23121 0.371914C1.00452 0.375913 0.788239 0.467744 0.627924 0.628059C0.467609 0.788375 0.375778 1.00466 0.371778 1.23134C0.367778 1.45803 0.451922 1.67741 0.606482 1.84328L5.76315 6.99995L0.606482 12.1566C0.442624 12.3207 0.350586 12.5431 0.350586 12.775C0.350586 13.0068 0.442624 13.2292 0.606482 13.3933C0.770545 13.5571 0.99294 13.6492 1.22482 13.6492C1.45669 13.6492 1.67909 13.5571 1.84315 13.3933L6.99982 8.23662L12.1565 13.3933C12.3205 13.5571 12.5429 13.6492 12.7748 13.6492C13.0067 13.6492 13.2291 13.5571 13.3931 13.3933C13.557 13.2292 13.649 13.0068 13.649 12.775C13.649 12.5431 13.557 12.3207 13.3931 12.1566L8.23648 6.99995Z"
+							fill="#212121"
+						/>
 					</svg>
 				</button>
 			</div>
@@ -274,21 +358,32 @@ const closeDialog = () => {
 			<div class="geo-dialog-body">
 				<div v-if="coords?.accuracy != null" class="geopoint-icons">
 					<i v-if="geolocationQuality === ACCURACY_QUALITY.POOR" class="icon-warning" />
-					<svg v-else class="icon-good-location" xmlns="http://www.w3.org/2000/svg" width="22" height="17" viewBox="0 0 22 17" fill="none">
-						<path d="M7.49994 12.8668L2.63494 8.00177L0.978271 9.64677L7.49994 16.1684L21.4999 2.16844L19.8549 0.523438L7.49994 12.8668Z" fill="#3B82F6" />
+					<svg
+						v-else
+						class="icon-good-location"
+						xmlns="http://www.w3.org/2000/svg"
+						width="22"
+						height="17"
+						viewBox="0 0 22 17"
+						fill="none"
+					>
+						<path
+							d="M7.49994 12.8668L2.63494 8.00177L0.978271 9.64677L7.49994 16.1684L21.4999 2.16844L19.8549 0.523438L7.49994 12.8668Z"
+							fill="#3B82F6"
+						/>
 					</svg>
 				</div>
 
 				<div class="geopoint-information">
 					<!-- TODO: translations -->
-					<strong v-if="coords?.accuracy != null" class="geo-quality">{{ coords.accuracy }}m - {{ geolocationQualityLabel }} accuracy</strong>
+					<strong v-if="coords?.accuracy != null" class="geo-quality">
+						{{ coords.accuracy }}m - {{ geolocationQualityLabel }} accuracy
+					</strong>
 					<p v-if="accuracyThreshold && value == null">
 						Location will be saved at {{ accuracyThreshold }}m
 					</p>
 					<p>Time taken to capture location: {{ formattedTime }}</p>
-					<p v-if="value?.accuracy">
-						Previous saved location at {{ value.accuracy }}m
-					</p>
+					<p v-if="value?.accuracy">Previous saved location at {{ value.accuracy }}m</p>
 				</div>
 			</div>
 		</template>
@@ -296,10 +391,15 @@ const closeDialog = () => {
 		<template #footer>
 			<div class="geo-dialog-footer">
 				<!-- TODO: translations -->
-				<Button text rounded severity="contrast" label="Cancel" @click="closeDialog()" />
+				<Button text rounded severity="contrast" label="Cancel" @click="stop()" />
 
 				<!-- TODO: translations -->
-				<Button label="Save location" rounded :disabled="coords?.accuracy == null" @click="save()" />
+				<Button
+					label="Save location"
+					rounded
+					:disabled="coords?.accuracy == null"
+					@click="commit()"
+				/>
 			</div>
 		</template>
 	</PrimeDialog>
@@ -448,7 +548,7 @@ const closeDialog = () => {
 	background-color: var(--error-bg-color);
 	border-radius: var(--geo-radius);
 	margin-top: var(--geo-spacing-xxl);
-	padding: 20px;
+	padding: var(--geo-spacing-xl);
 
 	.icon-warning {
 		font-size: 1.2rem;
