@@ -2,7 +2,7 @@ import type { XFormDefinition } from '../../XFormDefinition.ts';
 import type { InputAppearanceDefinition } from '../appearance/inputAppearanceParser.ts';
 import { inputAppearanceParser } from '../appearance/inputAppearanceParser.ts';
 import type { BodyElementParentContext } from '../BodyDefinition.ts';
-import { parseToFloat, parseToInteger } from '../NodeOptionsParser.ts';
+import { parseToFloat, parseToInteger } from '../../../lib/NumberParsers.ts';
 import { ControlDefinition } from './ControlDefinition.ts';
 
 export class InputControlDefinition extends ControlDefinition<'input'> {

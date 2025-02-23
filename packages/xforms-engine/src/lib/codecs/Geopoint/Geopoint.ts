@@ -75,11 +75,7 @@ export class Geopoint {
 	getTuple(): GeopointTuple {
 		const { latitude, longitude, altitude, accuracy } = this.internalValue;
 
-		if (altitude.value == null && accuracy.value != null) {
-			return [latitude, longitude, altitude, accuracy];
-		}
-
-		if (altitude.value != null && accuracy.value != null) {
+		if (accuracy.value != null) {
 			return [latitude, longitude, altitude, accuracy];
 		}
 

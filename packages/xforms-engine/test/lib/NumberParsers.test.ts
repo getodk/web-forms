@@ -1,7 +1,7 @@
 import { assert, describe, expect, it } from 'vitest';
-import { parseToFloat, parseToInteger } from '../../../src/parse/body/NodeOptionsParser.ts';
+import { parseToFloat, parseToInteger } from '../../src/lib/NumberParsers.ts';
 
-describe('NodeOptionsParser', () => {
+describe('NumberParsers', () => {
 	interface SuccessTestCase {
 		readonly input: string | null;
 		readonly expected: number | null;
