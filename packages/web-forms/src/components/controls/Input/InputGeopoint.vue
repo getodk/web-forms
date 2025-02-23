@@ -37,6 +37,7 @@ const STATES = {
 
 type StatesEnum = typeof STATES;
 type StatesValue =
+	// eslint-disable-next-line @typescript-eslint/sort-type-constituents
 	| StatesEnum['INITIAL']
 	| StatesEnum['REQUESTED']['PENDING']
 	| StatesEnum['REQUESTED']['SUCCESS']
@@ -383,7 +384,9 @@ const transitionToInitialState = () => {
 						Location will be saved at {{ accuracyThreshold }}m
 					</p>
 					<p>Time taken to capture location: {{ formattedTime }}</p>
-					<p v-if="value?.accuracy">Previous saved location at {{ value.accuracy }}m</p>
+					<p v-if="value?.accuracy">
+						Previous saved location at {{ value.accuracy }}m
+					</p>
 				</div>
 			</div>
 		</template>

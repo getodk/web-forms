@@ -567,6 +567,7 @@ describe('Data (<bind type>) type support', () => {
 
 			it.each([
 				'ZYX %% ABC $$',
+				'ZYX %% 1200 10',
 				'-15.2936673 120.7260063 ABC $$',
 				'-2.33373 36.7260063 ABC 15',
 				'20.2936673 -16.7260063 1200 ABCD',
@@ -602,8 +603,8 @@ describe('Data (<bind type>) type support', () => {
 				},
 				{
 					expression: { latitude: 0, longitude: 0, altitude: 0, accuracy: 0 },
-					expectedAsObject: { latitude: 0, longitude: 0, altitude: 0, accuracy: 0 },
-					expectedAsText: '0 0 0 0',
+					expectedAsObject: null,
+					expectedAsText: '',
 				},
 			])(
 				'sets value with GeopointValue object',

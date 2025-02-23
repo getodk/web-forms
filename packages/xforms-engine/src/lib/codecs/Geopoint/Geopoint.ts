@@ -94,7 +94,7 @@ export class Geopoint {
 		const isLatitude = this.isValidDegrees('latitude', latitude.value);
 		const isLongitude = this.isValidDegrees('longitude', longitude.value);
 
-		if (!isLatitude || !isLongitude) {
+		if (!isLatitude || !isLongitude || Geopoint.isNullLocation(latitude.value, longitude.value)) {
 			return null;
 		}
 
@@ -114,6 +114,10 @@ export class Geopoint {
 		return value != null && !Number.isNaN(value);
 	}
 
+	private static isNullLocation(latitude: number, longitude: number) {
+		return latitude === 0 && longitude === 0;
+	}
+
 	static parseString(value: string): GeopointRuntimeValue {
 		if (value.trim() === '') {
 			return null;
@@ -131,7 +135,10 @@ export class Geopoint {
 	static toCoordinatesString(value: GeopointInputValue): string {
 		const decodedValue = typeof value === 'string' ? Geopoint.parseString(value) : value;
 
-		if (decodedValue == null) {
+		if (
+			decodedValue == null ||
+			Geopoint.isNullLocation(decodedValue.latitude, decodedValue.longitude)
+		) {
 			return '';
 		}
 
