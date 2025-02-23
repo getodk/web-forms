@@ -34,6 +34,9 @@ export interface GeopointValue {
 
 export type GeopointRuntimeValue = GeopointValue | null;
 
+// TODO: Add support for GeoJSONValue
+export type GeopointInputValue = GeopointRuntimeValue | string;
+
 interface GeopointInternalValue {
 	readonly latitude: Latitude;
 	readonly longitude: Longitude;
@@ -109,5 +112,32 @@ export class Geopoint {
 
 	private isValidNumber(value: number | null | undefined) {
 		return value != null && !Number.isNaN(value);
+	}
+
+	static parseString(value: string): GeopointRuntimeValue {
+		if (value.trim() === '') {
+			return null;
+		}
+
+		const [latitude, longitude, altitude = null, accuracy = null] = value.split(/\s+/).map(Number);
+
+		if (latitude == null || longitude == null || Number.isNaN(altitude) || Number.isNaN(accuracy)) {
+			return null;
+		}
+
+		return new this({ latitude, longitude, altitude, accuracy }).getRuntimeValue();
+	}
+
+	static toCoordinatesString(value: GeopointInputValue): string {
+		const decodedValue = typeof value === 'string' ? Geopoint.parseString(value) : value;
+
+		if (decodedValue == null) {
+			return '';
+		}
+
+		return new this(decodedValue)
+			.getTuple()
+			.map((item) => item.value ?? 0)
+			.join(' ');
 	}
 }
