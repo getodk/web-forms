@@ -1,21 +1,41 @@
 <script setup lang="ts">
 import GeopointFormattedValue from '@/components/controls/GeopointFormattedValue.vue';
-import ElapsedTime from '@/components/ElapsedTime.vue';
+import GeolocationRequestDialog from '@/components/GeolocationRequestDialog.vue';
 import GeopointAccuracyQuality from '@/components/GeopointAccuracyQuality.vue';
+import type {
+	GeolocationRequestFailure,
+	GeolocationRequestPending,
+	GeolocationRequestState,
+	GeolocationRequestSuccess,
+} from '@/lib/geopoint/GeolocationRequest.ts';
 import { GeopointAccuracy } from '@/lib/geopoint/GeopointAccuracy.ts';
 import { GeopointAccuracyThresholdOptions } from '@/lib/geopoint/GeopointAccuracyThresholdOptions.ts';
 import type { GeopointValueObject } from '@/lib/geopoint/GeopointValueObject.ts';
-import type { GeopointInputNode, GeopointInputValue } from '@getodk/xforms-engine';
+import type { GeopointInputNode } from '@getodk/xforms-engine';
 import Button from 'primevue/button';
-import PrimeDialog from 'primevue/dialog';
-import PrimeProgressSpinner from 'primevue/progressspinner';
-import { computed, inject, nextTick, ref } from 'vue';
+import { computed, inject, ref } from 'vue';
 
 interface InputGeopointProps {
 	readonly question: GeopointInputNode;
 }
 
 const props = defineProps<InputGeopointProps>();
+
+const submitPressed = inject<boolean>('submitPressed');
+
+const isInvalid = computed(() => props.question.validationState.violation?.valid === false);
+
+const isDisabled = computed(() => props.question.currentState.readonly === true);
+
+const INPUT_GEOPOINT_STATUS = {
+	INITIAL: 'INITIAL',
+	REQUESTED: 'REQUESTED',
+	DISMISSED: 'DISMISSED',
+} as const;
+
+type InputGeopointStatusEnum = typeof INPUT_GEOPOINT_STATUS;
+
+type InputGeopointStatus = InputGeopointStatusEnum[keyof InputGeopointStatusEnum];
 
 const thresholdOptions = new GeopointAccuracyThresholdOptions(props.question.nodeOptions);
 
@@ -27,154 +47,73 @@ const committedValueAccuracy = computed((): GeopointAccuracy => {
 	return new GeopointAccuracy(committedValue.value, thresholdOptions);
 });
 
-const requestedValue = ref<GeopointValueObject | null>(null);
-
 const requestedValueAccuracy = computed((): GeopointAccuracy => {
-	return new GeopointAccuracy(requestedValue.value, thresholdOptions);
+	return new GeopointAccuracy(activeRequest.value?.geopoint ?? null, thresholdOptions);
 });
 
-/**
- * @description Defines the possible states of the Geopoint input state machine.
- * Each state represents a distinct phase in the geolocation capture process.
- *
- * @property {string} INITIAL - Idle state, no geolocation active.
- * @property {Object} REQUESTED - Group of states for active geolocation attempts.
- * @property {string} REQUESTED.PENDING - Awaiting geolocation data after starting the watch.
- * @property {string} REQUESTED.SUCCESS - Position received, evaluating accuracy for commit.
- * @property {string} REQUESTED.FAILURE - Geolocation errored out (e.g., permission denied).
- * @property {string} DISMISSED - User canceled the operation, transitioning back to INITIAL.
- * @property {string} COMMITTED - Location successfully saved, transitioning back to INITIAL.
- */
-const STATES = {
-	INITIAL: 'INITIAL',
-	REQUESTED: {
-		PENDING: 'REQUESTED.PENDING',
-		SUCCESS: 'REQUESTED.SUCCESS',
-		FAILURE: 'REQUESTED.FAILURE',
-	},
-	DISMISSED: 'DISMISSED',
-	COMMITTED: 'COMMITTED',
-} as const;
+const status = ref<InputGeopointStatus>(INPUT_GEOPOINT_STATUS.INITIAL);
+const dismissedRequest = ref<GeolocationRequestState | null>(null);
+const activeRequest = ref<GeolocationRequestState | null>(null);
 
-type StatesEnum = typeof STATES;
-type StatesValue =
-	// eslint-disable-next-line @typescript-eslint/sort-type-constituents
-	| StatesEnum['INITIAL']
-	| StatesEnum['REQUESTED']['PENDING']
-	| StatesEnum['REQUESTED']['SUCCESS']
-	| StatesEnum['REQUESTED']['FAILURE']
-	| StatesEnum['DISMISSED']
-	| StatesEnum['COMMITTED'];
-
-const state = ref<StatesValue>(STATES.INITIAL);
-const startTime = ref<number | null>(null);
-const submitPressed = inject<boolean>('submitPressed');
-// TODO: fix TypeScript check so it doesn't take types from NodeJS
-let timerID: NodeJS.Timeout | null = null;
-let watchID: number | null = null;
-
-const value = computed((): GeopointInputValue => {
-	return props.question.currentState.value;
-});
-const isInvalid = computed(() => props.question.validationState.violation?.valid === false);
-const disabled = computed(() => props.question.currentState.readonly === true);
-const isLocationCaptureInProgress = computed(() => {
-	return state.value === STATES.REQUESTED.PENDING || state.value === STATES.REQUESTED.SUCCESS;
-});
-const hasError = computed(() => state.value === STATES.REQUESTED.FAILURE);
-
-const start = () => {
-	if (isLocationCaptureInProgress.value) {
-		return;
-	}
-
-	state.value = STATES.REQUESTED.PENDING;
-
-	watchID = navigator.geolocation.watchPosition(
-		(position) => {
-			const coordinates = position.coords;
-
-			requestedValue.value = coordinates;
-			state.value = STATES.REQUESTED.SUCCESS;
-
-			if (
-				// TODO: the intent of this condition seems to be associated with a "try
-				// again" action invoked by the user. Is this logic right?
-				value.value === null &&
-				// TODO: this previously explicitly checked `accuracyThreshold.value !==
-				// 0 (from a computed/defaulted). That and the following are inherently
-				// mutually exclusive conditions: it is not possible for a geolocation
-				// request to produce coordinates at an accuracy of 0m. (And if it were,
-				// why would we not honor it?)
-				requestedValueAccuracy.value.quality === GeopointAccuracy.GOOD
-			) {
-				void commit();
-			}
-		},
-		() => {
-			state.value = STATES.REQUESTED.FAILURE;
-			cleanup();
-		},
-		{ enableHighAccuracy: true }
-	);
+const initiateRequest = () => {
+	status.value = INPUT_GEOPOINT_STATUS.REQUESTED;
+	activeRequest.value = null;
+	dismissedRequest.value = null;
 };
 
-const stop = async () => {
-	if (!isLocationCaptureInProgress.value) {
-		return;
-	}
-
-	state.value = STATES.DISMISSED;
-	await transitionToInitialState();
+const updateRequestProgress = (requestState: GeolocationRequestState) => {
+	status.value = INPUT_GEOPOINT_STATUS.REQUESTED;
+	activeRequest.value = requestState;
+	dismissedRequest.value = null;
 };
 
-const commit = async () => {
-	if (state.value !== STATES.REQUESTED.SUCCESS || requestedValue.value == null) {
-		return;
-	}
-
-	props.question.setValue({
-		latitude: requestedValue.value.latitude,
-		longitude: requestedValue.value.longitude,
-		altitude: requestedValue.value.altitude,
-		accuracy: requestedValue.value.accuracy,
-	});
-
-	state.value = STATES.COMMITTED;
-	await transitionToInitialState();
+const onRequested = (requested: GeolocationRequestPending) => {
+	updateRequestProgress(requested);
 };
 
-const cleanup = () => {
-	requestedValue.value = null;
-	startTime.value = null;
+const dismissRequest = (dismissed: GeolocationRequestState) => {
+	status.value = INPUT_GEOPOINT_STATUS.DISMISSED;
+	activeRequest.value = null;
+	dismissedRequest.value = dismissed;
+};
 
-	if (watchID !== null) {
-		navigator.geolocation.clearWatch(watchID);
-		watchID = null;
-	}
+const commitRequest = (success: GeolocationRequestSuccess) => {
+	props.question.setValue(success.geopoint);
 
-	if (timerID !== null) {
-		clearInterval(timerID);
-		timerID = null;
+	status.value = INPUT_GEOPOINT_STATUS.INITIAL;
+	activeRequest.value = null;
+	dismissedRequest.value = null;
+};
+
+const onSuccess = (success: GeolocationRequestSuccess) => {
+	if (requestedValueAccuracy.value.quality === GeopointAccuracy.GOOD) {
+		commitRequest(success);
+	} else {
+		updateRequestProgress(success);
 	}
 };
 
-const transitionToInitialState = () => {
-	return nextTick(() => {
-		cleanup();
-		state.value = STATES.INITIAL;
-	});
+const onFailure = (failure: GeolocationRequestFailure) => {
+	updateRequestProgress(failure);
+};
+
+const onCancel = (canceled: GeolocationRequestState) => {
+	dismissRequest(canceled);
+};
+
+const onSave = (saved: GeolocationRequestSuccess) => {
+	commitRequest(saved);
 };
 </script>
 
 <template>
 	<div ref="controlElement" class="geopoint-control">
 		<Button
-			v-if="value == null"
+			v-if="committedValue == null"
 			rounded
 			class="get-location-button"
-			:disabled="disabled"
-			@click="start()"
+			:disabled="isDisabled"
+			@click="initiateRequest()"
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -193,7 +132,7 @@ const transitionToInitialState = () => {
 			<span>Get location</span>
 		</Button>
 
-		<div v-if="value != null" class="geopoint-value-container">
+		<div v-if="committedValue != null" class="geopoint-value-container">
 			<div class="geopoint-icons">
 				<i v-if="committedValueAccuracy.quality === GeopointAccuracy.POOR" class="icon-warning" />
 				<svg
@@ -217,12 +156,12 @@ const transitionToInitialState = () => {
 				</strong>
 				<GeopointFormattedValue :question="question" />
 				<Button
-					v-if="!disabled"
+					v-if="!isDisabled"
 					rounded
 					outlined
 					severity="contrast"
 					class="retry-button"
-					@click="start()"
+					@click="initiateRequest()"
 				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -252,7 +191,7 @@ const transitionToInitialState = () => {
 		</div>
 
 		<div
-			v-if="hasError"
+			v-if="activeRequest?.error != null"
 			class="geopoint-error"
 			:class="{ 'stack-errors': submitPressed && isInvalid }"
 		>
@@ -262,84 +201,17 @@ const transitionToInitialState = () => {
 		</div>
 	</div>
 
-	<PrimeDialog :visible="isLocationCaptureInProgress" modal class="geo-dialog" :closable="false" :draggable="false">
-		<template #header>
-			<div class="geo-dialog-header">
-				<div class="geo-dialog-header-title">
-					<PrimeProgressSpinner class="spinner" stroke-width="4" />
-					<!-- TODO: translations -->
-					<strong>Finding your location</strong>
-				</div>
-				<button class="close-icon" @click="stop()">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="14"
-						height="14"
-						viewBox="0 0 14 14"
-						fill="none"
-					>
-						<path
-							d="M8.23648 6.99995L13.3931 1.84328C13.4791 1.76318 13.5481 1.66658 13.5959 1.55925C13.6437 1.45191 13.6694 1.33605 13.6715 1.21856C13.6736 1.10107 13.652 0.984374 13.608 0.875421C13.564 0.766468 13.4984 0.667495 13.4154 0.584407C13.3323 0.501318 13.2333 0.435816 13.1243 0.391808C13.0154 0.347801 12.8987 0.326188 12.7812 0.328261C12.6637 0.330334 12.5479 0.35605 12.4405 0.403874C12.3332 0.451698 12.2366 0.52065 12.1565 0.606618L6.99982 5.76328L1.84315 0.606618C1.67728 0.452058 1.45789 0.367914 1.23121 0.371914C1.00452 0.375913 0.788239 0.467744 0.627924 0.628059C0.467609 0.788375 0.375778 1.00466 0.371778 1.23134C0.367778 1.45803 0.451922 1.67741 0.606482 1.84328L5.76315 6.99995L0.606482 12.1566C0.442624 12.3207 0.350586 12.5431 0.350586 12.775C0.350586 13.0068 0.442624 13.2292 0.606482 13.3933C0.770545 13.5571 0.99294 13.6492 1.22482 13.6492C1.45669 13.6492 1.67909 13.5571 1.84315 13.3933L6.99982 8.23662L12.1565 13.3933C12.3205 13.5571 12.5429 13.6492 12.7748 13.6492C13.0067 13.6492 13.2291 13.5571 13.3931 13.3933C13.557 13.2292 13.649 13.0068 13.649 12.775C13.649 12.5431 13.557 12.3207 13.3931 12.1566L8.23648 6.99995Z"
-							fill="#212121"
-						/>
-					</svg>
-				</button>
-			</div>
-		</template>
-
-		<template #default>
-			<div class="geo-dialog-body">
-				<div v-if="requestedValue?.accuracy != null" class="geopoint-icons">
-					<i v-if="requestedValueAccuracy.quality === GeopointAccuracy.POOR" class="icon-warning" />
-					<svg
-						v-else
-						class="icon-good-location"
-						xmlns="http://www.w3.org/2000/svg"
-						width="22"
-						height="17"
-						viewBox="0 0 22 17"
-						fill="none"
-					>
-						<path
-							d="M7.49994 12.8668L2.63494 8.00177L0.978271 9.64677L7.49994 16.1684L21.4999 2.16844L19.8549 0.523438L7.49994 12.8668Z"
-							fill="#3B82F6"
-						/>
-					</svg>
-				</div>
-
-				<div class="geopoint-information">
-					<!-- TODO: translations -->
-					<strong v-if="requestedValue?.accuracy != null" class="geo-quality">
-						{{ requestedValue.accuracy }}m
-						-
-						<GeopointAccuracyQuality :accuracy="requestedValueAccuracy" />
-					</strong>
-					<p v-if="thresholdOptions.accuracyThreshold > 0 && value == null">
-						Location will be saved at {{ thresholdOptions.accuracyThreshold }}m
-					</p>
-					<p>Time taken to capture location: <ElapsedTime /></p>
-					<p v-if="value?.accuracy">
-						Previous saved location at {{ value.accuracy }}m
-					</p>
-				</div>
-			</div>
-		</template>
-
-		<template #footer>
-			<div class="geo-dialog-footer">
-				<!-- TODO: translations -->
-				<Button text rounded severity="contrast" label="Cancel" @click="stop()" />
-
-				<!-- TODO: translations -->
-				<Button
-					label="Save location"
-					rounded
-					:disabled="requestedValue?.accuracy == null"
-					@click="commit()"
-				/>
-			</div>
-		</template>
-	</PrimeDialog>
+	<!-- TODO: :geopoint="requestedValue ?? committedValue" ? -->
+	<GeolocationRequestDialog
+		v-if="status === INPUT_GEOPOINT_STATUS.REQUESTED"
+		:geopoint="committedValue"
+		:options="thresholdOptions"
+		@pending="onRequested"
+		@cancel="onCancel"
+		@save="onSave"
+		@success="onSuccess"
+		@failure="onFailure"
+	/>
 </template>
 
 <style lang="scss">
@@ -347,7 +219,8 @@ const transitionToInitialState = () => {
 
 // Variable definition
 .geopoint-control,
-.geo-dialog {
+.geo-dialog,
+:deep(.geo-dialog) {
 	--geo-spacing-s: 5px;
 	--geo-spacing-m: 10px;
 	--geo-spacing-l: 15px;
@@ -392,32 +265,7 @@ const transitionToInitialState = () => {
 	}
 }
 
-.geo-dialog-header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	width: 100%;
-
-	.close-icon {
-		background: none;
-		border: none;
-		cursor: pointer;
-	}
-}
-
-.geo-dialog-header-title {
-	display: flex;
-	font-size: var(--geo-title-font-size);
-
-	.spinner {
-		width: 22px;
-		height: 22px;
-		margin-right: var(--geo-spacing-l);
-	}
-}
-
-.geopoint-value-container,
-.geo-dialog-body {
+.geopoint-value-container {
 	display: flex;
 	background: var(--surface-100);
 	border-radius: var(--geo-radius);
@@ -447,13 +295,6 @@ const transitionToInitialState = () => {
 	}
 }
 
-.geo-dialog-body {
-	align-items: flex-start;
-	padding: var(--geo-spacing-xxl);
-	max-width: 450px;
-	width: 80vw;
-}
-
 .geopoint-value {
 	display: flex;
 	align-items: center;
@@ -475,10 +316,6 @@ const transitionToInitialState = () => {
 	}
 }
 
-.geo-dialog-footer button {
-	margin: 0 0 var(--geo-spacing-m) var(--geo-spacing-l);
-}
-
 .geopoint-error {
 	font-size: var(--geo-text-font-size);
 	color: var(--error-text-color);
@@ -498,23 +335,11 @@ const transitionToInitialState = () => {
 	}
 }
 
-// Overriding Primevue's styles
-.p-dialog.geo-dialog {
-	background: var(--surface-0);
-
-	&,
-	.p-dialog-footer,
-	.p-dialog-header {
-		border-radius: var(--geo-radius);
-	}
-}
-
 .p-button.p-button-contrast.p-button-outlined.retry-button {
 	background: var(--surface-0);
 }
 
 @media screen and (max-width: #{$md}) {
-	.geo-dialog-body,
 	.geopoint-value-container {
 		padding: var(--geo-spacing-xxl) var(--geo-spacing-xl);
 	}
