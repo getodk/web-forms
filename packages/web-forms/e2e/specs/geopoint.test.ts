@@ -1,10 +1,10 @@
 import { test } from '@playwright/test';
-import { FormPage } from '../page-objects/form-page.ts';
-import { PreviewPage } from '../page-objects/preview-page.ts';
+import { FormPage } from '../page-objects/pages/FormPage.ts';
+import { PreviewPage } from '../page-objects/pages/PreviewPage.ts';
 
 test.describe('Geopoint Question Type', () => {
 	test.describe('Geolocation permission granted', () => {
-		let formPage: FormPage | undefined;
+		let formPage: FormPage;
 
 		test.beforeEach(async ({ page, context }) => {
 			await context.grantPermissions(['geolocation']);
@@ -16,11 +16,7 @@ test.describe('Geopoint Question Type', () => {
 			await previewPage.openDemoForm('geopoint', 'geopoint.xml', 'Geopoint');
 		});
 
-		test('should capture good accuracy location', async ({ context }) => {
-			if (formPage == null) {
-				throw new Error('FormPage not provided');
-			}
-
+		test('captures good-accuracy location', async ({ context }) => {
 			await context.setGeolocation({
 				latitude: 40.7128,
 				longitude: -74.006,
@@ -28,32 +24,25 @@ test.describe('Geopoint Question Type', () => {
 				altitude: 0,
 			});
 
-			await formPage.expectNote(
-				'The browser will display a permission prompt to allow or block location' +
-					" access. Click 'Allow' to enable location services. If dismissed, the" +
-					' prompt may not appear again unless permissions are reset in browser settings.'
-			);
+			await formPage.expectNote(`
+        The browser will display a permission prompt to allow or block location access.
+        Click 'Allow' to enable location services. If dismissed, the prompt may not appear
+        again unless permissions are reset in browser settings.
+      `);
 
 			await formPage.expectLabel('Where are you filling out the survey?');
+			await formPage.geopoint.openDialog();
+			await formPage.geopoint.expectGeopointDialog('Finding your location', '10m - Good accuracy');
+			await formPage.geopoint.saveLocation();
 
-			await formPage.openGeopoint();
-
-			await formPage.expectGeopointDialog('Finding your location', '10m - Good accuracy');
-
-			await formPage.saveGeopointLocation();
-
-			await formPage.expectGeopointFormattedValue('Good accuracy', [
+			await formPage.geopoint.expectGeopointFormattedValue('Good accuracy', [
 				'Accuracy: 10m',
 				'Latitude: 40.7128',
 				'Longitude: -74.006',
 			]);
 		});
 
-		test('should capture poor accuracy location', async ({ context }) => {
-			if (formPage == null) {
-				throw new Error('FormPage not provided');
-			}
-
+		test('captures poor-accuracy location', async ({ context }) => {
 			await context.setGeolocation({
 				latitude: 80.5128,
 				longitude: -99.9099,
@@ -62,25 +51,18 @@ test.describe('Geopoint Question Type', () => {
 			});
 
 			await formPage.expectLabel('Where are you filling out the survey?');
+			await formPage.geopoint.openDialog();
+			await formPage.geopoint.expectGeopointDialog('Finding your location', '500m - Poor accuracy');
+			await formPage.geopoint.saveLocation();
 
-			await formPage.openGeopoint();
-
-			await formPage.expectGeopointDialog('Finding your location', '500m - Poor accuracy');
-
-			await formPage.saveGeopointLocation();
-
-			await formPage.expectGeopointFormattedValue('Poor accuracy', [
+			await formPage.geopoint.expectGeopointFormattedValue('Poor accuracy', [
 				'Accuracy: 500m',
 				'Latitude: 80.5128',
 				'Longitude: -99.9099',
 			]);
 		});
 
-		test('should retry to capture location', async ({ context }) => {
-			if (formPage == null) {
-				throw new Error('FormPage not provided');
-			}
-
+		test('retries and improves location accuracy', async ({ context }) => {
 			await context.setGeolocation({
 				latitude: 79.5128,
 				longitude: -95.9099,
@@ -88,13 +70,11 @@ test.describe('Geopoint Question Type', () => {
 				altitude: 0,
 			});
 
-			await formPage.openGeopoint();
+			await formPage.geopoint.openDialog();
+			await formPage.geopoint.expectGeopointDialog('Finding your location', '350m - Poor accuracy');
+			await formPage.geopoint.saveLocation();
 
-			await formPage.expectGeopointDialog('Finding your location', '350m - Poor accuracy');
-
-			await formPage.saveGeopointLocation();
-
-			await formPage.expectGeopointFormattedValue('Poor accuracy', [
+			await formPage.geopoint.expectGeopointFormattedValue('Poor accuracy', [
 				'Accuracy: 350m',
 				'Latitude: 79.5128',
 				'Longitude: -95.9099',
@@ -107,13 +87,11 @@ test.describe('Geopoint Question Type', () => {
 				altitude: 1200,
 			});
 
-			await formPage.retryGeopointLocation();
+			await formPage.geopoint.retryCapture();
+			await formPage.geopoint.expectGeopointDialog('Finding your location', '7m - Good accuracy');
+			await formPage.geopoint.saveLocation();
 
-			await formPage.expectGeopointDialog('Finding your location', '7m - Good accuracy');
-
-			await formPage.saveGeopointLocation();
-
-			await formPage.expectGeopointFormattedValue('Good accuracy', [
+			await formPage.geopoint.expectGeopointFormattedValue('Good accuracy', [
 				'Accuracy: 7m',
 				'Latitude: 80.5128',
 				'Longitude: -99.9099',
@@ -122,7 +100,7 @@ test.describe('Geopoint Question Type', () => {
 	});
 
 	test.describe('Geolocation permission denied', () => {
-		let formPage: FormPage | undefined;
+		let formPage: FormPage;
 
 		test.beforeEach(async ({ browser }) => {
 			const context = await browser.newContext({
@@ -136,16 +114,10 @@ test.describe('Geopoint Question Type', () => {
 			await previewPage.openDemoForm('geopoint', 'geopoint.xml', 'Geopoint');
 		});
 
-		test('should show troubleshooting message when permission is not granted', async () => {
-			if (formPage == null) {
-				throw new Error('FormPage not provided');
-			}
-
+		test('displays troubleshooting message when permission is denied', async () => {
 			await formPage.expectLabel('Where are you filling out the survey?');
-
-			await formPage.openGeopoint();
-
-			await formPage.expectGeopointErrorMessage(
+			await formPage.geopoint.openDialog();
+			await formPage.geopoint.expectGeopointErrorMessage(
 				'Cannot access location Grant location permission in the browser settings and make sure location is turned on.'
 			);
 		});

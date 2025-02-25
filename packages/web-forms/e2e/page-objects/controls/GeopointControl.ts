@@ -1,42 +1,10 @@
 import { expect, Page } from '@playwright/test';
 
-export class FormPage {
+export class GeopointControl {
 	private readonly page: Page;
 
 	constructor(page: Page) {
 		this.page = page;
-	}
-
-	async expectNote(expectedNoteText: string) {
-		const note = this.page.locator('.note-control').getByText(expectedNoteText, { exact: true });
-		await note.scrollIntoViewIfNeeded();
-		await expect(note).toBeVisible();
-	}
-
-	async expectLabel(expectedLabelText: string) {
-		const note = this.page.locator('.control-text').getByText(expectedLabelText, { exact: true });
-		await note.scrollIntoViewIfNeeded();
-		await expect(note).toBeVisible();
-	}
-
-	async clickButton(parentLocator: string, buttonText: string, index = 0) {
-		const buttons = this.page.locator(parentLocator).getByText(buttonText, { exact: true });
-		const button = buttons.nth(index);
-		await button.scrollIntoViewIfNeeded();
-		await expect(button).toBeVisible();
-		await button.click();
-	}
-
-	openGeopoint() {
-		return this.clickButton('.geopoint-control', 'Get location');
-	}
-
-	saveGeopointLocation() {
-		return this.clickButton('.geo-dialog-footer', 'Save location');
-	}
-
-	retryGeopointLocation() {
-		return this.clickButton('.geopoint-value', 'Try again');
 	}
 
 	async expectGeopointDialog(expectedTitle: string, expectedQualityText: string) {
@@ -72,5 +40,29 @@ export class FormPage {
 			.locator('.geopoint-error')
 			.getByText(expectedMessage, { exact: true });
 		await expect(message).toBeVisible();
+	}
+
+	async openDialog(index = 0) {
+		const buttons = this.page
+			.locator('.geopoint-control')
+			.getByText('Get location', { exact: true });
+		const button = buttons.nth(index);
+		await button.scrollIntoViewIfNeeded();
+		await expect(button).toBeVisible();
+		await button.click();
+	}
+
+	async saveLocation() {
+		const button = this.page
+			.locator('.geo-dialog-footer')
+			.getByText('Save location', { exact: true });
+		await expect(button).toBeVisible();
+		await button.click();
+	}
+
+	async retryCapture() {
+		const button = this.page.locator('.geopoint-value').getByText('Try again', { exact: true });
+		await expect(button).toBeVisible();
+		await button.click();
 	}
 }

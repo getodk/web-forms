@@ -8,18 +8,21 @@ The E2E tests are located in `packages/web-forms/e2e/`. Here's the structure and
 
 ```
 e2e/
-├── fixtures/            # Sample forms and data for testing
-├── page-objects/        # Page Object Models for reusable UI interactions
-│   ├── form-page.js     # Methods for form-related actions
-│   ├── preview-page.js  # Methods for the preview page related actions
-├── specs/               # Test specification files
+├── fixtures/         # Sample forms and data for testing.
+├── page-objects/     # Page Object Model structure for e2e tests, organizing UI abstractions into pages and reusable controls.
+    ├── controls/     # Reusable controls such as form fields, UI components, etc.
+        ├── GeopointComponent.ts  # Example of a reusable control for the geopoint question type.
+    ├── pages/        # Full page representations.
+        ├── FormPage.ts           # Example of a full page representation for a form.
+├── specs/            # Test specification files.
+        ├── geopoint.test.ts      # Example of a test file for the geopoint question type.
 ```
 
 ### Key Components
 
 - **Fixtures**: Reusable test data (e.g., sample XForms) to simulate real-world use cases. Add new forms here as needed.
-- **Page Objects**: Uses the [Page Object Model (POM)](https://playwright.dev/docs/pom) pattern to encapsulate UI interactions, making tests cleaner and easier to maintain.
-- **Specs**: Test files organized by feature (e.g., rendering, submission). Name new tests descriptively to reflect what they cover.
+- **Page Objects**: Implements the [Page Object Model (POM)](https://playwright.dev/docs/pom) pattern to encapsulate UI interactions, enhancing test readability and maintainability.
+- **Specs**: Test files organized by feature (e.g., rendering, submission). Name new tests descriptively to reflect their coverage.
 
 ## Getting Started
 
@@ -43,7 +46,7 @@ e2e/
    yarn workspace @getodk/web-forms test:e2e <filepath, e.g. e2e/specs/geopoint.test.ts>
    ```
 
-3. **Add New Tests**
+3. **Add new tests**
    - Create fixtures in `fixtures/` if needed.
    - Update or add Page Objects in `page-objects/` for new UI elements.
    - Write tests in `specs/` with descriptive names.
