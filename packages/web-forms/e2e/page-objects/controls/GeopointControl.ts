@@ -19,19 +19,19 @@ export class GeopointControl {
 		await expect(accuracyQuality).toBeVisible();
 	}
 
-	async expectGeopointFormattedValue(expectedQuality: string, expectedLocation: string[]) {
-		const valueContainer = this.page.locator('.geopoint-value');
-
-		const quality = valueContainer
-			.locator('.geo-quality')
-			.getByText(expectedQuality, { exact: true });
-		await expect(quality).toBeVisible();
-
+	async expectGeopointFormattedValue(expectedLocation: string[], expectedQuality?: string) {
 		for (const location of expectedLocation) {
-			const formattedValue = valueContainer
+			const formattedValue = this.page
 				.locator('.geopoint-formatted-value')
 				.getByText(location, { exact: true });
 			await expect(formattedValue).toBeVisible();
+		}
+
+		if (expectedQuality) {
+			const quality = this.page
+				.locator('.geopoint-value .geo-quality')
+				.getByText(expectedQuality, { exact: true });
+			await expect(quality).toBeVisible();
 		}
 	}
 

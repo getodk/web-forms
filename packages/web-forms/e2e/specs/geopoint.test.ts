@@ -24,22 +24,22 @@ test.describe('Geopoint Question Type', () => {
 				altitude: 0,
 			});
 
-			await formPage.expectNote(`
+			await formPage.expectLabel(`
         The browser will display a permission prompt to allow or block location access.
         Click 'Allow' to enable location services. If dismissed, the prompt may not appear
         again unless permissions are reset in browser settings.
       `);
 
 			await formPage.expectLabel('Where are you filling out the survey?');
+			await formPage.expectHint('(No autosave)');
 			await formPage.geopoint.openDialog();
 			await formPage.geopoint.expectGeopointDialog('Finding your location', '10m - Good accuracy');
 			await formPage.geopoint.saveLocation();
 
-			await formPage.geopoint.expectGeopointFormattedValue('Good accuracy', [
-				'Accuracy: 10m',
-				'Latitude: 40.7128',
-				'Longitude: -74.006',
-			]);
+			await formPage.geopoint.expectGeopointFormattedValue(
+				['Accuracy: 10m', 'Latitude: 40.7128', 'Longitude: -74.006'],
+				'Good accuracy'
+			);
 		});
 
 		test('captures poor-accuracy location', async ({ context }) => {
@@ -55,11 +55,10 @@ test.describe('Geopoint Question Type', () => {
 			await formPage.geopoint.expectGeopointDialog('Finding your location', '500m - Poor accuracy');
 			await formPage.geopoint.saveLocation();
 
-			await formPage.geopoint.expectGeopointFormattedValue('Poor accuracy', [
-				'Accuracy: 500m',
-				'Latitude: 80.5128',
-				'Longitude: -99.9099',
-			]);
+			await formPage.geopoint.expectGeopointFormattedValue(
+				['Accuracy: 500m', 'Latitude: 80.5128', 'Longitude: -99.9099'],
+				'Poor accuracy'
+			);
 		});
 
 		test('retries and improves location accuracy', async ({ context }) => {
@@ -74,11 +73,10 @@ test.describe('Geopoint Question Type', () => {
 			await formPage.geopoint.expectGeopointDialog('Finding your location', '350m - Poor accuracy');
 			await formPage.geopoint.saveLocation();
 
-			await formPage.geopoint.expectGeopointFormattedValue('Poor accuracy', [
-				'Accuracy: 350m',
-				'Latitude: 79.5128',
-				'Longitude: -95.9099',
-			]);
+			await formPage.geopoint.expectGeopointFormattedValue(
+				['Accuracy: 350m', 'Latitude: 79.5128', 'Longitude: -95.9099'],
+				'Poor accuracy'
+			);
 
 			await context.setGeolocation({
 				latitude: 80.5128,
@@ -91,11 +89,10 @@ test.describe('Geopoint Question Type', () => {
 			await formPage.geopoint.expectGeopointDialog('Finding your location', '7m - Good accuracy');
 			await formPage.geopoint.saveLocation();
 
-			await formPage.geopoint.expectGeopointFormattedValue('Good accuracy', [
-				'Accuracy: 7m',
-				'Latitude: 80.5128',
-				'Longitude: -99.9099',
-			]);
+			await formPage.geopoint.expectGeopointFormattedValue(
+				['Accuracy: 7m', 'Latitude: 80.5128', 'Longitude: -99.9099'],
+				'Good accuracy'
+			);
 		});
 	});
 
