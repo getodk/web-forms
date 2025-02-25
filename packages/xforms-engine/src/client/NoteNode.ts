@@ -70,6 +70,7 @@ export type NoteNodeAppearances = NodeAppearances<NoteDefinition>;
 export interface NoteNode<V extends ValueType = ValueType> extends BaseValueNode<V, NoteValue<V>> {
 	readonly nodeType: 'note';
 	readonly appearances: NoteNodeAppearances;
+	readonly nodeOptions: null;
 	readonly definition: NoteDefinition<V>;
 	readonly root: RootNode;
 	readonly parent: GeneralParentNode;
