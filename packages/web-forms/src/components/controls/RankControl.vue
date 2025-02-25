@@ -12,6 +12,7 @@ interface RankControlProps {
 
 interface HighlightOption {
 	index: Ref<number | null>;
+	// TODO: fix TypeScript check so it doesn't take types from NodeJS
 	timeoutID: NodeJS.Timeout | null;
 }
 
