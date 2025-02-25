@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import GeopointFormattedValue from '@/components/controls/GeopointFormattedValue.vue';
 import ElapsedTime from '@/components/ElapsedTime.vue';
+import GeopointAccuracyQuality from '@/components/GeopointAccuracyQuality.vue';
+import { GeopointAccuracy } from '@/lib/geopoint/GeopointAccuracy.ts';
+import { GeopointAccuracyThresholdOptions } from '@/lib/geopoint/GeopointAccuracyThresholdOptions.ts';
+import type { GeopointValueObject } from '@/lib/geopoint/GeopointValueObject.ts';
 import type { GeopointInputNode, GeopointInputValue } from '@getodk/xforms-engine';
 import Button from 'primevue/button';
 import PrimeDialog from 'primevue/dialog';
@@ -12,6 +16,22 @@ interface InputGeopointProps {
 }
 
 const props = defineProps<InputGeopointProps>();
+
+const thresholdOptions = new GeopointAccuracyThresholdOptions(props.question.nodeOptions);
+
+const committedValue = computed((): GeopointValueObject | null => {
+	return props.question.currentState.value;
+});
+
+const committedValueAccuracy = computed((): GeopointAccuracy => {
+	return new GeopointAccuracy(committedValue.value, thresholdOptions);
+});
+
+const requestedValue = ref<GeopointValueObject | null>(null);
+
+const requestedValueAccuracy = computed((): GeopointAccuracy => {
+	return new GeopointAccuracy(requestedValue.value, thresholdOptions);
+});
 
 /**
  * @description Defines the possible states of the Geopoint input state machine.
@@ -47,7 +67,6 @@ type StatesValue =
 	| StatesEnum['COMMITTED'];
 
 const state = ref<StatesValue>(STATES.INITIAL);
-const coords = ref<GeolocationCoordinates | null>(null);
 const startTime = ref<number | null>(null);
 const submitPressed = inject<boolean>('submitPressed');
 // TODO: fix TypeScript check so it doesn't take types from NodeJS
@@ -64,84 +83,6 @@ const isLocationCaptureInProgress = computed(() => {
 });
 const hasError = computed(() => state.value === STATES.REQUESTED.FAILURE);
 
-/**
- * Default accuracy in meters that can usually be reached by modern devices given enough time.
- */
-const ACCURACY_THRESHOLD_DEFAULT = 5;
-const accuracyThreshold = computed<number>(() => {
-	return props.question.nodeOptions.accuracyThreshold ?? ACCURACY_THRESHOLD_DEFAULT;
-});
-
-/**
- * Default unacceptable accuracy in meters, which is about the length of a city block.
- */
-const UNACCEPTABLE_ACCURACY_THRESHOLD_DEFAULT = 100;
-const unacceptableAccuracyThreshold = computed<number>(() => {
-	const threshold = props.question.nodeOptions.unacceptableAccuracyThreshold;
-	return threshold ?? UNACCEPTABLE_ACCURACY_THRESHOLD_DEFAULT;
-});
-
-/**
- * Defines geolocation accuracy levels:
- * @property {string} GOOD - if accuracy is <= accuracyThreshold
- * @property {string} ACCEPTABLE - if accuracy is > accuracyThreshold and <= unacceptableAccuracyThreshold
- * @property {string} POOR - if accuracy > unacceptableAccuracyThreshold
- * @property {string} UNKNOWN - if accuracy is null or undefined
- */
-const ACCURACY_QUALITY = {
-	GOOD: 'GOOD',
-	ACCEPTABLE: 'ACCEPTABLE',
-	POOR: 'POOR',
-	UNKNOWN: 'UNKNOWN',
-} as const;
-
-type AccuracyQualityEnum = typeof ACCURACY_QUALITY;
-type AccuracyQualityValue = AccuracyQualityEnum[keyof AccuracyQualityEnum];
-
-const getQualityCoordinates = (accuracy: number | null | undefined): AccuracyQualityValue => {
-	if (accuracy == null) {
-		return ACCURACY_QUALITY.UNKNOWN;
-	}
-
-	if (accuracy <= accuracyThreshold.value) {
-		return ACCURACY_QUALITY.GOOD;
-	}
-
-	if (accuracy > accuracyThreshold.value && accuracy < unacceptableAccuracyThreshold.value) {
-		return ACCURACY_QUALITY.ACCEPTABLE;
-	}
-
-	return ACCURACY_QUALITY.POOR;
-};
-
-// TODO: translations
-const getQualityLabel = (quality: AccuracyQualityValue): string => {
-	switch (quality) {
-		case ACCURACY_QUALITY.GOOD:
-		case ACCURACY_QUALITY.ACCEPTABLE:
-			return 'Good';
-
-		case ACCURACY_QUALITY.POOR:
-			return 'Poor';
-
-		default:
-			return 'Unknown';
-	}
-};
-
-const geolocationQuality = computed<AccuracyQualityValue>(() => {
-	return getQualityCoordinates(coords.value?.accuracy);
-});
-const geolocationQualityLabel = computed<string>(() => {
-	return getQualityLabel(geolocationQuality.value);
-});
-const savedValueQuality = computed<AccuracyQualityValue>(() => {
-	return getQualityCoordinates(value.value?.accuracy);
-});
-const savedValueQualityLabel = computed<string>(() => {
-	return getQualityLabel(savedValueQuality.value);
-});
-
 const start = () => {
 	if (isLocationCaptureInProgress.value) {
 		return;
@@ -151,13 +92,21 @@ const start = () => {
 
 	watchID = navigator.geolocation.watchPosition(
 		(position) => {
-			coords.value = position.coords;
+			const coordinates = position.coords;
+
+			requestedValue.value = coordinates;
 			state.value = STATES.REQUESTED.SUCCESS;
 
 			if (
+				// TODO: the intent of this condition seems to be associated with a "try
+				// again" action invoked by the user. Is this logic right?
 				value.value === null &&
-				accuracyThreshold.value !== 0 &&
-				coords.value.accuracy <= accuracyThreshold.value
+				// TODO: this previously explicitly checked `accuracyThreshold.value !==
+				// 0 (from a computed/defaulted). That and the following are inherently
+				// mutually exclusive conditions: it is not possible for a geolocation
+				// request to produce coordinates at an accuracy of 0m. (And if it were,
+				// why would we not honor it?)
+				requestedValueAccuracy.value.quality === GeopointAccuracy.GOOD
 			) {
 				void commit();
 			}
@@ -180,15 +129,15 @@ const stop = async () => {
 };
 
 const commit = async () => {
-	if (state.value !== STATES.REQUESTED.SUCCESS || coords.value == null) {
+	if (state.value !== STATES.REQUESTED.SUCCESS || requestedValue.value == null) {
 		return;
 	}
 
 	props.question.setValue({
-		latitude: coords.value.latitude,
-		longitude: coords.value.longitude,
-		altitude: coords.value.altitude,
-		accuracy: coords.value.accuracy,
+		latitude: requestedValue.value.latitude,
+		longitude: requestedValue.value.longitude,
+		altitude: requestedValue.value.altitude,
+		accuracy: requestedValue.value.accuracy,
 	});
 
 	state.value = STATES.COMMITTED;
@@ -196,7 +145,7 @@ const commit = async () => {
 };
 
 const cleanup = () => {
-	coords.value = null;
+	requestedValue.value = null;
 	startTime.value = null;
 
 	if (watchID !== null) {
@@ -246,7 +195,7 @@ const transitionToInitialState = () => {
 
 		<div v-if="value != null" class="geopoint-value-container">
 			<div class="geopoint-icons">
-				<i v-if="savedValueQuality === ACCURACY_QUALITY.POOR" class="icon-warning" />
+				<i v-if="committedValueAccuracy.quality === GeopointAccuracy.POOR" class="icon-warning" />
 				<svg
 					v-else
 					class="icon-good-location"
@@ -263,9 +212,8 @@ const transitionToInitialState = () => {
 				</svg>
 			</div>
 			<div class="geopoint-value">
-				<!-- TODO: translations -->
-				<strong v-if="savedValueQualityLabel" class="geo-quality">
-					{{ savedValueQualityLabel }} accuracy
+				<strong class="geo-quality">
+					<GeopointAccuracyQuality :accuracy="committedValueAccuracy" />
 				</strong>
 				<GeopointFormattedValue :question="question" />
 				<Button
@@ -341,8 +289,8 @@ const transitionToInitialState = () => {
 
 		<template #default>
 			<div class="geo-dialog-body">
-				<div v-if="coords?.accuracy != null" class="geopoint-icons">
-					<i v-if="geolocationQuality === ACCURACY_QUALITY.POOR" class="icon-warning" />
+				<div v-if="requestedValue?.accuracy != null" class="geopoint-icons">
+					<i v-if="requestedValueAccuracy.quality === GeopointAccuracy.POOR" class="icon-warning" />
 					<svg
 						v-else
 						class="icon-good-location"
@@ -361,11 +309,13 @@ const transitionToInitialState = () => {
 
 				<div class="geopoint-information">
 					<!-- TODO: translations -->
-					<strong v-if="coords?.accuracy != null" class="geo-quality">
-						{{ coords.accuracy }}m - {{ geolocationQualityLabel }} accuracy
+					<strong v-if="requestedValue?.accuracy != null" class="geo-quality">
+						{{ requestedValue.accuracy }}m
+						-
+						<GeopointAccuracyQuality :accuracy="requestedValueAccuracy" />
 					</strong>
-					<p v-if="accuracyThreshold && value == null">
-						Location will be saved at {{ accuracyThreshold }}m
+					<p v-if="thresholdOptions.accuracyThreshold > 0 && value == null">
+						Location will be saved at {{ thresholdOptions.accuracyThreshold }}m
 					</p>
 					<p>Time taken to capture location: <ElapsedTime /></p>
 					<p v-if="value?.accuracy">
@@ -384,7 +334,7 @@ const transitionToInitialState = () => {
 				<Button
 					label="Save location"
 					rounded
-					:disabled="coords?.accuracy == null"
+					:disabled="requestedValue?.accuracy == null"
 					@click="commit()"
 				/>
 			</div>
