@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import GeopointFormattedValue from '@/components/controls/GeopointFormattedValue.vue';
+import ElapsedTime from '@/components/ElapsedTime.vue';
 import type { GeopointInputNode, GeopointInputValue } from '@getodk/xforms-engine';
 import Button from 'primevue/button';
 import PrimeDialog from 'primevue/dialog';
@@ -47,7 +48,6 @@ type StatesValue =
 
 const state = ref<StatesValue>(STATES.INITIAL);
 const coords = ref<GeolocationCoordinates | null>(null);
-const elapsedTime = ref(0);
 const startTime = ref<number | null>(null);
 const submitPressed = inject<boolean>('submitPressed');
 // TODO: fix TypeScript check so it doesn't take types from NodeJS
@@ -63,11 +63,6 @@ const isLocationCaptureInProgress = computed(() => {
 	return state.value === STATES.REQUESTED.PENDING || state.value === STATES.REQUESTED.SUCCESS;
 });
 const hasError = computed(() => state.value === STATES.REQUESTED.FAILURE);
-const formattedTime = computed(() => {
-	const minutes = Math.floor(elapsedTime.value / 60);
-	const seconds = (elapsedTime.value % 60).toString().padStart(2, '0');
-	return `${minutes}:${seconds}`;
-});
 
 /**
  * Default accuracy in meters that can usually be reached by modern devices given enough time.
@@ -147,22 +142,12 @@ const savedValueQualityLabel = computed<string>(() => {
 	return getQualityLabel(savedValueQuality.value);
 });
 
-const startElapsedTime = () => {
-	startTime.value = Date.now();
-	timerID = setInterval(() => {
-		if (startTime.value !== null) {
-			elapsedTime.value = Math.floor((Date.now() - startTime.value) / 1000);
-		}
-	}, 1000);
-};
-
 const start = () => {
 	if (isLocationCaptureInProgress.value) {
 		return;
 	}
 
 	state.value = STATES.REQUESTED.PENDING;
-	startElapsedTime();
 
 	watchID = navigator.geolocation.watchPosition(
 		(position) => {
@@ -212,7 +197,6 @@ const commit = async () => {
 
 const cleanup = () => {
 	coords.value = null;
-	elapsedTime.value = 0;
 	startTime.value = null;
 
 	if (watchID !== null) {
@@ -383,7 +367,7 @@ const transitionToInitialState = () => {
 					<p v-if="accuracyThreshold && value == null">
 						Location will be saved at {{ accuracyThreshold }}m
 					</p>
-					<p>Time taken to capture location: {{ formattedTime }}</p>
+					<p>Time taken to capture location: <ElapsedTime /></p>
 					<p v-if="value?.accuracy">
 						Previous saved location at {{ value.accuracy }}m
 					</p>
