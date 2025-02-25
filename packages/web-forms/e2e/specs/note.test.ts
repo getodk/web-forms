@@ -34,19 +34,19 @@ test.describe('Note Question Type', () => {
 		await formPage.expectLabelAtIndex('', 2, false);
 		await formPage.expectHintAtIndex('Hint-only note', 1);
 
-		await formPage.expectLabelAtIndex('A note with a default value', 3);
+		await formPage.expectLabel('A note with a default value');
 		await formPage.expectNoteAtIndex('A value', 0);
 
-		await formPage.expectLabelAtIndex('A note with a calculation', 4);
+		await formPage.expectLabel('A note with a calculation');
 		await formPage.expectNoteAtIndex('A value', 1);
 
-		await formPage.expectLabelAtIndex('A readonly integer with value', 8);
+		await formPage.expectLabel('A readonly integer with value');
 		await formPage.expectNoteAtIndex('3', 2);
 
-		await formPage.expectLabelAtIndex('A note with decimal type calculated from int', 9);
+		await formPage.expectLabel('A note with decimal type calculated from int');
 		await formPage.expectNoteAtIndex('4.5', 3);
 
-		await formPage.expectLabelAtIndex('A note with geopoint type', 10);
+		await formPage.expectLabel('A note with geopoint type');
 		await formPage.geopoint.expectGeopointFormattedValue([
 			'Accuracy: 150m',
 			'Latitude: 38.253094215699576',

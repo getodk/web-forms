@@ -40,7 +40,7 @@ export class PreviewPage {
 		await expect(link).toBeVisible();
 		await link.click();
 
-		// Wait for form to load and verify the form title
+		// Wait for form to load and verify the form title ensuring the form is ready.
 		const title = this.page.locator('.form-title').getByRole('heading', { name: formTitle });
 		await expect(title).toBeVisible();
 	}
