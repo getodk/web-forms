@@ -30,7 +30,6 @@ test.describe('Geopoint Question Type', () => {
 
 			await formPage.expectNote(
 				'The browser will display a permission prompt to allow or block location' +
-					// eslint-disable-next-line prettier-vue/prettier
 					" access. Click 'Allow' to enable location services. If dismissed, the" +
 					' prompt may not appear again unless permissions are reset in browser settings.'
 			);
@@ -61,13 +60,6 @@ test.describe('Geopoint Question Type', () => {
 				accuracy: 500,
 				altitude: 0,
 			});
-
-			await formPage.expectNote(
-				'The browser will display a permission prompt to allow or block location' +
-					// eslint-disable-next-line prettier-vue/prettier
-					" access. Click 'Allow' to enable location services. If dismissed, the" +
-					' prompt may not appear again unless permissions are reset in browser settings.'
-			);
 
 			await formPage.expectLabel('Where are you filling out the survey?');
 
@@ -148,13 +140,6 @@ test.describe('Geopoint Question Type', () => {
 			if (formPage == null) {
 				throw new Error('FormPage not provided');
 			}
-
-			await formPage.expectNote(
-				'The browser will display a permission prompt to allow or block location' +
-					// eslint-disable-next-line prettier-vue/prettier
-					" access. Click 'Allow' to enable location services. If dismissed, the" +
-					' prompt may not appear again unless permissions are reset in browser settings.'
-			);
 
 			await formPage.expectLabel('Where are you filling out the survey?');
 
