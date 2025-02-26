@@ -7,7 +7,7 @@ import type {
 	RepeatInstanceNode,
 	RepeatInstanceNodeAppearances,
 } from '../../client/repeat/RepeatInstanceNode.ts';
-import type { SubmissionState } from '../../client/submission/SubmissionState.ts';
+import type { InstanceState } from '../../client/serialization/InstanceState.ts';
 import type { TextRange } from '../../client/TextRange.ts';
 import type { AncestorNodeValidationState } from '../../client/validation.ts';
 import type { XFormsXPathElement } from '../../integration/xpath/adapter/XFormsXPathNode.ts';
@@ -98,7 +98,7 @@ export class RepeatInstance
 		GeneralChildNode
 	>;
 	readonly validationState: AncestorNodeValidationState;
-	readonly submissionState: SubmissionState;
+	readonly instanceState: InstanceState;
 
 	constructor(
 		override readonly parent: RepeatRange,
@@ -178,7 +178,7 @@ export class RepeatInstance
 
 		childrenState.setChildren(buildChildren(this));
 		this.validationState = createAggregatedViolations(this, sharedStateOptions);
-		this.submissionState = createParentNodeSubmissionState(this);
+		this.instanceState = createParentNodeSubmissionState(this);
 	}
 
 	getChildren(): readonly GeneralChildNode[] {
