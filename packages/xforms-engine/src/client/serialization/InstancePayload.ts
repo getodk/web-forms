@@ -80,7 +80,16 @@ type InstancePayloadViolation =
 
 interface BaseInstancePayload<PayloadType extends InstancePayloadType> {
 	readonly status: InstancePayloadStatus;
+
+	/**
+	 * @todo This property name doesn't make sense anymore, and it's not clear if
+	 * "instance payload" is the best way for us to convey "submission definition"
+	 * at all! Despite adding this note in the midst of a giant renaming overhaul,
+	 * addressing this awkwardness is intentionally deferred because a change here
+	 * would be the most likely to disrupt active integration into Central.
+	 */
 	readonly definition: SubmissionDefinition;
+
 	get violations(): readonly InstancePayloadViolation[] | null;
 
 	/**
