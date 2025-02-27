@@ -4,7 +4,7 @@ import { computed, inject, provide, ref } from 'vue';
 import ControlText from '../../ControlText.vue';
 import ValidationMessage from '../../ValidationMessage.vue';
 import InputDecimal from './InputDecimal.vue';
-import InputGeopoint from './InputGeopoint.vue';
+import InputGeopoint from './Geopoint/InputGeopoint.vue';
 import InputInt from './InputInt.vue';
 import InputNumbersAppearance from './InputNumbersAppearance.vue';
 import InputText from './InputText.vue';

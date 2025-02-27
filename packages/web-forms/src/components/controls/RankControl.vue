@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import ControlText from '@/components/ControlText.vue';
 import ValidationMessage from '@/components/ValidationMessage.vue';
+import type { TimerID } from '@getodk/common/types/timers.ts';
 import type { RankNode } from '@getodk/xforms-engine';
 import type { Ref } from 'vue';
 import { computed, inject, ref } from 'vue';
@@ -12,8 +13,7 @@ interface RankControlProps {
 
 interface HighlightOption {
 	index: Ref<number | null>;
-	// TODO: fix TypeScript check so it doesn't take types from NodeJS
-	timeoutID: NodeJS.Timeout | null;
+	timeoutID: TimerID | null;
 }
 
 const props = defineProps<RankControlProps>();
