@@ -6,6 +6,7 @@ import type {
 	GeopointNoteValue,
 } from '@getodk/xforms-engine';
 import { computed } from 'vue';
+import { truncateDecimals } from '@/lib/format/truncateDecimals.ts';
 
 type GeopointNode = GeopointInputNode | GeopointNoteNode;
 
@@ -25,7 +26,7 @@ const value = computed<GeopointValue>(() => {
 <template>
 	<!-- TODO: translations -->
 	<p class="geopoint-formatted-value">
-		<span v-if="value?.accuracy != null">Accuracy: {{ value.accuracy }}m</span>
+		<span v-if="value?.accuracy != null">Accuracy: {{ truncateDecimals(value.accuracy) }} m</span>
 		<span v-if="value?.latitude != null">Latitude: {{ value.latitude }}</span>
 		<span v-if="value?.longitude != null">Longitude: {{ value.longitude }}</span>
 	</p>

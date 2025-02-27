@@ -3,6 +3,7 @@ import { computed, onBeforeUnmount, ref, watchEffect } from 'vue';
 import Button from 'primevue/button';
 import PrimeDialog from 'primevue/dialog';
 import PrimeProgressSpinner from 'primevue/progressspinner';
+import { truncateDecimals } from '@/lib/format/truncateDecimals.ts';
 import ElapsedTime from '@/components/ElapsedTime.vue';
 import {
 	GEOLOCATION_STATUS,
@@ -163,14 +164,14 @@ onBeforeUnmount(cleanup);
 				<div class="geopoint-information">
 					<!-- TODO: translations -->
 					<strong v-if="accuracy.value != null" class="geo-quality">
-						{{ accuracy.value }}m - {{ accuracy.label }}
+						{{ truncateDecimals(accuracy.value) }} m - {{ accuracy.label }}
 					</strong>
 					<p v-if="options.accuracyThreshold > 0 && state.geopoint == null">
-						Location will be saved at {{ options.accuracyThreshold }}m
+						Location will be saved at {{ options.accuracyThreshold }} m
 					</p>
 					<p>Time taken to capture location: <ElapsedTime /></p>
 					<p v-if="previousAccuracy.value">
-						Previous saved location at {{ previousAccuracy.value }}m
+						Previous saved location at {{ truncateDecimals(previousAccuracy.value) }} m
 					</p>
 				</div>
 			</div>
