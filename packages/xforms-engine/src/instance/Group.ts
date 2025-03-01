@@ -65,10 +65,6 @@ export class Group
 
 		this.childrenState = childrenState;
 
-		const sharedStateOptions = {
-			clientStateFactory: this.engineConfig.stateFactory,
-		};
-
 		const state = createSharedNodeState(
 			this.scope,
 			{
@@ -83,7 +79,7 @@ export class Group
 				valueOptions: null,
 				value: null,
 			},
-			sharedStateOptions
+			this.instanceConfig
 		);
 
 		this.state = state;
@@ -95,7 +91,7 @@ export class Group
 		);
 
 		childrenState.setChildren(buildChildren(this));
-		this.validationState = createAggregatedViolations(this, sharedStateOptions);
+		this.validationState = createAggregatedViolations(this, this.instanceConfig);
 		this.instanceState = createParentNodeInstanceState(this);
 	}
 

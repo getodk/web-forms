@@ -54,10 +54,6 @@ export class ModelValue<V extends ValueType = ValueType>
 
 		super(parent, definition, codec);
 
-		const sharedStateOptions = {
-			clientStateFactory: this.engineConfig.stateFactory,
-		};
-
 		const state = createSharedNodeState(
 			this.scope,
 			{
@@ -73,7 +69,7 @@ export class ModelValue<V extends ValueType = ValueType>
 				value: this.valueState,
 				instanceValue: this.getInstanceValue,
 			},
-			sharedStateOptions
+			this.instanceConfig
 		);
 
 		this.state = state;

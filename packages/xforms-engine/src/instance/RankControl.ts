@@ -149,10 +149,6 @@ export class RankControl
 			return createMemo(() => codec.encodeValue(getValue()));
 		});
 
-		const sharedStateOptions = {
-			clientStateFactory: this.engineConfig.stateFactory,
-		};
-
 		const state = createSharedNodeState(
 			this.scope,
 			{
@@ -167,7 +163,7 @@ export class RankControl
 				value: valueState,
 				instanceValue: this.getInstanceValue,
 			},
-			sharedStateOptions
+			this.instanceConfig
 		);
 
 		this.state = state;

@@ -97,10 +97,6 @@ export class Root
 		this.childrenState = childrenState;
 		this.languages = parent.languages;
 
-		const sharedStateOptions = {
-			clientStateFactory: this.engineConfig.stateFactory,
-		};
-
 		const state = createSharedNodeState(
 			this.scope,
 			{
@@ -115,7 +111,7 @@ export class Root
 				value: null,
 				children: childrenState.childIds,
 			},
-			sharedStateOptions
+			this.instanceConfig
 		);
 
 		this.state = state;
@@ -127,7 +123,7 @@ export class Root
 		);
 
 		childrenState.setChildren(buildChildren(this));
-		this.validationState = createAggregatedViolations(this, sharedStateOptions);
+		this.validationState = createAggregatedViolations(this, this.instanceConfig);
 		this.instanceState = createRootInstanceState(this);
 	}
 

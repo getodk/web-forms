@@ -158,10 +158,6 @@ export abstract class BaseRepeatRange<Definition extends AnyRepeatRangeDefinitio
 
 		this.childrenState = childrenState;
 
-		const sharedStateOptions = {
-			clientStateFactory: this.engineConfig.stateFactory,
-		};
-
 		const state = createSharedNodeState(
 			this.scope,
 			{
@@ -176,7 +172,7 @@ export abstract class BaseRepeatRange<Definition extends AnyRepeatRangeDefinitio
 				valueOptions: null,
 				value: null,
 			},
-			sharedStateOptions
+			this.instanceConfig
 		);
 
 		this.state = state;

@@ -72,10 +72,6 @@ export class RangeControl<V extends RangeValueType = RangeValueType>
 
 		this.appearances = definition.bodyElement.appearances;
 
-		const sharedStateOptions = {
-			clientStateFactory: this.engineConfig.stateFactory,
-		};
-
 		const state = createSharedNodeState(
 			this.scope,
 			{
@@ -91,7 +87,7 @@ export class RangeControl<V extends RangeValueType = RangeValueType>
 				value: this.valueState,
 				instanceValue: this.getInstanceValue,
 			},
-			sharedStateOptions
+			this.instanceConfig
 		);
 
 		this.state = state;

@@ -58,10 +58,6 @@ export class Note<V extends ValueType = ValueType>
 
 		this.appearances = definition.bodyElement.appearances;
 
-		const sharedStateOptions = {
-			clientStateFactory: this.engineConfig.stateFactory,
-		};
-
 		const isReadonly = createNoteReadonlyThunk(this, definition);
 		const noteTextComputation = createNoteText(this, definition.noteTextDefinition);
 
@@ -107,7 +103,7 @@ export class Note<V extends ValueType = ValueType>
 				value: this.valueState,
 				instanceValue: this.getInstanceValue,
 			},
-			sharedStateOptions
+			this.instanceConfig
 		);
 
 		this.state = state;
