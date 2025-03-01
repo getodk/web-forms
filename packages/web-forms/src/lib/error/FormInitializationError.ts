@@ -4,10 +4,12 @@ import {
 } from '@getodk/common/lib/runtime-types/shared-type-predicates.ts';
 import type { createInstance } from '@getodk/xforms-engine';
 
-interface ErrorLikeCause extends UnknownObject {
+interface ErrorLike {
 	readonly message: string;
 	readonly stack?: string | null;
 }
+
+interface ErrorLikeCause extends ErrorLike, UnknownObject {}
 
 const isErrorLikeCause = (cause: unknown): cause is ErrorLikeCause => {
 	if (!isUnknownObject(cause)) {
@@ -23,6 +25,13 @@ const isErrorLikeCause = (cause: unknown): cause is ErrorLikeCause => {
  * @todo translations
  */
 const UNKNOWN_ERROR_MESSAGE = 'Unknown error';
+
+interface FormInitializationErrorOptions {
+	readonly message: string;
+	readonly cause?: unknown;
+	readonly unknownCauseDetail?: string | null;
+	readonly stack?: string | null;
+}
 
 /**
  * Provides a minimal, uniform representation of most general, known form load
@@ -86,31 +95,50 @@ const UNKNOWN_ERROR_MESSAGE = 'Unknown error';
  * to `@getodk/xforms-engine`.
  */
 export class FormInitializationError extends Error {
+	static fromError(cause: ErrorLike): FormInitializationError {
+		return new this(cause);
+	}
+
+	static from(cause: unknown): FormInitializationError {
+		if (cause instanceof Error || isErrorLikeCause(cause)) {
+			return this.fromError(cause);
+		}
+
+		if (isUnknownObject(cause) && typeof cause.message === 'string') {
+			return new this({
+				message: cause.message,
+				cause,
+			});
+		}
+
+		if (typeof cause === 'string') {
+			return new this({
+				message: cause,
+				cause,
+			});
+		}
+
+		let unknownCauseDetail: string | null = null;
+
+		try {
+			unknownCauseDetail = JSON.stringify(cause, null, 2);
+		} catch {
+			// Ignore JSON serialization error
+		}
+
+		return new this({
+			message: 'Unknown error',
+			cause,
+			unknownCauseDetail,
+		});
+	}
+
+	readonly cause: unknown;
 	readonly unknownCauseDetail: string | null;
 	readonly stack?: string | undefined;
 
-	constructor(readonly cause: unknown) {
-		let message: string;
-		let unknownCauseDetail: string | null = null;
-		let stack: string | null = null;
-
-		// If `createInstance` rejected with an error, we can derive its message and stack
-		if (cause instanceof Error || isErrorLikeCause(cause)) {
-			message = cause.message;
-			stack = cause.stack ?? null;
-		} else if (isUnknownObject(cause) && typeof cause.message === 'string') {
-			message = cause.message;
-		} else if (typeof cause === 'string') {
-			message = cause;
-		} else {
-			message = 'Unknown error';
-
-			try {
-				unknownCauseDetail = JSON.stringify(cause, null, 2);
-			} catch {
-				// Ignore JSON serialization error
-			}
-		}
+	private constructor(options: FormInitializationErrorOptions) {
+		let message = options.message;
 
 		// TODO: this occurs when Solid's production build detects a "potential
 		// infinite loop" (i.e. either a form cycle, or potentially a serious bug in
@@ -119,9 +147,12 @@ export class FormInitializationError extends Error {
 			message = 'Unknown error';
 		}
 
+		const { cause, unknownCauseDetail, stack } = options;
+
 		super(message, { cause });
 
-		this.unknownCauseDetail = unknownCauseDetail;
+		this.cause = cause;
+		this.unknownCauseDetail = unknownCauseDetail ?? null;
 
 		if (stack != null) {
 			this.stack = stack;
