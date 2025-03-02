@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import type {
 	ChunkedInstancePayload,
+	FetchFormAttachment,
 	MissingResourceBehavior,
 	MonolithicInstancePayload,
+	RootNode,
 } from '@getodk/xforms-engine';
-import { initializeForm, type FetchFormAttachment, type RootNode } from '@getodk/xforms-engine';
+import { createInstance } from '@getodk/xforms-engine';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
 import PrimeMessage from 'primevue/message';
@@ -107,15 +109,17 @@ const odkForm = ref<RootNode>();
 const submitPressed = ref(false);
 const initializeFormError = ref<FormInitializationError | null>();
 
-initializeForm(props.formXml, {
-	config: {
+createInstance(props.formXml, {
+	form: {
 		fetchFormAttachment: props.fetchFormAttachment,
 		missingResourceBehavior: props.missingResourceBehavior,
+	},
+	instance: {
 		stateFactory: reactive,
 	},
 })
 	.then((f) => {
-		odkForm.value = f;
+		odkForm.value = f.root;
 	})
 	.catch((cause) => {
 		initializeFormError.value = new FormInitializationError(cause);
