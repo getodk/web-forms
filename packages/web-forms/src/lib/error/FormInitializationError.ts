@@ -2,7 +2,7 @@ import {
 	isUnknownObject,
 	type UnknownObject,
 } from '@getodk/common/lib/runtime-types/shared-type-predicates.ts';
-import type { initializeForm } from '@getodk/xforms-engine';
+import type { createInstance } from '@getodk/xforms-engine';
 
 interface ErrorLikeCause extends UnknownObject {
 	readonly message: string;
@@ -37,7 +37,7 @@ const UNKNOWN_ERROR_MESSAGE = 'Unknown error';
  * coming refinement.
  *
  * We handle these broad cases, each of which may be produced by a rejected
- * {@link Promise}, as returned by {@link initializeForm}:
+ * {@link Promise}, as returned by {@link createInstance}:
  *
  * 1. Promise is rejected with any {@link Error}, or subclass/inheritor thereof,
  *    as thrown by `@getodk/xforms-engine` or `@getodk/xpath`. These are
@@ -63,7 +63,7 @@ const UNKNOWN_ERROR_MESSAGE = 'Unknown error';
  *    system. We will likely make some meaningful effort on this front as well,
  *    but we accept it will never be exhaustive. Most importantly, we cannot
  *    truly know what types may be thrown (and then passed through as a
- *    {@link Promise} rejection by {@link initializeForm}).
+ *    {@link Promise} rejection by {@link createInstance}).
  *
  * As such where the type of {@link cause} is...
  *
@@ -94,7 +94,7 @@ export class FormInitializationError extends Error {
 		let unknownCauseDetail: string | null = null;
 		let stack: string | null = null;
 
-		// If `initializeForm` rejected with an error, we can derive its message and stack
+		// If `createInstance` rejected with an error, we can derive its message and stack
 		if (cause instanceof Error || isErrorLikeCause(cause)) {
 			message = cause.message;
 			stack = cause.stack ?? null;
