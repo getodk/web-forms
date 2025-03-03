@@ -26,9 +26,9 @@ const surveyLink = computed(() => {
 	</div>
 </template>
 
-
-
 <style lang="scss">
+@import 'primeflex/core/_variables.scss';
+
 .feedback-button span {
 	display: block;
 	position: fixed;
@@ -53,5 +53,11 @@ const surveyLink = computed(() => {
 .feedback-button span:hover,
 .feedback-button:focus-within span {
 	right: 10px;
+}
+
+@media screen and (max-width: #{$sm}) {
+	.feedback-button {
+		display: none;
+	}
 }
 </style>
