@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { resetInstanceState } from '@/shared-state/form-state.ts';
 import { xformFixturesByCategory, XFormResource } from '@getodk/common/fixtures/xforms.ts';
 import type {
 	ChunkedInstancePayload,
@@ -10,7 +11,9 @@ import { constants as ENGINE_CONSTANTS } from '@getodk/xforms-engine';
 import { ref } from 'vue';
 import { useRoute } from 'vue-router';
 import OdkWebForm from '../components/OdkWebForm.vue';
+import { cacheInstance } from '../shared-state/instance-cache-state.ts';
 import FeedbackButton from './FeedbackButton.vue';
+import InstanceCache from './InstanceCache.vue';
 
 const route = useRoute();
 
@@ -59,7 +62,8 @@ const handleSubmit = (payload: MonolithicInstancePayload) => {
 	// eslint-disable-next-line no-console
 	console.log('submission payload:', payload);
 
-	alert(`Submit button was pressed`);
+	cacheInstance(payload);
+	resetInstanceState();
 };
 
 const handleSubmitChunked = (payload: ChunkedInstancePayload) => {
@@ -69,6 +73,7 @@ const handleSubmitChunked = (payload: ChunkedInstancePayload) => {
 </script>
 <template>
 	<template v-if="formPreviewState">
+		<InstanceCache />
 		<OdkWebForm
 			:form-xml="formPreviewState.formXML"
 			:fetch-form-attachment="formPreviewState.fetchFormAttachment"
