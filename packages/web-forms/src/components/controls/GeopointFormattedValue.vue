@@ -26,7 +26,7 @@ const value = computed<GeopointValue>(() => {
 <template>
 	<!-- TODO: translations -->
 	<p class="geopoint-formatted-value">
-		<span v-if="value?.accuracy != null">Accuracy: {{ truncateDecimals(value.accuracy) }} m</span>
+		<span v-if="value?.accuracy != null">Accuracy: {{ truncateDecimals(value.accuracy, { decimals: 3 }) }} m</span>
 		<span v-if="value?.latitude != null">Latitude: {{ value.latitude }}</span>
 		<span v-if="value?.longitude != null">Longitude: {{ value.longitude }}</span>
 	</p>

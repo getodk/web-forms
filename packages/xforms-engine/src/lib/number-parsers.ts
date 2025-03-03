@@ -17,7 +17,7 @@ export const parseToFloat = (value: string | null): number | null => {
 	}
 
 	const parsed = Number(value);
-	if (typeof value !== 'string' || value.trim() === '' || isNaN(parsed)) {
+	if (typeof value !== 'string' || value.trim() === '' || Number.isNaN(parsed)) {
 		throw new Error(`Expected a float, but got: ${value}`);
 	}
 

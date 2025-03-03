@@ -1,5 +1,5 @@
 import { assert, describe, expect, it } from 'vitest';
-import { parseToFloat, parseToInteger } from '../../src/lib/NumberParsers.ts';
+import { parseToFloat, parseToInteger } from '../../src/lib/number-parsers.ts';
 
 describe('NumberParsers', () => {
 	interface SuccessTestCase {

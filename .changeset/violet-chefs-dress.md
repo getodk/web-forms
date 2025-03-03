@@ -5,5 +5,5 @@
 '@getodk/common': patch
 ---
 
-Support for default geopoint question type (`<input type="geopoint">`)
-Support for geopoint note
+- Support for geopoint questions with no appearance
+- Support for geopoint notes

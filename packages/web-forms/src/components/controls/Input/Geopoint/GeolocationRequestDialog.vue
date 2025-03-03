@@ -23,6 +23,8 @@ interface GeolocationRequestDialogProps {
 
 const props = defineProps<GeolocationRequestDialogProps>();
 
+const accuracyTruncateOptions = { decimals: 3 };
+
 const previousAccuracy = computed(() => {
 	return new GeopointAccuracy(props.geopoint, props.options);
 });
@@ -164,14 +166,14 @@ onBeforeUnmount(cleanup);
 				<div class="geopoint-information">
 					<!-- TODO: translations -->
 					<strong v-if="accuracy.value != null" class="geo-quality">
-						{{ truncateDecimals(accuracy.value) }} m - {{ accuracy.label }}
+						{{ truncateDecimals(accuracy.value, accuracyTruncateOptions) }} m - {{ accuracy.label }}
 					</strong>
 					<p v-if="options.accuracyThreshold > 0 && state.geopoint == null">
 						Location will be saved at {{ options.accuracyThreshold }} m
 					</p>
 					<p>Time taken to capture location: <ElapsedTime /></p>
 					<p v-if="previousAccuracy.value">
-						Previous saved location at {{ truncateDecimals(previousAccuracy.value) }} m
+						Previous saved location at {{ truncateDecimals(previousAccuracy.value, accuracyTruncateOptions) }} m
 					</p>
 				</div>
 			</div>
