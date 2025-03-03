@@ -1,4 +1,10 @@
 <script setup lang="ts">
+import {
+	initializeFormResultState,
+	initializeInstanceState,
+	instanceState,
+	resetFormInstanceState,
+} from '@/lib/shared-state/form-state.ts';
 import type {
 	ChunkedInstancePayload,
 	FetchFormAttachment,
@@ -6,12 +12,11 @@ import type {
 	MonolithicInstancePayload,
 	RootNode,
 } from '@getodk/xforms-engine';
-import { loadForm } from '@getodk/xforms-engine';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
 import PrimeMessage from 'primevue/message';
 import type { ComponentPublicInstance } from 'vue';
-import { computed, getCurrentInstance, provide, reactive, ref, watchEffect } from 'vue';
+import { computed, getCurrentInstance, onBeforeUnmount, provide, ref, watchEffect } from 'vue';
 import { FormInitializationError } from '../lib/error/FormInitializationError.ts';
 import FormLoadFailureDialog from './Form/FormLoadFailureDialog.vue';
 import FormHeader from './FormHeader.vue';
@@ -105,14 +110,15 @@ const emitSubmitChunked = async (root: RootNode) => {
 
 const emit = defineEmits<OdkWebFormEmits>();
 
-const odkForm = ref<RootNode>();
+const odkForm = computed(() => instanceState.value?.root);
+
 const submitPressed = ref(false);
 const initializeFormError = ref<FormInitializationError | null>();
 
 const init = async () => {
 	const { formXml, fetchFormAttachment, missingResourceBehavior } = props;
 
-	const formResult = await loadForm(formXml, {
+	const formResult = await initializeFormResultState(formXml, {
 		fetchFormAttachment,
 		missingResourceBehavior,
 	});
@@ -124,15 +130,17 @@ const init = async () => {
 	}
 
 	try {
-		const { root } = formResult.createInstance({ stateFactory: reactive });
-
-		odkForm.value = root;
+		initializeInstanceState(formResult);
 	} catch (error) {
 		initializeFormError.value = FormInitializationError.from(error);
 	}
 };
 
 void init();
+
+onBeforeUnmount(() => {
+	resetFormInstanceState();
+});
 
 const handleSubmit = () => {
 	const root = odkForm.value;

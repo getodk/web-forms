@@ -96,6 +96,15 @@ interface FormInitializationErrorOptions {
  */
 export class FormInitializationError extends Error {
 	static fromError(cause: ErrorLike): FormInitializationError {
+		if (cause instanceof AggregateError) {
+			const errors: readonly unknown[] = cause.errors;
+			const [head, ...tail] = errors;
+
+			if (head != null && tail.length === 0) {
+				return this.from(head);
+			}
+		}
+
 		return new this(cause);
 	}
 
