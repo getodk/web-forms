@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { resetInstanceState } from '@/shared-state/form-state.ts';
+import { resetInstanceState } from '@/lib/shared-state/form-state.ts';
 import { xformFixturesByCategory, XFormResource } from '@getodk/common/fixtures/xforms.ts';
 import type {
 	ChunkedInstancePayload,
@@ -11,7 +11,7 @@ import { constants as ENGINE_CONSTANTS } from '@getodk/xforms-engine';
 import { ref } from 'vue';
 import { useRoute } from 'vue-router';
 import OdkWebForm from '../components/OdkWebForm.vue';
-import { cacheInstance } from '../shared-state/instance-cache-state.ts';
+import { cacheInstance } from '../lib/shared-state/instance-cache-state.ts';
 import FeedbackButton from './FeedbackButton.vue';
 import InstanceCache from './InstanceCache.vue';
 

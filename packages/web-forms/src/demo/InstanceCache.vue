@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import PrimeButton from 'primevue/button';
-import type { AnyInstance, InstantiableFormResult } from '../shared-state/form-state.ts';
-import { instantiableFormResult, restoreInstanceState } from '../shared-state/form-state.ts';
-import type { InstanceCacheItem } from '../shared-state/instance-cache-state.ts';
+import type { AnyInstance, InstantiableFormResult } from '../lib/shared-state/form-state.ts';
+import { instantiableFormResult, restoreInstanceState } from '../lib/shared-state/form-state.ts';
+import type { InstanceCacheItem } from '../lib/shared-state/instance-cache-state.ts';
 import {
 	clearCache,
 	evictCachedInstance,
 	instanceCache,
-} from '../shared-state/instance-cache-state.ts';
+} from '../lib/shared-state/instance-cache-state.ts';
 
 const formatTimeUnit = (timeUnit: number): string => {
 	return timeUnit.toString().padStart(2, '0');

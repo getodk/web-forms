@@ -3,7 +3,7 @@ import {
 	initializeFormResultState,
 	initializeInstanceState,
 	instanceState,
-} from '@/shared-state/form-state.ts';
+} from '@/lib/shared-state/form-state.ts';
 import type {
 	ChunkedInstancePayload,
 	FetchFormAttachment,
