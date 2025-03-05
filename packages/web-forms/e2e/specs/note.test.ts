@@ -9,7 +9,7 @@ test.describe('Note Question Type', () => {
 		formPage = new FormPage(page);
 
 		const previewPage = new PreviewPage(page);
-		await previewPage.goToPage();
+		await previewPage.goToDevPage();
 		await previewPage.openDemoForm('notes', '2-all-possible-notes.xml', 'Notes');
 	});
 
@@ -48,7 +48,7 @@ test.describe('Note Question Type', () => {
 
 		await formPage.expectLabel('A note with geopoint type');
 		await formPage.geopoint.expectGeopointFormattedValue([
-			'Accuracy: 150m',
+			'Accuracy: 150 m',
 			'Latitude: 38.253094215699576',
 			'Longitude: 21.756382658677467',
 		]);

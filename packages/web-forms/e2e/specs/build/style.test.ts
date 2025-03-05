@@ -3,10 +3,10 @@ import { PreviewPage } from '../../page-objects/pages/PreviewPage.js';
 
 test('Build includes component-defined styles', async ({ page }) => {
 	const previewPage = new PreviewPage(page);
-	await previewPage.goToPage();
+	await previewPage.goToBuildPage();
 
 	// This ensures that the application is loaded before proceeding forward.
-	await expect(page.getByText('Demo Forms').first()).toBeVisible();
+	await expect(page.getByText('ODK Web Forms Preview').first()).toBeVisible();
 
 	// Get the (Sass-defined) large breakpoint size
 	// [In theory, if we can get this and it's not a number, we've already validated styles. Below expands on that to leave some breadcrumbs]

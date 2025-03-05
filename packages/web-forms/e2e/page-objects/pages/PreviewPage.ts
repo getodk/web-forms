@@ -1,6 +1,7 @@
 import { expect, Page } from '@playwright/test';
 
-const BASE_URL = 'http://localhost:5173';
+const DEV_BASE_URL = 'http://localhost:5173';
+const BUILD_BASE_URL = 'http://localhost:5174';
 
 export class PreviewPage {
 	private readonly page: Page;
@@ -9,14 +10,16 @@ export class PreviewPage {
 		this.page = page;
 	}
 
-	async goToPage() {
-		await this.page.goto(BASE_URL);
+	async goToDevPage() {
+		await this.page.goto(DEV_BASE_URL);
+	}
+
+	async goToBuildPage() {
+		await this.page.goto(BUILD_BASE_URL);
 	}
 
 	/**
 	 * Opens a preexisting demo form by navigating through the demo forms UI.
-	 *
-	 * @TODO Add support for uploading XML forms from /e2e/fixtures directory for test-specific scenarios
 	 *
 	 * @param {string} accordionName - The name of the demo forms category accordion
 	 * @param {string} formLinkName - The exact name of the demo form link to open
