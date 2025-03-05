@@ -59,10 +59,11 @@ export default defineConfig(({ mode }) => {
 	const isTest = mode === 'test';
 
 	let timeZoneId: string | null = process.env.TZ ?? null;
-	let locale: string | null = process.env.locale ?? null;
+	let localeId: string | null = process.env.LOCALE_ID ?? null;
+
 	if (isTest) {
 		timeZoneId = timeZoneId ?? TEST_TIME_ZONE;
-		locale = locale ?? TEST_LOCALE;
+		localeId = localeId ?? TEST_LOCALE;
 	}
 
 	// `expressionParser.ts` is built as a separate entry so it can be consumed
@@ -95,7 +96,7 @@ export default defineConfig(({ mode }) => {
 		},
 		define: {
 			TZ: JSON.stringify(timeZoneId),
-			locale: JSON.stringify(locale),
+			LOCALE_ID: JSON.stringify(localeId),
 		},
 		esbuild: {
 			target: 'esnext',
