@@ -1,0 +1,23 @@
+services:
+  web-forms:
+    image: ghcr.io/getodk/web-forms:main
+    build:
+      context: ../..
+      dockerfile: contrib/containers/Containerfile
+    volumes:
+      - ../../packages:/app/packages
+    ports:
+      - "${WEB_FORMS_PORT:-3221}:3221"
+    command: yarn workspace @getodk/web-forms dev
+
+  xlsform-online:
+    image: ghcr.io/getodk/xlsform-online:master
+    build: 
+      context: https://github.com/getodk/xlsform-online.git#master
+    environment:
+      DJANGO_SECRET_KEY: xxxxxxxxxxxxxxxxxxx
+      DJANGO_TMP_HOME: /tmp_home
+      DJANGO_PERSISTENT_HOME: /persistent_home
+      DJANGO_CORS_ALLOWED_ORIGIN: http://localhost:${WEB_FORMS_PORT:-3221}
+    ports:
+      - "${XLSFORM_ONLINE_PORT:-8558}:8000"
