@@ -27,11 +27,11 @@ declare global {
 	 *
 	 * @example 'en-US' // American English
 	 */
-	const locale: string;
+	const LOCALE_ID: string;
 }
 
 beforeEach(() => {
-	const dateOnTimezone = new Date().toLocaleString(locale, { timeZone: TZ });
+	const dateOnTimezone = new Date().toLocaleString(LOCALE_ID, { timeZone: TZ });
 	vi.useFakeTimers({
 		now: new Date(dateOnTimezone).getTime(),
 	});
