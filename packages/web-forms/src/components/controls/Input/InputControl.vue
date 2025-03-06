@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import InputDate from '@/components/controls/Input/InputDate.vue';
 import type { AnyInputNode } from '@getodk/xforms-engine';
 import { computed, inject, provide, ref } from 'vue';
 import ControlText from '../../ControlText.vue';
@@ -27,6 +28,9 @@ provide('isInvalid', isInvalid);
 	<ControlText :question="node" />
 
 	<div class="input-control-container">
+		<template v-if="node.valueType === 'date'">
+			<InputDate :node="node" />
+		</template>
 		<template v-if="node.valueType === 'decimal'">
 			<InputDecimal :node="node" />
 		</template>
