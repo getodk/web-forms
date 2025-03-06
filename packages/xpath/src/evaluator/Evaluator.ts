@@ -1,4 +1,4 @@
-import { Temporal } from '@js-temporal/polyfill';
+import { Temporal } from 'temporal-polyfill';
 import type { UnwrapAdapterNode } from '../adapter/interface/XPathCustomUnwrappableNode.ts';
 import type { XPathDOMAdapter } from '../adapter/interface/XPathDOMAdapter.ts';
 import type { XPathNode } from '../adapter/interface/XPathNode.ts';

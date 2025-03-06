@@ -1,4 +1,4 @@
-import { Temporal } from '@js-temporal/polyfill';
+import { Temporal } from 'temporal-polyfill';
 import { MILLISECOND_NANOSECONDS } from './constants.ts';
 import { isISODateOrDateTimeLike } from './predicates.ts';
 
@@ -18,6 +18,24 @@ export const tryParseDateString = (value: string): Date | null => {
 	return null;
 };
 
+/**
+ * Validates a timezone offset (e.g., "+01:00", "-23:59") to ensure it’s within the valid range.
+ * Webkit (Safari) parses invalid offsets like "-24:00" while Chrome and Firefox reject them.
+ * Using `Temporal.TimeZone.from` ensures consistent rejection of out-of-spec offsets
+ * across browsers, aligning with the Temporal spec’s max of ±23:59.
+ *
+ * @param offset - The offset string to validate (e.g., "-24:00", "+01:00").
+ * @returns `true` if the offset is valid, `false` otherwise.
+ */
+const isValidOffset = (offset: string): boolean => {
+	try {
+		Temporal.TimeZone.from(offset);
+		return true;
+	} catch {
+		return false;
+	}
+};
+
 export const dateTimeFromString = (
 	timeZone: Temporal.TimeZone,
 	value: string
@@ -30,7 +48,13 @@ export const dateTimeFromString = (
 		return Temporal.ZonedDateTime.from(value.replace(/Z$/, '[UTC]')).withTimeZone(timeZone);
 	}
 
-	if (/[-+]\d{2}:\d{2}$/.test(value) || !/^\d{4}/.test(value)) {
+	const offsetRegex = /[-+]\d{2}:\d{2}$/;
+	const offsetMatch = offsetRegex.exec(value);
+	if (offsetMatch != null && !isValidOffset(offsetMatch[0])) {
+		return null;
+	}
+
+	if (offsetRegex.test(value) || !/^\d{4}/.test(value)) {
 		const date = tryParseDateString(value);
 
 		if (date == null) {

@@ -1,6 +1,6 @@
 import { UnreachableError } from '@getodk/common/lib/error/UnreachableError.ts';
 import { identity } from '@getodk/common/lib/identity.ts';
-import type { Temporal } from '@js-temporal/polyfill';
+import type { Temporal } from 'temporal-polyfill';
 import type { XPathDOMAdapter } from '../adapter/interface/XPathDOMAdapter.ts';
 import type {
 	UnspecifiedNonXPathNodeKind,

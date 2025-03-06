@@ -1,4 +1,4 @@
-import { Temporal } from '@js-temporal/polyfill';
+import { Temporal } from 'temporal-polyfill';
 import {
 	ISO_DATE_LIKE_PATTERN,
 	ISO_DATE_OR_DATE_TIME_LIKE_PATTERN,

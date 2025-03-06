@@ -55,9 +55,9 @@
   },
   "dependencies": {
     "@getodk/common": "0.5.0",
-    "@js-temporal/polyfill": "^0.4.4",
     "crypto-js": "^4.2.0",
-    "itertools-ts": "^1.27.1"
+    "itertools-ts": "^1.27.1",
+    "temporal-polyfill": "^0.2.5"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",

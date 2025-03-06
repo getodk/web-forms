@@ -1,4 +1,4 @@
-import { Temporal } from '@js-temporal/polyfill';
+import { Temporal } from 'temporal-polyfill';
 import type { XPathNode } from '../../adapter/interface/XPathNode.ts';
 import { EvaluationContext } from '../../context/EvaluationContext.ts';
 import { DateTimeLikeEvaluation } from '../../evaluations/DateTimeLikeEvaluation.ts';
