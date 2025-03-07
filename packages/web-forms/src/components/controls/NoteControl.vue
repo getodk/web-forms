@@ -44,11 +44,11 @@ const value = computed<NoteRenderableValue>(() => {
 		case 'string':
 		case 'int':
 		case 'decimal':
+		case 'date':
 		case 'geopoint':
 			return question.currentState.value;
 
 		case 'boolean':
-		case 'date':
 		case 'time':
 		case 'dateTime':
 		case 'geotrace':

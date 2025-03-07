@@ -4,7 +4,7 @@ import {
 	ISO_DATE_OR_DATE_TIME_LIKE_PATTERN,
 	ISO_DATE_TIME_LIKE_PATTERN,
 	ISO_TIME_LIKE_PATTERN,
-} from './constants.ts';
+} from '@getodk/common/constants/datetime.ts';
 
 export const isISODateLike = (value: string) => ISO_DATE_LIKE_PATTERN.test(value);
 

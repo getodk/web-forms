@@ -8,7 +8,7 @@ import { FunctionImplementation } from '../../evaluator/functions/FunctionImplem
 import { NumberFunction } from '../../evaluator/functions/NumberFunction.ts';
 import { StringFunction } from '../../evaluator/functions/StringFunction.ts';
 import { dateTimeFromNumber, dateTimeFromString } from '../../lib/datetime/coercion.ts';
-import { DAY_MILLISECONDS } from '../../lib/datetime/constants.ts';
+import { DAY_MILLISECONDS } from '@getodk/common/constants/datetime.ts';
 import { now } from '../../lib/datetime/functions.ts';
 import { isValidTimeString } from '../../lib/datetime/predicates.ts';
 

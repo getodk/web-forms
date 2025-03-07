@@ -1,5 +1,5 @@
 import { Temporal } from 'temporal-polyfill';
-import { MILLISECOND_NANOSECONDS } from './constants.ts';
+import { MILLISECOND_NANOSECONDS } from '@getodk/common/constants/datetime.ts';
 import { isISODateOrDateTimeLike } from './predicates.ts';
 
 export const tryParseDateString = (value: string): Date | null => {
