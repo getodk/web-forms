@@ -1,5 +1,6 @@
 import type { ValueType } from '../../client/ValueType.ts';
-import { DateValueCodec } from './Date/DateValueCodec.ts';
+import type { DatetimeInputValue, DatetimeRuntimeValue } from './Date/Datetime.ts';
+import { DatetimeValueCodec } from './Date/DatetimeValueCodec.ts';
 import {
 	DecimalValueCodec,
 	type DecimalInputValue,
@@ -17,7 +18,7 @@ interface RuntimeValuesByType {
 	readonly int: IntRuntimeValue;
 	readonly decimal: DecimalRuntimeValue;
 	readonly boolean: string;
-	readonly date: string;
+	readonly date: DatetimeRuntimeValue;
 	readonly time: string;
 	readonly dateTime: string;
 	readonly geopoint: GeopointRuntimeValue;
@@ -35,7 +36,7 @@ interface RuntimeInputValuesByType {
 	readonly int: IntInputValue;
 	readonly decimal: DecimalInputValue;
 	readonly boolean: string;
-	readonly date: string;
+	readonly date: DatetimeInputValue;
 	readonly time: string;
 	readonly dateTime: string;
 	readonly geopoint: GeopointInputValue;
@@ -64,7 +65,7 @@ export const sharedValueCodecs: SharedValueCodecs = {
 	int: new IntValueCodec(),
 	decimal: new DecimalValueCodec(),
 	boolean: new ValueTypePlaceholderCodec('boolean'),
-	date: new DateValueCodec(),
+	date: new DatetimeValueCodec(),
 	time: new ValueTypePlaceholderCodec('time'),
 	dateTime: new ValueTypePlaceholderCodec('dateTime'),
 	geopoint: new GeopointValueCodec(),
