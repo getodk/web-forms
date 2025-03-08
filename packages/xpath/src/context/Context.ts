@@ -1,4 +1,4 @@
-import type { Temporal } from '@js-temporal/polyfill';
+import type { Temporal } from 'temporal-polyfill';
 import type { XPathNode } from '../adapter/interface/XPathDOMAdapter.ts';
 import type {
 	AdapterDocument,

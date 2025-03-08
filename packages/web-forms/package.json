@@ -75,6 +75,7 @@
     "vue": "^3.3.4"
   },
   "dependencies": {
+    "temporal-polyfill": "^0.2.5",
     "vue-draggable-plus": "^0.6.0"
   }
 }
