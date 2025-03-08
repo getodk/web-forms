@@ -668,17 +668,15 @@ describe('Data (<bind type>) type support', () => {
 				expect(answer.stringValue).toBe('');
 			});
 
-			it.each([
-				'13:30:55',
-				'2025-23-23',
-				'ZYX',
-				'2025-03-07T14:30:00+invalid',
-			])('has null when incorrect value is passed', (expression) => {
-				scenario.answer('/root/date-value', expression);
-				answer = getTypedInputNodeAnswer('/root/date-value', 'date');
-				expect(answer.value).toBeNull();
-				expect(answer.stringValue).toBe('');
-			});
+			it.each(['13:30:55', '2025-23-23', 'ZYX', '2025-03-07T14:30:00+invalid'])(
+				'has null when incorrect value is passed',
+				(expression) => {
+					scenario.answer('/root/date-value', expression);
+					answer = getTypedInputNodeAnswer('/root/date-value', 'date');
+					expect(answer.value).toBeNull();
+					expect(answer.stringValue).toBe('');
+				}
+			);
 
 			it.each([
 				{
@@ -693,7 +691,9 @@ describe('Data (<bind type>) type support', () => {
 				},
 				{
 					expression: '2025-03-07T14:30:00-08:00[America/Los_Angeles]',
-					expectedAsObject: Temporal.ZonedDateTime.from('2025-03-07T14:30:00-08:00[America/Los_Angeles]'),
+					expectedAsObject: Temporal.ZonedDateTime.from(
+						'2025-03-07T14:30:00-08:00[America/Los_Angeles]'
+					),
 					expectedAsText: '2025-03-07T14:30:00-08:00[America/Los_Angeles]',
 				},
 				{
@@ -706,15 +706,12 @@ describe('Data (<bind type>) type support', () => {
 					expectedAsObject: Temporal.PlainDateTime.from('2025-03-07T14:30:00'),
 					expectedAsText: '2025-03-07T14:30:00',
 				},
-			])(
-				'sets value with valid date',
-				({ expression, expectedAsObject, expectedAsText }) => {
-					scenario.answer('/root/date-value', expression);
-					answer = getTypedInputNodeAnswer('/root/date-value', 'date');
-					expect(answer.value).to.deep.equal(expectedAsObject);
-					expect(answer.stringValue).toEqual(expectedAsText);
-				}
-			);
+			])('sets value with valid date', ({ expression, expectedAsObject, expectedAsText }) => {
+				scenario.answer('/root/date-value', expression);
+				answer = getTypedInputNodeAnswer('/root/date-value', 'date');
+				expect(answer.value).to.deep.equal(expectedAsObject);
+				expect(answer.stringValue).toEqual(expectedAsText);
+			});
 		});
 	});
 

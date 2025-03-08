@@ -5,14 +5,27 @@ import {
 	ISO_DATE_TIME_LIKE_PATTERN,
 } from '@getodk/common/constants/datetime.ts';
 
-export type DatetimeRuntimeValue = Temporal.PlainDate | Temporal.PlainDateTime | Temporal.ZonedDateTime | null;
+export type DatetimeRuntimeValue =
+	| Temporal.PlainDate
+	| Temporal.PlainDateTime
+	| Temporal.ZonedDateTime
+	| null;
 
-export type DatetimeInputValue = Date | Temporal.PlainDate | Temporal.PlainDateTime | Temporal.ZonedDateTime | string | null;
+export type DatetimeInputValue =
+	| Date
+	| Temporal.PlainDate
+	| Temporal.PlainDateTime
+	| Temporal.ZonedDateTime
+	| string
+	| null;
 
 export class Datetime {
-
 	static parseString(value: string): DatetimeRuntimeValue {
-		if (value == null || typeof value !== 'string' || !ISO_DATE_OR_DATE_TIME_LIKE_PATTERN.test(value)) {
+		if (
+			value == null ||
+			typeof value !== 'string' ||
+			!ISO_DATE_OR_DATE_TIME_LIKE_PATTERN.test(value)
+		) {
 			return null;
 		}
 
@@ -47,18 +60,16 @@ export class Datetime {
 			}
 
 			if (value instanceof Date) {
-				return Temporal.ZonedDateTime
-					.from({
-						timeZoneId: Temporal.Now.timeZoneId(),
-						year: value.getFullYear(),
-						month: value.getMonth() + 1,
-						day: value.getDate(),
-						hour: value.getHours(),
-						minute: value.getMinutes(),
-						second: value.getSeconds(),
-						millisecond: value.getMilliseconds(),
-					})
-					.toString();
+				return Temporal.ZonedDateTime.from({
+					timeZoneId: Temporal.Now.timeZoneId(),
+					year: value.getFullYear(),
+					month: value.getMonth() + 1,
+					day: value.getDate(),
+					hour: value.getHours(),
+					minute: value.getMinutes(),
+					second: value.getSeconds(),
+					millisecond: value.getMilliseconds(),
+				}).toString();
 			}
 
 			const parsedValue = Datetime.parseString(value);
