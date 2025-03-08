@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import Calendar from 'primevue/calendar';
+import { Temporal } from 'temporal-polyfill';
 import type { DateInputNode } from '@getodk/xforms-engine';
 
 interface InputDateProps {
@@ -18,11 +19,11 @@ const value = computed({
 		}
 
 		if (temporalValue instanceof Temporal.ZonedDateTime) {
-			return temporalValue.toInstant().toJSDate();
+			return new Date(temporalValue.toInstant().epochMilliseconds);
 		}
 
 		// For PlainDate and PlainDateTime, use ISO string with UTC assumption
-		const time = (temporalValue instanceof Temporal.PlainDate ? 'T00:00:00Z' : 'Z');
+		const time = temporalValue instanceof Temporal.PlainDate ? 'T00:00:00Z' : 'Z';
 		return new Date(temporalValue.toString() + time);
 	},
 	set: (newDate) => {
@@ -31,11 +32,10 @@ const value = computed({
 });
 
 const isDisabled = computed(() => props.question.currentState.readonly === true);
-
 </script>
 
 <template>
-	<Calendar v-model="value" showIcon iconDisplay="input" showButtonBar :disabled="isDisabled"/>
+	<Calendar v-model="value" show-icon icon-display="input" show-button-bar :disabled="isDisabled" />
 </template>
 
 <style lang="scss">
