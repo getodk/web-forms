@@ -11,6 +11,7 @@ import {
 	title,
 } from '@getodk/common/test/fixtures/xform-dsl/index.ts';
 import type { ValueType } from '@getodk/xforms-engine';
+import { Temporal } from 'temporal-polyfill';
 import { assert, beforeEach, describe, expect, expectTypeOf, it } from 'vitest';
 import { intAnswer } from '../src/answer/ExpectedIntAnswer.ts';
 import { InputNodeAnswer } from '../src/answer/InputNodeAnswer.ts';
@@ -38,13 +39,15 @@ describe('Data (<bind type>) type support', () => {
 							t('int-value', '123'),
 							t('decimal-value', '45.67'),
 							t('geopoint-value', '38.25146813817506 21.758421137528785 0 0'),
+							t('date-value', '1999-11-23'),
 						)
 					),
 					bind('/root/string-value').type('string').relevant(modelNodeRelevanceExpression),
 					bind('/root/implicit-string-value').relevant(modelNodeRelevanceExpression),
 					bind('/root/int-value').type('int').relevant(modelNodeRelevanceExpression),
 					bind('/root/decimal-value').type('decimal').relevant(modelNodeRelevanceExpression),
-					bind('/root/geopoint-value').type('geopoint').relevant(modelNodeRelevanceExpression)
+					bind('/root/geopoint-value').type('geopoint').relevant(modelNodeRelevanceExpression),
+					bind('/root/date-value').type('date').relevant(modelNodeRelevanceExpression)
 				)
 			),
 			body(
@@ -211,9 +214,31 @@ describe('Data (<bind type>) type support', () => {
 				});
 			});
 
-			it('has an null as blank value', () => {
+			it('has a null as blank value', () => {
 				scenario.answer(modelNodeRelevancePath, 'no');
 				answer = getTypedModelValueNodeAnswer('/root/geopoint-value', 'geopoint');
+				expect(answer.value).toBeNull();
+			});
+		});
+
+		describe('type="date"', () => {
+			let answer: ModelValueNodeAnswer<'date'>;
+
+			beforeEach(() => {
+				answer = getTypedModelValueNodeAnswer('/root/date-value', 'date');
+			});
+
+			it('has a ZonedDateTime | null static type', () => {
+				expectTypeOf(answer.value).toEqualTypeOf<Temporal.ZonedDateTime | null>();
+			});
+
+			it('has a date populated value', () => {
+				expect(answer.value).to.deep.equal(Temporal.PlainDate.from('1999-11-23'));
+			});
+
+			it('has a null as blank value', () => {
+				scenario.answer(modelNodeRelevancePath, 'no');
+				answer = getTypedModelValueNodeAnswer('/root/date-value', 'date');
 				expect(answer.value).toBeNull();
 			});
 		});
@@ -238,13 +263,15 @@ describe('Data (<bind type>) type support', () => {
 							t('int-value', '123'),
 							t('decimal-value', '45.67'),
 							t('geopoint-value', '38.25146813817506 21.758421137528785 1000 25'),
+							t('date-value', '2025-12-20T13:45:55'),
 						)
 					),
 					bind('/root/string-value').type('string').relevant(inputRelevanceExpression),
 					bind('/root/implicit-string-value').relevant(inputRelevanceExpression),
 					bind('/root/int-value').type('int').relevant(inputRelevanceExpression),
 					bind('/root/decimal-value').type('decimal').relevant(inputRelevanceExpression),
-					bind('/root/geopoint-value').type('geopoint').relevant(inputRelevanceExpression)
+					bind('/root/geopoint-value').type('geopoint').relevant(inputRelevanceExpression),
+					bind('/root/date-value').type('date').relevant(inputRelevanceExpression)
 				)
 			),
 			body(
@@ -254,6 +281,7 @@ describe('Data (<bind type>) type support', () => {
 				input('/root/int-value'),
 				input('/root/decimal-value'),
 				input('/root/geopoint-value'),
+				input('/root/date-value'),
 			)
 		);
 
@@ -612,6 +640,78 @@ describe('Data (<bind type>) type support', () => {
 					scenario.answer('/root/geopoint-value', expression);
 					answer = getTypedInputNodeAnswer('/root/geopoint-value', 'geopoint');
 					expect(answer.value).toEqual(expectedAsObject);
+					expect(answer.stringValue).toEqual(expectedAsText);
+				}
+			);
+		});
+
+		describe('type="date"', () => {
+			let answer: InputNodeAnswer<'date'>;
+
+			beforeEach(() => {
+				answer = getTypedInputNodeAnswer('/root/date-value', 'date');
+			});
+
+			it('has a ZonedDateTime | null static type', () => {
+				expectTypeOf(answer.value).toEqualTypeOf<Temporal.ZonedDateTime | null>();
+			});
+
+			it('has a date populated value', () => {
+				expect(answer.value).to.deep.equal(Temporal.PlainDateTime.from('2025-12-20T13:45:55'));
+				expect(answer.stringValue).toEqual('2025-12-20T13:45:55');
+			});
+
+			it('has an null as blank value', () => {
+				scenario.answer(inputRelevancePath, 'no');
+				answer = getTypedInputNodeAnswer('/root/date-value', 'date');
+				expect(answer.value).toBeNull();
+				expect(answer.stringValue).toBe('');
+			});
+
+			it.each([
+				'13:30:55',
+				'2025-23-23',
+				'ZYX',
+				'2025-03-07T14:30:00+invalid',
+			])('has null when incorrect value is passed', (expression) => {
+				scenario.answer('/root/date-value', expression);
+				answer = getTypedInputNodeAnswer('/root/date-value', 'date');
+				expect(answer.value).toBeNull();
+				expect(answer.stringValue).toBe('');
+			});
+
+			it.each([
+				{
+					expression: '2025-03-07',
+					expectedAsObject: Temporal.PlainDate.from('2025-03-07'),
+					expectedAsText: '2025-03-07',
+				},
+				{
+					expression: '2025-03-07T14:30:00-08:00',
+					expectedAsObject: Temporal.PlainDateTime.from('2025-03-07T14:30:00-08:00'),
+					expectedAsText: '2025-03-07T14:30:00',
+				},
+				{
+					expression: '2025-03-07T14:30:00-08:00[America/Los_Angeles]',
+					expectedAsObject: Temporal.ZonedDateTime.from('2025-03-07T14:30:00-08:00[America/Los_Angeles]'),
+					expectedAsText: '2025-03-07T14:30:00-08:00[America/Los_Angeles]',
+				},
+				{
+					expression: '2025-03-07T14:30:00Z',
+					expectedAsObject: Temporal.ZonedDateTime.from('2025-03-07T14:30:00[UTC]'),
+					expectedAsText: '2025-03-07T14:30:00Z',
+				},
+				{
+					expression: '2025-03-07T14:30:00',
+					expectedAsObject: Temporal.PlainDateTime.from('2025-03-07T14:30:00'),
+					expectedAsText: '2025-03-07T14:30:00',
+				},
+			])(
+				'sets value with valid date',
+				({ expression, expectedAsObject, expectedAsText }) => {
+					scenario.answer('/root/date-value', expression);
+					answer = getTypedInputNodeAnswer('/root/date-value', 'date');
+					expect(answer.value).to.deep.equal(expectedAsObject);
 					expect(answer.stringValue).toEqual(expectedAsText);
 				}
 			);

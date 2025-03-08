@@ -22,10 +22,10 @@ export class Datetime {
 			}
 
 			if (ISO_DATE_TIME_LIKE_PATTERN.test(value)) {
-				return Temporal.ZonedDateTime.from(value);
+				return Temporal.PlainDateTime.from(value);
 			}
 
-			return Temporal.PlainDateTime.from(value);
+			return Temporal.ZonedDateTime.from(value);
 		} catch {
 			// TODO: should we throw when codec cannot interpret the value?
 			return null;
