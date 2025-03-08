@@ -109,6 +109,6 @@ export type AnyNoteNode =
 	| StringNoteNode
 	| IntNoteNode
 	| DecimalNoteNode
-  | DateNoteNode
+	| DateNoteNode
 	| GeopointNoteNode
 	| TemporaryStringValueNoteNode;
