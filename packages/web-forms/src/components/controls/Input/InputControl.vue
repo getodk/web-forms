@@ -28,9 +28,6 @@ provide('isInvalid', isInvalid);
 	<ControlText :question="node" />
 
 	<div class="input-control-container">
-		<template v-if="node.valueType === 'date'">
-			<InputDate :node="node" />
-		</template>
 		<template v-if="node.valueType === 'decimal'">
 			<InputDecimal :node="node" />
 		</template>
@@ -43,12 +40,15 @@ provide('isInvalid', isInvalid);
 		<template v-else-if="node.valueType === 'geopoint'">
 			<InputGeopoint :question="node" />
 		</template>
+		<template v-else-if="node.valueType === 'date'">
+			<InputDate :question="node" />
+		</template>
 		<template v-else>
 			<InputText :node="node" />
 		</template>
 
 		<!-- Excluding Geopoint since it doesn't display an error icon in the input box like other input types. TODO: Refactor to allow each input type to determine how errors are displayed. -->
-		<i v-show="isInvalid && (doneAnswering || submitPressed) && node.valueType !== 'geopoint'" class="icon-error" />
+		<i v-show="isInvalid && (doneAnswering || submitPressed) && (node.valueType !== 'geopoint' && node.valueType !== 'date')" class="icon-error" />
 	</div>
 	<ValidationMessage
 		:message="node.validationState.violation?.message.asString"
