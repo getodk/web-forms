@@ -22,7 +22,7 @@ export class RepeatRangeUncontrolled
 
 	constructor(
 		parent: GeneralParentNode,
-		instanceNode: StaticElement,
+		instanceNode: StaticElement | null,
 		definition: UncontrolledRepeatDefinition,
 		repeatInstanceNodes: readonly StaticElement[]
 	) {

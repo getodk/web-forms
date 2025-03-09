@@ -108,7 +108,7 @@ export class RepeatInstance
 
 	constructor(
 		override readonly parent: RepeatRange,
-		instanceNode: StaticElement,
+		instanceNode: StaticElement | null,
 		options: RepeatInstanceOptions
 	) {
 		const { definition } = parent;

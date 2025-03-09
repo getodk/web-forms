@@ -152,7 +152,7 @@ export abstract class BaseRepeatRange<Definition extends AnyRepeatDefinition>
 
 	constructor(
 		parent: GeneralParentNode,
-		instanceNode: StaticElement,
+		instanceNode: StaticElement | null,
 		definition: Definition,
 		protected readonly repeatInstanceNodes: readonly StaticElement[]
 	) {

@@ -8,8 +8,10 @@ import type { SubtreeDefinition } from '../client/SubtreeNode.ts';
 import type { TriggerNodeDefinition } from '../client/TriggerNode.ts';
 import type { UploadNodeDefinition } from '../client/unsupported/UploadNode.ts';
 import { ErrorProductionDesignPendingError } from '../error/ErrorProductionDesignPendingError.ts';
+import type { StaticDocument } from '../integration/xpath/static-dom/StaticDocument.ts';
 import type { StaticElement } from '../integration/xpath/static-dom/StaticElement.ts';
 import type { LeafNodeDefinition } from '../parse/model/LeafNodeDefinition.ts';
+import type { NodeDefinition } from '../parse/model/NodeDefinition.ts';
 import { NoteNodeDefinition } from '../parse/model/NoteNodeDefinition.ts';
 import type {
 	AnyRangeNodeDefinition,
@@ -17,6 +19,7 @@ import type {
 } from '../parse/model/RangeNodeDefinition.ts';
 import { RangeNodeDefinition } from '../parse/model/RangeNodeDefinition.ts';
 import type { SubtreeDefinition as ModelSubtreeDefinition } from '../parse/model/SubtreeDefinition.ts';
+import type { InstanceNode } from './abstract/InstanceNode.ts';
 import { Group } from './Group.ts';
 import type { GeneralChildNode, GeneralParentNode } from './hierarchy.ts';
 import { InputControl } from './InputControl.ts';
@@ -33,19 +36,19 @@ import { UploadControl } from './unsupported/UploadControl.ts';
 
 type InstanceNodesByNodeset = ReadonlyMap<string, readonly [StaticElement, ...StaticElement[]]>;
 
-const groupInstanceNodesByNodeset = (
-	instanceNodes: readonly StaticElement[]
+const groupChildElementsByNodeset = (
+	parent: StaticDocument | StaticElement
 ): InstanceNodesByNodeset => {
 	const result = new Map<string, [StaticElement, ...StaticElement[]]>();
 
-	for (const instanceNode of instanceNodes) {
-		const { nodeset } = instanceNode;
+	for (const child of parent.childElements) {
+		const { nodeset } = child;
 		const group = result.get(nodeset);
 
 		if (group == null) {
-			result.set(nodeset, [instanceNode]);
+			result.set(nodeset, [child]);
 		} else {
-			group.push(instanceNode);
+			group.push(child);
 		}
 	}
 
@@ -149,13 +152,47 @@ const isUploadNodeDefinition = (
 };
 
 export const buildChildren = (parent: GeneralParentNode): GeneralChildNode[] => {
-	const { childElements } = parent.instanceNode;
-	const grouped = groupInstanceNodesByNodeset(childElements);
-	const groups = Array.from(grouped.values());
+	/**
+	 * Child nodesets are collected from the {@link parent}'s
+	 * {@link NodeDefinition.template}, ensuring that we produce
+	 * {@link InstanceNode}s for every **model-defined** node, even if a
+	 * corresponding node was not serialized in a {@link parent.instanceNode}.
+	 *
+	 * In other words, by referencing the model-defined template, we are able to
+	 * reproduce nodes which were omitted as non-relevant in a prior serialization
+	 * and/or submission.
+	 */
+	const childNodesets = Array.from(
+		new Set(
+			parent.definition.template.childElements.map((childElement) => {
+				return childElement.nodeset;
+			})
+		)
+	);
 
-	return groups.map((instanceNodes): GeneralChildNode => {
-		const instanceNode: StaticElement = instanceNodes[0];
-		const definition = parent.model.getNodeDefinition(instanceNode);
+	let instanceChildrenByNodeset: InstanceNodesByNodeset | null;
+
+	if (parent.instanceNode == null) {
+		instanceChildrenByNodeset = null;
+	} else {
+		instanceChildrenByNodeset = groupChildElementsByNodeset(parent.instanceNode);
+	}
+
+	return childNodesets.map((nodeset): GeneralChildNode => {
+		/**
+		 * Get children of the target nodeset from {@link parent.instanceNode}, if
+		 * that node exists, and if children with that nodeset exist.
+		 *
+		 * If either does not exist (e.g. it was omitted as non-relevant in a prior
+		 * serialization), we continue to reference model-defined templates as we
+		 * recurse down the {@link InstanceNode} subtree.
+		 *
+		 * @see {@link childNodesets}
+		 */
+		const instanceNodes = instanceChildrenByNodeset?.get(nodeset);
+		const instanceNode: StaticElement | null = instanceNodes?.[0] ?? null;
+
+		const definition = parent.model.getNodeDefinition(nodeset);
 
 		switch (definition.type) {
 			case 'root': {
@@ -174,7 +211,7 @@ export const buildChildren = (parent: GeneralParentNode): GeneralChildNode[] => 
 			}
 
 			case 'repeat': {
-				const repeatInstanceNodes = definition.omitTemplate(instanceNodes);
+				const repeatInstanceNodes = definition.omitTemplate(instanceNodes ?? []);
 
 				if (definition.isControlled()) {
 					return new RepeatRangeControlled(parent, instanceNode, definition, repeatInstanceNodes);
@@ -184,7 +221,9 @@ export const buildChildren = (parent: GeneralParentNode): GeneralChildNode[] => 
 			}
 
 			case 'leaf-node': {
-				instanceNode.assertLeafElement();
+				if (instanceNode != null && !instanceNode.isLeafElement()) {
+					throw new ErrorProductionDesignPendingError();
+				}
 
 				if (definition instanceof NoteNodeDefinition) {
 					return new Note(parent, instanceNode, definition);

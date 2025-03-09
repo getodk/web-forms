@@ -15,7 +15,9 @@ const isInstanceFirstLoad = (options: InstanceValueStateOptions) => {
 };
 
 const getInitialValue = (context: InstanceValueContext): string => {
-	return context.decodeInstanceValue(context.instanceNode.value);
+	const sourceNode = context.instanceNode ?? context.definition.template;
+
+	return context.decodeInstanceValue(sourceNode.value);
 };
 
 type BaseValueState = Signal<string>;

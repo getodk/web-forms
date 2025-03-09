@@ -332,7 +332,6 @@ export class RepeatDefinition extends DescendentNodeDefinition<'repeat', RepeatE
 	readonly template: StaticElement;
 	readonly namespaceDeclarations: NamespaceDeclarationMap;
 	readonly qualifiedName: QualifiedName;
-	readonly defaultValue = null;
 
 	private constructor(
 		parent: ParentNodeDefinition,

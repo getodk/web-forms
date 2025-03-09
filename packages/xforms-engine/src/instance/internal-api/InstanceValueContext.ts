@@ -14,12 +14,13 @@ interface InstanceValueContextDefinitionBind {
 
 export interface InstanceValueContextDefinition {
 	readonly bind: InstanceValueContextDefinitionBind;
+	readonly template: StaticLeafElement;
 }
 
 export interface InstanceValueContext extends EvaluationContext {
 	readonly scope: ReactiveScope;
 	readonly definition: InstanceValueContextDefinition;
-	readonly instanceNode: StaticLeafElement;
+	readonly instanceNode: StaticLeafElement | null;
 	readonly decodeInstanceValue: DecodeInstanceValue;
 
 	isReadonly(): boolean;

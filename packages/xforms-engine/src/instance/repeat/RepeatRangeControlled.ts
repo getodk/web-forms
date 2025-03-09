@@ -27,7 +27,7 @@ export class RepeatRangeControlled
 
 	constructor(
 		parent: GeneralParentNode,
-		instanceNode: StaticElement,
+		instanceNode: StaticElement | null,
 		definition: ControlledRepeatDefinition,
 		repeatInstanceNodes: readonly StaticElement[]
 	) {
