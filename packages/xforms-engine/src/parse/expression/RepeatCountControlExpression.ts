@@ -45,6 +45,20 @@ const FIXED_NOOP_EXPRESSION = '-1';
 
 type FixedNoopExpression = typeof FIXED_NOOP_EXPRESSION;
 
+interface CountExpressionByType {
+	readonly [REPEAT_COUNT_CONTROL_TYPE.DYNAMIC]: string;
+	readonly [REPEAT_COUNT_CONTROL_TYPE.FIXED]: FixedNoopExpression;
+}
+
+type CountExpression<Type extends RepeatCountControlType> = CountExpressionByType[Type];
+
+interface FixedCountByType {
+	readonly [REPEAT_COUNT_CONTROL_TYPE.DYNAMIC]: null;
+	readonly [REPEAT_COUNT_CONTROL_TYPE.FIXED]: number;
+}
+
+type FixedCount<Type extends RepeatCountControlType> = FixedCountByType[Type];
+
 /**
  * Represents either of these
  * {@link https://getodk.github.io/xforms-spec/#body-attributes | body attributes}:
@@ -69,37 +83,50 @@ export class RepeatCountControlExpression<
 			return null;
 		}
 
-		return new this(bodyElement, REPEAT_COUNT_CONTROL_TYPE.DYNAMIC, countExpression);
+		return new this(bodyElement, REPEAT_COUNT_CONTROL_TYPE.DYNAMIC, countExpression, null);
 	}
 
 	static forNoAddRemoveExpression(
-		bodyElement: RepeatElementDefinition
+		bodyElement: RepeatElementDefinition,
+		fixedCount: number
 	): RepeatCountControlExpression | null {
 		const { noAddRemoveExpression } = bodyElement;
 
 		if (noAddRemoveExpression != null && isConstantTruthyExpression(noAddRemoveExpression)) {
-			return new this(bodyElement, REPEAT_COUNT_CONTROL_TYPE.FIXED, FIXED_NOOP_EXPRESSION);
+			return new this(
+				bodyElement,
+				REPEAT_COUNT_CONTROL_TYPE.FIXED,
+				FIXED_NOOP_EXPRESSION,
+				fixedCount
+			);
 		}
 
 		return null;
 	}
 
+	readonly fixedCount: FixedCount<Type>;
+
 	private constructor(
 		context: RepeatElementDefinition,
 		type: RepeatCountControlDynamicType,
-		expression: string
+		expression: string,
+		fixedCount: null
 	);
 	private constructor(
 		context: RepeatElementDefinition,
 		type: RepeatCountControlFixedType,
-		expression: FixedNoopExpression
+		expression: FixedNoopExpression,
+		fixedCount: number
 	);
 	private constructor(
 		context: RepeatElementDefinition,
 		readonly type: Type,
-		expression: string
+		expression: CountExpression<Type>,
+		fixedCount: FixedCount<Type>
 	) {
 		super(context, 'number', expression);
+
+		this.fixedCount = fixedCount;
 	}
 
 	isDynamic(): this is RepeatCountControlDynamicExpression {
@@ -115,4 +142,4 @@ export type RepeatCountControlDynamicExpression =
 	RepeatCountControlExpression<RepeatCountControlDynamicType>;
 
 export type RepeatCountControlFixedExpression =
-	RepeatCountControlExpression<RepeatCountControlDynamicType>;
+	RepeatCountControlExpression<RepeatCountControlFixedType>;

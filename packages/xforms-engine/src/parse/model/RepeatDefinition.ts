@@ -353,7 +353,10 @@ export class RepeatDefinition extends DescendentNodeDefinition<'repeat', RepeatE
 
 		this.count =
 			RepeatCountControlExpression.forCountExpression(bodyElement) ??
-			RepeatCountControlExpression.forNoAddRemoveExpression(bodyElement);
+			RepeatCountControlExpression.forNoAddRemoveExpression(
+				bodyElement,
+				this.omitTemplate(instanceNodes).length
+			);
 	}
 
 	isControlled(): this is ControlledRepeatDefinition {

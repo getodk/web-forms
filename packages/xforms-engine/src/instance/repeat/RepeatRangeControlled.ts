@@ -109,16 +109,19 @@ export class RepeatRangeControlled
 	}
 
 	private createFixedInstances(
-		_countExpression: RepeatCountControlFixedExpression,
+		countExpression: RepeatCountControlFixedExpression,
 		templateNode: StaticElement,
-		repeatInstnaceNodes: readonly StaticElement[]
+		repeatInstanceNodes: readonly StaticElement[]
 	): void {
 		this.scope.runTask(() => {
-			if (repeatInstnaceNodes.length === 0) {
-				this.addChildren(-1, [templateNode]);
-			} else {
-				this.addChildren(-1, repeatInstnaceNodes);
-			}
+			const count = Math.max(countExpression.fixedCount, 1);
+			const childNodes = Array<StaticElement>(count)
+				.fill(templateNode)
+				.map((template, index) => {
+					return repeatInstanceNodes[index] ?? template;
+				});
+
+			this.addChildren(-1, childNodes);
 		});
 	}
 }
