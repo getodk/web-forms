@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, provide } from 'vue';
+import { ref, computed, provide } from 'vue';
 import type { ComponentPublicInstance } from 'vue';
 import type {
 	AnyControlNode,
@@ -17,7 +17,7 @@ import ProgressBar from 'primevue/progressbar';
 import Button from 'primevue/button';
 
 const props = defineProps<{ nodes: readonly GeneralChildNode[] }>();
-const emit = defineEmits(['endOfForm']);
+const emit = defineEmits(['sendFormFromStepper']);
 
 const isGroupNode = (node: GeneralChildNode): node is GroupNode => {
 	return node.nodeType === 'group';
@@ -59,44 +59,47 @@ const steps = computed(() =>
 );
 
 // Handle stepper state
-const currentStep = ref(0);
-const isCurrentStepValidated = ref(true);
+const firstStep = 0;
+const finalStep = steps.value.length;
+const currentStep = ref(firstStep);
 const submitPressed = ref(false);
 provide('submitPressed', submitPressed);
 
-const validateStep = () => {
+const allFieldsValid = () => {
     // Manually trigger submitPressed to display error messages
 	submitPressed.value = true;
 
     const currentNode = steps.value[currentStep.value];
+
+    // Check group error array
     if (isGroupNode(currentNode) && currentNode.validationState.violations.length > 0) {
-        isCurrentStepValidated.value = false;
+        return false;
+
+    // Check question single error
     } else if (currentNode.validationState.violation) {
-        isCurrentStepValidated.value = false;
-    } else {
-        isCurrentStepValidated.value = true;
+        return false;
     }
+
+    return true;
 }
 const nextStep = () => {
-    validateStep();
+    if (!allFieldsValid()) {
+        // There was an error validating
+        return false;
+    }
 
-	if (isCurrentStepValidated.value && currentStep.value < steps.value.length - 1) {
+    // Do not increment further if at end of form
+	if (currentStep.value < steps.value.length - 1) {
         // Reset validation triggered later in the form
 	    submitPressed.value = false;
-        // Also reset validation state of current node
-        isCurrentStepValidated.value = true;
 		currentStep.value++;
 	}
 };
 const prevStep = () => {
-	if (currentStep.value > 0) {
+	if (currentStep.value > firstStep) {
 		currentStep.value--;
 	}
 };
-const isLastStep = computed(() => currentStep.value === steps.value.length - 1);
-watch(isLastStep, (newValue) => {
-    emit('endOfForm', newValue);
-});
 
 // // Calculate stepper progress
 // const totalNodes = computed(() => 
@@ -137,19 +140,55 @@ watch(isLastStep, (newValue) => {
 				<ExpectModelNode v-else :node="step" />
 			</template>
 		</div>
-
-		<div class="navigation-buttons">
-			<Button label="Previous" @click="prevStep" :disabled="currentStep === 0" />
-			<Button label="Next" @click="nextStep" :disabled="isCurrentStepValidated && currentStep === steps.length - 1" />
-		</div>
 	</div>
+
+    <div class="navigation-button-group">
+        <!-- If swapping to arrows: 🡨 🡪 -->
+        <Button v-if="currentStep > firstStep" class="navigation-button" label="Back" @click="prevStep" rounded outlined />
+        <Button v-if="currentStep === finalStep" class="navigation-button" label="Send" @click="allFieldsValid ? emit('sendFormFromStepper') : null" rounded />
+        <!-- Note the button ordering is important here as we use a last-child selector for styling -->
+        <Button v-if="currentStep < finalStep" class="navigation-button" label="Next" @click="nextStep" rounded outlined />
+    </div>
 </template>
 
 <style scoped lang="scss">
-.navigation-buttons {
+.stepper-container {
 	display: flex;
-	justify-content: space-between;
+	flex-direction: column;
+	flex-grow: 1;
+	overflow-y: auto;
+	padding-bottom: 3rem;
+
+	:deep(.p-panel) {
+		box-shadow: none;
+	}
+}
+
+.navigation-button-group {
+	display: flex;
+	position: fixed;
+	bottom: 0;
+	left: 0;
 	width: 100%;
-	margin-top: 1rem;
+	background: white;
+	padding: 1rem;
+	justify-content: space-between;
+	box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Ensure Next button is on the right when Back is hidden */
+.navigation-button-group .navigation-button:last-child {
+	margin-left: auto;
+}
+
+/* If only one button is visible, align it to the right */
+.navigation-button-group:has(.navigation-button:first-child:last-child) {
+	justify-content: flex-end;
+}
+
+.navigation-button {
+    padding-left: 3rem;
+    padding-right: 3rem;
+    font-size: 1rem;
 }
 </style>
