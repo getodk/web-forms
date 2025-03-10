@@ -4,7 +4,9 @@ import { computed } from 'vue';
 import FormPanel from './FormPanel.vue';
 import QuestionList from './QuestionList.vue';
 
-const props = defineProps<{ node: GroupNode }>();
+const props = withDefaults(defineProps<{ node: GroupNode, toggleable?: boolean }>(), {
+	toggleable: false,
+});
 
 const classes = ['group'];
 
@@ -18,7 +20,7 @@ const tableLayout = computed(() => {
 </script>
 
 <template>
-	<FormPanel :title="node.currentState.label?.asString" :no-ui="!node.currentState.label" :class="classes">
+	<FormPanel :title="node.currentState.label?.asString" :no-ui="!node.currentState.label" :toggleable="props.toggleable" :class="classes">
 		<div :class="{ 'table-layout': tableLayout, 'gap-2': !tableLayout, 'flex': true, 'flex-column': true }">
 			<QuestionList :nodes="node.currentState.children" />
 		</div>
