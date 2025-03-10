@@ -1,4 +1,5 @@
 import { createComputed } from 'solid-js';
+import type { LoadFormWarnings } from '../../client/index.ts';
 import type { RepeatRangeNodeAppearances } from '../../client/repeat/BaseRepeatRangeNode.ts';
 import type { RepeatRangeControlledNode } from '../../client/repeat/RepeatRangeControlledNode.ts';
 import type { AncestorNodeValidationState } from '../../client/validation.ts';
@@ -57,18 +58,52 @@ export class RepeatRangeControlled
 		this.validationState = createAggregatedViolations(this, this.instanceConfig);
 	}
 
+	/**
+	 * @todo Design and produce {@link LoadFormWarnings | warnings} as values!
+	 */
+	private warnDroppedInstanceNodes(
+		inputNodes: readonly StaticElement[],
+		actualCount: number
+	): void {
+		const isInstanceCreation = this.rootDocument.mode === 'create';
+
+		// We don't warn about dropping excess repeat instances from **form
+		// definition** input: they're potentially used to create N > initial
+		// computed `count` after load.
+		if (isInstanceCreation) {
+			return;
+		}
+
+		const droppedCount = inputNodes.length - actualCount;
+
+		if (droppedCount > 0) {
+			// eslint-disable-next-line no-console
+			console.warn(
+				`Dropped ${droppedCount} repeat instances for repeat range ${this.contextReference()}`
+			);
+		}
+	}
+
 	private initializeDynamicInstances(
 		countExpression: RepeatCountControlDynamicExpression,
 		templateNode: StaticElement,
 		repeatInstanceNodes: readonly StaticElement[]
 	): void {
 		this.scope.runTask(() => {
+			let firstRun = true;
+
 			const computeCount = createComputedExpression(this, countExpression, {
 				defaultValue: 0,
 			});
 
 			createComputed<number>((previousCount) => {
 				let currentCount = computeCount();
+
+				if (firstRun) {
+					this.warnDroppedInstanceNodes(repeatInstanceNodes, currentCount);
+
+					firstRun = false;
+				}
 
 				if (Number.isFinite(currentCount) && currentCount < 0) {
 					currentCount = 0;
@@ -116,14 +151,7 @@ export class RepeatRangeControlled
 		this.scope.runTask(() => {
 			const count = Math.max(countExpression.fixedCount, 1);
 
-			const droppedInstanceNodesCount = repeatInstanceNodes.length - count;
-
-			if (droppedInstanceNodesCount > 0) {
-				// eslint-disable-next-line no-console
-				console.warn(
-					`Dropped ${droppedInstanceNodesCount} repeat instances for repeat range ${this.contextReference()}`
-				);
-			}
+			this.warnDroppedInstanceNodes(repeatInstanceNodes, count);
 
 			const childNodes = Array<StaticElement>(count)
 				.fill(templateNode)
