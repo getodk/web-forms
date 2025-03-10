@@ -22,6 +22,7 @@ import { computed, getCurrentInstance, provide, ref, watchEffect } from 'vue';
 import FormLoadFailureDialog from './Form/FormLoadFailureDialog.vue';
 import FormHeader from './FormHeader.vue';
 import QuestionList from './QuestionList.vue';
+import QuestionStepper from './QuestionStepper.vue';
 
 const webFormsVersion = __WEB_FORMS_VERSION__;
 
@@ -29,6 +30,13 @@ export interface OdkWebFormsProps {
 	readonly formXml: string;
 	readonly fetchFormAttachment: FetchFormAttachment;
 	readonly missingResourceBehavior?: MissingResourceBehavior;
+
+	/**
+	 * Note: by default all questions will be displayed in a single list,
+	 * with collapsable groups. This param changes to a stepper layout
+	 * closer to Collect.
+	 */
+	stepperLayout?: boolean;
 
 	/**
 	 * Note: this parameter must be set when subscribing to the
@@ -43,7 +51,9 @@ export interface OdkWebFormsProps {
 	readonly editInstance?: EditInstanceOptions;
 }
 
-const props = defineProps<OdkWebFormsProps>();
+const props = withDefaults(defineProps<OdkWebFormsProps>(), {
+	stepperLayout: false,
+});
 
 const hostSubmissionResultCallbackFactory = (
 	currentState: FormStateSuccessResult
@@ -140,6 +150,7 @@ const emit = defineEmits<OdkWebFormEmits>();
 
 const state = initializeFormState();
 const submitPressed = ref(false);
+const showSendButton = ref(props.stepperLayout ? false : true);
 
 const init = async () => {
 	state.value = await loadFormState(props.formXml, {
@@ -230,12 +241,13 @@ watchEffect(() => {
 					<div class="form-questions">
 						<div class="flex flex-column gap-2">
 							<QuestionList :nodes="state.root.currentState.children" />
+							<QuestionStepper v-if="stepperLayout" :nodes="state.root.currentState.children" @endOfForm="showSendButton=true" />
 						</div>
 					</div>
 				</template>
 			</Card>
 
-			<div class="footer flex justify-content-end flex-wrap gap-3">
+			<div v-if="showSendButton" class="footer flex justify-content-end flex-wrap gap-3">
 				<Button label="Send" rounded @click="handleSubmit(state)" />
 			</div>
 		</div>
