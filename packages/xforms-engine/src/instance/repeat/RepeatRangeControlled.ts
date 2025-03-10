@@ -115,6 +115,16 @@ export class RepeatRangeControlled
 	): void {
 		this.scope.runTask(() => {
 			const count = Math.max(countExpression.fixedCount, 1);
+
+			const droppedInstanceNodesCount = repeatInstanceNodes.length - count;
+
+			if (droppedInstanceNodesCount > 0) {
+				// eslint-disable-next-line no-console
+				console.warn(
+					`Dropped ${droppedInstanceNodesCount} repeat instances for repeat range ${this.contextReference()}`
+				);
+			}
+
 			const childNodes = Array<StaticElement>(count)
 				.fill(templateNode)
 				.map((template, index) => {
