@@ -74,7 +74,7 @@ const value = computed<NoteRenderableValue>(() => {
 				<GeopointFormattedValue :question="question" />
 			</template>
 
-			<template v-if="question.valueType === 'date'">
+			<template v-else-if="question.valueType === 'date'">
 				{{ value.toString() }}
 			</template>
 

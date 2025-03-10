@@ -1,6 +1,6 @@
 import type { ValueType } from '../../client/ValueType.ts';
-import type { DatetimeInputValue, DatetimeRuntimeValue } from './Date/Datetime.ts';
-import { DatetimeValueCodec } from './Date/DatetimeValueCodec.ts';
+import type { DatetimeInputValue, DatetimeRuntimeValue } from './DateValueCodec.ts';
+import { DateValueCodec } from './DateValueCodec.ts';
 import {
 	DecimalValueCodec,
 	type DecimalInputValue,
@@ -65,7 +65,7 @@ export const sharedValueCodecs: SharedValueCodecs = {
 	int: new IntValueCodec(),
 	decimal: new DecimalValueCodec(),
 	boolean: new ValueTypePlaceholderCodec('boolean'),
-	date: new DatetimeValueCodec(),
+	date: new DateValueCodec(),
 	time: new ValueTypePlaceholderCodec('time'),
 	dateTime: new ValueTypePlaceholderCodec('dateTime'),
 	geopoint: new GeopointValueCodec(),

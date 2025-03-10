@@ -54,7 +54,7 @@
       <bind nodeset="/data/dates/fruits_date" type="date" required="false()"
             relevant=" /data/dates/date_of_birth  != &quot;&quot;"/>
       <bind nodeset="/data/dates/vegetables_date" type="date" required="false()"
-            relevant=" /data/dates/date_of_birth  != &quot;&quot;" readonly=" /data/dates/fruits_date  &gt; today()"/>
+            relevant=" /data/dates/date_of_birth  != &quot;&quot;" readonly="/data/dates/date_of_birth &lt;= today()"/>
       <bind nodeset="/data/meta/instanceID" type="string" readonly="true()" jr:preload="uid"/>
     </model>
   </h:head>

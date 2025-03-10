@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import Calendar from 'primevue/calendar';
-import { Temporal } from 'temporal-polyfill';
 import type { DateInputNode } from '@getodk/xforms-engine';
+import { ISO_DATE_LIKE_PATTERN } from '@getodk/common/constants/datetime.ts';
 
 interface InputDateProps {
 	readonly question: DateInputNode;
@@ -12,19 +12,17 @@ const props = defineProps<InputDateProps>();
 
 const value = computed({
 	get: () => {
-		const temporalValue = props.question.currentState.value;
-
-		if (temporalValue == null) {
+		if (props.question.currentState.value == null) {
 			return null;
 		}
 
-		if (temporalValue instanceof Temporal.ZonedDateTime) {
-			return new Date(temporalValue.toInstant().epochMilliseconds);
+		const temporalValue = props.question.currentState.value.toString();
+		if (!ISO_DATE_LIKE_PATTERN.test(temporalValue)) {
+			return null;
 		}
 
-		// For PlainDate and PlainDateTime, use ISO string with UTC assumption
-		const time = temporalValue instanceof Temporal.PlainDate ? 'T00:00:00Z' : 'Z';
-		return new Date(temporalValue.toString() + time);
+		// Convert to ISO string (yyyy-mm-dd) and append time for start of day local
+		return new Date(temporalValue + 'T00:00:00');
 	},
 	set: (newDate) => {
 		props.question.setValue(newDate);
@@ -39,6 +37,8 @@ const isDisabled = computed(() => props.question.currentState.readonly === true)
 </template>
 
 <style lang="scss">
+@import 'primeflex/core/_variables.scss';
+
 .p-calendar {
 	width: 50%;
 }
@@ -62,5 +62,11 @@ const isDisabled = computed(() => props.question.currentState.readonly === true)
 
 .p-calendar.p-calendar-disabled .p-datepicker-trigger-icon {
 	cursor: not-allowed;
+}
+
+@media screen and (max-width: #{$sm}) {
+	.p-calendar {
+		width: 100%;
+	}
 }
 </style>

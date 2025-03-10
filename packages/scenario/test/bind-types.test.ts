@@ -39,7 +39,7 @@ describe('Data (<bind type>) type support', () => {
 							t('int-value', '123'),
 							t('decimal-value', '45.67'),
 							t('geopoint-value', '38.25146813817506 21.758421137528785 0 0'),
-							t('date-value', '1999-11-23'),
+							t('date-value', '1999-11-23T23:30:05'),
 						)
 					),
 					bind('/root/string-value').type('string').relevant(modelNodeRelevanceExpression),
@@ -229,7 +229,7 @@ describe('Data (<bind type>) type support', () => {
 			});
 
 			it('has a ZonedDateTime | null static type', () => {
-				expectTypeOf(answer.value).toEqualTypeOf<Temporal.ZonedDateTime | null>();
+				expectTypeOf(answer.value).toEqualTypeOf<Temporal.PlainDate | null>();
 			});
 
 			it('has a date populated value', () => {
@@ -263,7 +263,7 @@ describe('Data (<bind type>) type support', () => {
 							t('int-value', '123'),
 							t('decimal-value', '45.67'),
 							t('geopoint-value', '38.25146813817506 21.758421137528785 1000 25'),
-							t('date-value', '2025-12-20T13:45:55'),
+							t('date-value', '2025-12-20'),
 						)
 					),
 					bind('/root/string-value').type('string').relevant(inputRelevanceExpression),
@@ -653,12 +653,12 @@ describe('Data (<bind type>) type support', () => {
 			});
 
 			it('has a ZonedDateTime | null static type', () => {
-				expectTypeOf(answer.value).toEqualTypeOf<Temporal.ZonedDateTime | null>();
+				expectTypeOf(answer.value).toEqualTypeOf<Temporal.PlainDate | null>();
 			});
 
 			it('has a date populated value', () => {
-				expect(answer.value).to.deep.equal(Temporal.PlainDateTime.from('2025-12-20T13:45:55'));
-				expect(answer.stringValue).toEqual('2025-12-20T13:45:55');
+				expect(answer.value).to.deep.equal(Temporal.PlainDate.from('2025-12-20'));
+				expect(answer.stringValue).toEqual('2025-12-20');
 			});
 
 			it('has an null as blank value', () => {
@@ -668,43 +668,30 @@ describe('Data (<bind type>) type support', () => {
 				expect(answer.stringValue).toBe('');
 			});
 
-			it.each(['13:30:55', '2025-23-23', 'ZYX', '2025-03-07T14:30:00+invalid'])(
-				'has null when incorrect value is passed',
-				(expression) => {
-					scenario.answer('/root/date-value', expression);
-					answer = getTypedInputNodeAnswer('/root/date-value', 'date');
-					expect(answer.value).toBeNull();
-					expect(answer.stringValue).toBe('');
-				}
-			);
+			it.each([
+				'13:30:55',
+				'2025-23-23',
+				'ZYX',
+				'2025-03-07T14:30:00+invalid',
+				'2025-03-07T14:30:00-08:00',
+				'2025-03-07T14:30:00Z',
+			])('has null when incorrect value is passed', (expression) => {
+				scenario.answer('/root/date-value', expression);
+				answer = getTypedInputNodeAnswer('/root/date-value', 'date');
+				expect(answer.value).toBeNull();
+				expect(answer.stringValue).toBe('');
+			});
 
 			it.each([
 				{
-					expression: '2025-03-07',
-					expectedAsObject: Temporal.PlainDate.from('2025-03-07'),
-					expectedAsText: '2025-03-07',
+					expression: '2025-03-14',
+					expectedAsObject: Temporal.PlainDate.from('2025-03-14'),
+					expectedAsText: '2025-03-14',
 				},
 				{
-					expression: '2025-03-07T14:30:00-08:00',
-					expectedAsObject: Temporal.PlainDateTime.from('2025-03-07T14:30:00-08:00'),
-					expectedAsText: '2025-03-07T14:30:00',
-				},
-				{
-					expression: '2025-03-07T14:30:00-08:00[America/Los_Angeles]',
-					expectedAsObject: Temporal.ZonedDateTime.from(
-						'2025-03-07T14:30:00-08:00[America/Los_Angeles]'
-					),
-					expectedAsText: '2025-03-07T14:30:00-08:00[America/Los_Angeles]',
-				},
-				{
-					expression: '2025-03-07T14:30:00Z',
-					expectedAsObject: Temporal.ZonedDateTime.from('2025-03-07T14:30:00[UTC]'),
-					expectedAsText: '2025-03-07T14:30:00Z',
-				},
-				{
-					expression: '2025-03-07T14:30:00',
-					expectedAsObject: Temporal.PlainDateTime.from('2025-03-07T14:30:00'),
-					expectedAsText: '2025-03-07T14:30:00',
+					expression: '2025-12-21T14:30:00',
+					expectedAsObject: Temporal.PlainDate.from('2025-12-21'),
+					expectedAsText: '2025-12-21',
 				},
 			])('sets value with valid date', ({ expression, expectedAsObject, expectedAsText }) => {
 				scenario.answer('/root/date-value', expression);
