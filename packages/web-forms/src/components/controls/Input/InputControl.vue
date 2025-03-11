@@ -19,6 +19,11 @@ const props = defineProps<InputControlProps>();
 const doneAnswering = ref(false);
 const submitPressed = inject<boolean>('submitPressed');
 const isInvalid = computed(() => props.node.validationState.violation?.valid === false);
+const hideIconError = computed(() => {
+	// Excluding these node type, since no error icon is needed in the input box like other input types.
+	// TODO: Refactor to allow each input type to determine how errors are displayed.
+	return !['geopoint', 'date'].includes(props.node.valueType);
+});
 
 provide('doneAnswering', doneAnswering);
 provide('isInvalid', isInvalid);
@@ -47,8 +52,7 @@ provide('isInvalid', isInvalid);
 			<InputText :node="node" />
 		</template>
 
-		<!-- Excluding Geopoint since it doesn't display an error icon in the input box like other input types. TODO: Refactor to allow each input type to determine how errors are displayed. -->
-		<i v-show="isInvalid && (doneAnswering || submitPressed) && (node.valueType !== 'geopoint' && node.valueType !== 'date')" class="icon-error" />
+		<i v-show="isInvalid && (doneAnswering || submitPressed) && hideIconError" class="icon-error" />
 	</div>
 	<ValidationMessage
 		:message="node.validationState.violation?.message.asString"

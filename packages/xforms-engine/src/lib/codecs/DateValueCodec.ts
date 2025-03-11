@@ -15,6 +15,10 @@ export type DatetimeInputValue =
 /**
  * Parses a string in the format 'YYYY-MM-DD' or 'YYYY-MM-DDTHH:MM:SS' (no offset)
  * into a Temporal.PlainDate.
+ * TODO: Datetimes with a valid timezone offset are treated as errors.
+ *       User research is needed to determine whether the date should honor
+ *       the timezone or be truncated to the yyyy-mm-dd format only.
+ *
  * @param value - The string to parse.
  * @returns A {@link DatetimeRuntimeValue}
  */
@@ -42,11 +46,15 @@ const parseString = (value: string): DatetimeRuntimeValue => {
 
 /**
  * Converts a date-like value ({@link DatetimeInputValue}) to a 'YYYY-MM-DD' string.
+ * TODO: Datetimes with a valid timezone offset are treated as errors.
+ *       User research is needed to determine whether the date should honor
+ *       the timezone or be truncated to the yyyy-mm-dd format only.
+ *
  * @param value - The value to convert.
  * @returns A date string or empty string if invalid.
  */
 const toDateString = (value: DatetimeInputValue): string => {
-	if (value == null) {
+	if (value == null || value instanceof Temporal.ZonedDateTime) {
 		return '';
 	}
 
@@ -55,7 +63,7 @@ const toDateString = (value: DatetimeInputValue): string => {
 			return value.toString();
 		}
 
-		if (value instanceof Temporal.PlainDateTime || value instanceof Temporal.ZonedDateTime) {
+		if (value instanceof Temporal.PlainDateTime) {
 			return value.toPlainDate().toString();
 		}
 

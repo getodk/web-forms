@@ -228,7 +228,7 @@ describe('Data (<bind type>) type support', () => {
 				answer = getTypedModelValueNodeAnswer('/root/date-value', 'date');
 			});
 
-			it('has a ZonedDateTime | null static type', () => {
+			it('has a PlainDate | null static type', () => {
 				expectTypeOf(answer.value).toEqualTypeOf<Temporal.PlainDate | null>();
 			});
 
@@ -652,7 +652,7 @@ describe('Data (<bind type>) type support', () => {
 				answer = getTypedInputNodeAnswer('/root/date-value', 'date');
 			});
 
-			it('has a ZonedDateTime | null static type', () => {
+			it('has a PlainDate | null static type', () => {
 				expectTypeOf(answer.value).toEqualTypeOf<Temporal.PlainDate | null>();
 			});
 
