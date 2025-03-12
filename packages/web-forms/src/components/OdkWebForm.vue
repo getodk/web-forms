@@ -8,7 +8,6 @@ import { initializeForm, type FetchFormAttachment, type RootNode } from '@getodk
 import Button from 'primevue/button';
 import Card from 'primevue/card';
 import PrimeMessage from 'primevue/message';
-import type { ComponentPublicInstance } from 'vue';
 import { computed, getCurrentInstance, provide, reactive, ref, watchEffect } from 'vue';
 import { FormInitializationError } from '../lib/error/FormInitializationError.ts';
 import FormLoadFailureDialog from './Form/FormLoadFailureDialog.vue';
@@ -105,6 +104,8 @@ const emit = defineEmits<OdkWebFormEmits>();
 
 const odkForm = ref<RootNode>();
 const submitPressed = ref(false);
+const floatingErrorActive = ref(false);
+const showValidationError = ref(false);
 const initializeFormError = ref<FormInitializationError | null>();
 
 initializeForm(props.formXml, {
@@ -125,17 +126,17 @@ const handleSubmit = () => {
 	const root = odkForm.value;
 
 	if (root?.validationState.violations?.length === 0) {
+		floatingErrorActive.value = false;
 		// eslint-disable-next-line @typescript-eslint/no-floating-promises
 		emitSubmit(root);
 		// eslint-disable-next-line @typescript-eslint/no-floating-promises
 		emitSubmitChunked(root);
 	} else {
+		floatingErrorActive.value = true;
 		submitPressed.value = true;
 		document.scrollingElement?.scrollTo(0, 0);
 	}
 };
-
-const validationErrorMessagePopover = ref<ComponentPublicInstance | null>(null);
 
 provide('submitPressed', submitPressed);
 
@@ -149,10 +150,10 @@ const validationErrorMessage = computed(() => {
 });
 
 watchEffect(() => {
-	if (submitPressed.value && validationErrorMessage.value) {
-		(validationErrorMessagePopover.value?.$el as HTMLElement)?.showPopover?.();
+	if (floatingErrorActive.value && validationErrorMessage.value?.length) {
+		showValidationError.value = true;
 	} else {
-		(validationErrorMessagePopover.value?.$el as HTMLElement)?.hidePopover?.();
+		showValidationError.value = false;
 	}
 });
 </script>
@@ -186,8 +187,9 @@ watchEffect(() => {
 		:class="{ 'submit-pressed': submitPressed }"
 	>
 		<div class="form-wrapper">
-			<div v-show="submitPressed && validationErrorMessage" class="error-banner-placeholder" />
-			<PrimeMessage ref="validationErrorMessagePopover" popover="manual" severity="error" icon="icon-error_outline" class="form-error-message" :closable="false">
+			<div v-if="showValidationError" class="error-banner-placeholder" />
+			<!-- Closable error message to clear the view and avoid overlap with other elements -->
+			<PrimeMessage v-if="showValidationError" severity="error" icon="icon-error_outline" class="form-error-message" @close="floatingErrorActive = false">
 				{{ validationErrorMessage }}
 			</PrimeMessage>
 
@@ -266,6 +268,8 @@ watchEffect(() => {
 		}
 
 		.form-error-message.p-message.p-message-error {
+			position: fixed;
+			z-index: 100;
 			border-radius: 10px;
 			background-color: var(--error-bg-color);
 			border: 1px solid var(--error-text-color);
@@ -275,7 +279,7 @@ watchEffect(() => {
 			top: 1rem;
 
 			:deep(.p-message-wrapper) {
-				padding: 0.75rem 0.75rem;
+				padding: 8px 15px;
 				flex-grow: 1;
 			}
 
@@ -349,6 +353,7 @@ watchEffect(() => {
 				margin: var(--wf-error-banner-gap) 1rem 0 1rem;
 				max-width: unset;
 				width: calc(100% - 2rem);
+				top: 0.27rem;
 			}
 
 			.questions-card {
