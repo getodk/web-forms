@@ -13,6 +13,8 @@ import type {
 	XFormsXPathPrimaryInstanceNodeKind,
 } from '../../integration/xpath/adapter/XFormsXPathNode.ts';
 import type { PrimaryInstanceXPathNode } from '../../integration/xpath/adapter/kind.ts';
+import type { StaticDocument } from '../../integration/xpath/static-dom/StaticDocument.ts';
+import type { StaticElement } from '../../integration/xpath/static-dom/StaticElement.ts';
 import type { MaterializedChildren } from '../../lib/reactivity/materializeCurrentStateChildren.ts';
 import type { CurrentState } from '../../lib/reactivity/node-state/createCurrentState.ts';
 import type { EngineState } from '../../lib/reactivity/node-state/createEngineState.ts';
@@ -21,6 +23,7 @@ import type { ReactiveScope } from '../../lib/reactivity/scope.ts';
 import { createReactiveScope } from '../../lib/reactivity/scope.ts';
 import type { SimpleAtomicState } from '../../lib/reactivity/types.ts';
 import { createUniqueId } from '../../lib/unique-id.ts';
+import type { ModelDefinition } from '../../parse/model/ModelDefinition.ts';
 import type { AnyNodeDefinition } from '../../parse/model/NodeDefinition.ts';
 import type { PrimaryInstance } from '../PrimaryInstance.ts';
 import type { Root } from '../Root.ts';
@@ -103,6 +106,7 @@ export abstract class InstanceNode<
 	>
 	implements BaseEngineNode, XFormsXPathPrimaryInstanceNode, EvaluationContext
 {
+	abstract readonly model: ModelDefinition;
 	protected abstract readonly state: SharedNodeState<Spec>;
 	protected abstract readonly engineState: EngineState<Spec>;
 
@@ -189,6 +193,7 @@ export abstract class InstanceNode<
 	constructor(
 		readonly instanceConfig: InstanceConfig,
 		readonly parent: Parent,
+		readonly instanceNode: StaticDocument | StaticElement,
 		readonly definition: Definition,
 		options?: InstanceNodeOptions
 	) {

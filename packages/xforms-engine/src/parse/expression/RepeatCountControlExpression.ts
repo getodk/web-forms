@@ -3,6 +3,48 @@ import { RepeatElementDefinition } from '../body/RepeatElementDefinition.ts';
 import { isConstantTruthyExpression } from '../xpath/semantic-analysis.ts';
 import { DependentExpression } from './abstract/DependentExpression.ts';
 
+export const REPEAT_COUNT_CONTROL_TYPE = {
+	/** @see {@link RepeatCountControlDynamicType} */
+	DYNAMIC: 'DYNAMIC',
+
+	/** @see {@link RepeatCountControlFixedType} */
+	FIXED: 'FIXED',
+} as const;
+
+type RepeatCountControlTypes = typeof REPEAT_COUNT_CONTROL_TYPE;
+
+/**
+ * Represents an expression which controls a dynamic count of a range of repeat
+ * instances, i.e. as defined by the `jr:count`
+ * {@link https://getodk.github.io/xforms-spec/#body-attributes | body attribute}.
+ */
+export type RepeatCountControlDynamicType = RepeatCountControlTypes['DYNAMIC'];
+
+/**
+ * Represents an expression which controls a fixed count of a range of repeat
+ * instances, i.e. as defined by the `jr:noAddRemove`
+ * {@link https://getodk.github.io/xforms-spec/#body-attributes | body attribute},
+ * when its expression is `true()` (or any other expression interpreted as
+ * "constantly truthy").
+ *
+ * Note: a fixed count will not be **evaluated** as an expression. Instead, it
+ * will be **synthesized** by populating exactly the count of repeat instances
+ * present in the form definition.
+ *
+ * @see {@link isConstantTruthyExpression} for more detail about the semantics
+ * of "constantly truthy" expressions.
+ */
+export type RepeatCountControlFixedType = RepeatCountControlTypes['FIXED'];
+
+// prettier-ignore
+export type RepeatCountControlType =
+	| RepeatCountControlDynamicType
+	| RepeatCountControlFixedType;
+
+const FIXED_NOOP_EXPRESSION = '-1';
+
+type FixedNoopExpression = typeof FIXED_NOOP_EXPRESSION;
+
 /**
  * Represents either of these
  * {@link https://getodk.github.io/xforms-spec/#body-attributes | body attributes}:
@@ -15,30 +57,62 @@ import { DependentExpression } from './abstract/DependentExpression.ts';
  * should simplify client usage, as well as implementation of the internal
  * representation of {@link RepeatRangeControlledNode}.
  */
-export class RepeatCountControlExpression extends DependentExpression<'number'> {
-	static from(
-		bodyElement: RepeatElementDefinition,
-		initialCount: number
+export class RepeatCountControlExpression<
+	Type extends RepeatCountControlType = RepeatCountControlType,
+> extends DependentExpression<'number'> {
+	static forCountExpression(
+		bodyElement: RepeatElementDefinition
 	): RepeatCountControlExpression | null {
-		const { countExpression, noAddRemoveExpression } = bodyElement;
+		const { countExpression } = bodyElement;
 
-		if (countExpression != null) {
-			return new this(bodyElement, countExpression);
+		if (countExpression == null) {
+			return null;
 		}
 
-		if (noAddRemoveExpression != null && isConstantTruthyExpression(noAddRemoveExpression)) {
-			// Assumption: `noAddRemove` with no form-defined repeat instances has no
-			// purpose. Infer intent as a single repeat instance, as defined by the
-			// repeat's template.
-			const fixedCountExpression = String(Math.max(initialCount, 1));
+		return new this(bodyElement, REPEAT_COUNT_CONTROL_TYPE.DYNAMIC, countExpression);
+	}
 
-			return new this(bodyElement, fixedCountExpression);
+	static forNoAddRemoveExpression(
+		bodyElement: RepeatElementDefinition
+	): RepeatCountControlExpression | null {
+		const { noAddRemoveExpression } = bodyElement;
+
+		if (noAddRemoveExpression != null && isConstantTruthyExpression(noAddRemoveExpression)) {
+			return new this(bodyElement, REPEAT_COUNT_CONTROL_TYPE.FIXED, FIXED_NOOP_EXPRESSION);
 		}
 
 		return null;
 	}
 
-	private constructor(context: RepeatElementDefinition, expression: string) {
+	private constructor(
+		context: RepeatElementDefinition,
+		type: RepeatCountControlDynamicType,
+		expression: string
+	);
+	private constructor(
+		context: RepeatElementDefinition,
+		type: RepeatCountControlFixedType,
+		expression: FixedNoopExpression
+	);
+	private constructor(
+		context: RepeatElementDefinition,
+		readonly type: Type,
+		expression: string
+	) {
 		super(context, 'number', expression);
 	}
+
+	isDynamic(): this is RepeatCountControlDynamicExpression {
+		return this.type === REPEAT_COUNT_CONTROL_TYPE.DYNAMIC;
+	}
+
+	isFixed(): this is RepeatCountControlFixedExpression {
+		return this.type === REPEAT_COUNT_CONTROL_TYPE.FIXED;
+	}
 }
+
+export type RepeatCountControlDynamicExpression =
+	RepeatCountControlExpression<RepeatCountControlDynamicType>;
+
+export type RepeatCountControlFixedExpression =
+	RepeatCountControlExpression<RepeatCountControlDynamicType>;

@@ -11,8 +11,10 @@ import type {
 } from '../../integration/xpath/adapter/XFormsXPathNode.ts';
 import { XFORMS_XPATH_NODE_RANGE_KIND } from '../../integration/xpath/adapter/XFormsXPathNode.ts';
 import type { EngineXPathEvaluator } from '../../integration/xpath/EngineXPathEvaluator.ts';
+import type { StaticElement } from '../../integration/xpath/static-dom/StaticElement.ts';
 import { createComputedExpression } from '../../lib/reactivity/createComputedExpression.ts';
 import type { ReactiveScope } from '../../lib/reactivity/scope.ts';
+import type { ModelDefinition } from '../../parse/model/ModelDefinition.ts';
 import type { AnyNodeDefinition } from '../../parse/model/NodeDefinition.ts';
 import type { AnyChildNode, AnyParentNode, RepeatRange } from '../hierarchy.ts';
 import type { EvaluationContext } from '../internal-api/EvaluationContext.ts';
@@ -100,6 +102,9 @@ export abstract class DescendantNode<
 
 	readonly isRequired: Accessor<boolean>;
 
+	// InstanceNode
+	readonly model: ModelDefinition;
+
 	// XFormsXPathPrimaryInstanceDescendantNode
 
 	/**
@@ -128,10 +133,13 @@ export abstract class DescendantNode<
 
 	constructor(
 		override readonly parent: Parent,
+		override readonly instanceNode: StaticElement,
 		override readonly definition: Definition,
 		options?: DescendantNodeOptions
 	) {
-		super(parent.instanceConfig, parent, definition, options);
+		super(parent.instanceConfig, parent, instanceNode, definition, options);
+
+		this.model = parent.model;
 
 		if (this.isRoot()) {
 			this.root = this;
@@ -142,7 +150,7 @@ export abstract class DescendantNode<
 		const { evaluator } = parent;
 
 		// See notes on property declaration
-		if (definition.type === 'repeat-range') {
+		if (definition.type === 'repeat') {
 			this[XPathNodeKindKey] = XFORMS_XPATH_NODE_RANGE_KIND;
 		} else {
 			this[XPathNodeKindKey] = 'element';
