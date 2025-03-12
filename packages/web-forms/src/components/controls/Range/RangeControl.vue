@@ -192,7 +192,7 @@ const orientation = props.node.appearances.vertical ? 'vertical' : 'horizontal';
 		// No clue why PrimeVue has a default `transform` style to shrink this!
 		transform: none;
 
-		z-index: 1;
+		z-index: var(--z-index-form-content);
 
 		&:focus-visible {
 			box-shadow:

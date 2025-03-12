@@ -49,6 +49,23 @@ It uses the [PrimeVue component library](https://primevue.org/).
 
 We are using a customized version of the Material Light Indigo theme provided by PrimeVue.
 
+#### Z-Index Layering System
+
+This package uses a centralized `z-index` layering system to manage UI stacking order, defined in `src/assets/css/z-index.css`. Custom properties (e.g., `--z-index-error-banner`) ensure elements like floating error messages, form controls, and overlays stack correctly without overlap.
+
+- **Key Layers**:
+
+  - `--z-index-base: 0` (background)
+  - `--z-index-form-content: 10` (inputs, buttons)
+  - `--z-index-form-floating: 20` (highlights, tooltips)
+  - `--z-index-error-banner: 30` (floating errors)
+  - `--z-index-overlay: 100` (modals)
+  - `--z-index-topmost: 1000` (loaders, notifications)
+
+- **Usage**: Apply with `z-index: var(--z-index-error-banner);` on positioned elements (e.g., `position: absolute`).
+
+See [src/assets/css/z-index.css](src/assets/css/z-index.css) for full details.
+
 ### Icons
 
 We use **Material Icons** using IcoMoon to select a subset of icons in order to minimize the size. The font files are located in [`./src/assets/fonts/`](./src/assets/fonts/), and the CSS is [`./src/assets/css/icomoon.css`](/src/assets/css/icomoon.css). Our IcoMoon definition is in the root directory of this package at [`./icomoon.json`](./icomoon.json).

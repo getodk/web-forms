@@ -38,7 +38,7 @@ const surveyLink = computed(() => {
 	right: 0;
 	bottom: 150px;
 	height: 4rem;
-	z-index: 99999;
+	z-index: var(--z-index-topmost);
 	border-top-left-radius: 5px;
 	border-top-right-radius: 5px;
 	text-align: center;

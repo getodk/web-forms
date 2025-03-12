@@ -269,7 +269,7 @@ watchEffect(() => {
 
 		.form-error-message.p-message.p-message-error {
 			position: fixed;
-			z-index: 100;
+			z-index: var(--z-index-error-banner);
 			border-radius: 10px;
 			background-color: var(--error-bg-color);
 			border: 1px solid var(--error-text-color);
