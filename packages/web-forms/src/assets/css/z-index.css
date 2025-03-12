@@ -1,0 +1,39 @@
+/**
+ * Z-Index Layering System
+ *
+ * This project uses a centralized z-index layering system to manage the stacking order of UI
+ * elements, preventing overlap issues and ensuring maintainability. CSS custom properties are
+ * defined with meaningful names and a logical sequence, making it easy to understand and adjust
+ * the stacking order.
+ *
+ * Purpose:
+ * - Avoid z-index conflicts by assigning predefined layers to UI components.
+ * - Provide clarity on stacking priorities for developers and maintainers.
+ * - Allow flexibility for future additions without restructuring existing values.
+ *
+ * Example:
+ * .error-banner-placeholder {
+ *   z-index: var(--z-index-error-banner);
+ *   position: absolute;
+ * }
+ */
+
+:root {
+	/* Base layer for static content (e.g., page content, form background) */
+	--z-index-base: 0;
+
+	/* Standard form controls (e.g., inputs, labels, buttons) */
+	--z-index-form-content: 10;
+
+	/* Floating form elements (e.g., validation highlights, tooltips) */
+	--z-index-form-floating: 20;
+
+	/* Floating error messages or banners above the form */
+	--z-index-error-banner: 30;
+
+	/* Overlays like modals, popups, or dialogs above form content */
+	--z-index-overlay: 100;
+
+	/* Critical UI elements (e.g., loading spinners, toast notifications) */
+	--z-index-topmost: 1000;
+}
