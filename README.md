@@ -423,3 +423,4 @@ If you'd like to try the functionality available on `main`, see the preview [on 
 1. Run `yarn changeset version` to generate changelog files and version bumps from the changeset files
 1. Verify that the changelogs look good, commit changes, open a PR, merge the PR
 1. Push tags for each package in the format `package@x.x.x`. A Github action will publish the packages on NPM
+1. Update dependencies to kick off the new release cycle. We do this so that dependency updates get verified implicitly during development.
