@@ -12,7 +12,7 @@
 
 - 0287a16: Fix: include namespace declarations in submission XML
 - a08e77b: Fix: include primary instance root attributes in submission XML
-- e6d01b0: - Partial support for `<range>` (basic horizontal and vertical sliders)
+- e6d01b0: Partial support for `<range>` (basic horizontal and vertical sliders)
   - **FIX** setting `<select1>` values with spaces
   - **BREAKING CHANGE** (`@getodk/xforms-engine`): `SelectNode`'s write methods have been replaced with more ergonomic alternatives
 
