@@ -54,8 +54,5 @@
     "solid-js": "^1.9.3",
     "vite": "^5.4.11",
     "vitest": "^2.1.8"
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }
