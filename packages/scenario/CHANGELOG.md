@@ -5,7 +5,7 @@
 ### Minor Changes
 
 - 81a57c3: Support for rank question types (`<odk:rank>`)
-- 99295eb: - Support for geopoint questions with no appearance
+- 99295eb: Support for geopoint questions with no appearance
   - Support for geopoint notes
 
 ### Patch Changes
