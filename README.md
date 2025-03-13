@@ -47,7 +47,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  #####  $\texttt{Question types (basic functionality)\hspace{5mm}\color{green}████\color{LightGray}███████████ \color{initial} 29\\%}$
+  #####  $\texttt{Question types (basic functionality)\hspace{5mm}\color{green}████\color{LightGray}███████████ \color{initial} 32\\%}$
 
   </summary>
   <br/>
@@ -63,11 +63,11 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | select\_\*\_from_file      |    ✅    |
 | repeat                     |    ✅    |
 | group                      |    ✅    |
-| geopoint                   |          |
+| geopoint                   |    🚧    |
 | geotrace                   |          |
 | geoshape                   |          |
 | start-geopoint             |          |
-| range                      |          |
+| range                      |    🚧    |
 | image                      |          |
 | barcode                    |          |
 | audio                      |          |
@@ -77,7 +77,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | date                       |          |
 | time                       |          |
 | datetime                   |          |
-| rank                       |          |
+| rank                       |    ✅    |
 | csv-external               |    ✅    |
 | acknowledge                |    🚧    |
 | start                      |          |
@@ -151,7 +151,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  #####  $\texttt{Parameters\hspace{43mm}\color{green}███\color{LightGray}████████████ \color{initial} 22\\%}$
+  #####  $\texttt{Parameters\hspace{43mm}\color{green}██████\color{LightGray}█████████ \color{initial} 44\\%}$
 
   </summary>
   <br/>
@@ -162,8 +162,8 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | seed                                                                                                                             |    ✅    |
 | value                                                                                                                            |          |
 | label                                                                                                                            |          |
-| geopoint capture-accuracy, warning-accur<br/>acy, allow-mock-accuracy                                                            |          |
-| range start, end, step                                                                                                           |          |
+| geopoint capture-accuracy, warning-accur<br/>acy, allow-mock-accuracy                                                            |    ✅    |
+| range start, end, step                                                                                                           |    ✅    |
 | image max-pixels                                                                                                                 |          |
 | audio quality                                                                                                                    |          |
 | Audit: location-priority, location-min-i<br/>nterval, location-max-age, track-changes<br/>, track-changes-reasons, identify-user |          |
@@ -228,7 +228,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  #####  $\texttt{Theme and Layouts\hspace{30mm}\color{green}█\color{LightGray}██████████████ \color{initial} 9\\%}$
+  #####  $\texttt{Theme and Layouts\hspace{30mm}\color{green}██\color{LightGray}█████████████ \color{initial} 18\\%}$
 
   </summary>
   <br/>
@@ -242,7 +242,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | theme color                |          |
 | Submissions                |          |
 | preview                    |    ✅    |
-| send                       |          |
+| send                       |    ✅    |
 | view                       |          |
 | edit                       |          |
 | attachments                |          |
