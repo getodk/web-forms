@@ -1,4 +1,5 @@
 import type { ValueType } from '../../client/ValueType.ts';
+import type { StaticLeafElement } from '../../integration/xpath/static-dom/StaticElement.ts';
 import {
 	NamespaceDeclarationMap,
 	type NamedSubtreeDefinition,
@@ -19,14 +20,12 @@ export class LeafNodeDefinition<V extends ValueType = ValueType>
 	readonly namespaceDeclarations: NamespaceDeclarationMap;
 	readonly qualifiedName: QualifiedName;
 	readonly children = null;
-	readonly instances = null;
-	readonly defaultValue: string;
 
 	constructor(
 		parent: ParentNodeDefinition,
 		bind: BindDefinition,
 		bodyElement: AnyBodyElementDefinition | null,
-		readonly node: Element
+		readonly template: StaticLeafElement
 	) {
 		if (bodyElement != null && bodyElement.category !== 'control') {
 			throw new Error(`Unexpected body element for nodeset ${bind.nodeset}`);
@@ -35,9 +34,8 @@ export class LeafNodeDefinition<V extends ValueType = ValueType>
 		super(parent, bind, bodyElement);
 
 		this.valueType = bind.type.resolved satisfies ValueType as V;
-		this.qualifiedName = new QualifiedName(node);
+		this.qualifiedName = template.qualifiedName;
 		this.namespaceDeclarations = new NamespaceDeclarationMap(this);
-		this.defaultValue = node.textContent ?? '';
 	}
 
 	toJSON() {

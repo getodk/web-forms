@@ -1,6 +1,6 @@
+import type { CreatedFormInstance } from '../client/form/CreateFormInstance.ts';
 import type { FormInstanceConfig } from '../client/form/FormInstanceConfig.ts';
 import type { LoadFormOptions } from '../client/form/LoadForm.ts';
-import type { CreatedFormInstance } from '../client/index.ts';
 import type { FormResource } from '../instance/resource.ts';
 import { loadForm } from './loadForm.ts';
 

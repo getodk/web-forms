@@ -1,6 +1,7 @@
 import { XPathNodeKindKey } from '@getodk/xpath';
 import type { Accessor } from 'solid-js';
 import { createSignal } from 'solid-js';
+import type { FormInstanceInitializationMode } from '../client/form/FormInstance.ts';
 import type { ActiveLanguage, FormLanguage, FormLanguages } from '../client/FormLanguage.ts';
 import type { FormNodeID } from '../client/identity.ts';
 import type { RootNode } from '../client/RootNode.ts';
@@ -13,6 +14,7 @@ import type { InstanceState } from '../client/serialization/InstanceState.ts';
 import type { AncestorNodeValidationState } from '../client/validation.ts';
 import type { XFormsXPathDocument } from '../integration/xpath/adapter/XFormsXPathNode.ts';
 import { EngineXPathEvaluator } from '../integration/xpath/EngineXPathEvaluator.ts';
+import type { StaticDocument } from '../integration/xpath/static-dom/StaticDocument.ts';
 import { createPrimaryInstanceState } from '../lib/client-reactivity/instance-state/createPrimaryInstanceState.ts';
 import { prepareInstancePayload } from '../lib/client-reactivity/instance-state/prepareInstancePayload.ts';
 import { createChildrenState } from '../lib/reactivity/createChildrenState.ts';
@@ -30,6 +32,7 @@ import type { ModelDefinition } from '../parse/model/ModelDefinition.ts';
 import type { RootDefinition } from '../parse/model/RootDefinition.ts';
 import type { SecondaryInstancesDefinition } from '../parse/model/SecondaryInstance/SecondaryInstancesDefinition.ts';
 import { InstanceNode } from './abstract/InstanceNode.ts';
+import type { InitialInstanceState } from './input/InitialInstanceState.ts';
 import type { EvaluationContext } from './internal-api/EvaluationContext.ts';
 import type { InstanceConfig } from './internal-api/InstanceConfig.ts';
 import type { PrimaryInstanceDocument } from './internal-api/PrimaryInstanceDocument.ts';
@@ -74,14 +77,33 @@ interface PrimaryInstanceStateSpec {
 	readonly activeLanguage: Accessor<ActiveLanguage>;
 }
 
-export interface PrimaryInstanceOptions {
+interface PrimaryInstanceStateInputByMode {
+	readonly create: null;
+	readonly restore: InitialInstanceState;
+}
+
+export type PrimaryInstanceInitialState<Mode extends FormInstanceInitializationMode> =
+	PrimaryInstanceStateInputByMode[Mode];
+
+export interface BasePrimaryInstanceOptions {
 	readonly scope: ReactiveScope;
 	readonly model: ModelDefinition;
 	readonly secondaryInstances: SecondaryInstancesDefinition;
+}
+
+export interface ModelessPrimaryInstanceOptions extends BasePrimaryInstanceOptions {
 	readonly config: InstanceConfig;
 }
 
-export class PrimaryInstance
+export interface PrimaryInstanceOptions<Mode extends FormInstanceInitializationMode>
+	extends ModelessPrimaryInstanceOptions {
+	readonly mode: Mode;
+	readonly initialState: PrimaryInstanceInitialState<Mode>;
+}
+
+export class PrimaryInstance<
+		Mode extends FormInstanceInitializationMode = FormInstanceInitializationMode,
+	>
 	extends InstanceNode<RootDefinition, PrimaryInstanceStateSpec, null, Root>
 	implements
 		PrimaryInstanceDocument,
@@ -90,11 +112,19 @@ export class PrimaryInstance
 		EvaluationContext,
 		ClientReactiveSerializableInstance
 {
+	/**
+	 * @todo this will be populated as we introduce other initialization modes!
+	 */
+	readonly initializationMode: FormInstanceInitializationMode = 'create';
+
+	readonly model: ModelDefinition;
+
 	// InstanceNode
 	protected readonly state: SharedNodeState<PrimaryInstanceStateSpec>;
 	protected readonly engineState: EngineState<PrimaryInstanceStateSpec>;
-	readonly getChildren: Accessor<readonly Root[]>;
 
+	override readonly instanceNode: StaticDocument;
+	readonly getChildren: Accessor<readonly Root[]>;
 	readonly hasReadonlyAncestor = () => false;
 	readonly isReadonly = () => false;
 	readonly hasNonRelevantAncestor = () => false;
@@ -125,14 +155,20 @@ export class PrimaryInstance
 	readonly evaluator: EngineXPathEvaluator;
 	override readonly contextNode = this;
 
-	constructor(options: PrimaryInstanceOptions) {
-		const { scope, model, secondaryInstances, config } = options;
-		const { root: definition } = model;
+	constructor(options: PrimaryInstanceOptions<Mode>) {
+		const { mode, initialState, scope, model, secondaryInstances, config } = options;
+		const { instance: modelInstance } = model;
+		const activeInstance = initialState?.document ?? modelInstance;
+		const definition = model.getRootDefinition(activeInstance);
 
-		super(config, null, definition, {
+		super(config, null, activeInstance, definition, {
 			scope,
 			computeReference: () => PRIMARY_INSTANCE_REFERENCE,
 		});
+
+		this.initializationMode = mode;
+		this.model = model;
+		this.instanceNode = activeInstance;
 
 		const [isAttached, setIsAttached] = createSignal(false);
 
