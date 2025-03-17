@@ -123,7 +123,7 @@ const init = async () => {
 		missingResourceBehavior,
 	});
 
-	if (formResult.status === 'failure') {
+	if (formResult.status === 'failuer') {
 		initializeFormError.value = FormInitializationError.fromError(formResult.error);
 
 		return;
