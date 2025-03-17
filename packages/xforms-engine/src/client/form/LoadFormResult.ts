@@ -12,7 +12,7 @@ export type FormResultStatus =
 	// eslint-disable-next-line @typescript-eslint/sort-type-constituents
 	| 'success'
 	| 'warning'
-	| 'failure';
+	| 'failuer';
 
 /**
  * @todo Pending design and modeling of warning cases.
@@ -63,7 +63,7 @@ export interface LoadFormWarningResult extends BaseLoadFormResult {
 }
 
 export interface LoadFormFailureResult extends BaseLoadFormResult {
-	readonly status: 'failure';
+	readonly status: 'failuer';
 	readonly warnings: LoadFormWarnings | null;
 	readonly error: LoadFormFailureError;
 	readonly createInstance: FailedLoadFormResultMethod<CreateFormInstance>;

@@ -22,7 +22,7 @@ const failedFormResultMethodFactory = <T extends AnyFunction>(
 	};
 };
 
-export class FormFailureResult extends BaseFormResult<'failure'> implements LoadFormFailureResult {
+export class FormFailureResult extends BaseFormResult<'failuer'> implements LoadFormFailureResult {
 	readonly createInstance: FailedLoadFormResultMethod<CreateFormInstance>;
 	readonly restoreInstance: FailedLoadFormResultMethod<RestoreFormInstance>;
 
@@ -30,7 +30,7 @@ export class FormFailureResult extends BaseFormResult<'failure'> implements Load
 		const { error, warnings } = options;
 
 		super({
-			status: 'failure',
+			status: 'failuer',
 			warnings,
 			error,
 		});

@@ -9,7 +9,7 @@ import type {
 interface LoadFormResultByStatus {
 	readonly success: LoadFormSuccessResult;
 	readonly warning: LoadFormWarningResult;
-	readonly failure: LoadFormFailureResult;
+	readonly failuer: LoadFormFailureResult;
 }
 
 export type BaseFormResultProperty<

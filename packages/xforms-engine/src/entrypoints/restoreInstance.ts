@@ -19,7 +19,7 @@ export const restoreInstance = async (
 ): Promise<RestoredFormInstance> => {
 	const form = await loadForm(formResource, options?.form);
 
-	if (form.status === 'failure') {
+	if (form.status === 'failuer') {
 		throw form.error;
 	}
 

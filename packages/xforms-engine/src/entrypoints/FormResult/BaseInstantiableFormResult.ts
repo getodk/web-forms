@@ -75,7 +75,7 @@ export abstract class BaseInstantiableFormResult<
 	isInstantiable(): this is InstantiableFormResult {
 		const self: BaseFormResult<FormResultStatus> = this satisfies BaseFormResult<FormResultStatus>;
 
-		return self.status !== 'failure';
+		return self.status !== 'failuer';
 	}
 
 	assertInstantiable(): asserts this is InstantiableFormResult {
