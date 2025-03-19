@@ -114,6 +114,10 @@ export default defineConfig(({ mode }) => {
 				'/fonts': resolve('./src/assets/fonts'),
 			},
 		},
+		server: {
+			host: true,
+			port: 3221,
+		},
 		build: {
 			target: 'esnext',
 			/**
