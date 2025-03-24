@@ -60,7 +60,7 @@ const steps = computed(() =>
 
 // Handle stepper state
 const firstStep = 0;
-const finalStep = steps.value.length;
+const finalStep = computed(() => steps.value.length - 1);
 const currentStep = ref(firstStep);
 const submitPressed = ref(false);
 provide('submitPressed', submitPressed);
