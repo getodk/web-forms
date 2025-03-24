@@ -16,12 +16,21 @@ import { FormInitializationError } from '../lib/error/FormInitializationError.ts
 import FormLoadFailureDialog from './Form/FormLoadFailureDialog.vue';
 import FormHeader from './FormHeader.vue';
 import QuestionList from './QuestionList.vue';
+import QuestionStepper from './QuestionStepper.vue';
 
 const webFormsVersion = __WEB_FORMS_VERSION__;
 
 interface OdkWebFormsProps {
 	formXml: string;
 	fetchFormAttachment: FetchFormAttachment;
+
+	/**
+	 * Note: by default all questions will be displayed in a single list,
+	 * with collapsable groups. This param changes to a stepper layout
+	 * closer to Collect.
+	 */
+	stepperLayout?: boolean;
+
 	missingResourceBehavior?: MissingResourceBehavior;
 
 	/**
@@ -31,7 +40,9 @@ interface OdkWebFormsProps {
 	submissionMaxSize?: number;
 }
 
-const props = defineProps<OdkWebFormsProps>();
+const props = withDefaults(defineProps<OdkWebFormsProps>(), {
+	stepperLayout: false,
+});
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions -- evidently a type must be used for this to be assigned to a name (which we use!); as an interface, it won't satisfy the `Record` constraint of `defineEmits`.
 type OdkWebFormEmits = {
@@ -107,6 +118,7 @@ const emit = defineEmits<OdkWebFormEmits>();
 
 const odkForm = ref<RootNode>();
 const submitPressed = ref(false);
+const showSendButton = ref(props.stepperLayout ? false : true);
 const initializeFormError = ref<FormInitializationError | null>();
 
 const init = async () => {
@@ -210,19 +222,21 @@ watchEffect(() => {
 				<template #content>
 					<div class="form-questions">
 						<div class="flex flex-column gap-2">
-							<QuestionList :nodes="odkForm.currentState.children" />
+							<QuestionList v-if="!stepperLayout" :nodes="odkForm.currentState.children" />
+							<!-- Note that QuestionStepper has the 'Send' button integrated instead of using the button below -->
+							<QuestionStepper v-if="stepperLayout" :nodes="odkForm.currentState.children" @sendFormFromStepper="handleSubmit()" />
 						</div>
 					</div>
 				</template>
 			</Card>
 
-			<div class="footer flex justify-content-end flex-wrap gap-3">
+			<div v-if="showSendButton" class="footer flex justify-content-end flex-wrap gap-3">
 				<!-- maybe current state is in odkForm.state.something -->
 				<Button label="Send" rounded @click="handleSubmit()" />
 			</div>
 		</div>
 
-		<div class="powered-by-wrapper">
+		<div v-if="showSendButton" class="powered-by-wrapper">
 			<a class="anchor" href="https://getodk.org" target="_blank">
 				<span class="caption">Powered by</span>
 				<img
