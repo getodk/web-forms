@@ -43,13 +43,19 @@ const values = computed<string[]>({
 			return currentValues.slice();
 		}
 
-		return props.question.currentState.valueOptions.map((option) => option.value);
+		return getRankItems();
 	},
 	set: (orderedValues) => {
 		touched.value = true;
 		props.question.setValues(orderedValues);
 	},
 });
+
+const getRankItems = () => props.question.currentState.valueOptions.map((option) => option.value);
+
+const selectDefaultOrder = () => {
+	values.value = getRankItems();
+};
 
 const setHighlight = (index: number | null) => {
 	highlight.index.value = index;
@@ -111,6 +117,16 @@ const swapItems = (index: number, newPosition: number) => {
 		class="rank-control"
 		:class="{ 'disabled': disabled }"
 	>
+		<div v-if="!touched" class="rank-overlay">
+			<button :disabled="disabled" @click="selectDefaultOrder">
+				<svg xmlns="http://www.w3.org/2000/svg" width="8" height="15" viewBox="0 0 8 15" fill="none">
+					<path d="M3.91263 2.57495L5.96263 4.52245C6.28763 4.8312 6.81263 4.8312 7.13763 4.52245C7.46263 4.2137 7.46263 3.71495 7.13763 3.4062L4.49596 0.888697C4.17096 0.579948 3.64596 0.579948 3.32096 0.888697L0.679297 3.4062C0.354297 3.71495 0.354297 4.2137 0.679297 4.52245C1.0043 4.8312 1.5293 4.8312 1.8543 4.52245L3.91263 2.57495ZM3.91263 12.3441L1.86263 10.3966C1.53763 10.0879 1.01263 10.0879 0.68763 10.3966C0.36263 10.7054 0.36263 11.2041 0.68763 11.5129L3.3293 14.0304C3.6543 14.3391 4.1793 14.3391 4.5043 14.0304L7.14596 11.5208C7.47096 11.212 7.47096 10.7133 7.14596 10.4045C6.82096 10.0958 6.29596 10.0958 5.97096 10.4045L3.91263 12.3441Z" fill="#323232"/>
+				</svg>
+				<!-- TODO: translations -->
+				<span>Rank items</span>
+			</button>
+		</div>
+
 		<div
 			v-for="(value, index) in values"
 			:id="value"
@@ -170,12 +186,15 @@ const swapItems = (index: number, newPosition: number) => {
 	--rankBorderRadius: 10px;
 	--rankHighlightBackground: var(--primary-50);
 	--rankHighlightBorder: var(--primary-500);
+	--rankBaseBackground: var(--surface-0);
+	--rankDisabledBackground: var(--surface-300);
+	--rankDisabledText: var(--surface-500);
 }
 
 // Overriding VueDraggable's sortable-chosen class
 .sortable-chosen {
 	opacity: 0.9;
-	background-color: var(--surface-0);
+	background-color: var(--rankBaseBackground);
 }
 
 .rank-control {
@@ -184,6 +203,7 @@ const swapItems = (index: number, newPosition: number) => {
 	flex-wrap: nowrap;
 	align-items: flex-start;
 	gap: var(--rankSpacing);
+	position: relative;
 }
 
 .rank-option {
@@ -193,6 +213,7 @@ const swapItems = (index: number, newPosition: number) => {
 	justify-content: space-between;
 	width: 100%;
 	padding: 8px;
+	background: var(--rankBaseBackground);
 	border: var(--rankBorder);
 	border-radius: var(--rankBorderRadius);
 	font-size: 1rem;
@@ -217,28 +238,29 @@ const swapItems = (index: number, newPosition: number) => {
 	opacity: 0.5;
 }
 
-.rank-buttons {
+.rank-overlay button,
+.rank-buttons button {
 	display: flex;
+	align-items: center;
 	gap: var(--rankSpacing);
+	border: var(--rankBorder);
+	border-radius: var(--rankBorderRadius);
+	background: var(--rankBaseBackground);
+	padding: var(--rankSpacing);
+	line-height: 0;
 
-	button {
-		border: var(--rankBorder);
-		border-radius: var(--rankBorderRadius);
-		background: var(--surface-0);
-		padding: var(--rankSpacing);
-		line-height: 0;
-	}
-
-	button:hover:not(:disabled) {
+	&:hover:not(:disabled) {
 		background: var(--rankHighlightBackground);
 		border: 1px solid var(--rankHighlightBorder);
 	}
 
-	button:disabled {
-		background: var(--surface-100);
+	&:disabled {
+		background: var(--rankDisabledBackground);
+		color: var(--rankDisabledText);
 		border: none;
+
 		svg path {
-			fill: var(--surface-300);
+			fill: var(--rankDisabledText);
 		}
 	}
 }
@@ -246,6 +268,26 @@ const swapItems = (index: number, newPosition: number) => {
 .disabled .rank-option,
 .disabled button {
 	cursor: not-allowed;
+}
+
+.rank-overlay {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: rgba(244, 243, 242, 0.9);
+	border-radius: var(--rankBorderRadius);
+
+	button {
+		padding: var(--rankSpacing) 20px;
+	}
+}
+
+.rank-buttons {
+	display: flex;
+	gap: var(--rankSpacing);
 }
 
 @media screen and (max-width: #{$sm}) {
