@@ -107,16 +107,7 @@ const swapItems = (index: number, newPosition: number) => {
 <template>
 	<ControlText :question="question" />
 
-	<VueDraggable
-		:id="question.nodeId"
-		v-model="values"
-		:delay="HOLD_DELAY"
-		:delay-on-touch-only="true"
-		:disabled="disabled"
-		ghost-class="fade-moving"
-		class="rank-control"
-		:class="{ 'disabled': disabled }"
-	>
+	<div class="range-control-container">
 		<div v-if="!touched" class="rank-overlay">
 			<button :disabled="disabled" @click="selectDefaultOrder">
 				<svg xmlns="http://www.w3.org/2000/svg" width="8" height="15" viewBox="0 0 8 15" fill="none">
@@ -127,48 +118,59 @@ const swapItems = (index: number, newPosition: number) => {
 			</button>
 		</div>
 
-		<div
-			v-for="(value, index) in values"
-			:id="value"
-			:key="value"
-			class="rank-option"
-			:class="{ 'moving': highlight.index.value === index }"
-			tabindex="0"
-			@keydown.up.prevent="moveUp(index)"
-			@keydown.down.prevent="moveDown(index)"
+		<VueDraggable
+			:id="question.nodeId"
+			v-model="values"
+			:delay="HOLD_DELAY"
+			:delay-on-touch-only="true"
+			:disabled="disabled"
+			ghost-class="fade-moving"
+			class="rank-control"
+			:class="{ disabled: disabled }"
 		>
-			<div class="rank-label">
-				<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 768 768">
-					<path d="M480 511.5q25.5 0 45 19.5t19.5 45-19.5 45-45 19.5-45-19.5-19.5-45 19.5-45 45-19.5zM480 319.5q25.5 0 45 19.5t19.5 45-19.5 45-45 19.5-45-19.5-19.5-45 19.5-45 45-19.5zM480 256.5q-25.5 0-45-19.5t-19.5-45 19.5-45 45-19.5 45 19.5 19.5 45-19.5 45-45 19.5zM288 127.5q25.5 0 45 19.5t19.5 45-19.5 45-45 19.5-45-19.5-19.5-45 19.5-45 45-19.5zM288 319.5q25.5 0 45 19.5t19.5 45-19.5 45-45 19.5-45-19.5-19.5-45 19.5-45 45-19.5zM352.5 576q0 25.5-19.5 45t-45 19.5-45-19.5-19.5-45 19.5-45 45-19.5 45 19.5 19.5 45z" />
-				</svg>
-				<span>{{ props.question.getValueLabel(value)?.asString }}</span>
-			</div>
-
-			<div class="rank-buttons">
-				<button
-					v-if="values.length > 1"
-					:disabled="disabled || (index === 0)"
-					@click="moveUp(index)"
-					@mousedown="setHighlight(index)"
-				>
-					<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 768 768">
-						<path d="M384 256.5l192 192-45 45-147-147-147 147-45-45z" />
+			<div
+				v-for="(value, index) in values"
+				:id="value"
+				:key="value"
+				class="rank-option"
+				:class="{ moving: highlight.index.value === index }"
+				tabindex="0"
+				@keydown.up.prevent="moveUp(index)"
+				@keydown.down.prevent="moveDown(index)"
+			>
+				<div class="rank-label">
+					<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 768 768">
+						<path d="M480 511.5q25.5 0 45 19.5t19.5 45-19.5 45-45 19.5-45-19.5-19.5-45 19.5-45 45-19.5zM480 319.5q25.5 0 45 19.5t19.5 45-19.5 45-45 19.5-45-19.5-19.5-45 19.5-45 45-19.5zM480 256.5q-25.5 0-45-19.5t-19.5-45 19.5-45 45-19.5 45 19.5 19.5 45-19.5 45-45 19.5zM288 127.5q25.5 0 45 19.5t19.5 45-19.5 45-45 19.5-45-19.5-19.5-45 19.5-45 45-19.5zM288 319.5q25.5 0 45 19.5t19.5 45-19.5 45-45 19.5-45-19.5-19.5-45 19.5-45 45-19.5zM352.5 576q0 25.5-19.5 45t-45 19.5-45-19.5-19.5-45 19.5-45 45-19.5 45 19.5 19.5 45z" />
 					</svg>
-				</button>
+					<span>{{ props.question.getValueLabel(value)?.asString }}</span>
+				</div>
 
-				<button
-					v-if="values.length > 1"
-					:disabled="disabled || (index === values.length - 1)"
-					@click="moveDown(index)"
-					@mousedown="setHighlight(index)"
-				>
-					<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 768 768">
-						<path d="M531 274.5l45 45-192 192-192-192 45-45 147 147z" />
-					</svg>
-				</button>
+				<div class="rank-buttons">
+					<button
+						v-if="values.length > 1"
+						:disabled="disabled || index === 0"
+						@click="moveUp(index)"
+						@mousedown="setHighlight(index)"
+					>
+						<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 768 768">
+							<path d="M384 256.5l192 192-45 45-147-147-147 147-45-45z" />
+						</svg>
+					</button>
+
+					<button
+						v-if="values.length > 1"
+						:disabled="disabled || index === values.length - 1"
+						@click="moveDown(index)"
+						@mousedown="setHighlight(index)"
+					>
+						<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 768 768">
+							<path d="M531 274.5l45 45-192 192-192-192 45-45 147 147z" />
+						</svg>
+					</button>
+				</div>
 			</div>
-		</div>
-	</VueDraggable>
+		</VueDraggable>
+	</div>
 
 	<ValidationMessage
 		:message="question.validationState.violation?.message.asString"
@@ -180,7 +182,7 @@ const swapItems = (index: number, newPosition: number) => {
 @import 'primeflex/core/_variables.scss';
 
 // Variable definition to root element
-.rank-control {
+.range-control-container {
 	--rankSpacing: 7px;
 	--rankBorder: 1px solid var(--surface-300);
 	--rankBorderRadius: 10px;
@@ -197,13 +199,16 @@ const swapItems = (index: number, newPosition: number) => {
 	background-color: var(--rankBaseBackground);
 }
 
+.range-control-container {
+	position: relative;
+}
+
 .rank-control {
 	display: flex;
 	flex-direction: column;
 	flex-wrap: nowrap;
 	align-items: flex-start;
 	gap: var(--rankSpacing);
-	position: relative;
 }
 
 .rank-option {
@@ -225,6 +230,10 @@ const swapItems = (index: number, newPosition: number) => {
 		display: flex;
 		align-items: center;
 		gap: var(--rankSpacing);
+	}
+
+	.rank-label svg {
+		flex-shrink: 0;
 	}
 }
 
@@ -270,6 +279,11 @@ const swapItems = (index: number, newPosition: number) => {
 	cursor: not-allowed;
 }
 
+.rank-buttons {
+	display: flex;
+	gap: var(--rankSpacing);
+}
+
 .rank-overlay {
 	position: absolute;
 	width: 100%;
@@ -285,9 +299,8 @@ const swapItems = (index: number, newPosition: number) => {
 	}
 }
 
-.rank-buttons {
-	display: flex;
-	gap: var(--rankSpacing);
+.highlight .rank-overlay {
+	background-color: rgba(157, 157, 157, 0.9);
 }
 
 @media screen and (max-width: #{$sm}) {
