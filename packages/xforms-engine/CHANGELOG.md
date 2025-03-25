@@ -14,7 +14,7 @@
 - 50e944d: **BREAKING CHANGE** The main engine entrypoint (formerly `initializeForm`) has been split into:
   - `loadForm`, producing an intermediate result from which many instances of the same form can be created (with a `createInstance` method on that result)
   - `createInstance`, a convenience wrapper composing the result from `loadForm` and its `createInstance` method to create a single instance; this entrypoint effectively restores the behavior of `initializeForm`
-  Some interfaces related to the former `initializeForm` have also been refined to reflect this change.
+    Some interfaces related to the former `initializeForm` have also been refined to reflect this change.
 - 87523b7: Partial support for editing submitted instances:
   - Introduce `editInstance` entrypoints, intended for editing previously submitted instance state
   - Implement resource resolution for `editInstance` entrypoints, intended for supporting I/O-bound submission edit workflows
