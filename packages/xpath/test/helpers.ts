@@ -21,8 +21,6 @@ declare global {
 	 */
 	// eslint-disable-next-line no-var
 	var TZ: string | undefined;
-	// eslint-disable-next-line no-var
-	var LOCALE_ID: string | undefined;
 	/**
 	 * The locale string defining the language and regional formatting for tests.
 	 * This follows the BCP 47 language tag format (e.g., 'en-US'). It ensures consistent formatting
@@ -30,6 +28,8 @@ declare global {
 	 *
 	 * @example 'en-US' // American English
 	 */
+	// eslint-disable-next-line no-var
+	var LOCALE_ID: string | undefined;
 	// eslint-disable-next-line no-var
 	var IMPLEMENTATION: string | undefined;
 }
