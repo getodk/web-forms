@@ -2,7 +2,7 @@
 
 With ODK Web Forms, you can define forms with powerful logic using the spreadsheet-based [XLSForm standard](https://docs.getodk.org/xlsform/). Use [our Vue-based frontend](/packages/web-forms/) or build your own user experience around [the engine](/packages/xforms-engine/)!
 
-You can try a preview [on the ODK website](https://getodk.org/web-forms-preview/).
+You can try a preview [on the ODK website](https://getodk.org/web-forms-preview/). This gets updated nightly to reflect `main`.
 
 > [!IMPORTANT]
 > ODK Web Forms is currently pre-release. We don't yet guarantee that its interfaces are stable and it is missing many features that are available in XLSForm form definitions.
@@ -19,7 +19,7 @@ https://github.com/getodk/web-forms/assets/447837/9b25e1bc-d209-462c-8e9e-3259bd
 - [xpath](/packages/xpath): XPath evaluator with ODK XForms extensions
 - [scenario](/packages/scenario): engine client used to express tests on forms
 
-We use [Volta](https://volta.sh/) to ensure consistent `node` and `yarn` versions.
+We use [Volta](https://volta.sh/) to ensure consistent `node` and `yarn` versions. Published packages are available [on NPM](https://www.npmjs.com/search?q=getodk).
 
 Run the preview with `yarn workspace @getodk/web-forms dev`.
 
@@ -47,7 +47,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  #####  $\texttt{Question types (basic functionality)\hspace{5mm}\color{green}████\color{LightGray}███████████ \color{initial} 29\\%}$
+  #####  $\texttt{Question types (basic functionality)\hspace{5mm}\color{green}████\color{LightGray}███████████ \color{initial} 32\\%}$
 
   </summary>
   <br/>
@@ -63,11 +63,11 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | select\_\*\_from_file      |    ✅    |
 | repeat                     |    ✅    |
 | group                      |    ✅    |
-| geopoint                   |          |
+| geopoint                   |    🚧    |
 | geotrace                   |          |
 | geoshape                   |          |
 | start-geopoint             |          |
-| range                      |          |
+| range                      |    🚧    |
 | image                      |          |
 | barcode                    |          |
 | audio                      |          |
@@ -77,7 +77,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | date                       |          |
 | time                       |          |
 | datetime                   |          |
-| rank                       |          |
+| rank                       |    ✅    |
 | csv-external               |    ✅    |
 | acknowledge                |    🚧    |
 | start                      |          |
@@ -151,7 +151,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  #####  $\texttt{Parameters\hspace{43mm}\color{green}███\color{LightGray}████████████ \color{initial} 22\\%}$
+  #####  $\texttt{Parameters\hspace{43mm}\color{green}██████\color{LightGray}█████████ \color{initial} 44\\%}$
 
   </summary>
   <br/>
@@ -162,8 +162,8 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | seed                                                                                                                             |    ✅    |
 | value                                                                                                                            |          |
 | label                                                                                                                            |          |
-| geopoint capture-accuracy, warning-accur<br/>acy, allow-mock-accuracy                                                            |          |
-| range start, end, step                                                                                                           |          |
+| geopoint capture-accuracy, warning-accur<br/>acy, allow-mock-accuracy                                                            |    ✅    |
+| range start, end, step                                                                                                           |    ✅    |
 | image max-pixels                                                                                                                 |          |
 | audio quality                                                                                                                    |          |
 | Audit: location-priority, location-min-i<br/>nterval, location-max-age, track-changes<br/>, track-changes-reasons, identify-user |          |
@@ -228,7 +228,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  #####  $\texttt{Theme and Layouts\hspace{30mm}\color{green}█\color{LightGray}██████████████ \color{initial} 9\\%}$
+  #####  $\texttt{Theme and Layouts\hspace{30mm}\color{green}██\color{LightGray}█████████████ \color{initial} 18\\%}$
 
   </summary>
   <br/>
@@ -242,7 +242,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | theme color                |          |
 | Submissions                |          |
 | preview                    |    ✅    |
-| send                       |          |
+| send                       |    ✅    |
 | view                       |          |
 | edit                       |          |
 | attachments                |          |
@@ -413,3 +413,14 @@ We will be adding color and more styling soon. We intend to expose a way to do b
 
 - [Orbeon forms](https://www.orbeon.com/) is a web form system that uses the W3C XForms standard.
 - [Fore](https://github.com/Jinntec/Fore) is an XForms-inspired framework for defining frontend applications.
+
+## Releases
+
+If you'd like to try the functionality available on `main`, see the preview [on the ODK website](https://getodk.org/web-forms-preview/) which is updated daily. We try to release frequently and if there's functionality on `main` that you need but isn't released yet, please file an issue to request a release!
+
+### Release process
+
+1. Run `yarn changeset version` to generate changelog files and version bumps from the changeset files
+1. Verify that the changelogs look good, commit changes, open a PR, merge the PR
+1. Push tags for each package in the format `package@x.x.x`. A Github action will publish the packages on NPM
+1. Update dependencies to kick off the new release cycle. We do this so that dependency updates get verified implicitly during development.

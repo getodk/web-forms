@@ -5,6 +5,7 @@ import type { TriggerNode, TriggerNodeDefinition } from '../client/TriggerNode.t
 import type { ValueType } from '../client/ValueType.ts';
 import { ErrorProductionDesignPendingError } from '../error/ErrorProductionDesignPendingError.ts';
 import type { XFormsXPathElement } from '../integration/xpath/adapter/XFormsXPathNode.ts';
+import type { StaticLeafElement } from '../integration/xpath/static-dom/StaticElement.ts';
 import type { TriggerInputValue, TriggerRuntimeValue } from '../lib/codecs/TriggerCodec.ts';
 import { TriggerCodec } from '../lib/codecs/TriggerCodec.ts';
 import type { CurrentState } from '../lib/reactivity/node-state/createCurrentState.ts';
@@ -19,7 +20,7 @@ import { ValueNode, type ValueNodeStateSpec } from './abstract/ValueNode.ts';
 import type { GeneralParentNode } from './hierarchy.ts';
 import type { EvaluationContext } from './internal-api/EvaluationContext.ts';
 import type { ValidationContext } from './internal-api/ValidationContext.ts';
-import type { ClientReactiveSubmittableValueNode } from './internal-api/submission/ClientReactiveSubmittableValueNode.ts';
+import type { ClientReactiveSerializableValueNode } from './internal-api/serialization/ClientReactiveSerializableValueNode.ts';
 
 interface TriggerControlStateSpec extends ValueNodeStateSpec<TriggerRuntimeValue> {
 	readonly label: Accessor<TextRange<'label'> | null>;
@@ -45,17 +46,25 @@ export class TriggerControl
 		XFormsXPathElement,
 		EvaluationContext,
 		ValidationContext,
-		ClientReactiveSubmittableValueNode
+		ClientReactiveSerializableValueNode
 {
-	static from(parent: GeneralParentNode, definition: TriggerNodeDefinition): TriggerControl;
-	static from(parent: GeneralParentNode, definition: AnyTriggerNodeDefinition): TriggerControl {
+	static from(
+		parent: GeneralParentNode,
+		instanceNode: StaticLeafElement | null,
+		definition: TriggerNodeDefinition
+	): TriggerControl;
+	static from(
+		parent: GeneralParentNode,
+		instanceNode: StaticLeafElement | null,
+		definition: AnyTriggerNodeDefinition
+	): TriggerControl {
 		if (definition.valueType !== 'string') {
 			throw new ErrorProductionDesignPendingError(
 				`Unsupported trigger value type: ${definition.valueType}`
 			);
 		}
 
-		return new this(parent, definition);
+		return new this(parent, instanceNode, definition);
 	}
 
 	// XFormsXPathElement
@@ -71,14 +80,14 @@ export class TriggerControl
 	readonly nodeOptions = null;
 	readonly currentState: CurrentState<TriggerControlStateSpec>;
 
-	private constructor(parent: GeneralParentNode, definition: TriggerNodeDefinition<'string'>) {
-		super(parent, definition, codec);
+	private constructor(
+		parent: GeneralParentNode,
+		instanceNode: StaticLeafElement | null,
+		definition: TriggerNodeDefinition<'string'>
+	) {
+		super(parent, instanceNode, definition, codec);
 
 		this.appearances = definition.bodyElement.appearances;
-
-		const sharedStateOptions = {
-			clientStateFactory: this.engineConfig.stateFactory,
-		};
 
 		const state = createSharedNodeState(
 			this.scope,
@@ -95,7 +104,7 @@ export class TriggerControl
 				value: this.valueState,
 				instanceValue: this.getInstanceValue,
 			},
-			sharedStateOptions
+			this.instanceConfig
 		);
 
 		this.state = state;

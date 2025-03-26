@@ -12,6 +12,7 @@ import type { TextRange } from '../client/TextRange.ts';
 import type { ValueType } from '../client/ValueType.ts';
 import { SelectValueTypeError } from '../error/SelectValueTypeError.ts';
 import type { XFormsXPathElement } from '../integration/xpath/adapter/XFormsXPathNode.ts';
+import type { StaticLeafElement } from '../integration/xpath/static-dom/StaticElement.ts';
 import { getSelectCodec } from '../lib/codecs/getSelectCodec.ts';
 import { createItemCollection } from '../lib/reactivity/createItemCollection.ts';
 import type { CurrentState } from '../lib/reactivity/node-state/createCurrentState.ts';
@@ -28,7 +29,7 @@ import { ValueNode } from './abstract/ValueNode.ts';
 import type { GeneralParentNode } from './hierarchy.ts';
 import type { EvaluationContext } from './internal-api/EvaluationContext.ts';
 import type { ValidationContext } from './internal-api/ValidationContext.ts';
-import type { ClientReactiveSubmittableValueNode } from './internal-api/submission/ClientReactiveSubmittableValueNode.ts';
+import type { ClientReactiveSerializableValueNode } from './internal-api/serialization/ClientReactiveSerializableValueNode.ts';
 
 export type AnySelectDefinition = {
 	[V in ValueType]: SelectDefinition<V>;
@@ -59,13 +60,21 @@ export class SelectControl
 		XFormsXPathElement,
 		EvaluationContext,
 		ValidationContext,
-		ClientReactiveSubmittableValueNode
+		ClientReactiveSerializableValueNode
 {
-	static from(parent: GeneralParentNode, definition: SelectDefinition): SelectControl;
-	static from(parent: GeneralParentNode, definition: AnySelectDefinition): SelectControl {
+	static from(
+		parent: GeneralParentNode,
+		instanceNode: StaticLeafElement | null,
+		definition: SelectDefinition
+	): SelectControl;
+	static from(
+		parent: GeneralParentNode,
+		instanceNode: StaticLeafElement | null,
+		definition: AnySelectDefinition
+	): SelectControl {
 		assertSupportedSelectValueType(definition);
 
-		return new this(parent, definition);
+		return new this(parent, instanceNode, definition);
 	}
 
 	private readonly mapOptionsByValue: Accessor<SelectItemMap>;
@@ -86,10 +95,14 @@ export class SelectControl
 	readonly nodeOptions = null;
 	readonly currentState: CurrentState<SelectControlStateSpec>;
 
-	private constructor(parent: GeneralParentNode, definition: SelectDefinition<'string'>) {
+	private constructor(
+		parent: GeneralParentNode,
+		instanceNode: StaticLeafElement | null,
+		definition: SelectDefinition<'string'>
+	) {
 		const codec = getSelectCodec(definition);
 
-		super(parent, definition, codec);
+		super(parent, instanceNode, definition, codec);
 
 		this.appearances = definition.bodyElement.appearances;
 		this.selectType = definition.bodyElement.type;
@@ -123,10 +136,6 @@ export class SelectControl
 			});
 		});
 
-		const sharedStateOptions = {
-			clientStateFactory: this.engineConfig.stateFactory,
-		};
-
 		const state = createSharedNodeState(
 			this.scope,
 			{
@@ -142,7 +151,7 @@ export class SelectControl
 				value: valueState,
 				instanceValue: this.getInstanceValue,
 			},
-			sharedStateOptions
+			this.instanceConfig
 		);
 
 		this.state = state;
