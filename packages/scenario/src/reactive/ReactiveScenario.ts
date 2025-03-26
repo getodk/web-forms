@@ -1,45 +1,40 @@
+import type { RootNode } from '@getodk/xforms-engine';
 import type { EffectFunction, Owner } from 'solid-js';
-import { createEffect, createRoot, getOwner, runWithOwner } from 'solid-js';
+import { createEffect, createRoot } from 'solid-js';
 import { createMutable } from 'solid-js/store';
-import { assert } from 'vitest';
-import type { InitializeTestFormOptions } from '../client/init.ts';
-import { Scenario, type ScenarioConstructorOptions } from '../jr/Scenario.ts';
+import type { InitializableForm, TestFormOptions } from '../client/init.ts';
+import { getAssertedOwner, runInSolidScope } from '../client/solid-helpers.ts';
+import type { ScenarioConfig } from '../jr/Scenario.ts';
+import { Scenario } from '../jr/Scenario.ts';
 
 export class ReactiveScenario extends Scenario {
-	static override getInitializeTestFormOptions(): InitializeTestFormOptions {
-		return super.getInitializeTestFormOptions({
+	static override getTestFormOptions(): TestFormOptions {
+		return super.getTestFormOptions({
 			stateFactory: createMutable,
 		});
 	}
 
 	private readonly testScopedOwner: Owner;
 
-	constructor(options: ScenarioConstructorOptions) {
-		let dispose: VoidFunction;
+	constructor(baseConfig: ScenarioConfig, form: InitializableForm, instanceRoot: RootNode) {
+		let dispose!: VoidFunction;
 
-		const testScopedOwner = createRoot((disposeFn) => {
-			dispose = disposeFn;
+		const testScopedOwner = createRoot((disposeRoot) => {
+			dispose = () => {
+				disposeRoot();
+				baseConfig.dispose();
+			};
 
-			const owner = getOwner();
-
-			assert(owner);
-
-			return owner;
+			return getAssertedOwner();
 		});
 
-		super({
-			...options,
-			dispose: () => {
-				dispose();
-				options.dispose();
-			},
-		});
+		super({ ...baseConfig, dispose }, form, instanceRoot);
 
 		this.testScopedOwner = testScopedOwner;
 	}
 
 	createEffect<Next>(fn: EffectFunction<NoInfer<Next> | undefined, Next>): void {
-		runWithOwner(this.testScopedOwner, () => {
+		runInSolidScope(this.testScopedOwner, () => {
 			createEffect(fn);
 		});
 	}

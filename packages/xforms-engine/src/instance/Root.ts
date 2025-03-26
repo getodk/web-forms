@@ -3,16 +3,15 @@ import type { Accessor } from 'solid-js';
 import type { ActiveLanguage, FormLanguage, FormLanguages } from '../client/FormLanguage.ts';
 import type { FormNodeID } from '../client/identity.ts';
 import type { RootNode } from '../client/RootNode.ts';
-import type { SubmissionDefinition } from '../client/submission/SubmissionDefinition.ts';
+import type { InstancePayload } from '../client/serialization/InstancePayload.ts';
 import type {
-	SubmissionChunkedType,
-	SubmissionOptions,
-} from '../client/submission/SubmissionOptions.ts';
-import type { SubmissionResult } from '../client/submission/SubmissionResult.ts';
-import type { SubmissionState } from '../client/submission/SubmissionState.ts';
+	InstancePayloadOptions,
+	InstancePayloadType,
+} from '../client/serialization/InstancePayloadOptions.ts';
+import type { InstanceState } from '../client/serialization/InstanceState.ts';
 import type { AncestorNodeValidationState } from '../client/validation.ts';
 import type { XFormsXPathElement } from '../integration/xpath/adapter/XFormsXPathNode.ts';
-import { createRootSubmissionState } from '../lib/client-reactivity/submission/createRootSubmissionState.ts';
+import { createRootInstanceState } from '../lib/client-reactivity/instance-state/createRootInstanceState.ts';
 import type { ChildrenState } from '../lib/reactivity/createChildrenState.ts';
 import { createChildrenState } from '../lib/reactivity/createChildrenState.ts';
 import type { MaterializedChildren } from '../lib/reactivity/materializeCurrentStateChildren.ts';
@@ -25,10 +24,10 @@ import { createAggregatedViolations } from '../lib/reactivity/validation/createA
 import type { BodyClassList } from '../parse/body/BodyDefinition.ts';
 import type { RootDefinition } from '../parse/model/RootDefinition.ts';
 import { DescendantNode } from './abstract/DescendantNode.ts';
-import { buildChildren } from './children.ts';
+import { buildChildren } from './children/buildChildren.ts';
 import type { GeneralChildNode } from './hierarchy.ts';
 import type { EvaluationContext } from './internal-api/EvaluationContext.ts';
-import type { ClientReactiveSubmittableParentNode } from './internal-api/submission/ClientReactiveSubmittableParentNode.ts';
+import type { ClientReactiveSerializableParentNode } from './internal-api/serialization/ClientReactiveSerializableParentNode.ts';
 import type { TranslationContext } from './internal-api/TranslationContext.ts';
 import type { PrimaryInstance } from './PrimaryInstance.ts';
 
@@ -54,7 +53,7 @@ export class Root
 		XFormsXPathElement,
 		EvaluationContext,
 		TranslationContext,
-		ClientReactiveSubmittableParentNode<GeneralChildNode>
+		ClientReactiveSerializableParentNode<GeneralChildNode>
 {
 	private readonly childrenState: ChildrenState<GeneralChildNode>;
 
@@ -80,22 +79,16 @@ export class Root
 	readonly classes: BodyClassList;
 	readonly currentState: MaterializedChildren<CurrentState<RootStateSpec>, GeneralChildNode>;
 	readonly validationState: AncestorNodeValidationState;
-	readonly submissionState: SubmissionState;
-
-	// ClientReactiveSubmittableInstance
-	get submissionDefinition(): SubmissionDefinition {
-		return this.definition.submission;
-	}
-
-	// RootNode
+	readonly instanceState: InstanceState;
 	readonly languages: FormLanguages;
 
 	constructor(parent: PrimaryInstance) {
-		const { definition } = parent;
+		const { definition, instanceNode: instance } = parent;
+		const instanceNode = instance.root;
 		const { nodeset: reference } = definition;
 		const computeReference: Accessor<string> = () => reference;
 
-		super(parent, definition, {
+		super(parent, instanceNode, definition, {
 			computeReference,
 		});
 
@@ -105,10 +98,6 @@ export class Root
 
 		this.childrenState = childrenState;
 		this.languages = parent.languages;
-
-		const sharedStateOptions = {
-			clientStateFactory: this.engineConfig.stateFactory,
-		};
 
 		const state = createSharedNodeState(
 			this.scope,
@@ -124,7 +113,7 @@ export class Root
 				value: null,
 				children: childrenState.childIds,
 			},
-			sharedStateOptions
+			this.instanceConfig
 		);
 
 		this.state = state;
@@ -136,8 +125,8 @@ export class Root
 		);
 
 		childrenState.setChildren(buildChildren(this));
-		this.validationState = createAggregatedViolations(this, sharedStateOptions);
-		this.submissionState = createRootSubmissionState(this);
+		this.validationState = createAggregatedViolations(this, this.instanceConfig);
+		this.instanceState = createRootInstanceState(this);
 	}
 
 	getChildren(): readonly GeneralChildNode[] {
@@ -151,9 +140,9 @@ export class Root
 		return this;
 	}
 
-	prepareSubmission<ChunkedType extends SubmissionChunkedType = 'monolithic'>(
-		options?: SubmissionOptions<ChunkedType>
-	): Promise<SubmissionResult<ChunkedType>> {
-		return this.rootDocument.prepareSubmission(options);
+	prepareInstancePayload<PayloadType extends InstancePayloadType = 'monolithic'>(
+		options?: InstancePayloadOptions<PayloadType>
+	): Promise<InstancePayload<PayloadType>> {
+		return this.rootDocument.prepareInstancePayload(options);
 	}
 }

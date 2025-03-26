@@ -10,6 +10,7 @@ import type {
 import type { TextRange } from '../client/TextRange.ts';
 import type { ValueType } from '../client/ValueType.ts';
 import type { XFormsXPathElement } from '../integration/xpath/adapter/XFormsXPathNode.ts';
+import type { StaticLeafElement } from '../integration/xpath/static-dom/StaticElement.ts';
 import type { RuntimeInputValue, RuntimeValue } from '../lib/codecs/getSharedValueCodec.ts';
 import { getSharedValueCodec } from '../lib/codecs/getSharedValueCodec.ts';
 import type { CurrentState } from '../lib/reactivity/node-state/createCurrentState.ts';
@@ -22,7 +23,7 @@ import type { InputControlDefinition } from '../parse/body/control/InputControlD
 import { ValueNode, type ValueNodeStateSpec } from './abstract/ValueNode.ts';
 import type { GeneralParentNode } from './hierarchy.ts';
 import type { EvaluationContext } from './internal-api/EvaluationContext.ts';
-import type { ClientReactiveSubmittableValueNode } from './internal-api/submission/ClientReactiveSubmittableValueNode.ts';
+import type { ClientReactiveSerializableValueNode } from './internal-api/serialization/ClientReactiveSerializableValueNode.ts';
 import type { ValidationContext } from './internal-api/ValidationContext.ts';
 import type { Root } from './Root.ts';
 
@@ -78,14 +79,19 @@ export class InputControl<V extends ValueType = ValueType>
 		XFormsXPathElement,
 		EvaluationContext,
 		ValidationContext,
-		ClientReactiveSubmittableValueNode
+		ClientReactiveSerializableValueNode
 {
-	static from(parent: GeneralParentNode, definition: InputDefinition): AnyInputControl;
+	static from(
+		parent: GeneralParentNode,
+		instanceNode: StaticLeafElement | null,
+		definition: InputDefinition
+	): AnyInputControl;
 	static from<V extends ValueType>(
 		parent: GeneralParentNode,
+		instanceNode: StaticLeafElement | null,
 		definition: InputDefinition<V>
 	): InputControl<V> {
-		return new this(parent, definition);
+		return new this(parent, instanceNode, definition);
 	}
 
 	// XFormsXPathElement
@@ -101,17 +107,17 @@ export class InputControl<V extends ValueType = ValueType>
 	readonly nodeOptions: InputNodeOptions<V>;
 	readonly currentState: CurrentState<InputControlStateSpec<V>>;
 
-	constructor(parent: GeneralParentNode, definition: InputDefinition<V>) {
+	constructor(
+		parent: GeneralParentNode,
+		instanceNode: StaticLeafElement | null,
+		definition: InputDefinition<V>
+	) {
 		const codec = getSharedValueCodec(definition.valueType);
 
-		super(parent, definition, codec);
+		super(parent, instanceNode, definition, codec);
 
 		this.appearances = definition.bodyElement.appearances;
 		this.nodeOptions = nodeOptionsFactoryByType[definition.valueType](definition.bodyElement);
-
-		const sharedStateOptions = {
-			clientStateFactory: this.engineConfig.stateFactory,
-		};
 
 		const state = createSharedNodeState(
 			this.scope,
@@ -128,7 +134,7 @@ export class InputControl<V extends ValueType = ValueType>
 				value: this.valueState,
 				instanceValue: this.getInstanceValue,
 			},
-			sharedStateOptions
+			this.instanceConfig
 		);
 
 		this.state = state;
