@@ -35,3 +35,7 @@ export const ISO_DATE_OR_DATE_TIME_LIKE_PATTERN = new RegExp(
 		'$',
 	].join('')
 );
+
+export const ISO_DATE_OR_DATE_TIME_NO_OFFSET_PATTERN = new RegExp(
+	['^', ISO_DATE_LIKE_SUBPATTERN, `(T${ISO_TIME_LIKE_SUBPATTERN})?`, '$'].join('')
+);

@@ -1,4 +1,4 @@
-import { Temporal } from '@js-temporal/polyfill';
+import { Temporal } from 'temporal-polyfill';
 
 export const currentLocalDateTimeString = (timeZone: Temporal.TimeZone): string => {
 	return localDateTimeString(now(timeZone));

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import InputDate from '@/components/controls/Input/InputDate.vue';
 import type { AnyInputNode } from '@getodk/xforms-engine';
 import { computed, inject, provide, ref } from 'vue';
 import ControlText from '../../ControlText.vue';
@@ -18,6 +19,11 @@ const props = defineProps<InputControlProps>();
 const doneAnswering = ref(false);
 const submitPressed = inject<boolean>('submitPressed');
 const isInvalid = computed(() => props.node.validationState.violation?.valid === false);
+const hideIconError = computed(() => {
+	// Excluding these node type, since no error icon is needed in the input box like other input types.
+	// TODO: Refactor to allow each input type to determine how errors are displayed.
+	return !['geopoint', 'date'].includes(props.node.valueType);
+});
 
 provide('doneAnswering', doneAnswering);
 provide('isInvalid', isInvalid);
@@ -39,12 +45,14 @@ provide('isInvalid', isInvalid);
 		<template v-else-if="node.valueType === 'geopoint'">
 			<InputGeopoint :question="node" />
 		</template>
+		<template v-else-if="node.valueType === 'date'">
+			<InputDate :question="node" />
+		</template>
 		<template v-else>
 			<InputText :node="node" />
 		</template>
 
-		<!-- Excluding Geopoint since it doesn't display an error icon in the input box like other input types. TODO: Refactor to allow each input type to determine how errors are displayed. -->
-		<i v-show="isInvalid && (doneAnswering || submitPressed) && node.valueType !== 'geopoint'" class="icon-error" />
+		<i v-show="isInvalid && (doneAnswering || submitPressed) && hideIconError" class="icon-error" />
 	</div>
 	<ValidationMessage
 		:message="node.validationState.violation?.message.asString"
