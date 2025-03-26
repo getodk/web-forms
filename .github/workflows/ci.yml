@@ -168,6 +168,8 @@ jobs:
 
       - if: ${{ matrix.target == 'Web' }}
         run: 'yarn workspace @getodk/common test-browser:${{ matrix.browser }}'
+        env:
+          DEBUG: pw:browser,pw:api
 
   xforms-engine:
     name: '@getodk/xforms-engine'
