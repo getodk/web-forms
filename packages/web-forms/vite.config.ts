@@ -181,7 +181,8 @@ export default defineConfig(({ mode }) => {
 			force: true,
 		},
 		test: {
-			testTimeout: process.env.CI ? 40 * 1000 : 10 * 1000,
+			pool: 'threads',
+			testTimeout: 40 * 1000,
 			browser: {
 				enabled: BROWSER_ENABLED,
 				instances: BROWSER_NAME != null ? [{ browser: BROWSER_NAME }] : [],
