@@ -45,7 +45,7 @@ export default defineConfig(({ mode }) => {
 
 	return {
 		build: {
-			target: 'esnext',
+			target: false as const,
 		},
 		esbuild: {
 			sourcemap: true,
