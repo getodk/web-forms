@@ -61,17 +61,17 @@
     "@babel/core": "^7.26.10",
     "@getodk/tree-sitter-xpath": "0.1.2",
     "@getodk/xpath": "0.4.0",
-    "@playwright/test": "^1.49.1",
+    "@playwright/test": "^1.51.1",
     "@types/papaparse": "^5.3.15",
-    "@vitest/browser": "^2.1.8",
+    "@vitest/browser": "^3.0.9",
     "babel-plugin-transform-jsbi-to-bigint": "^1.4.0",
     "http-server": "^14.1.1",
     "jsdom": "^25.0.1",
     "typedoc": "^0.27.5",
-    "vite": "^5.4.11",
+    "vite": "^6.2.3",
     "vite-plugin-dts": "^4.5.3",
     "vite-plugin-no-bundle": "^4.0.0",
-    "vitest": "^2.1.8"
+    "vitest": "^3.0.9"
   },
   "peerDependencies": {
     "solid-js": "^1.9.5"

@@ -57,6 +57,14 @@ export default defineConfig(({ mode }) => {
 			},
 			exclude: ['@getodk/xforms-engine'],
 			force: true,
+			/**
+			 * Pre-bundles `papaparse` from `@getodk/xforms-engine`. Vite 6.2.3 doesn’t optimize it
+			 * automatically due to the source alias (`../xforms-engine/src/index.ts`), causing runtime
+			 * reloads in browser-mode tests that break Vitest’s suite detection (`Error: No test suite
+			 * found`). Centralizing in `xforms-engine`’s config fails as the alias bypasses it. Debug
+			 * with `DEBUG=vite:*` and `--reporter=verbose` if reload issues come up.
+			 */
+			include: ['papaparse'],
 		},
 		resolve: {
 			alias: {
@@ -67,7 +75,7 @@ export default defineConfig(({ mode }) => {
 		test: {
 			browser: {
 				enabled: BROWSER_ENABLED,
-				name: BROWSER_NAME!,
+				instances: [{ browser: BROWSER_NAME }],
 				provider: 'playwright',
 				headless: true,
 				screenshotFailures: false,
