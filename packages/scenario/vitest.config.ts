@@ -8,7 +8,9 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig(({ mode }) => {
 	let include: string[];
 	let exclude: string[];
+
 	const isBenchmark = mode === 'benchmark';
+
 	if (isBenchmark) {
 		include = ['./benchmark/**/*.bench.ts'];
 		exclude = ['./src/**/*', './test/**/*'];
@@ -18,30 +20,41 @@ export default defineConfig(({ mode }) => {
 	}
 
 	const supportedBrowsers = new Set(['chromium', 'firefox', 'webkit'] as const);
+
 	type SupportedBrowser = CollectionValues<typeof supportedBrowsers>;
+
 	const isSupportedBrowser = (browserName: string): browserName is SupportedBrowser =>
 		supportedBrowsers.has(browserName as SupportedBrowser);
 
 	const BROWSER_NAME = (() => {
 		const envBrowserName = process.env.BROWSER_NAME;
-		if (envBrowserName == null) return null;
-		if (isSupportedBrowser(envBrowserName)) return envBrowserName;
+
+		if (envBrowserName == null) {
+			return null;
+		}
+
+		if (isSupportedBrowser(envBrowserName)) {
+			return envBrowserName;
+		}
+
 		throw new Error(`Unsupported browser: ${envBrowserName}`);
 	})();
 
 	const BROWSER_ENABLED = BROWSER_NAME != null;
-	const TEST_ENVIRONMENT = BROWSER_ENABLED ? undefined : 'jsdom'; // Fixed
+	const TEST_ENVIRONMENT = BROWSER_ENABLED ? 'node' : 'jsdom';
 
 	return {
 		build: {
-			target: 'esnext', // Fixed
+			target: 'esnext',
 		},
 		esbuild: {
 			sourcemap: true,
 			target: 'esnext',
 		},
 		optimizeDeps: {
-			esbuildOptions: { target: 'esnext' },
+			esbuildOptions: {
+				target: 'esnext',
+			},
 			exclude: ['@getodk/xforms-engine'],
 			force: true,
 			include: ['papaparse'],
@@ -54,27 +67,51 @@ export default defineConfig(({ mode }) => {
 		},
 		test: {
 			pool: 'threads',
-			testTimeout: process.env.CI ? 40 * 1000 : 10 * 1000, // Fixed
+			testTimeout: process.env.CI ? 40 * 1000 : 10 * 1000,
 			browser: {
 				enabled: BROWSER_ENABLED,
-				name: BROWSER_NAME, // Fixed
+				instances: [{ browser: BROWSER_NAME }],
 				provider: 'playwright',
 				headless: true,
 				screenshotFailures: false,
 			},
+
 			include,
 			exclude,
+
 			deps: {
-				inline: true,
 				optimizer: {
-					web: { exclude: ['solid-js'] },
+					web: {
+						// Prevent loading multiple instances of Solid. This deviates from
+						// most of the recommendations provided by Solid and related tooling,
+						// as Vitest's interfaces have since changed. But it does seem to be
+						// the appropriate solution (at least for our usage).
+						exclude: ['solid-js'],
+					},
 				},
 				moduleDirectories: ['node_modules', '../../node_modules'],
 			},
 			environment: TEST_ENVIRONMENT,
 			globals: false,
 			setupFiles: ['./src/vitest/setup.ts'],
+
 			reporters: process.env.GITHUB_ACTIONS ? ['default', 'github-actions'] : 'default',
+
+			server: {
+				deps: {
+					/**
+					 * Inlines all dependencies into the test bundle instead of pre-bundling them.
+					 *
+					 * Added to resolve a `TypeError: Cannot read properties of undefined (reading 'registerGraph')`
+					 * error in `solid-js/store` during tests, which occurred because SolidJS dev tools (`DEV$1`) were not
+					 * properly initialized in the `jsdom` environment when dependencies were pre-bundled.
+					 *
+					 * It maintains test behavior closer to a real browser runtime, avoiding pre-bundling quirks. It might
+					 * increase test startup time slightly due to skipping pre-bundling optimizations.
+					 */
+					inline: true,
+				},
+			},
 		},
 	};
 });
