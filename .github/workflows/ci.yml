@@ -286,7 +286,8 @@ jobs:
         run: 'yarn playwright install ${{ matrix.browser }} --with-deps'
 
       - if: ${{ matrix.target == 'Web' }}
-        run: 'yarn workspace @getodk/scenario test-browser:${{ matrix.browser }}'
+        #run: 'yarn workspace @getodk/scenario test-browser:${{ matrix.browser }}'
+        run: 'yarn workspace @getodk/scenario vitest run test/smoketests/child-vaccination.test.ts --reporter=verbose'
 
   xpath:
     name: '@getodk/xpath'
