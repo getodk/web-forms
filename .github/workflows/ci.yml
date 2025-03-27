@@ -280,7 +280,7 @@ jobs:
         run: 'yarn workspace @getodk/scenario test:types'
 
       - if: ${{ matrix.target == 'Node' }}
-        run: 'yarn workspace @getodk/scenario test-node:jsdom test/smoketests/child-vaccination.test.ts --reporter=verbose'
+        run: 'yarn workspace @getodk/scenario test-node:jsdom --reporter=verbose'
 
       - if: ${{ matrix.target == 'Web' }}
         run: 'yarn playwright install ${{ matrix.browser }} --with-deps'
