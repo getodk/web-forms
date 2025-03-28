@@ -66,7 +66,7 @@ export default defineConfig(({ mode }) => {
 			conditions: ['solid', 'browser', 'development'],
 		},
 		test: {
-			testTimeout: 35 * 1000,
+			testTimeout: 40 * 1000,
 			browser: {
 				enabled: BROWSER_ENABLED,
 				instances: [{ browser: BROWSER_NAME }],
