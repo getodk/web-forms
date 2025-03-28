@@ -139,7 +139,7 @@ export default defineConfig(({ mode }) => {
 					 * It maintains test behavior closer to a real browser runtime, avoiding pre-bundling quirks. It might
 					 * increase test startup time slightly due to skipping pre-bundling optimizations.
 					 */
-					inline: true,
+					inline: ['solid-js'],
 				},
 			},
 		},
