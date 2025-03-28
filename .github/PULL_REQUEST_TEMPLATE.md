@@ -4,6 +4,7 @@ Closes #
 
 - [ ] Chrome
 - [ ] Firefox
+- [ ] Android (Chrome)
 - [ ] Safari (macOS)
 - [ ] Safari (iOS)
 - [ ] Not applicable
