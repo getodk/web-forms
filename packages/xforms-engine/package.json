@@ -67,7 +67,7 @@
     "babel-plugin-transform-jsbi-to-bigint": "^1.4.0",
     "http-server": "^14.1.1",
     "jsdom": "^26.0.0",
-    "typedoc": "^0.27.5",
+    "typedoc": "^0.28.1",
     "vite": "^6.2.3",
     "vite-plugin-dts": "^4.5.3",
     "vite-plugin-no-bundle": "^4.0.0",
