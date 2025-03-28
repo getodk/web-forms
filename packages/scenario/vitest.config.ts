@@ -66,8 +66,7 @@ export default defineConfig(({ mode }) => {
 			conditions: ['solid', 'browser', 'development'],
 		},
 		test: {
-			pool: 'threads',
-			testTimeout: 40 * 1000,
+			testTimeout: 35 * 1000,
 			browser: {
 				enabled: BROWSER_ENABLED,
 				instances: [{ browser: BROWSER_NAME }],
@@ -80,15 +79,6 @@ export default defineConfig(({ mode }) => {
 			exclude,
 
 			deps: {
-				optimizer: {
-					web: {
-						// Prevent loading multiple instances of Solid. This deviates from
-						// most of the recommendations provided by Solid and related tooling,
-						// as Vitest's interfaces have since changed. But it does seem to be
-						// the appropriate solution (at least for our usage).
-						exclude: ['solid-js'],
-					},
-				},
 				moduleDirectories: ['node_modules', '../../node_modules'],
 			},
 			environment: TEST_ENVIRONMENT,
@@ -109,7 +99,7 @@ export default defineConfig(({ mode }) => {
 					 * It maintains test behavior closer to a real browser runtime, avoiding pre-bundling quirks. It might
 					 * increase test startup time slightly due to skipping pre-bundling optimizations.
 					 */
-					inline: ['solid-js'],
+					inline: TEST_ENVIRONMENT === 'jsdom' ? ['solid-js'] : [],
 				},
 			},
 		},
