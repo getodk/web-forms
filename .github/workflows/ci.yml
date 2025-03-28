@@ -457,7 +457,7 @@ jobs:
         run: 'yarn workspace @getodk/web-forms test-browser:${{ matrix.browser }}'
 
       - if: ${{ matrix.target == 'Web' }}
-        run: 'yarn workspace @getodk/web-forms test:e2e'
+        run: 'yarn workspace @getodk/web-forms test:e2e:${{ matrix.browser }}'
 
       - if: ${{ matrix.node-version == '22.12.0' && matrix.target == 'Node' }}
         uses: actions/upload-artifact@v4
