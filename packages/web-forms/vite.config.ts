@@ -181,7 +181,6 @@ export default defineConfig(({ mode }) => {
 			force: true,
 		},
 		test: {
-			testTimeout: 50 * 1000,
 			browser: {
 				enabled: BROWSER_ENABLED,
 				instances: BROWSER_NAME != null ? [{ browser: BROWSER_NAME }] : [],

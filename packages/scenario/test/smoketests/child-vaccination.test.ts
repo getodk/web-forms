@@ -734,11 +734,8 @@ describe('ChildVaccinationTest.java', () => {
 		}
 
 		testFn('[smoke test]', async () => {
-			console.time('init');
 			const scenario = await Scenario.init(fixtureName);
-			console.timeEnd('init');
 
-			console.time('building-type');
 			scenario.next('/data/building_type');
 
 			const answerBuildTypeMulti = () => {
@@ -768,9 +765,14 @@ describe('ChildVaccinationTest.java', () => {
 			scenario.answer('Some building');
 			scenario.next('/data/full_address1');
 			scenario.answer('Some address, some location');
-			console.timeEnd('building-type');
 
-			console.time('households');
+			// endregion
+
+			// region Answer all household repeats
+
+			// Create all possible permutations of children combining
+			// all health record types, meaningful ages, ways to define age,
+			// and vaccination sets, which amounts to 18 households and 108 children
 			const households = HealthRecord.all().flatMap((healthRecord) =>
 				buildHouseholdChildren(scenario, healthRecord)
 			);
@@ -834,7 +836,6 @@ describe('ChildVaccinationTest.java', () => {
 					scenario.answer('yes');
 				}
 			});
-			console.timeEnd('households');
 
 			scenario.trace('END HOUSEHOLDS');
 
@@ -848,7 +849,8 @@ describe('ChildVaccinationTest.java', () => {
 			expect(scenario.refAtIndex().genericize()).toEqual(FINISHED_FORM_REF);
 
 			scenario.next('END_OF_FORM');
-			console.timeEnd('end-of-form');
+
+			// endregion
 		});
 	});
 });
