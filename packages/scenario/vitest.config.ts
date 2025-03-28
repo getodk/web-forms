@@ -57,6 +57,9 @@ export default defineConfig(({ mode }) => {
 			},
 			exclude: ['@getodk/xforms-engine'],
 			force: true,
+			/**
+			 * Added since it's a xforms-engine's dependency
+			 */
 			include: ['papaparse'],
 		},
 		resolve: {
@@ -66,6 +69,9 @@ export default defineConfig(({ mode }) => {
 			conditions: ['solid', 'browser', 'development'],
 		},
 		test: {
+			/**
+			 * Increasing timeout since child-vaccination.test.ts is slow
+			 */
 			testTimeout: 40 * 1000,
 			browser: {
 				enabled: BROWSER_ENABLED,
@@ -90,8 +96,6 @@ export default defineConfig(({ mode }) => {
 			server: {
 				deps: {
 					/**
-					 * Inlines all dependencies into the test bundle instead of pre-bundling them.
-					 *
 					 * Added to resolve a `TypeError: Cannot read properties of undefined (reading 'registerGraph')`
 					 * error in `solid-js/store` during tests, which occurred because SolidJS dev tools (`DEV$1`) were not
 					 * properly initialized in the `jsdom` environment when dependencies were pre-bundled.
