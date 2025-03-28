@@ -58,6 +58,7 @@ describe('randomize()', () => {
 
 		it(
 			'without a seed',
+			{ retry: 5 },
 			() => {
 				const expression = `randomize(${SELECTOR})`;
 
@@ -69,8 +70,7 @@ describe('randomize()', () => {
 				expect(nodes.length).toEqual(6);
 				expect(text.length).toEqual(6);
 				expect(text).not.toEqual('ABCDEF');
-			},
-			{ retry: 5 }
+			}
 		);
 
 		[
