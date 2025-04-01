@@ -1,22 +1,19 @@
 <script setup lang="ts">
 import type {
-	AnyControlNode,
 	AnyInputNode,
 	AnyNoteNode,
-	AnyUnsupportedControlNode,
-	SelectNode,
+	AnyControlNode as ControlNode,
 	RankNode,
+	SelectNode,
 } from '@getodk/xforms-engine';
 import { inject } from 'vue';
 import InputControl from './controls/Input/InputControl.vue';
 import NoteControl from './controls/NoteControl.vue';
 import RangeControl from './controls/Range/RangeControl.vue';
-import SelectControl from './controls/SelectControl.vue';
 import RankControl from './controls/RankControl.vue';
+import SelectControl from './controls/SelectControl.vue';
 import TriggerControl from './controls/TriggerControl.vue';
-import UnsupportedControl from './controls/UnsupportedControl.vue';
-
-type ControlNode = AnyControlNode | AnyUnsupportedControlNode;
+import UploadControl from './controls/UploadControl.vue';
 
 defineProps<{ question: ControlNode }>();
 
@@ -26,6 +23,8 @@ const isRankNode = (node: ControlNode): node is RankNode => node.nodeType === 'r
 const isNoteNode = (node: ControlNode): node is AnyNoteNode => node.nodeType === 'note';
 const isRangeNode = (node: ControlNode) => node.nodeType === 'range';
 const isTriggerNode = (node: ControlNode) => node.nodeType === 'trigger';
+
+const isUploadNode = (node: ControlNode) => node.nodeType === 'upload';
 
 const submitPressed = inject('submitPressed');
 </script>
@@ -50,7 +49,7 @@ const submitPressed = inject('submitPressed');
 
 		<TriggerControl v-else-if="isTriggerNode(question)" :question="question" />
 
-		<UnsupportedControl v-else :question="question" />
+		<UploadControl v-else-if="isUploadNode(question)" :question="question" />
 	</div>
 </template>
 
