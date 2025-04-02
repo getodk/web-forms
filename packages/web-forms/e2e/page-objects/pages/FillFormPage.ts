@@ -1,7 +1,7 @@
 import { expect, Page } from '@playwright/test';
 import { GeopointControl } from '../controls/GeopointControl.js';
 
-export class FormPage {
+export class FillFormPage {
 	private readonly page: Page;
 
 	public readonly geopoint: GeopointControl;

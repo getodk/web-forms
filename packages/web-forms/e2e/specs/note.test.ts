@@ -1,12 +1,12 @@
 import { test } from '@playwright/test';
-import { FormPage } from '../page-objects/pages/FormPage.ts';
+import { FillFormPage } from '../page-objects/pages/FillFormPage.ts';
 import { PreviewPage } from '../page-objects/pages/PreviewPage.ts';
 
 test.describe('Note Question Type', () => {
-	let formPage: FormPage;
+	let formPage: FillFormPage;
 
 	test.beforeEach(async ({ page }) => {
-		formPage = new FormPage(page);
+		formPage = new FillFormPage(page);
 
 		const previewPage = new PreviewPage(page);
 		await previewPage.goToDevPage();

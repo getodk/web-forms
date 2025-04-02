@@ -1,15 +1,15 @@
 import { test } from '@playwright/test';
-import { FormPage } from '../page-objects/pages/FormPage.ts';
+import { FillFormPage } from '../page-objects/pages/FillFormPage.ts';
 import { PreviewPage } from '../page-objects/pages/PreviewPage.ts';
 
 test.describe('Geopoint Question Type', () => {
 	test.describe('Geolocation permission granted', () => {
-		let formPage: FormPage;
+		let formPage: FillFormPage;
 
 		test.beforeEach(async ({ page, context }) => {
 			await context.grantPermissions(['geolocation']);
 
-			formPage = new FormPage(page);
+			formPage = new FillFormPage(page);
 
 			const previewPage = new PreviewPage(page);
 			await previewPage.goToDevPage();
@@ -103,14 +103,14 @@ test.describe('Geopoint Question Type', () => {
 	});
 
 	test.describe('Geolocation permission denied', () => {
-		let formPage: FormPage;
+		let formPage: FillFormPage;
 
 		test.beforeEach(async ({ browser }) => {
 			const context = await browser.newContext({
 				permissions: [],
 			});
 			const page = await context.newPage();
-			formPage = new FormPage(page);
+			formPage = new FillFormPage(page);
 
 			const previewPage = new PreviewPage(page);
 			await previewPage.goToDevPage();
