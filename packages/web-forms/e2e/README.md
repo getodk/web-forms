@@ -23,7 +23,7 @@ e2e/
 
 - **Page Objects**: Implements the [Page Object Model](https://playwright.dev/docs/pom) pattern to encapsulate UI interactions, enhancing test readability and maintainability.
 - **Test Specification File**: Test files structured by feature (e.g., rendering, form submission), each holding a suite of tests targeting a specific application aspect. Use clear, descriptive names to highlight their purpose and ensure test coverage is easily identifiable.
-- **Fixtures**: Reusable test data (e.g., sample XForms) to simulate real-world use cases. Find fixtures in the [common package](packages/common/src/fixtures)
+- **Fixtures**: Reusable test data (e.g., sample XForms) to simulate real-world use cases. Find fixtures in the [common package](../../common/src/fixtures)
 
 ## Getting started
 
@@ -51,4 +51,4 @@ e2e/
 
 - Keep tests focused.
 - Use page object methods in `pages-objects/` for UI actions.
-- Add [fixtures](packages/common/src/fixtures) for new scenarios instead of hardcoding data.
+- Add [fixtures](../../common/src/fixtures) for new scenarios instead of hardcoding data.
