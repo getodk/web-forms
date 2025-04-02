@@ -8,7 +8,7 @@ import hankenGrotesk300 from '@fontsource/hanken-grotesk/300.css?inline';
 import hankenGrotesk400 from '@fontsource/hanken-grotesk/400.css?inline';
 import roboto from '@fontsource/roboto/300.css?inline';
 import icomoon from '../assets/css/icomoon.css?inline';
-import theme from '../themes/2024-light/theme.scss?inline';
+import theme from '../themes/2024-light/theme.css?inline';
 // TODO/sk: Purge it - postcss-purgecss
 import primeflex from 'primeflex/primeflex.css?inline';
 

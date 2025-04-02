@@ -1,0 +1,17 @@
+/*
+@import '~primevue/resources/themes/lara-light-blue/theme.css';
+
+!**
+* TODO maybe import icomoon here so if in future we can to introduce new theme with different iconset
+* Don't know how much future theme will be different from this??
+*!
+
+:root {
+	--primary-50: #e9f8ff;
+	--text-color: #1b1b1f;
+	--light-elevation-1: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+	--surface-300: #cbcacc;
+	--error-text-color: #b3261e;
+	--error-bg-color: #ffedea;
+}
+*/

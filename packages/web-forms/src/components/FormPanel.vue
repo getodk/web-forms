@@ -34,7 +34,7 @@ const toggle = () => {
 	panelState.value = !panelState.value;
 };
 
-const menu = ref<Menu & MenuState>();
+const menu = ref<InstanceType<typeof Menu> & MenuState>();
 
 const toggleMenu = (event: Event) => {
 	menu.value?.toggle(event);

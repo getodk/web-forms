@@ -8,7 +8,7 @@ import PrimeInputIcon from 'primevue/inputicon';
 import PrimeInputText from 'primevue/inputtext';
 import PrimeMessage from 'primevue/message';
 
-import { computed, ref, watch, type HTMLInputElementEvent } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useConfiguration } from './composables/configuration';
 import { useXlsFormOnline } from './composables/xlsform-online';
 
@@ -40,9 +40,10 @@ watch(configErrors, (value) => {
 
 const { convertXlsForm } = useXlsFormOnline(xlsformOnlineBaseUrl);
 
-const fileChangeHandler = async (e: HTMLInputElementEvent) => {
-	if (e.target?.files?.length == 1) {
-		await uploadFile(e.target.files[0]);
+const fileChangeHandler = async (event: Event) => {
+	const target = event.target as HTMLInputElement;
+	if (target?.files?.length == 1) {
+		await uploadFile(target.files[0]);
 	}
 };
 
@@ -201,7 +202,7 @@ document.addEventListener(
 </template>
 
 <style scoped lang="scss">
-@import 'primeflex/core/_variables.scss';
+//@import 'primeflex/core/_variables.scss';
 
 .spinner {
 	width: 40px;
@@ -340,7 +341,7 @@ document.addEventListener(
 	}
 }
 
-@media screen and (min-width: #{$md}) {
+@media screen and (min-width: var(--pf-breakpoint-md)) {
 	.form-upload-component {
 		.preview-wrapper {
 			.action-buttons {

@@ -3,10 +3,12 @@ import type { AnyFunction } from '@getodk/common/types/helpers.d.ts';
 import type { AnyControlNode, RootNode } from '@getodk/xforms-engine';
 import { initializeForm } from '@getodk/xforms-engine';
 import type { MountingOptions } from '@vue/test-utils';
-import PrimeVue from 'primevue/config';
 import type { MockInstance } from 'vitest';
 import { vi } from 'vitest';
 import { reactive } from 'vue';
+import PrimeVue from 'primevue/config';
+import { definePreset } from '@primeuix/themes';
+import Aura from '@primeuix/themes/aura';
 
 /**
  * @todo this does roughly the same thing as {@link getFormXml}, except it
@@ -55,8 +57,27 @@ export const getReactiveForm = async (formPath: string): Promise<RootNode> => {
 
 type GlobalMountOptions = Required<MountingOptions<unknown>>['global'];
 
+const customPreset = definePreset(Aura, {
+	semantic: {
+		primary: {
+			50: '#e9f8ff',
+			textColor: '#1b1b1f',
+		},
+		text: {
+			color: '#1b1b1f',
+		},
+		error: {
+			textColor: '#b3261e',
+			background: '#ffedea',
+		},
+		surface: {
+			300: '#cbcacc',
+		},
+	},
+});
+
 export const globalMountOptions: GlobalMountOptions = {
-	plugins: [[PrimeVue, { ripple: false }]],
+	plugins: [[PrimeVue, { theme: { preset: customPreset } }]],
 	provide: {
 		submitPressed: false,
 	},

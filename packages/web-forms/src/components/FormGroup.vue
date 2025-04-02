@@ -27,7 +27,7 @@ const tableLayout = computed(() => {
 
 
 <style scoped lang="scss">
-@import 'primeflex/core/_variables.scss';
+//@import 'primeflex/core/_variables.scss';
 
 .table-layout {
 	width: max-content;

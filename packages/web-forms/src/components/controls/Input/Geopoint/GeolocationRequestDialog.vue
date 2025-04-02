@@ -192,7 +192,7 @@ onBeforeUnmount(cleanup);
 </template>
 
 <style lang="scss">
-@import 'primeflex/core/_variables.scss';
+//@import 'primeflex/core/_variables.scss';
 
 .geo-dialog {
 	--geo-spacing-s: 5px;
@@ -278,7 +278,7 @@ onBeforeUnmount(cleanup);
 	}
 }
 
-@media screen and (max-width: #{$md}) {
+@media screen and (max-width: var(--pf-breakpoint-md)) {
 	.geo-dialog-body {
 		padding: var(--geo-spacing-xxl) var(--geo-spacing-xl);
 	}

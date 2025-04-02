@@ -19,7 +19,7 @@ const nColumnstyle = computed(() => {
 </template>
 
 <style scoped lang="scss">
-@import 'primeflex/core/_variables.scss';
+//@import 'primeflex/core/_variables.scss';
 
 .columns-pack {
 	display: flex;
@@ -32,13 +32,13 @@ const nColumnstyle = computed(() => {
 	gap: 10px 20px;
 	grid-template-columns: repeat(2, 1fr);
 
-	@media screen and (min-width: #{$md}) {
+	@media screen and (min-width: var(--pf-breakpoint-md)) {
 		grid-template-columns: repeat(3, 1fr);
 	}
-	@media screen and (min-width: #{$lg}) {
+	@media screen and (min-width: var(--pf-breakpoint-lg)) {
 		grid-template-columns: repeat(4, 1fr);
 	}
-	@media screen and (min-width: #{$xl}) {
+	@media screen and (min-width: var(--pf-breakpoint-xl)) {
 		grid-template-columns: repeat(5, 1fr);
 	}
 }

@@ -46,7 +46,7 @@ const getOptionLabel = (value: string) => {
 </template>
 
 <style scoped lang="scss">
-@import 'primeflex/core/_variables.scss';
+//@import 'primeflex/core/_variables.scss';
 
 .dropdown {
 	width: 100%;
@@ -57,7 +57,7 @@ const getOptionLabel = (value: string) => {
 		border-color: var(--primary-500);
 	}
 
-	@media screen and (min-width: #{$md}) {
+	@media screen and (min-width: var(--pf-breakpoint-md)) {
 		width: 50%;
 	}
 }

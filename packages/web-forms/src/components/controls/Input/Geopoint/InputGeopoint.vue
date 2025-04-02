@@ -220,7 +220,7 @@ const onSave = (saved: GeolocationRequestSuccess) => {
 </template>
 
 <style scoped lang="scss">
-@import 'primeflex/core/_variables.scss';
+//@import 'primeflex/core/_variables.scss';
 
 // Variable definition
 .geopoint-control {
@@ -319,7 +319,7 @@ const onSave = (saved: GeolocationRequestSuccess) => {
 	background: var(--surface-0);
 }
 
-@media screen and (max-width: #{$md}) {
+@media screen and (max-width: var(--pf-breakpoint-md)) {
 	.geopoint-value-container {
 		align-items: flex-start;
 		padding: var(--geo-spacing-xxl) var(--geo-spacing-xl);

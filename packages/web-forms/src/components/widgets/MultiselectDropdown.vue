@@ -54,7 +54,7 @@ if (props.question.appearances['no-buttons']) {
 </template>
 
 <style scoped lang="scss">
-@import 'primeflex/core/_variables.scss';
+//@import 'primeflex/core/_variables.scss';
 
 .multi-select-dropdown {
 	width: 100%;
@@ -66,7 +66,7 @@ if (props.question.appearances['no-buttons']) {
 		border-color: var(--primary-500);
 	}
 
-	@media screen and (min-width: #{$md}) {
+	@media screen and (min-width: var(--pf-breakpoint-md)) {
 		width: 50%;
 	}
 }

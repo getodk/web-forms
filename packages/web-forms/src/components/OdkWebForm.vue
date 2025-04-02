@@ -229,7 +229,7 @@ watchEffect(() => {
 </template>
 
 <style scoped lang="scss">
-@import 'primeflex/core/_variables.scss';
+//@import 'primeflex/core/_variables.scss';
 
 .form-initialization-status {
 	display: none;
@@ -331,7 +331,8 @@ watchEffect(() => {
 	}
 }
 
-@media screen and (max-width: #{$lg - 1}) {
+// @media screen and (max-width: #{$lg - 1}) {
+@media screen and (max-width: (var(--pf-breakpoint-lg) - 1)) {
 	.odk-form {
 		.form-wrapper {
 			max-width: unset;
@@ -374,15 +375,15 @@ watchEffect(() => {
 </style>
 
 <style lang="scss">
-@import 'primeflex/core/_variables.scss';
+//@import 'primeflex/core/_variables.scss';
 :root {
-	--breakpoint-lg: #{$lg};
+	--breakpoint-lg: var(--pf-breakpoint-lg);
 }
 
 body {
 	background: var(--gray-200);
 }
-@media screen and (max-width: #{$lg - 1}) {
+@media screen and (max-width: (var(--pf-breakpoint-lg) - 1)) {
 	body {
 		background: white;
 	}

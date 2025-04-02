@@ -138,7 +138,7 @@ const isDev = import.meta.env.DEV;
 </template>
 
 <style scoped lang="scss">
-@import 'primeflex/core/_variables.scss';
+//@import 'primeflex/core/_variables.scss';
 .home-page-component {
 	--font-family: 'Hanken Grotesk', Roboto, sans-serif;
 	--primary-color: #009ecc;
@@ -247,7 +247,7 @@ const isDev = import.meta.env.DEV;
 	}
 }
 
-@media screen and (min-width: #{$md}) {
+@media screen and (min-width: var(--pf-breakpoint-md)) {
 	.home-page-component {
 		.container {
 			max-width: 720px;
@@ -274,7 +274,7 @@ const isDev = import.meta.env.DEV;
 	}
 }
 
-@media screen and (min-width: #{$lg}) {
+@media screen and (min-width: var(--pf-breakpoint-lg)) {
 	.home-page-component {
 		.container {
 			max-width: 960px;
@@ -282,7 +282,7 @@ const isDev = import.meta.env.DEV;
 	}
 }
 
-@media screen and (min-width: #{$xl}) {
+@media screen and (min-width: var(--pf-breakpoint-xl)) {
 	.home-page-component {
 		.container {
 			max-width: 1030px;

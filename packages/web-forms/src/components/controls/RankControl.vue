@@ -18,7 +18,7 @@ interface HighlightOption {
 
 const props = defineProps<RankControlProps>();
 const touched = ref(false);
-const submitPressed = inject<boolean>('submitPressed');
+const submitPressed = inject<boolean>('submitPressed', false);
 const disabled = computed(() => props.question.currentState.readonly === true);
 const highlight: HighlightOption = {
 	index: ref(null),
@@ -161,7 +161,7 @@ const swapItems = (index: number, newPosition: number) => {
 </template>
 
 <style scoped lang="scss">
-@import 'primeflex/core/_variables.scss';
+//@import 'primeflex/core/_variables.scss';
 
 // Variable definition to root element
 .rank-control {
@@ -248,7 +248,7 @@ const swapItems = (index: number, newPosition: number) => {
 	cursor: not-allowed;
 }
 
-@media screen and (max-width: #{$sm}) {
+@media screen and (max-width: var(--pf-breakpoint-sm)) {
 	.rank-buttons {
 		display: none;
 	}
