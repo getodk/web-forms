@@ -9,14 +9,15 @@ import {
 	title,
 	upload,
 } from '@getodk/common/test/fixtures/xform-dsl/index.ts';
-import { beforeEach, describe, expect, it } from 'vitest';
+import type { UploadNode } from '@getodk/xforms-engine';
+import { assert, beforeEach, describe, expect, it } from 'vitest';
 import { binaryAnswer } from '../../src/answer/ExpectedBinaryAnswer.ts';
 import { Scenario } from '../../src/jr/Scenario.ts';
 
 describe('Instance attachments: upload controls', () => {
-	describe('basic upload state', () => {
-		const FAKE_INSTANCE_ID = 'not important to this suite';
+	const FAKE_INSTANCE_ID = 'not important to this suite';
 
+	describe('basic upload state', () => {
 		let scenario: Scenario;
 
 		beforeEach(async () => {
@@ -131,6 +132,128 @@ describe('Instance attachments: upload controls', () => {
 					t('meta',
 						t('instanceID', FAKE_INSTANCE_ID))).asXml()
 			);
+		});
+	});
+
+	describe('accepted types', () => {
+		const getUploadNode = (scneario: Scenario, reference: string): UploadNode => {
+			const node = scneario.getInstanceNode(reference);
+
+			assert(node.nodeType === 'upload');
+
+			return node;
+		};
+
+		type UploadAcceptedTypeCaseAttrs =
+			| ReadonlyMap<'accept', string>
+			| ReadonlyMap<'mediatype', string>
+			| ReadonlyMap<never, string>;
+
+		interface AcceptedTypeCase {
+			readonly description: string;
+			readonly uploadAttrs: UploadAcceptedTypeCaseAttrs;
+			readonly expected: readonly [string, ...string[]];
+		}
+
+		it.each<AcceptedTypeCase>([
+			{
+				description: 'parses an accepted type accepting all uploads by default',
+				uploadAttrs: new Map(),
+				expected: ['*/*'],
+			},
+
+			{
+				description: 'parses a single `mediatype` MIME type value',
+				uploadAttrs: new Map([['mediatype', 'image/*']]),
+				expected: ['image/*'],
+			},
+
+			{
+				description: 'parses multiple `accept` MIME type values',
+				uploadAttrs: new Map([['accept', 'audio/*, video/*']]),
+				expected: ['audio/*', 'video/*'],
+			},
+
+			{
+				description: 'parses multiple `accept` extension values',
+				uploadAttrs: new Map([['accept', '.gif, .jpg, .png']]),
+				expected: ['.gif', '.jpg', '.png'],
+			},
+
+			{
+				description: 'parses a mix of `accept` MIME type and extension values',
+				uploadAttrs: new Map([['accept', '.gif, .jpg, .png, video/*']]),
+				expected: ['.gif', '.jpg', '.png', 'video/*'],
+			},
+		])('$description', async ({ uploadAttrs, expected }) => {
+			const scenario = await Scenario.init(
+				'Typed upload control',
+				// prettier-ignore
+				html(
+					head(
+						title('Typed upload control'),
+						model(
+							mainInstance(
+								t('data id="typed-upload-control"',
+									t('file-upload'),
+									t('meta',
+										t('instanceID', FAKE_INSTANCE_ID)))),
+							bind('/data/file-upload').type('binary'))),
+					body(
+						upload('/data/file-upload', uploadAttrs)))
+			);
+
+			const node = getUploadNode(scenario, '/data/file-upload');
+
+			expect(node.nodeOptions.types).toEqual(expected);
+		});
+
+		interface InvalidAcceptedTypeCase {
+			readonly description: string;
+			readonly uploadAttrs: UploadAcceptedTypeCaseAttrs;
+		}
+
+		it.each<InvalidAcceptedTypeCase>([
+			{
+				description: 'does not parse a `mediatype` attribute specifying a file extension',
+				uploadAttrs: new Map([['mediatype', '.jpg']]),
+			},
+
+			{
+				description: 'does not parse a blank `mediatype` attribute',
+				uploadAttrs: new Map([['mediatype', '']]),
+			},
+
+			{
+				description: 'does not parse a blank `accept` attribute',
+				uploadAttrs: new Map([['accept', '']]),
+			},
+
+			{
+				description: 'does not parse an arbitrary `accept` value',
+				uploadAttrs: new Map([['accept', 'arbitrary']]),
+			},
+		])('$description', async ({ uploadAttrs }) => {
+			const init = async () => {
+				await Scenario.init(
+					'Invalid upload control',
+					// prettier-ignore
+					html(
+						head(
+							title('Invalid upload control'),
+							model(
+								mainInstance(
+									t('data id="invalid-upload-control"',
+										t('file-upload'),
+										t('meta',
+											t('instanceID', FAKE_INSTANCE_ID)))),
+								bind('/data/file-upload').type('binary'))),
+						body(
+							upload('/data/file-upload', uploadAttrs)))
+				);
+			};
+
+			await expect(init).rejects.toThrow();
 		});
 	});
 });

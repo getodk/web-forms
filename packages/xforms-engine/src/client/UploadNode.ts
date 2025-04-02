@@ -20,11 +20,29 @@ export interface UploadDefinition<V extends ValueType = ValueType> extends LeafN
 	readonly bodyElement: UploadControlDefinition;
 }
 
+export type AcceptedUploadExtension = `.${string}`;
+export type AcceptedUploadMIMEType = `${string}/${string}`;
+
+// prettier-ignore
+export type AcceptedUploadType =
+	| AcceptedUploadExtension
+	| AcceptedUploadMIMEType;
+
+// prettier-ignore
+export type AcceptedUploadTypes =
+	// eslint-disable-next-line @typescript-eslint/sort-type-constituents
+	| readonly [AcceptedUploadType, ...AcceptedUploadType[]]
+	| readonly ['*/*'];
+
+export interface UploadNodeOptions {
+	readonly types: AcceptedUploadTypes;
+}
+
 export interface UploadNode extends BaseValueNode<'binary', UploadValue> {
 	readonly nodeType: 'upload';
 	/** @todo */
 	readonly appearances: UnknownAppearanceDefinition;
-	readonly nodeOptions: null;
+	readonly nodeOptions: UploadNodeOptions;
 	readonly valueType: 'binary';
 	readonly definition: UploadDefinition<'binary'>;
 	readonly root: RootNode;
