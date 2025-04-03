@@ -319,4 +319,6 @@ describe('Instance attachments: binary output', () => {
 			await expect(preparePayload).rejects.toThrowError(AggregateError);
 		});
 	});
+
+	describe.todo('support for distinct file names');
 });
