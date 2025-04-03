@@ -13,7 +13,7 @@ import RangeControl from './controls/Range/RangeControl.vue';
 import RankControl from './controls/RankControl.vue';
 import SelectControl from './controls/SelectControl.vue';
 import TriggerControl from './controls/TriggerControl.vue';
-import UploadControl from './controls/UploadControl.vue';
+import UploadControl from './controls/Upload/UploadControl.vue';
 
 defineProps<{ question: ControlNode }>();
 
