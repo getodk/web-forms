@@ -5,11 +5,11 @@ import type { AnyControlNode as QuestionNode } from '@getodk/xforms-engine';
 import Button from 'primevue/button';
 import { computed, inject, ref } from 'vue';
 
-interface ImageUploadControlProps {
+interface UploadImageControlProps {
 	readonly question: QuestionNode; // ToDo: Integrate with xforms-engine and use correct node type here.
 }
 
-const props = defineProps<ImageUploadControlProps>();
+const props = defineProps<UploadImageControlProps>();
 const touched = ref(false);
 const submitPressed = inject<boolean>('submitPressed');
 const isDisabled = computed(() => props.question.currentState.readonly === true);
