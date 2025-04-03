@@ -233,7 +233,7 @@ describe('OdkWebForm', () => {
 			expect(textInputElement.value).toBe(previouslySubmittedValue);
 		});
 
-		it.fails('loads instance attachments for editing', async () => {
+		it('loads instance attachments for editing', async () => {
 			/** @see {@link editBasicForm} */
 			const editAttachmentsForm = /* xml */ `<?xml version="1.0"?>
 			<h:html xmlns="http://www.w3.org/2002/xforms" xmlns:h="http://www.w3.org/1999/xhtml"
@@ -294,7 +294,7 @@ describe('OdkWebForm', () => {
 
 			// Temporary assertion: we know that providing any instance attachments
 			// will produce an error until support for `<upload>` is implemented.
-			expect(component.get('.form-load-failure-dialog').isVisible()).toBe(false);
+			expect(component.find('.form-load-failure-dialog').exists()).toBe(false);
 
 			// TODO: actual test logic beyond this point will depend on implementation
 			// of `<upload>` controls.
