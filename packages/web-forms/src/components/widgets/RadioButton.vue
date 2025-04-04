@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { selectOptionId } from '@/lib/format/selectOptionId.ts';
 import type { SelectNode } from '@getodk/xforms-engine';
-import PrimeRadioButton from 'primevue/radiobutton';
+import RadioButton from 'primevue/radiobutton';
 interface RadioButtonProps {
 	readonly question: SelectNode;
 }
@@ -27,7 +27,7 @@ const selectValue = (value: string) => {
 			'no-buttons': question.appearances['no-buttons']
 		}"
 	>
-		<PrimeRadioButton
+		<RadioButton
 			:input-id="selectOptionId(question, option)"
 			:value="option.value"
 			:name="question.nodeId"

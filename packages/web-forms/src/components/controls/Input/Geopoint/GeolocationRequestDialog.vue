@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watchEffect } from 'vue';
 import Button from 'primevue/button';
-import PrimeDialog from 'primevue/dialog';
-import PrimeProgressSpinner from 'primevue/progressspinner';
+import Dialog from 'primevue/dialog';
+import ProgressSpinner from 'primevue/progressspinner';
 import { truncateDecimals } from '@/lib/format/truncateDecimals.ts';
 import ElapsedTime from '@/components/ElapsedTime.vue';
 import {
@@ -118,11 +118,11 @@ onBeforeUnmount(cleanup);
 </script>
 
 <template>
-	<PrimeDialog :visible="true" modal class="geo-dialog" :closable="false" :draggable="false">
+	<Dialog :visible="true" modal class="geo-dialog" :closable="false" :draggable="false">
 		<template #header>
 			<div class="geo-dialog-header">
 				<div class="geo-dialog-header-title">
-					<PrimeProgressSpinner class="spinner" stroke-width="4" />
+					<ProgressSpinner class="spinner" stroke-width="4" />
 					<!-- TODO: translations -->
 					<strong>Finding your location</strong>
 				</div>
@@ -188,7 +188,7 @@ onBeforeUnmount(cleanup);
 				<Button label="Save location" rounded :disabled="accuracy.value == null" @click="save()" />
 			</div>
 		</template>
-	</PrimeDialog>
+	</Dialog>
 </template>
 
 <style lang="scss">

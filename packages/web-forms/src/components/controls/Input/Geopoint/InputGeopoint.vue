@@ -317,6 +317,9 @@ const onSave = (saved: GeolocationRequestSuccess) => {
 
 .p-button.p-button-contrast.p-button-outlined.retry-button {
 	background: var(--p-surface-0);
+	&:hover {
+		background: var(--p-surface-200);
+	}
 }
 
 @media screen and (max-width: #{pf.$md}) {

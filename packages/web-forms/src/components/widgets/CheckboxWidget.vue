@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { selectOptionId } from '@/lib/format/selectOptionId.ts';
 import type { SelectNode } from '@getodk/xforms-engine';
-import PrimeCheckbox from 'primevue/checkbox';
+import Checkbox from 'primevue/checkbox';
 
 interface CheckboxWidgetProps {
 	readonly question: SelectNode;
@@ -28,7 +28,7 @@ const selectValues = (values: readonly string[]) => {
 			'no-buttons': question.appearances['no-buttons'] }]"
 		:for="selectOptionId(question, option)"
 	>
-		<PrimeCheckbox
+		<Checkbox
 			:input-id="selectOptionId(question, option)"
 			:name="question.nodeId"
 			:value="option.value"

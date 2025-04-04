@@ -48,7 +48,7 @@ const formXls = computed(() => {
 					<Button class="preview-button" label="View Form" icon="icon-remove_red_eye" />
 				</RouterLink>
 				<a :href="formXls">
-					<Button class="download-button" label="Download" severity="secondary" icon="icon-file_download" />
+					<Button class="download-button" label="Download" severity="contrast" variant="outlined" icon="icon-file_download" />
 				</a>
 			</div>
 		</div>

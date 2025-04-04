@@ -5,15 +5,15 @@ import {
 	type SyntheticDefaultLanguage,
 } from '@getodk/xforms-engine';
 import Button from 'primevue/button';
-import PrimeCard from 'primevue/card';
-import PrimeMenu from 'primevue/menu';
+import Card from 'primevue/card';
+import Menu from 'primevue/menu';
 import { ref } from 'vue';
 import FormLanguageDialog from './FormLanguageDialog.vue';
 import FormLanguageMenu from './FormLanguageMenu.vue';
 
 const props = defineProps<{ form: RootNode }>();
 const languageDialogState = ref(false);
-const menu = ref<InstanceType<typeof PrimeMenu>>();
+const menu = ref<InstanceType<typeof Menu>>();
 
 const isFormLanguage = (lang: FormLanguage | SyntheticDefaultLanguage): lang is FormLanguage => {
 	return !lang.isSyntheticDefault;
@@ -57,13 +57,13 @@ const handleLanguageChange = (event: FormLanguage) => {
 				@update:active-language="handleLanguageChange"
 			/>
 		</div>
-		<PrimeCard class="form-title">
+		<Card class="form-title">
 			<template #content>
 				<!-- TODO/q: should the title be on the definition or definition.form be accessible instead of definition.bind.form -->
 				<h1>{{ form.definition.bind.form.title }}</h1>
 			<!-- last saved timestamp -->
 			</template>
-		</PrimeCard>
+		</Card>
 	</div>
 
 
@@ -80,7 +80,7 @@ const handleLanguageChange = (event: FormLanguage) => {
 			<!-- show either hamburger or (print button and language changer) based on container size -->
 			<div v-else class="multilingual">
 				<Button icon="icon-menu" class="btn-menu" text rounded aria-label="Menu" @click="menu?.toggle" />
-				<PrimeMenu id="overlay_menu" ref="menu" :model="items" :popup="true" />
+				<Menu id="overlay_menu" ref="menu" :model="items" :popup="true" />
 				<FormLanguageDialog
 					v-model:state="languageDialogState"
 					:active-language="form.currentState.activeLanguage"

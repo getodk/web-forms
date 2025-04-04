@@ -16,7 +16,7 @@ import type {
 } from '@getodk/xforms-engine';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
-import PrimeMessage from 'primevue/message';
+import Message from 'primevue/message';
 import type { ComponentPublicInstance } from 'vue';
 import { computed, getCurrentInstance, provide, ref, watchEffect } from 'vue';
 import FormLoadFailureDialog from './Form/FormLoadFailureDialog.vue';
@@ -219,9 +219,9 @@ watchEffect(() => {
 	>
 		<div class="form-wrapper">
 			<div v-show="submitPressed && validationErrorMessage" class="error-banner-placeholder" />
-			<PrimeMessage ref="validationErrorMessagePopover" popover="manual" severity="error" icon="icon-error_outline" class="form-error-message" :closable="false">
+			<Message ref="validationErrorMessagePopover" popover="manual" severity="error" icon="icon-error_outline" class="form-error-message" :closable="false">
 				{{ validationErrorMessage }}
-			</PrimeMessage>
+			</Message>
 
 			<FormHeader :form="state.root" />
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ActiveLanguage, FormLanguage } from '@getodk/xforms-engine';
-import Dropdown from 'primevue/dropdown';
+import Select from 'primevue/select';
 
 defineProps<{ languages: FormLanguage[]; activeLanguage: ActiveLanguage }>();
 
@@ -8,7 +8,7 @@ defineEmits(['update:activeLanguage']);
 </script>
 
 <template>
-	<Dropdown
+	<Select
 		v-if="languages.length > 0"
 		:model-value="activeLanguage"
 		:options="languages"
@@ -26,7 +26,7 @@ defineEmits(['update:activeLanguage']);
 		<template #option="slotProps">
 			<span class="language-dd-label">{{ slotProps.option.language }}</span>
 		</template>
-	</Dropdown>
+	</Select>
 </template>
 
 <style scoped lang="scss">

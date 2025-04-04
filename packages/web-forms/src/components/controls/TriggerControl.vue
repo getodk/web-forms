@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { TriggerNode } from '@getodk/xforms-engine';
-import PrimeCheckbox from 'primevue/checkbox';
+import Checkbox from 'primevue/checkbox';
 import ControlText from '../ControlText.vue';
 
 const props = defineProps<{ question: TriggerNode; style?: string }>();
@@ -23,7 +23,7 @@ const setValue = (value: boolean) => {
 			}"
 			:for="question.nodeId + '_checkbox'"
 		>
-			<PrimeCheckbox
+			<Checkbox
 				:input-id="question.nodeId + '_checkbox'"
 				:binary="true"
 				:name="question.nodeId"

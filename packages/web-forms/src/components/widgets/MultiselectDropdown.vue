@@ -37,12 +37,16 @@ if (props.question.appearances['no-buttons']) {
 </script>
 
 <template>
+	<!--
+		Setting 'auto-filter-focus' true when 'filter' is true, to fix autofocus exception.
+		Ref: https://github.com/primefaces/primevue/issues/6793
+	-->
 	<MultiSelect
 		:id="`${question.nodeId}-control`"
 		class="multi-select-dropdown"
 		:input-id="question.nodeId"
 		:filter="question.appearances.autocomplete"
-		:auto-filter-focus="true"
+		:auto-filter-focus="question.appearances.autocomplete"
 		:show-toggle-all="false"
 		:options="options"
 		:option-label="getOptionLabel"
