@@ -178,12 +178,14 @@ export default defineConfig(({ mode }) => {
 			},
 		},
 		optimizeDeps: {
-			force: true,
+			/*force: true,
+			include: ['vue'],*/
+			disabled: true,
 		},
 		test: {
 			browser: {
 				enabled: BROWSER_ENABLED,
-				name: BROWSER_NAME!,
+				instances: BROWSER_NAME != null ? [{ browser: BROWSER_NAME }] : [],
 				provider: 'playwright',
 				fileParallelism: false,
 				headless: true,
