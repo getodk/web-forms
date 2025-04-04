@@ -34,7 +34,7 @@ defineEmits(['update:activeLanguage']);
 	display: flex;
 }
 
-.p-dropdown.rounded {
+.p-select.rounded {
 	border-radius: 30px;
 	border: none;
 	width: max-content;
@@ -42,10 +42,10 @@ defineEmits(['update:activeLanguage']);
 	color: #424242;
 
 	&.p-focus {
-		box-shadow: inset 0 0 0 1px var(--primary-500);
+		box-shadow: inset 0 0 0 1px var(--p-primary-500);
 	}
 
-	:deep(.p-dropdown-label) {
+	:deep(.p-select-label) {
 		padding: 5px 16px;
 		span {
 			vertical-align: middle;

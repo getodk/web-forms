@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { SelectNode } from '@getodk/xforms-engine';
-import PrimeMultiSelect from 'primevue/multiselect';
+import MultiSelect from 'primevue/multiselect';
 import { computed } from 'vue';
 
 interface MultiselectDropdownProps {
@@ -37,7 +37,7 @@ if (props.question.appearances['no-buttons']) {
 </script>
 
 <template>
-	<PrimeMultiSelect
+	<MultiSelect
 		:id="`${question.nodeId}-control`"
 		class="multi-select-dropdown"
 		:input-id="question.nodeId"
@@ -54,19 +54,19 @@ if (props.question.appearances['no-buttons']) {
 </template>
 
 <style scoped lang="scss">
-@import 'primeflex/core/_variables.scss';
+@use 'primeflex/core/_variables.scss' as pf;
 
 .multi-select-dropdown {
 	width: 100%;
 	border-radius: 10px;
-	border-color: var(--surface-300);
+	border-color: var(--p-surface-300);
 	border-radius: 10px;
 
 	&:not(.p-disabled):hover {
-		border-color: var(--primary-500);
+		border-color: var(--p-primary-500);
 	}
 
-	@media screen and (min-width: #{$md}) {
+	@media screen and (min-width: #{pf.$md}) {
 		width: 50%;
 	}
 }
@@ -86,7 +86,7 @@ if (props.question.appearances['no-buttons']) {
 		&[aria-selected='true']::after {
 			content: '\e916';
 			font-family: 'owf-icomoon';
-			color: var(--primary-500);
+			color: var(--p-primary-500);
 		}
 
 		span {

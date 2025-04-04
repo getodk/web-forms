@@ -34,7 +34,7 @@ const toggle = () => {
 	panelState.value = !panelState.value;
 };
 
-const menu = ref<Menu & MenuState>();
+const menu = ref<InstanceType<typeof Menu> & MenuState>();
 
 const toggleMenu = (event: Event) => {
 	menu.value?.toggle(event);
@@ -84,7 +84,7 @@ h2 {
 	height: 20px;
 	font-weight: 500;
 	border-radius: 30px;
-	background-color: var(--gray-200);
+	background-color: var(--p-surface-100);
 	font-size: 12px;
 	text-align: center;
 }
@@ -100,11 +100,11 @@ h2 {
 		&:active,
 		&:focus,
 		&.p-focus {
-			background: var(--primary-50);
+			background: var(--p-primary-50);
 		}
 
 		&:hover {
-			background: var(--primary-100);
+			background: var(--p-primary-100);
 		}
 	}
 
@@ -114,7 +114,7 @@ h2 {
 }
 
 .p-panel.p-panel-toggleable {
-	background: var(--surface-0);
+	background: var(--p-surface-0);
 	box-shadow: none;
 
 	.p-panel {
@@ -129,7 +129,7 @@ h2 {
 	}
 
 	:deep(.p-panel-content) {
-		border-left: 2px solid var(--gray-200);
+		border-left: 2px solid var(--p-surface-100);
 		margin-left: 10px;
 		border-radius: 0;
 		padding: 0 0 0 1.5rem;

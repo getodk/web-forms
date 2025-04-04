@@ -220,7 +220,7 @@ const onSave = (saved: GeolocationRequestSuccess) => {
 </template>
 
 <style scoped lang="scss">
-@import 'primeflex/core/_variables.scss';
+@use 'primeflex/core/_variables.scss' as pf;
 
 // Variable definition
 .geopoint-control {
@@ -248,11 +248,11 @@ const onSave = (saved: GeolocationRequestSuccess) => {
 	min-width: 270px;
 
 	svg {
-		fill: var(--surface-0);
+		fill: var(--p-surface-0);
 	}
 
 	&:disabled svg {
-		fill: var(--surface-500);
+		fill: var(--p-surface-500);
 	}
 }
 
@@ -261,13 +261,13 @@ const onSave = (saved: GeolocationRequestSuccess) => {
 	font-size: var(--geo-text-font-size);
 
 	svg path {
-		fill: var(--surface-900);
+		fill: var(--p-surface-900);
 	}
 }
 
 .geopoint-value-container {
 	display: flex;
-	background: var(--surface-100);
+	background: var(--p-surface-100);
 	border-radius: var(--geo-radius);
 	align-items: center;
 	font-size: var(--geo-text-font-size);
@@ -284,7 +284,7 @@ const onSave = (saved: GeolocationRequestSuccess) => {
 
 	.icon-warning {
 		font-size: 1.2rem;
-		color: var(--error-text-color);
+		color: var(--p-message-error-color);
 	}
 
 	.geopoint-value {
@@ -298,8 +298,8 @@ const onSave = (saved: GeolocationRequestSuccess) => {
 
 .geopoint-error {
 	font-size: 1rem;
-	color: var(--error-text-color);
-	background-color: var(--error-bg-color);
+	color: var(--p-message-error-color);
+	background-color: var(--p-message-error-background);
 	border-radius: var(--geo-radius);
 	margin-top: var(--geo-spacing-xxl);
 	padding: var(--geo-spacing-xl);
@@ -316,10 +316,10 @@ const onSave = (saved: GeolocationRequestSuccess) => {
 }
 
 .p-button.p-button-contrast.p-button-outlined.retry-button {
-	background: var(--surface-0);
+	background: var(--p-surface-0);
 }
 
-@media screen and (max-width: #{$md}) {
+@media screen and (max-width: #{pf.$md}) {
 	.geopoint-value-container {
 		align-items: flex-start;
 		padding: var(--geo-spacing-xxl) var(--geo-spacing-xl);

@@ -55,7 +55,7 @@ defineEmits(['change']);
 		}
 
 		&:hover {
-			background-color: var(--primary-100);
+			background-color: var(--p-primary-100);
 		}
 
 		&.active {
@@ -63,7 +63,7 @@ defineEmits(['change']);
 			outline: none;
 
 			&:hover {
-				background-color: var(--primary-100);
+				background-color: var(--p-primary-100);
 			}
 		}
 

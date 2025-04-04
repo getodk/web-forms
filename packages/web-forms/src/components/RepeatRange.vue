@@ -40,7 +40,7 @@ const label = computed(() => props.node.currentState.label?.asString);
 	margin-bottom: 1rem;
 
 	&:hover {
-		background: var(--primary-100);
+		background: var(--p-primary-100);
 	}
 
 	.btn-add-label {

@@ -107,7 +107,7 @@ const swapItems = (index: number, newPosition: number) => {
 <template>
 	<ControlText :question="question" />
 
-	<div class="range-control-container">
+	<div class="rank-control-container">
 		<div v-if="!touched" class="rank-overlay">
 			<button :disabled="disabled" @click="selectDefaultOrder">
 				<svg xmlns="http://www.w3.org/2000/svg" width="8" height="15" viewBox="0 0 8 15" fill="none">
@@ -179,18 +179,18 @@ const swapItems = (index: number, newPosition: number) => {
 </template>
 
 <style scoped lang="scss">
-@import 'primeflex/core/_variables.scss';
+@use 'primeflex/core/_variables.scss' as pf;
 
 // Variable definition to root element
-.range-control-container {
+.rank-control-container {
 	--rankSpacing: 7px;
-	--rankBorder: 1px solid var(--surface-300);
+	--rankBorder: 1px solid var(--p-surface-300);
 	--rankBorderRadius: 10px;
-	--rankHighlightBackground: var(--primary-50);
-	--rankHighlightBorder: var(--primary-500);
-	--rankBaseBackground: var(--surface-0);
-	--rankDisabledBackground: var(--surface-300);
-	--rankDisabledText: var(--surface-500);
+	--rankHighlightBackground: var(--p-primary-50);
+	--rankHighlightBorder: var(--p-primary-500);
+	--rankBaseBackground: var(--p-surface-0);
+	--rankDisabledBackground: var(--p-surface-300);
+	--rankDisabledText: var(--p-surface-500);
 }
 
 // Overriding VueDraggable's sortable-chosen class
@@ -199,7 +199,7 @@ const swapItems = (index: number, newPosition: number) => {
 	background-color: var(--rankBaseBackground);
 }
 
-.range-control-container {
+.rank-control-container {
 	position: relative;
 }
 
@@ -223,7 +223,7 @@ const swapItems = (index: number, newPosition: number) => {
 	border-radius: var(--rankBorderRadius);
 	font-size: 1rem;
 	line-height: 17px;
-	color: var(--surface-900);
+	color: var(--p-surface-900);
 	cursor: move;
 
 	.rank-label {
@@ -303,7 +303,7 @@ const swapItems = (index: number, newPosition: number) => {
 	background-color: rgba(157, 157, 157, 0.9);
 }
 
-@media screen and (max-width: #{$sm}) {
+@media screen and (max-width: #{pf.$sm}) {
 	.rank-buttons {
 		display: none;
 	}

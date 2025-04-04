@@ -201,7 +201,7 @@ document.addEventListener(
 </template>
 
 <style scoped lang="scss">
-@import 'primeflex/core/_variables.scss';
+@use 'primeflex/core/_variables.scss' as pf;
 
 .spinner {
 	width: 40px;
@@ -216,7 +216,7 @@ document.addEventListener(
 	.dropbox {
 		border: 1px dashed black;
 		border-radius: 20px;
-		background-color: var(--blue-50);
+		background-color: var(--p-primary-50);
 		height: 110px;
 		display: flex;
 		flex-direction: column;
@@ -231,7 +231,7 @@ document.addEventListener(
 
 	.dropbox.highlighted {
 		border-color: #1a73e8;
-		background-color: var(--blue-100);
+		background-color: var(--p-primary-100);
 	}
 
 	a.upload-file-link {
@@ -340,7 +340,7 @@ document.addEventListener(
 	}
 }
 
-@media screen and (min-width: #{$md}) {
+@media screen and (min-width: #{pf.$md}) {
 	.form-upload-component {
 		.preview-wrapper {
 			.action-buttons {

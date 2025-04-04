@@ -33,13 +33,13 @@ const value = computed<GeopointValue>(() => {
 </template>
 
 <style scoped lang="scss">
-@import 'primeflex/core/_variables.scss';
+@use 'primeflex/core/_variables.scss' as pf;
 
 .geopoint-formatted-value > span {
 	margin-right: 10px;
 }
 
-@media screen and (max-width: #{$md}) {
+@media screen and (max-width: #{pf.$md}) {
 	.geopoint-formatted-value {
 		display: flex;
 		flex-direction: column;

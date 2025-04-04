@@ -45,21 +45,21 @@ const setValue = (value: boolean) => {
 .value-option {
 	display: flex;
 	align-items: center;
-	outline: 1px solid var(--surface-300);
+	outline: 1px solid var(--p-surface-300);
 	border-radius: 10px;
 	padding: 15px;
-	background: var(--surface-0);
+	background: var(--p-surface-0);
 	cursor: pointer;
 
 	&:has(.p-checkbox-input:hover),
 	&:has(.p-checkbox-input:focus-visible) {
-		outline-color: var(--primary-500);
-		background-color: var(--primary-100);
+		outline-color: var(--p-primary-500);
+		background-color: var(--p-primary-100);
 	}
 
 	&.active {
-		outline: 2px solid var(--primary-500);
-		background-color: var(--primary-50);
+		outline: 2px solid var(--p-primary-500);
+		background-color: var(--p-primary-50);
 	}
 
 	.label-text {

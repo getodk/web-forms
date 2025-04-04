@@ -63,7 +63,7 @@ const submitPressed = inject('submitPressed');
 	border-radius: 10px;
 
 	&.highlight {
-		background-color: var(--error-bg-color);
+		background-color: var(--p-message-error-background);
 	}
 }
 

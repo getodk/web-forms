@@ -192,7 +192,7 @@ onBeforeUnmount(cleanup);
 </template>
 
 <style lang="scss">
-@import 'primeflex/core/_variables.scss';
+@use 'primeflex/core/_variables.scss' as pf;
 
 .geo-dialog {
 	--geo-spacing-s: 5px;
@@ -231,7 +231,7 @@ onBeforeUnmount(cleanup);
 
 .geo-dialog-body {
 	display: flex;
-	background: var(--surface-100);
+	background: var(--p-surface-100);
 	border-radius: var(--geo-radius);
 
 	.geopoint-icons {
@@ -240,7 +240,7 @@ onBeforeUnmount(cleanup);
 
 	.icon-warning {
 		font-size: 1.5rem;
-		color: var(--error-text-color);
+		color: var(--p-message-error-color);
 	}
 }
 
@@ -269,7 +269,7 @@ onBeforeUnmount(cleanup);
 
 // Overriding Primevue's styles
 .p-dialog.geo-dialog {
-	background: var(--surface-0);
+	background: var(--p-surface-0);
 
 	&,
 	.p-dialog-footer,
@@ -278,7 +278,7 @@ onBeforeUnmount(cleanup);
 	}
 }
 
-@media screen and (max-width: #{$md}) {
+@media screen and (max-width: #{pf.$md}) {
 	.geo-dialog-body {
 		padding: var(--geo-spacing-xxl) var(--geo-spacing-xl);
 	}

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { xformFixturesByIdentifier } from '@getodk/common/fixtures/xforms';
 import { xlsFormUrlMap } from '@getodk/common/fixtures/xlsforms';
-import PrimeButton from 'primevue/button';
+import Button from 'primevue/button';
 import { computed } from 'vue';
 import { RouterLink } from 'vue-router';
 
@@ -45,10 +45,10 @@ const formXls = computed(() => {
 			</p>
 			<div class="actions">
 				<RouterLink :to="`/form?url=${formXml}`" target="_blank" class="form-preview-link">
-					<PrimeButton class="preview-button" label="View Form" icon="icon-remove_red_eye" />
+					<Button class="preview-button" label="View Form" icon="icon-remove_red_eye" />
 				</RouterLink>
 				<a :href="formXls">
-					<PrimeButton class="download-button" label="Download" icon="icon-file_download" />
+					<Button class="download-button" label="Download" severity="secondary" icon="icon-file_download" />
 				</a>
 			</div>
 		</div>
@@ -60,7 +60,7 @@ const formXls = computed(() => {
 	border-radius: 20px;
 	overflow: hidden;
 	border: 1px solid #e6e7e8;
-	background: var(--surface-0);
+	background: var(--p-surface-0);
 
 	.form-image-wrap {
 		overflow: hidden;
@@ -90,36 +90,11 @@ const formXls = computed(() => {
 		min-height: 4rem;
 		font-weight: 300;
 	}
+
 	.actions {
 		display: flex;
 		flex-direction: row;
 		gap: 1rem;
-	}
-
-	.preview-button {
-		background-color: var(--primary-button-background-color);
-
-		&:hover,
-		&:focus {
-			background-color: var(--primary-button-background-color-hover);
-		}
-		&:active {
-			background-color: var(--primary-button-background-color-active);
-		}
-	}
-	.download-button {
-		background-color: var(--secondary-button-background-color);
-		color: var(--secondary-button-text-color);
-
-		&:hover,
-		&:focus {
-			background-color: var(--secondary-button-background-color-hover);
-			color: var(--secondary-button-text-color);
-		}
-		&:active {
-			background-color: var(--secondary-button-background-color-active);
-			color: var(--secondary-button-text-color);
-		}
 	}
 }
 </style>

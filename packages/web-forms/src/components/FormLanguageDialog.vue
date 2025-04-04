@@ -59,7 +59,7 @@ const handleCancel = () => {
 	cursor: pointer;
 
 	&:hover {
-		border-color: var(--primary-500);
+		border-color: var(--p-primary-500);
 	}
 	> div {
 		margin-right: 10px;

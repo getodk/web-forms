@@ -54,10 +54,10 @@ provide('isInvalid', isInvalid);
 
 <style scoped lang="scss">
 .input-control-container {
-	--input-bgcolor-default: var(--surface-100);
+	--input-bgcolor-default: var(--p-surface-100);
 	--input-bgcolor: var(--input-bgcolor-default);
-	--input-bgcolor-emphasized: var(--surface-50);
-	--input-bgcolor-inside-highlighted: var(--surface-0);
+	--input-bgcolor-emphasized: var(--p-surface-50);
+	--input-bgcolor-inside-highlighted: var(--p-surface-0);
 	--input-color: var(--text-color);
 
 	// Using `:has` allows sharing the same state of these custom properties for the
@@ -97,7 +97,7 @@ provide('isInvalid', isInvalid);
 		position: absolute;
 		inset-inline-end: 10px;
 		top: 15px;
-		color: var(--error-text-color);
+		color: var(--p-message-error-color);
 		font-size: 1.2rem;
 	}
 }

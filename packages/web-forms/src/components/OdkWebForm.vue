@@ -260,7 +260,7 @@ watchEffect(() => {
 </template>
 
 <style scoped lang="scss">
-@import 'primeflex/core/_variables.scss';
+@use 'primeflex/core/_variables.scss' as pf;
 
 .form-initialization-status {
 	display: none;
@@ -298,8 +298,8 @@ watchEffect(() => {
 
 		.form-error-message.p-message.p-message-error {
 			border-radius: 10px;
-			background-color: var(--error-bg-color);
-			border: 1px solid var(--error-text-color);
+			background-color: var(--p-message-error-background);
+			border: 1px solid var(--p-message-error-border-color);
 			max-width: var(--wf-max-form-width);
 			width: 100%;
 			margin: 0rem auto 1rem auto;
@@ -336,7 +336,7 @@ watchEffect(() => {
 		margin-left: 0.5rem;
 
 		.anchor {
-			color: var(--gray-500);
+			color: var(--p-surface-400);
 			font-size: 0.85rem;
 			font-weight: 300;
 			text-decoration: none;
@@ -357,12 +357,12 @@ watchEffect(() => {
 		.version {
 			font-size: 0.7rem;
 			margin: 0.5rem 0 0 0.85rem;
-			color: var(--gray-500);
+			color: var(--p-surface-400);
 		}
 	}
 }
 
-@media screen and (max-width: #{$lg - 1}) {
+@media screen and (max-width: #{pf.$lg - 1}) {
 	.odk-form {
 		.form-wrapper {
 			max-width: unset;
@@ -405,15 +405,15 @@ watchEffect(() => {
 </style>
 
 <style lang="scss">
-@import 'primeflex/core/_variables.scss';
+@use 'primeflex/core/_variables.scss' as pf;
 :root {
-	--breakpoint-lg: #{$lg};
+	--breakpoint-lg: #{pf.$lg};
 }
 
 body {
-	background: var(--gray-200);
+	background: var(--p-surface-100);
 }
-@media screen and (max-width: #{$lg - 1}) {
+@media screen and (max-width: #{pf.$lg - 1}) {
 	body {
 		background: white;
 	}
