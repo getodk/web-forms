@@ -4,16 +4,16 @@ import {
 	type RootNode,
 	type SyntheticDefaultLanguage,
 } from '@getodk/xforms-engine';
-import PrimeButton from 'primevue/button';
-import PrimeCard from 'primevue/card';
-import PrimeMenu from 'primevue/menu';
+import Button from 'primevue/button';
+import Card from 'primevue/card';
+import Menu from 'primevue/menu';
 import { ref } from 'vue';
 import FormLanguageDialog from './FormLanguageDialog.vue';
 import FormLanguageMenu from './FormLanguageMenu.vue';
 
 const props = defineProps<{ form: RootNode }>();
 const languageDialogState = ref(false);
-const menu = ref<PrimeMenu>();
+const menu = ref<InstanceType<typeof Menu>>();
 
 const isFormLanguage = (lang: FormLanguage | SyntheticDefaultLanguage): lang is FormLanguage => {
 	return !lang.isSyntheticDefault;
@@ -50,20 +50,20 @@ const handleLanguageChange = (event: FormLanguage) => {
 	<!-- for desktop -->
 	<div class="hidden lg:inline larger-screens">
 		<div class="flex justify-content-end flex-wrap gap-3">
-			<PrimeButton class="print-button" severity="secondary" rounded icon="icon-local_printshop" @click="print" />
+			<Button class="print-button" severity="secondary" rounded icon="icon-local_printshop" @click="print" />
 			<FormLanguageMenu
 				:active-language="form.currentState.activeLanguage"
 				:languages="languages"
 				@update:active-language="handleLanguageChange"
 			/>
 		</div>
-		<PrimeCard class="form-title">
+		<Card class="form-title">
 			<template #content>
 				<!-- TODO/q: should the title be on the definition or definition.form be accessible instead of definition.bind.form -->
 				<h1>{{ form.definition.bind.form.title }}</h1>
 			<!-- last saved timestamp -->
 			</template>
-		</PrimeCard>
+		</Card>
 	</div>
 
 
@@ -75,12 +75,12 @@ const handleLanguageChange = (event: FormLanguage) => {
 
 		<div class="form-options">
 			<!-- if Form is not multilingual then we always show print button -->
-			<PrimeButton v-if="languages.length === 0" class="print-button" severity="secondary" rounded icon="icon-local_printshop" @click="print" />
+			<Button v-if="languages.length === 0" class="print-button" severity="secondary" rounded icon="icon-local_printshop" @click="print" />
 
 			<!-- show either hamburger or (print button and language changer) based on container size -->
 			<div v-else class="multilingual">
-				<PrimeButton icon="icon-menu" class="btn-menu" text rounded aria-label="Menu" @click="menu?.toggle" />
-				<PrimeMenu id="overlay_menu" ref="menu" :model="items" :popup="true" />
+				<Button icon="icon-menu" class="btn-menu" text rounded aria-label="Menu" @click="menu?.toggle" />
+				<Menu id="overlay_menu" ref="menu" :model="items" :popup="true" />
 				<FormLanguageDialog
 					v-model:state="languageDialogState"
 					:active-language="form.currentState.activeLanguage"
@@ -88,7 +88,7 @@ const handleLanguageChange = (event: FormLanguage) => {
 					@update:active-language="handleLanguageChange"
 				/>
 
-				<PrimeButton class="print-button" severity="secondary" rounded icon="icon-local_printshop" @click="print" />
+				<Button class="print-button" severity="secondary" rounded icon="icon-local_printshop" @click="print" />
 				<FormLanguageMenu
 					:active-language="form.currentState.activeLanguage"
 					:languages="languages"
@@ -107,11 +107,11 @@ const handleLanguageChange = (event: FormLanguage) => {
 	font-size: 1.5rem;
 
 	&:hover {
-		background: var(--primary-100);
+		background: var(--p-primary-100);
 	}
 	&:active,
 	&:focus {
-		background: var(--primary-50);
+		background: var(--p-primary-50);
 	}
 }
 
@@ -133,7 +133,7 @@ const handleLanguageChange = (event: FormLanguage) => {
 }
 
 .smaller-screens {
-	background-color: var(--surface-0);
+	background-color: var(--p-surface-0);
 	filter: drop-shadow(0px 2px 6px rgba(0, 0, 0, 0.15)) drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
 
 	h1 {
@@ -157,7 +157,7 @@ const handleLanguageChange = (event: FormLanguage) => {
 			gap: 0.5rem;
 
 			.btn-menu {
-				color: var(--surface-900);
+				color: var(--p-surface-900);
 			}
 			.print-button {
 				display: none;
@@ -184,7 +184,7 @@ const handleLanguageChange = (event: FormLanguage) => {
 	}
 
 	.btn-menu {
-		color: var(--surface-900);
+		color: var(--p-surface-900);
 	}
 }
 </style>

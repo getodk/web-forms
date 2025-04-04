@@ -146,7 +146,7 @@ const orientation = props.node.appearances.vertical ? 'vertical' : 'horizontal';
 
 // = track (full-width; full-height in vertical orientation)
 .p-slider {
-	background-color: rgb(from var(--primary-color) r g b / 25%);
+	background-color: rgb(from var(--p-primary-color) r g b / 25%);
 
 	// = emphasized range between `min` and current value
 	:deep(.p-slider-range) {
@@ -196,7 +196,7 @@ const orientation = props.node.appearances.vertical ? 'vertical' : 'horizontal';
 		&:focus-visible {
 			box-shadow:
 				var(--thumb-shadow),
-				0 0 1px 10px rgb(from var(--primary-color) r g b / 20%);
+				0 0 1px 10px rgb(from var(--p-primary-color) r g b / 20%);
 		}
 	}
 }

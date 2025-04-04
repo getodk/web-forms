@@ -12,6 +12,6 @@ defineProps<{ question: QuestionNode }>();
 <style scoped lang="scss">
 .hint {
 	font-size: 0.85rem;
-	color: var(--text-color-secondary);
+	color: var(--p-surface-500);
 }
 </style>

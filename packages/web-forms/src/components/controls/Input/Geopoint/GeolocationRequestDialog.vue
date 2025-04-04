@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watchEffect } from 'vue';
 import Button from 'primevue/button';
-import PrimeDialog from 'primevue/dialog';
-import PrimeProgressSpinner from 'primevue/progressspinner';
+import Dialog from 'primevue/dialog';
+import ProgressSpinner from 'primevue/progressspinner';
 import { truncateDecimals } from '@/lib/format/truncateDecimals.ts';
 import ElapsedTime from '@/components/ElapsedTime.vue';
 import {
@@ -118,11 +118,11 @@ onBeforeUnmount(cleanup);
 </script>
 
 <template>
-	<PrimeDialog :visible="true" modal class="geo-dialog" :closable="false" :draggable="false">
+	<Dialog :visible="true" modal class="geo-dialog" :closable="false" :draggable="false">
 		<template #header>
 			<div class="geo-dialog-header">
 				<div class="geo-dialog-header-title">
-					<PrimeProgressSpinner class="spinner" stroke-width="4" />
+					<ProgressSpinner class="spinner" stroke-width="4" />
 					<!-- TODO: translations -->
 					<strong>Finding your location</strong>
 				</div>
@@ -188,11 +188,11 @@ onBeforeUnmount(cleanup);
 				<Button label="Save location" rounded :disabled="accuracy.value == null" @click="save()" />
 			</div>
 		</template>
-	</PrimeDialog>
+	</Dialog>
 </template>
 
 <style lang="scss">
-@import 'primeflex/core/_variables.scss';
+@use 'primeflex/core/_variables.scss' as pf;
 
 .geo-dialog {
 	--geo-spacing-s: 5px;
@@ -231,7 +231,7 @@ onBeforeUnmount(cleanup);
 
 .geo-dialog-body {
 	display: flex;
-	background: var(--surface-100);
+	background: var(--p-surface-100);
 	border-radius: var(--geo-radius);
 
 	.geopoint-icons {
@@ -240,7 +240,7 @@ onBeforeUnmount(cleanup);
 
 	.icon-warning {
 		font-size: 1.5rem;
-		color: var(--error-text-color);
+		color: var(--p-message-error-color);
 	}
 }
 
@@ -269,7 +269,7 @@ onBeforeUnmount(cleanup);
 
 // Overriding Primevue's styles
 .p-dialog.geo-dialog {
-	background: var(--surface-0);
+	background: var(--p-surface-0);
 
 	&,
 	.p-dialog-footer,
@@ -278,7 +278,7 @@ onBeforeUnmount(cleanup);
 	}
 }
 
-@media screen and (max-width: #{$md}) {
+@media screen and (max-width: #{pf.$md}) {
 	.geo-dialog-body {
 		padding: var(--geo-spacing-xxl) var(--geo-spacing-xl);
 	}

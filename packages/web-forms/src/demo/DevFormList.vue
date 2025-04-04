@@ -46,7 +46,7 @@ h1 {
 			padding: 0.5rem;
 
 			&:hover {
-				background-color: var(--gray-100);
+				background-color: var(--p-surface-100);
 			}
 		}
 
@@ -56,26 +56,26 @@ h1 {
 			li {
 				list-style: none;
 				margin: 10px;
-				border: 1px solid var(--primary-500);
+				border: 1px solid var(--p-primary-500);
 				border-radius: 10px;
 				cursor: pointer;
-				background-color: var(--surface-0);
+				background-color: var(--p-surface-0);
 				font-size: 16px;
 
 				a {
 					display: block;
 					padding: 10px;
 					text-decoration: none;
-					color: var(--gray-900);
+					color: var(--p-surface-900);
 
 					&:visited {
-						color: var(--gray-900);
+						color: var(--p-surface-900);
 					}
 				}
 			}
 
 			li:hover {
-				background-color: var(--primary-50);
+				background-color: var(--p-primary-50);
 			}
 		}
 	}

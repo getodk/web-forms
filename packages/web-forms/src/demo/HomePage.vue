@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import PrimeChip from 'primevue/chip';
+import Chip from 'primevue/chip';
 import DemoForm from './DemoForm.vue';
 import FormList from './DevFormList.vue';
 import FormUpload from './FormUpload.vue';
@@ -15,7 +15,7 @@ const isDev = import.meta.env.DEV;
 					<div class="col intro-wrapper">
 						<div class="intro-block">
 							<div>
-								<PrimeChip class="beta-chip" label="PREVIEW" />
+								<Chip class="beta-chip" label="PREVIEW" />
 							</div>
 
 							<h1 class="pape-title">
@@ -138,8 +138,10 @@ const isDev = import.meta.env.DEV;
 </template>
 
 <style scoped lang="scss">
-@import 'primeflex/core/_variables.scss';
+@use 'primeflex/core/_variables.scss' as pf;
+
 .home-page-component {
+	/* Using 'Hanken Grotesk' font in the Preview page to match ODK site. Forms and fields use Roboto only. */
 	--font-family: 'Hanken Grotesk', Roboto, sans-serif;
 	--primary-color: #009ecc;
 	--primary-button-background-color: var(--primary-color);
@@ -197,7 +199,7 @@ const isDev = import.meta.env.DEV;
 			gap: 18px;
 
 			.beta-chip {
-				background-color: var(--blue-50);
+				background-color: var(--p-primary-50);
 				font-size: 14px;
 				padding: 5.25px 16px;
 
@@ -247,7 +249,7 @@ const isDev = import.meta.env.DEV;
 	}
 }
 
-@media screen and (min-width: #{$md}) {
+@media screen and (min-width: #{pf.$md}) {
 	.home-page-component {
 		.container {
 			max-width: 720px;
@@ -274,7 +276,7 @@ const isDev = import.meta.env.DEV;
 	}
 }
 
-@media screen and (min-width: #{$lg}) {
+@media screen and (min-width: #{pf.$lg}) {
 	.home-page-component {
 		.container {
 			max-width: 960px;
@@ -282,7 +284,7 @@ const isDev = import.meta.env.DEV;
 	}
 }
 
-@media screen and (min-width: #{$xl}) {
+@media screen and (min-width: #{pf.$xl}) {
 	.home-page-component {
 		.container {
 			max-width: 1030px;

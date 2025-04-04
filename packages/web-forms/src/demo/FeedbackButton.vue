@@ -33,7 +33,7 @@ const surveyLink = computed(() => {
 	display: block;
 	position: fixed;
 	background-color: white;
-	color: var(--primary-500);
+	color: var(--p-primary-500);
 	border: 2px solid var(--gray-300);
 	right: 0;
 	bottom: 150px;

@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import PrimeButton from 'primevue/button';
-import PrimeProgressSpinner from 'primevue/progressspinner';
+import Button from 'primevue/button';
+import ProgressSpinner from 'primevue/progressspinner';
 import { RouterLink } from 'vue-router';
 
-import PrimeIconField from 'primevue/iconfield';
-import PrimeInputIcon from 'primevue/inputicon';
-import PrimeInputText from 'primevue/inputtext';
-import PrimeMessage from 'primevue/message';
+import IconField from 'primevue/iconfield';
+import InputIcon from 'primevue/inputicon';
+import InputText from 'primevue/inputtext';
+import Message from 'primevue/message';
 
 import { computed, ref, watch, type HTMLInputElementEvent } from 'vue';
 import { useConfiguration } from './composables/configuration';
@@ -163,7 +163,7 @@ document.addEventListener(
 					</template>
 				</template>
 				<template v-else>
-					<PrimeProgressSpinner class="spinner" />
+					<ProgressSpinner class="spinner" />
 					<span>
 						Uploading form
 					</span>
@@ -172,36 +172,36 @@ document.addEventListener(
 		</template>
 
 		<div v-else class="preview-wrapper">
-			<PrimeIconField icon-position="left" class="textbox-with-icon">
-				<PrimeInputIcon class="icon-insert_drive_file" />
-				<PrimeInputText :value="uploadedFilename" class="uploaded-file-textbox" />
-				<PrimeButton class="clear-button" icon="icon-clear" text rounded aria-label="Cancel" @click="reset()" />
-			</PrimeIconField>
+			<IconField icon-position="left" class="textbox-with-icon">
+				<InputIcon class="icon-insert_drive_file" />
+				<InputText :value="uploadedFilename" class="uploaded-file-textbox" />
+				<Button class="clear-button" icon="icon-clear" text rounded aria-label="Cancel" @click="reset()" />
+			</IconField>
 
 			<div class="action-buttons">
-				<PrimeButton label="Upload new Form" icon="icon-file_upload" class="upload-new-button" @click="reset" />
+				<Button label="Upload new Form" icon="icon-file_upload" class="upload-new-button" @click="reset" />
 				<RouterLink :to="`/form?url=${xformUrl}`" target="_blank" class="preview-link">
-					<PrimeButton label="Preview Form" icon="icon-remove_red_eye" class="preview-link-button" />
+					<Button label="Preview Form" icon="icon-remove_red_eye" class="preview-link-button" />
 				</RouterLink>
 			</div>
 		</div>
 
-		<PrimeMessage v-if="error" severity="error" icon="icon-error" @close="reset()">
+		<Message v-if="error" severity="error" icon="icon-error" @close="reset()">
 			{{ error }}
-		</PrimeMessage>
-		<PrimeMessage v-if="warnings?.length > 0" severity="warn" icon="icon-warning">
+		</Message>
+		<Message v-if="warnings?.length > 0" severity="warn" icon="icon-warning">
 			<span>There are following possible problems in the uploaded Form:</span>
 			<ul>
 				<li v-for="warning in warnings" :key="warning">
 					{{ warning }}
 				</li>
 			</ul>
-		</PrimeMessage>
+		</Message>
 	</div>
 </template>
 
 <style scoped lang="scss">
-@import 'primeflex/core/_variables.scss';
+@use 'primeflex/core/_variables.scss' as pf;
 
 .spinner {
 	width: 40px;
@@ -216,7 +216,7 @@ document.addEventListener(
 	.dropbox {
 		border: 1px dashed black;
 		border-radius: 20px;
-		background-color: var(--blue-50);
+		background-color: var(--p-primary-50);
 		height: 110px;
 		display: flex;
 		flex-direction: column;
@@ -231,7 +231,7 @@ document.addEventListener(
 
 	.dropbox.highlighted {
 		border-color: #1a73e8;
-		background-color: var(--blue-100);
+		background-color: var(--p-primary-100);
 	}
 
 	a.upload-file-link {
@@ -340,7 +340,7 @@ document.addEventListener(
 	}
 }
 
-@media screen and (min-width: #{$md}) {
+@media screen and (min-width: #{pf.$md}) {
 	.form-upload-component {
 		.preview-wrapper {
 			.action-buttons {

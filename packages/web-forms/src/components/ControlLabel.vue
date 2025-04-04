@@ -16,7 +16,7 @@ label {
 	line-height: 1.8rem;
 
 	.required {
-		color: var(--error-text-color);
+		color: var(--p-message-error-color);
 	}
 }
 </style>

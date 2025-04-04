@@ -1,3 +1,18 @@
+/**
+ * Global Styles
+ * Defines styles applied to the Web Forms' Preview (demo) page and Web Forms' components.
+ */
+
+/**
+ * ODK CSS Variables
+ * Establishes root-level variables for consistent styling and easy theming customization.
+ */
+:root {
+	--odk-font-family: Roboto, sans-serif;
+}
+
 body {
 	margin: 0;
+	font-family: var(--odk-font-family);
+	font-weight: 400;
 }

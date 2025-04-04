@@ -53,7 +53,7 @@ defineProps<{ appearances: SelectNodeAppearances }>();
 
 .table-row.list-nolabel {
 	&:hover {
-		background-color: var(--surface-100);
+		background-color: var(--p-surface-100);
 	}
 
 	:deep(.value-option) {
@@ -88,7 +88,7 @@ defineProps<{ appearances: SelectNodeAppearances }>();
 	margin-top: -30px;
 
 	&:hover {
-		background-color: var(--surface-100);
+		background-color: var(--p-surface-100);
 	}
 
 	:deep(.value-option) {

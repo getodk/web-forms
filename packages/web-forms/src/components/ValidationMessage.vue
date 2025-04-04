@@ -19,7 +19,7 @@ withDefaults(defineProps<{ message?: string; showMessage: boolean; addPlaceholde
 	min-height: 2rem;
 }
 .validation-message {
-	color: var(--error-text-color);
+	color: var(--p-message-error-color);
 	margin-top: 0.6rem;
 	display: block;
 }

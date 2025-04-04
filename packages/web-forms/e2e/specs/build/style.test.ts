@@ -23,14 +23,14 @@ test('Build includes component-defined styles', async ({ page }) => {
 	// against regressions in specific presentation aspects.
 	expect(Number.isNaN(largeViewportSize)).toBe(false);
 
-	// Setting viewport to `$lg` breakpoint ensures the `--gray-200` background
+	// Setting viewport to `$lg` breakpoint ensures the `--p-surface-100` background
 	// color is effective for `body`.
 	await page.setViewportSize({
 		width: largeViewportSize,
 		height: largeViewportSize,
 	});
 
-	// Assign several colors to `--gray-200`, checking that the color is
+	// Assign several colors to `--p-surface-100`, checking that the color is
 	// (initially) **not** the body's effective background color, and then that it
 	// is once assigned to that custom property.
 	//
@@ -41,8 +41,8 @@ test('Build includes component-defined styles', async ({ page }) => {
 	for (const color of colors) {
 		await expect(page.locator('body')).not.toHaveCSS('background-color', color);
 
-		await page.locator('html').evaluate((pageRoot, gray200) => {
-			pageRoot.style.setProperty('--gray-200', gray200);
+		await page.locator('html').evaluate((pageRoot, backgroundColor) => {
+			pageRoot.style.setProperty('--p-surface-100', backgroundColor);
 		}, color);
 
 		await expect(page.locator('body')).toHaveCSS('background-color', color);
