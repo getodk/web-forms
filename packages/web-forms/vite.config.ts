@@ -188,7 +188,7 @@ export default defineConfig(({ mode }) => {
 			},
 		},
 		optimizeDeps: {
-			force: false,
+			force: true,
 		},
 		test: {
 			browser: {
