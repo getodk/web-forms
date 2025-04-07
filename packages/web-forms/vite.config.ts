@@ -189,7 +189,6 @@ export default defineConfig(({ mode }) => {
 		},
 		optimizeDeps: {
 			force: true,
-			include: ['vue'],
 		},
 		test: {
 			browser: {
