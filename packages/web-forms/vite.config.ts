@@ -185,6 +185,11 @@ export default defineConfig(({ mode }) => {
 			 */
 			include: ['vue'],
 		},
+		server: {
+			fs: {
+				allow: ['.', '..', '../../node_modules'],
+			},
+		},
 		test: {
 			browser: {
 				enabled: BROWSER_ENABLED,
