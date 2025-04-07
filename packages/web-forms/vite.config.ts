@@ -102,12 +102,12 @@ export default defineConfig(({ mode }) => {
 		plugins: [vue(), vueJsx(), cssInjectedByJsPlugin(), ...extraPlugins],
 		resolve: {
 			alias: {
-				'@getodk/common': resolve(__dirname, '../common/src'),
 				/**
 				 * Linked dependencies outside the local node_modules (e.g., hoisted to the monorepo root)
 				 * are not pre-bundled unless explicitly configured.
 				 */
 				vue: resolve(__dirname, '../../node_modules/vue/dist/vue.esm-bundler.js'),
+				'@getodk/common': resolve(__dirname, '../common/src'),
 				'@': fileURLToPath(new URL('./src', import.meta.url)),
 				'primevue/menuitem': 'primevue/menu',
 				// With following lines, fonts byte array are copied into css file
@@ -117,6 +117,11 @@ export default defineConfig(({ mode }) => {
 				),
 				// Icomoon fonts
 				'/fonts': resolve('./src/assets/fonts'),
+			},
+		},
+		server: {
+			fs: {
+				allow: ['.', '..', '../../node_modules'],
 			},
 		},
 		build: {
