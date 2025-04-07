@@ -178,9 +178,12 @@ export default defineConfig(({ mode }) => {
 			},
 		},
 		optimizeDeps: {
-			/*force: true,
-			include: ['vue'],*/
-			disabled: true,
+			force: false,
+			/**
+			 * Linked dependencies outside the local node_modules (e.g., hoisted to the monorepo root)
+			 * are not pre-bundled unless explicitly configured.
+			 */
+			include: ['vue'],
 		},
 		test: {
 			browser: {
