@@ -37,6 +37,7 @@ const value = computed<GeopointValue>(() => {
 
 .geopoint-formatted-value > span {
 	margin-right: 10px;
+	font-size: var(--odk-answer-font-size);
 }
 
 @media screen and (max-width: #{pf.$md}) {

@@ -68,7 +68,7 @@ const submitPressed = inject<boolean>('submitPressed', false);
 	width: 100%;
 	display: flex;
 	flex-direction: column;
-	gap: 1rem;
+	gap: 0.8rem;
 
 	@media screen and (min-width: #{pf.$md}) {
 		min-width: 50%;

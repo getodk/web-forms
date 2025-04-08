@@ -184,19 +184,12 @@ const swapItems = (index: number, newPosition: number) => {
 // Variable definition to root element
 .rank-control-container {
 	--rankSpacing: 7px;
-	--rankBorder: 1px solid var(--p-surface-300);
-	--rankBorderRadius: 10px;
-	--rankHighlightBackground: var(--p-primary-50);
-	--rankHighlightBorder: var(--p-primary-500);
-	--rankBaseBackground: var(--p-surface-0);
-	--rankDisabledBackground: var(--p-surface-300);
-	--rankDisabledText: var(--p-surface-500);
 }
 
 // Overriding VueDraggable's sortable-chosen class
 .sortable-chosen {
 	opacity: 0.9;
-	background-color: var(--rankBaseBackground);
+	background-color: var(--odk-base-background-color);
 }
 
 .rank-control-container {
@@ -217,13 +210,13 @@ const swapItems = (index: number, newPosition: number) => {
 	align-items: center;
 	justify-content: space-between;
 	width: 100%;
-	padding: 8px;
-	background: var(--rankBaseBackground);
-	border: var(--rankBorder);
-	border-radius: var(--rankBorderRadius);
-	font-size: 1rem;
+	padding: 6px;
+	background: var(--odk-base-background-color);
+	border: 1px solid var(--odk-border-color);
+	border-radius: var(--odk-radius);
+	font-size: var(--odk-answer-font-size);
 	line-height: 17px;
-	color: var(--p-surface-900);
+	color: var(--odk-text-color);
 	cursor: move;
 
 	.rank-label {
@@ -239,8 +232,8 @@ const swapItems = (index: number, newPosition: number) => {
 
 .moving,
 .fade-moving {
-	background: var(--rankHighlightBackground);
-	border: 2px solid var(--rankHighlightBorder);
+	background: var(--odk-primary-lighter-background-color);
+	border: 2px solid var(--odk-primary-border-color);
 }
 
 .fade-moving {
@@ -252,24 +245,19 @@ const swapItems = (index: number, newPosition: number) => {
 	display: flex;
 	align-items: center;
 	gap: var(--rankSpacing);
-	border: var(--rankBorder);
-	border-radius: var(--rankBorderRadius);
-	background: var(--rankBaseBackground);
+	border: 1px solid var(--odk-border-color);
+	border-radius: var(--odk-radius);
+	background: var(--odk-base-background-color);
 	padding: var(--rankSpacing);
 	line-height: 0;
 
-	&:hover:not(:disabled) {
-		background: var(--rankHighlightBackground);
-		border: 1px solid var(--rankHighlightBorder);
-	}
-
 	&:disabled {
-		background: var(--rankDisabledBackground);
-		color: var(--rankDisabledText);
+		background: var(--odk-inactive-background-color);
+		color: var(--odk-muted-text-color);
 		border: none;
 
 		svg path {
-			fill: var(--rankDisabledText);
+			fill: var(--odk-muted-text-color);
 		}
 	}
 }
@@ -282,6 +270,11 @@ const swapItems = (index: number, newPosition: number) => {
 .rank-buttons {
 	display: flex;
 	gap: var(--rankSpacing);
+
+	button:hover:not(:disabled) {
+		background: var(--odk-muted-background-color);
+		border: 1px solid var(--odk-border-color);
+	}
 }
 
 .rank-overlay {
@@ -291,16 +284,21 @@ const swapItems = (index: number, newPosition: number) => {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	background-color: rgba(244, 243, 242, 0.9);
-	border-radius: var(--rankBorderRadius);
+	background-color: rgba(from var(--odk-muted-background-color) r g b / 0.9);
+	border-radius: var(--odk-radius);
 
 	button {
-		padding: var(--rankSpacing) 20px;
+		padding: 10px 20px;
+
+		&:hover:not(:disabled) {
+			background: var(--odk-inactive-background-color);
+			border: 1px solid var(--odk-border-color);
+		}
 	}
 }
 
 .highlight .rank-overlay {
-	background-color: rgba(157, 157, 157, 0.9);
+	background-color: rgba(from var(--odk-inactive-background-color) r g b / 0.9);
 }
 
 @media screen and (max-width: #{pf.$sm}) {

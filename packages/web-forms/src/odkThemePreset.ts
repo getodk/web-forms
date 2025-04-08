@@ -20,21 +20,17 @@ export const odkThemePreset = definePreset(Aura, {
 			light: {
 				surface: {
 					0: '#ffffff',
-					50: '#f9f9f9',
-					100: '#f4f4f4',
-					200: '#eeeeee',
-					300: '#cbcacc',
-					400: '#b2b1b3',
-					500: '#989899',
-					600: '#7f7f80',
-					700: '#666566',
-					800: '#4c4c4d',
-					900: '#333333',
-					950: '#1a1a1a',
-				},
-				danger: {
-					50: '#ffedea',
-					500: '#b3261e',
+					50: '{slate.50}',
+					100: '{slate.100}',
+					200: '{slate.200}',
+					300: '{slate.300}',
+					400: '{slate.400}',
+					500: '{slate.500}',
+					600: '{slate.600}',
+					700: '{slate.700}',
+					800: '{slate.800}',
+					900: '{slate.900}',
+					950: '{slate.950}',
 				},
 			},
 		},
@@ -86,8 +82,8 @@ export const odkThemePreset = definePreset(Aura, {
 			colorScheme: {
 				light: {
 					error: {
-						borderColor: '{danger.500}',
-						color: '{danger.500}',
+						borderColor: '{red.500}',
+						color: '{red.500}',
 					},
 				},
 			},
@@ -97,6 +93,7 @@ export const odkThemePreset = definePreset(Aura, {
 				light: {
 					root: {
 						color: '{surface.950}',
+						paddingY: '12px',
 					},
 					option: {
 						color: '{surface.950}',
@@ -112,6 +109,7 @@ export const odkThemePreset = definePreset(Aura, {
 				light: {
 					root: {
 						color: '{surface.950}',
+						paddingY: '12px',
 					},
 					option: {
 						color: '{surface.950}',
@@ -127,6 +125,7 @@ export const odkThemePreset = definePreset(Aura, {
 				light: {
 					root: {
 						color: '{surface.950}',
+						paddingY: '12px',
 					},
 				},
 			},

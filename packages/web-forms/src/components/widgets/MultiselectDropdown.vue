@@ -62,12 +62,11 @@ if (props.question.appearances['no-buttons']) {
 
 .multi-select-dropdown {
 	width: 100%;
-	border-radius: 10px;
-	border-color: var(--p-surface-300);
-	border-radius: 10px;
+	border-radius: var(--odk-radius);
+	border-color: var(--odk-border-color);
 
 	&:not(.p-disabled):hover {
-		border-color: var(--p-primary-500);
+		border-color: var(--odk-primary-border-color);
 	}
 
 	@media screen and (min-width: #{pf.$md}) {
@@ -86,11 +85,11 @@ if (props.question.appearances['no-buttons']) {
 		margin-left: -20px;
 	}
 
-	.p-multiselect-item {
+	.p-multiselect-option {
 		&[aria-selected='true']::after {
 			content: '\e916';
 			font-family: 'owf-icomoon';
-			color: var(--p-primary-500);
+			color: var(--odk-primary-text-color);
 		}
 
 		span {

@@ -101,22 +101,20 @@ const handleLanguageChange = (event: FormLanguage) => {
 
 <style scoped lang="scss">
 .p-button.p-button-icon-only.p-button-rounded {
-	height: 2.5rem;
-	width: 2.5rem;
-	min-width: 2.5rem;
-	font-size: 1.5rem;
+	font-size: var(--odk-icon-size-md);
 
 	&:hover {
-		background: var(--p-primary-100);
+		background: var(--odk-primary-light-background-color);
 	}
+
 	&:active,
 	&:focus {
-		background: var(--p-primary-50);
+		background: var(--odk-primary-lighter-background-color);
 	}
 }
 
 .form-title {
-	border-radius: 10px;
+	border-radius: var(--odk-radius);
 	box-shadow: none;
 	border-top: none;
 	margin-top: 20px;
@@ -125,7 +123,7 @@ const handleLanguageChange = (event: FormLanguage) => {
 		padding: 0 1rem;
 
 		h1 {
-			font-size: 1.5rem;
+			font-size: var(--odk-title-font-size);
 			font-weight: 500;
 			margin: 10px 0;
 		}
@@ -133,12 +131,12 @@ const handleLanguageChange = (event: FormLanguage) => {
 }
 
 .smaller-screens {
-	background-color: var(--p-surface-0);
-	filter: drop-shadow(0px 2px 6px rgba(0, 0, 0, 0.15)) drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
+	background-color: var(--odk-base-background-color);
+	border-bottom: 1px solid var(--odk-border-color);
 
 	h1 {
 		padding-left: 10px;
-		font-size: 1.25rem;
+		font-size: var(--odk-title-font-size);
 		font-weight: 400;
 	}
 
@@ -157,11 +155,13 @@ const handleLanguageChange = (event: FormLanguage) => {
 			gap: 0.5rem;
 
 			.btn-menu {
-				color: var(--p-surface-900);
+				color: var(--odk-text-color);
 			}
+
 			.print-button {
 				display: none;
 			}
+
 			.language-changer {
 				display: none;
 			}
@@ -172,9 +172,11 @@ const handleLanguageChange = (event: FormLanguage) => {
 				.btn-menu {
 					display: none;
 				}
+
 				.print-button {
 					display: flex;
 				}
+
 				.language-changer {
 					display: flex;
 					max-width: 220px;
@@ -184,7 +186,7 @@ const handleLanguageChange = (event: FormLanguage) => {
 	}
 
 	.btn-menu {
-		color: var(--p-surface-900);
+		color: var(--odk-text-color);
 	}
 }
 </style>

@@ -182,10 +182,10 @@ onBeforeUnmount(cleanup);
 		<template #footer>
 			<div class="geo-dialog-footer">
 				<!-- TODO: translations -->
-				<Button text rounded severity="contrast" label="Cancel" @click="cancel()" />
+				<Button text severity="contrast" label="Cancel" @click="cancel()" />
 
 				<!-- TODO: translations -->
-				<Button label="Save location" rounded :disabled="accuracy.value == null" @click="save()" />
+				<Button label="Save location" :disabled="accuracy.value == null" @click="save()" />
 			</div>
 		</template>
 	</Dialog>
@@ -200,9 +200,6 @@ onBeforeUnmount(cleanup);
 	--geo-spacing-l: 15px;
 	--geo-spacing-xl: 20px;
 	--geo-spacing-xxl: 30px;
-	--geo-radius: 10px;
-	--geo-title-font-size: 1.07rem;
-	--geo-text-font-size: 0.9rem;
 }
 
 .geo-dialog-header {
@@ -220,7 +217,7 @@ onBeforeUnmount(cleanup);
 
 .geo-dialog-header-title {
 	display: flex;
-	font-size: var(--geo-title-font-size);
+	font-size: var(--odk-group-font-size);
 
 	.spinner {
 		width: 22px;
@@ -231,8 +228,8 @@ onBeforeUnmount(cleanup);
 
 .geo-dialog-body {
 	display: flex;
-	background: var(--p-surface-100);
-	border-radius: var(--geo-radius);
+	background: var(--odk-muted-background-color);
+	border-radius: var(--odk-radius);
 
 	.geopoint-icons {
 		margin-right: var(--geo-spacing-l);
@@ -240,7 +237,7 @@ onBeforeUnmount(cleanup);
 
 	.icon-warning {
 		font-size: 1.5rem;
-		color: var(--p-message-error-color);
+		color: var(--odk-error-text-color);
 	}
 }
 
@@ -253,11 +250,11 @@ onBeforeUnmount(cleanup);
 
 .geopoint-information {
 	p {
-		font-size: var(--geo-text-font-size);
+		font-size: var(--odk-base-font-size);
 		margin: var(--geo-spacing-s) 0;
 	}
 	strong {
-		font-size: var(--geo-title-font-size);
+		font-size: var(--odk-base-font-size);
 		display: block;
 		margin-bottom: var(--geo-spacing-m);
 	}
@@ -269,12 +266,12 @@ onBeforeUnmount(cleanup);
 
 // Overriding Primevue's styles
 .p-dialog.geo-dialog {
-	background: var(--p-surface-0);
+	background: var(--odk-base-background-color);
 
 	&,
 	.p-dialog-footer,
 	.p-dialog-header {
-		border-radius: var(--geo-radius);
+		border-radius: var(--odk-radius);
 	}
 }
 

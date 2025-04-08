@@ -142,21 +142,9 @@ const isDev = import.meta.env.DEV;
 
 .home-page-component {
 	/* Using 'Hanken Grotesk' font in the Preview page to match ODK site. Forms and fields use Roboto only. */
-	--font-family: 'Hanken Grotesk', Roboto, sans-serif;
-	--primary-color: #009ecc;
-	--primary-button-background-color: var(--primary-color);
-	--primary-button-text-color: #ffffff;
-	--primary-button-background-color-active: #079;
-	--primary-button-background-color-hover: #0080a6;
-	--secondary-button-background-color: rgba(0, 158, 204, 0.1);
-	--secondary-button-text-color: var(--primary-color);
-	--secondary-button-background-color-active: rgba(0, 158, 204, 0.2);
-	--secondary-button-background-color-hover: rgba(0, 158, 204, 0.15);
-	--alt-section-background: #f9fbfd;
+	font-family: 'Hanken Grotesk', Roboto, sans-serif;
 
-	background-color: #ffffff;
-	font-family: var(--font-family);
-
+	background-color: var(--odk-base-background-color);
 	display: flex;
 	flex-direction: column;
 	gap: 2rem;
@@ -164,7 +152,7 @@ const isDev = import.meta.env.DEV;
 	.container {
 		width: 100%;
 		max-width: min(100%, 540px);
-		margin: 0 auto;
+		margin: 30px auto;
 		display: flex;
 		flex-direction: column;
 		gap: 2rem;
@@ -185,7 +173,7 @@ const isDev = import.meta.env.DEV;
 	}
 
 	section.demo-forms {
-		background-color: var(--alt-section-background);
+		background-color: var(--odk-muted-background-color);
 		padding: 2rem 0;
 	}
 
@@ -199,8 +187,8 @@ const isDev = import.meta.env.DEV;
 			gap: 18px;
 
 			.beta-chip {
-				background-color: var(--p-primary-50);
-				font-size: 14px;
+				background-color: var(--odk-primary-lighter-background-color);
+				font-size: var(--odk-base-font-size);
 				padding: 5.25px 16px;
 
 				:deep(.p-chip-text) {
@@ -210,13 +198,13 @@ const isDev = import.meta.env.DEV;
 
 			h1.pape-title {
 				margin: 0;
-				font-size: 2.25rem;
+				font-size: var(--odk-heading-font-size);
 				font-weight: 400;
 			}
 
 			p.page-description {
 				margin: 0;
-				font-size: 1.1875rem;
+				font-size: var(--odk-group-font-size);
 				font-weight: 300;
 			}
 
@@ -229,7 +217,7 @@ const isDev = import.meta.env.DEV;
 
 	.sample-preview {
 		overflow: hidden;
-		border-radius: 20px;
+		border-radius: var(--odk-radius);
 
 		.sample-image {
 			width: 517px;
@@ -238,14 +226,14 @@ const isDev = import.meta.env.DEV;
 	}
 
 	h1.demo-form-heading {
-		font-size: 2.25rem;
+		font-size: var(--odk-heading-font-size);
 		font-weight: 400;
 		margin: 0;
 		padding: 0 1rem;
 	}
 
 	a.inline-anchor {
-		color: var(--primary-color);
+		color: var(--odk-primary-text-color);
 	}
 }
 

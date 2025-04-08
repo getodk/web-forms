@@ -181,7 +181,7 @@ const onInput = (event: InputNumberInputEvent) => {
 	position: relative;
 
 	:deep(.p-inputtext) {
-		border-radius: 4px;
+		border-radius: var(--odk-radius);
 	}
 }
 

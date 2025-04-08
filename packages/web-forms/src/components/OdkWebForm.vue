@@ -236,7 +236,7 @@ watchEffect(() => {
 			</Card>
 
 			<div class="footer flex justify-content-end flex-wrap gap-3">
-				<Button label="Send" rounded @click="handleSubmit(state)" />
+				<Button label="Send" @click="handleSubmit(state)" />
 			</div>
 		</div>
 
@@ -260,7 +260,7 @@ watchEffect(() => {
 </template>
 
 <style scoped lang="scss">
-@use 'primeflex/core/_variables.scss' as pf;
+@import 'primeflex/core/_variables.scss';
 
 .form-initialization-status {
 	display: none;
@@ -268,7 +268,7 @@ watchEffect(() => {
 
 .odk-form {
 	width: 100%;
-	color: var(--text-color);
+	color: var(--odk-text-color);
 	--wf-error-banner-gap: 4rem;
 	--wf-max-form-width: 900px;
 
@@ -277,12 +277,11 @@ watchEffect(() => {
 		flex-direction: column;
 		max-width: var(--wf-max-form-width);
 		min-height: calc(100vh - 5.5rem);
-		min-height: calc(100dvh - 5.5rem);
 		margin: auto;
 		padding-top: 10px;
 
 		.questions-card {
-			border-radius: 10px;
+			border-radius: var(--odk-radius);
 			box-shadow: none;
 			border-top: none;
 			margin-top: 20px;
@@ -297,8 +296,8 @@ watchEffect(() => {
 		}
 
 		.form-error-message.p-message.p-message-error {
-			border-radius: 10px;
-			background-color: var(--p-message-error-background);
+			border-radius: var(--odk-radius);
+			background-color: var(--odk-error-background-color);
 			border: 1px solid var(--p-message-error-border-color);
 			max-width: var(--wf-max-form-width);
 			width: 100%;
@@ -336,8 +335,8 @@ watchEffect(() => {
 		margin-left: 0.5rem;
 
 		.anchor {
-			color: var(--p-surface-400);
-			font-size: 0.85rem;
+			color: var(--odk-muted-text-color);
+			font-size: var(--odk-hint-font-size);
 			font-weight: 300;
 			text-decoration: none;
 			margin-left: 1rem;
@@ -357,12 +356,12 @@ watchEffect(() => {
 		.version {
 			font-size: 0.7rem;
 			margin: 0.5rem 0 0 0.85rem;
-			color: var(--p-surface-400);
+			color: var(--odk-muted-text-color);
 		}
 	}
 }
 
-@media screen and (max-width: #{pf.$lg - 1}) {
+@media screen and (max-width: #{$lg - 1}) {
 	.odk-form {
 		.form-wrapper {
 			max-width: unset;
@@ -405,17 +404,16 @@ watchEffect(() => {
 </style>
 
 <style lang="scss">
-@use 'primeflex/core/_variables.scss' as pf;
-:root {
-	--breakpoint-lg: #{pf.$lg};
-}
+@import 'primeflex/core/_variables.scss';
 
 body {
-	background: var(--p-surface-100);
+	background: var(--odk-muted-background-color);
+	width: var(--odk-breakpoint-lg);
 }
-@media screen and (max-width: #{pf.$lg - 1}) {
+
+@media screen and (max-width: #{$lg - 1}) {
 	body {
-		background: white;
+		background: var(--odk-base-background-color);
 	}
 }
 </style>

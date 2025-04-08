@@ -50,11 +50,11 @@ const getOptionLabel = (value: string) => {
 
 .dropdown {
 	width: 100%;
-	border-radius: 10px;
-	border-color: var(--p-surface-300);
+	border-radius: var(--odk-radius);
+	border-color: var(--odk-radius);
 
 	&:not(.p-disabled):hover {
-		border-color: var(--p-primary-500);
+		border-color: var(--odk-primary-border-color);
 	}
 
 	@media screen and (min-width: #{pf.$md}) {

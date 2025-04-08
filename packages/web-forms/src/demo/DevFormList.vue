@@ -40,13 +40,13 @@ h1 {
 		list-style: none;
 		cursor: pointer;
 		margin: 10px;
-		font-size: 20px;
+		font-size: var(--odk-group-font-size);
 
 		summary {
 			padding: 0.5rem;
 
 			&:hover {
-				background-color: var(--p-surface-100);
+				background-color: var(--odk-muted-background-color);
 			}
 		}
 
@@ -56,26 +56,26 @@ h1 {
 			li {
 				list-style: none;
 				margin: 10px;
-				border: 1px solid var(--p-primary-500);
-				border-radius: 10px;
+				border: 1px solid var(--odk-primary-border-color);
+				border-radius: var(--odk-radius);
 				cursor: pointer;
-				background-color: var(--p-surface-0);
-				font-size: 16px;
+				background-color: var(--odk-base-background-color);
+				font-size: var(--odk-base-font-size);
 
 				a {
 					display: block;
 					padding: 10px;
 					text-decoration: none;
-					color: var(--p-surface-900);
+					color: var(--odk-text-color);
 
 					&:visited {
-						color: var(--p-surface-900);
+						color: var(--odk-text-color);
 					}
 				}
 			}
 
 			li:hover {
-				background-color: var(--p-primary-50);
+				background-color: var(--odk-primary-lighter-background-color);
 			}
 		}
 	}

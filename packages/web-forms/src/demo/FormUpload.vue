@@ -179,7 +179,7 @@ document.addEventListener(
 			</IconField>
 
 			<div class="action-buttons">
-				<Button label="Upload new Form" icon="icon-file_upload" class="upload-new-button" @click="reset" />
+				<Button label="Upload new Form" icon="icon-file_upload" class="upload-new-button" severity="contrast" variant="outlined" @click="reset" />
 				<RouterLink :to="`/form?url=${xformUrl}`" target="_blank" class="preview-link">
 					<Button label="Preview Form" icon="icon-remove_red_eye" class="preview-link-button" />
 				</RouterLink>
@@ -201,8 +201,6 @@ document.addEventListener(
 </template>
 
 <style scoped lang="scss">
-@use 'primeflex/core/_variables.scss' as pf;
-
 .spinner {
 	width: 40px;
 	height: 40px;
@@ -215,28 +213,27 @@ document.addEventListener(
 
 	.dropbox {
 		border: 1px dashed black;
-		border-radius: 20px;
-		background-color: var(--p-primary-50);
-		height: 110px;
+		border-radius: var(--odk-radius);
+		background-color: var(--odk-primary-lighter-background-color);
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
 		text-align: center;
 		gap: 1rem;
-		padding: 0 1rem;
-		font-size: 1.1875rem;
+		padding: 1rem;
+		font-size: var(--odk-group-font-size);
 		font-weight: 300;
 	}
 
 	.dropbox.highlighted {
-		border-color: #1a73e8;
-		background-color: var(--p-primary-100);
+		border-color: var(--odk-border-color);
+		background-color: var(--odk-primary-light-background-color);
 	}
 
 	a.upload-file-link {
 		font-weight: 400;
-		color: var(--primary-color);
+		color: var(--odk-primary-text-color);
 	}
 
 	.preview-wrapper {
@@ -251,59 +248,35 @@ document.addEventListener(
 			.uploaded-file-textbox {
 				width: 100%;
 				padding-right: 3rem;
+				padding-top: 11px;
+				padding-bottom: 11px;
+			}
+
+			.p-inputicon {
+				color: var(--odk-muted-text-color);
 			}
 
 			.clear-button {
 				position: absolute;
 				margin-top: 3px;
 				right: 1rem;
-				color: var(--text-color);
+				color: var(--odk-text-color);
 
 				&:hover,
 				&:active {
-					color: var(--text-color);
+					color: var(--odk-text-color);
+					background: unset;
+					outline: unset;
 				}
 			}
 		}
 
 		.action-buttons {
 			display: flex;
-			flex-direction: column;
-			flex-wrap: wrap;
+			flex-direction: row;
 			gap: 1rem;
-			width: 100%;
-
-			.upload-new-button {
-				flex: 1 1 auto;
-				text-align: center;
-				background-color: var(--secondary-button-background-color);
-				color: var(--secondary-button-text-color);
-
-				&:hover,
-				&:focus {
-					background-color: var(--secondary-button-background-color-hover);
-				}
-				&:active {
-					background-color: var(--secondary-button-background-color-active);
-				}
-			}
-
-			.preview-link {
-				flex: 1 1 auto;
-
-				.preview-link-button {
-					width: 100%;
-					background-color: var(--primary-button-background-color);
-
-					&:hover,
-					&:focus {
-						background-color: var(--primary-button-background-color-hover);
-					}
-					&:active {
-						background-color: var(--primary-button-background-color-active);
-					}
-				}
-			}
+			flex-wrap: wrap;
+			justify-content: center;
 		}
 	}
 
@@ -336,16 +309,6 @@ document.addEventListener(
 		}
 		.p-button-label {
 			text-align: left;
-		}
-	}
-}
-
-@media screen and (min-width: #{pf.$md}) {
-	.form-upload-component {
-		.preview-wrapper {
-			.action-buttons {
-				flex-direction: row;
-			}
 		}
 	}
 }

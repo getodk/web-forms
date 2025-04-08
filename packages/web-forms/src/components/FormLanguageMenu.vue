@@ -13,7 +13,7 @@ defineEmits(['update:activeLanguage']);
 		:model-value="activeLanguage"
 		:options="languages"
 		option-label="language"
-		class="align-items-center rounded with-icon language-changer"
+		class="align-items-center with-icon language-changer"
 		aria-label="change language"
 		@update:model-value="$emit('update:activeLanguage', $event)"
 	>
@@ -34,12 +34,11 @@ defineEmits(['update:activeLanguage']);
 	display: flex;
 }
 
-.p-select.rounded {
-	border-radius: 30px;
+.p-select.language-changer {
 	border: none;
 	width: max-content;
 	max-width: 220px;
-	color: #424242;
+	color: var(--odk-text-color);
 
 	&.p-focus {
 		box-shadow: inset 0 0 0 1px var(--p-primary-500);
@@ -54,7 +53,7 @@ defineEmits(['update:activeLanguage']);
 
 	.icon-language {
 		margin-right: 10px;
-		font-size: 1.5rem;
+		font-size: var(--odk-icon-size-md);
 	}
 }
 </style>

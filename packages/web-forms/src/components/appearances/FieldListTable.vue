@@ -16,9 +16,9 @@ defineProps<{ appearances: SelectNodeAppearances }>();
 <style lang="scss" scoped>
 .table-row {
 	display: table-row;
+	border-radius: var(--odk-radius);
+	margin-bottom: 6px;
 	padding-left: 10px;
-	margin-left: -10px;
-	border-radius: 15px;
 
 	.first-col {
 		display: table-cell;
@@ -34,6 +34,7 @@ defineProps<{ appearances: SelectNodeAppearances }>();
 		vertical-align: middle;
 		padding: 15px 5px;
 		outline: none;
+		background-color: unset;
 
 		&.active {
 			background-color: unset;
@@ -53,11 +54,11 @@ defineProps<{ appearances: SelectNodeAppearances }>();
 
 .table-row.list-nolabel {
 	&:hover {
-		background-color: var(--p-surface-100);
+		background-color: var(--odk-muted-background-color);
 	}
 
 	:deep(.value-option) {
-		border-radius: 35px;
+		border-radius: var(--odk-radius);
 		background-color: transparent;
 		.label-text {
 			display: none;
@@ -66,6 +67,8 @@ defineProps<{ appearances: SelectNodeAppearances }>();
 }
 
 .table-row.label {
+	padding: 0px;
+
 	:deep(.value-option) {
 		cursor: default;
 
@@ -88,7 +91,7 @@ defineProps<{ appearances: SelectNodeAppearances }>();
 	margin-top: -30px;
 
 	&:hover {
-		background-color: var(--p-surface-100);
+		background-color: var(--odk-muted-background-color);
 	}
 
 	:deep(.value-option) {
@@ -97,7 +100,7 @@ defineProps<{ appearances: SelectNodeAppearances }>();
 		.p-checkbox,
 		.p-radiobutton {
 			position: relative;
-			top: 20px;
+			top: 26px;
 		}
 
 		.label-text {

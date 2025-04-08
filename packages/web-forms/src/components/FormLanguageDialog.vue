@@ -39,11 +39,12 @@ const handleCancel = () => {
 				:name="lang.language"
 				:value="lang"
 			/>
-			{{ lang.language }}</label>
+			{{ lang.language }}
+		</label>
 
 		<div class="flex justify-content-end mt-5">
-			<Button label="Cancel" rounded text @click="handleCancel()" />
-			<Button label="Save" rounded raised @click="handleSave()" />
+			<Button label="Cancel" text @click="handleCancel()" />
+			<Button label="Save" class="ml-2" @click="handleSave()" />
 		</div>
 	</Dialog>
 </template>
@@ -52,14 +53,14 @@ const handleCancel = () => {
 .lang-options {
 	width: 100%;
 	display: block;
-	border: 1px solid #e6e1e5;
+	border: 1px solid var(--odk-border-color);
 	padding: 10px 0 10px 8px;
-	border-radius: 10px;
+	border-radius: var(--odk-radius);
 	margin-bottom: 10px;
 	cursor: pointer;
 
 	&:hover {
-		border-color: var(--p-primary-500);
+		border-color: var(--odk-primary-border-color);
 	}
 	> div {
 		margin-right: 10px;
@@ -73,19 +74,17 @@ button {
 
 <style lang="scss">
 .p-dialog.language-dialog {
-	--radius: 20px;
-
 	min-width: 300px;
-	border-radius: var(--radius);
+	border-radius: var(--odk-radius);
 
 	.p-dialog-header {
-		border-top-right-radius: var(--radius);
-		border-top-left-radius: var(--radius);
+		border-top-right-radius: var(--odk-radius);
+		border-top-left-radius: var(--odk-radius);
 	}
 
 	.p-dialog-content:last-of-type {
-		border-bottom-right-radius: var(--radius);
-		border-bottom-left-radius: var(--radius);
+		border-bottom-right-radius: var(--odk-radius);
+		border-bottom-left-radius: var(--odk-radius);
 	}
 }
 </style>

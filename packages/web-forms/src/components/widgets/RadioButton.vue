@@ -46,11 +46,11 @@ const selectValue = (value: string) => {
 .value-option {
 	display: flex;
 	align-items: center;
-	outline: 1px solid var(--p-surface-300);
-	border-radius: 10px;
-	padding: 15px;
+	outline: 1px solid var(--odk-border-color);
+	border-radius: var(--odk-radius);
+	padding: 12px;
 	cursor: pointer;
-	background: var(--p-surface-0);
+	background: var(--odk-base-background-color);
 
 	.label-text {
 		margin-left: 10px;
@@ -58,8 +58,8 @@ const selectValue = (value: string) => {
 
 	&:has(.p-radiobutton-input:hover),
 	&:has(.p-radiobutton-input:focus-visible) {
-		outline-color: var(--p-primary-500);
-		background-color: var(--p-primary-100);
+		outline-color: var(--odk-primary-border-color);
+		background-color: var(--odk-primary-light-background-color);
 	}
 
 	:deep(.p-radiobutton:not(.p-disabled):has(.p-radiobutton-input:focus-visible)),
@@ -69,13 +69,13 @@ const selectValue = (value: string) => {
 
 	&:deep(:has(.p-radiobutton-input:focus-visible)),
 	&:hover {
-		outline-color: var(--p-primary-500);
-		background-color: var(--p-primary-50);
+		outline-color: var(--odk-primary-border-color);
+		background-color: var(--odk-primary-lighter-background-color);
 	}
 
 	&.active {
-		outline: 2px solid var(--p-primary-500);
-		background-color: var(--p-primary-50);
+		outline: 2px solid var(--odk-primary-border-color);
+		background-color: var(--odk-primary-lighter-background-color);
 	}
 
 	&.disabled,

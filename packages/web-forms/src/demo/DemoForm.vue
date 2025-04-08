@@ -57,10 +57,10 @@ const formXls = computed(() => {
 
 <style scoped lang="scss">
 .demo-form {
-	border-radius: 20px;
+	border-radius: var(--odk-radius);
 	overflow: hidden;
-	border: 1px solid #e6e7e8;
-	background: var(--p-surface-0);
+	border: 1px solid var(--odk-border-color);
+	background: var(--odk-base-background-color);
 
 	.form-image-wrap {
 		overflow: hidden;
@@ -78,7 +78,7 @@ const formXls = computed(() => {
 
 	h2 {
 		margin: 0.5rem 0;
-		font-size: 1.5rem;
+		font-size: var(--odk-title-font-size);
 		font-weight: 400;
 	}
 

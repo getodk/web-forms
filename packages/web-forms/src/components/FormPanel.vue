@@ -69,7 +69,7 @@ const toggleMenu = (event: Event) => {
 
 <style scoped lang="scss">
 h2 {
-	font-size: 1.2rem;
+	font-size: var(--odk-group-font-size);
 	font-weight: 400;
 	margin: 0;
 	display: flex;
@@ -83,9 +83,9 @@ h2 {
 	width: 20px;
 	height: 20px;
 	font-weight: 500;
-	border-radius: 30px;
-	background-color: var(--p-surface-100);
-	font-size: 12px;
+	border-radius: var(--odk-radius);
+	background-color: var(--odk-muted-background-color);
+	font-size: var(--odk-base-font-size);
 	text-align: center;
 }
 
@@ -100,11 +100,11 @@ h2 {
 		&:active,
 		&:focus,
 		&.p-focus {
-			background: var(--p-primary-50);
+			background: var(--odk-primary-lighter-background-color);
 		}
 
 		&:hover {
-			background: var(--p-primary-100);
+			background: var(--odk-primary-light-background-color);
 		}
 	}
 
@@ -114,7 +114,7 @@ h2 {
 }
 
 .p-panel.p-panel-toggleable {
-	background: var(--p-surface-0);
+	background: var(--odk-base-background-color);
 	box-shadow: none;
 
 	.p-panel {
@@ -129,7 +129,7 @@ h2 {
 	}
 
 	:deep(.p-panel-content) {
-		border-left: 2px solid var(--p-surface-100);
+		border-left: 2px solid var(--odk-border-color);
 		margin-left: 10px;
 		border-radius: 0;
 		padding: 0 0 0 1.5rem;
