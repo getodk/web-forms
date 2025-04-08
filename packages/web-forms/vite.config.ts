@@ -105,11 +105,6 @@ export default defineConfig(({ mode }) => {
 				'@getodk/common': resolve(__dirname, '../common/src'),
 				'@': fileURLToPath(new URL('./src', import.meta.url)),
 				'primevue/menuitem': 'primevue/menu',
-				/**
-				 * Linked dependencies outside the local node_modules (e.g., hoisted to the monorepo root)
-				 * are not pre-bundled unless explicitly configured.
-				 */
-				vue: resolve(__dirname, '../../node_modules/vue/dist/vue.esm-bundler.js'),
 				// With following lines, fonts byte array are copied into css file
 				// Roboto fonts - don't want to copy those in our repository
 				'./fonts': resolve(
@@ -184,6 +179,10 @@ export default defineConfig(({ mode }) => {
 		},
 		optimizeDeps: {
 			force: true,
+			/**
+			 * Linked dependencies outside the local node_modules (e.g., hoisted to the monorepo root)
+			 * are not pre-bundled unless explicitly configured.
+			 */
 			include: ['vue'],
 			entries: [resolve(__dirname, '../../node_modules/vue/dist/vue.esm-bundler.js')],
 		},
