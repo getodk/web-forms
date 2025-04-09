@@ -177,6 +177,12 @@ export default defineConfig(({ mode }) => {
 		},
 		optimizeDeps: {
 			force: true,
+			/**
+			 * Linked dependencies outside the local node_modules (e.g., hoisted to the monorepo root)
+			 * are not pre-bundled unless explicitly configured.
+			 */
+			include: ['vue'],
+			entries: [resolve(__dirname, '../../node_modules/vue/dist/vue.esm-bundler.js')],
 		},
 		test: {
 			browser: {

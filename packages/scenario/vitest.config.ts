@@ -57,9 +57,6 @@ export default defineConfig(({ mode }) => {
 			},
 			exclude: ['@getodk/xforms-engine'],
 			force: true,
-			/**
-			 * Added since it's a xforms-engine's dependency
-			 */
 			include: ['papaparse'],
 		},
 		resolve: {
@@ -69,10 +66,6 @@ export default defineConfig(({ mode }) => {
 			conditions: ['solid', 'browser', 'development'],
 		},
 		test: {
-			/**
-			 * Increasing timeout since child-vaccination.test.ts is slow
-			 */
-			testTimeout: 40 * 1000,
 			browser: {
 				enabled: BROWSER_ENABLED,
 				instances: [{ browser: BROWSER_NAME }],
