@@ -405,10 +405,16 @@ watchEffect(() => {
 
 <style lang="scss">
 @import 'primeflex/core/_variables.scss';
+:root {
+	/*
+	 * This variable is used to assert the breakpoint from PrimeFlex are loaded
+	 * {@link https://github.com/getodk/web-forms/blob/main/packages/web-forms/e2e/test-cases/build/style.test.ts}
+	 */
+	--odk-test-breakpoint-lg: #{$lg};
+}
 
 body {
 	background: var(--odk-muted-background-color);
-	width: var(--odk-breakpoint-lg);
 }
 
 @media screen and (max-width: #{$lg - 1}) {
