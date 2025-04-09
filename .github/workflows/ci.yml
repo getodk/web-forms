@@ -48,6 +48,7 @@ jobs:
 
   install-and-build:
     needs: check-run
+    if: ${{ needs.check-run.outputs.should-skip != 'true' }}
     name: 'Install dependencies and build packages'
     runs-on: 'ubuntu-latest'
 
