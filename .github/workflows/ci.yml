@@ -24,6 +24,23 @@ env:
   LOCALE_ID: 'en-US'
 
 jobs:
+  check-run:
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: Check for duplicate push event with PR
+        if: github.event_name == 'push'
+        run: |
+          # Check if this push is tied to an open PR
+          PR_NUMBER=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/commits/${{ github.sha }}/pulls" | \
+            jq -r '.[0].number // "none"')
+          if [ "$PR_NUMBER" != "none" ]; then
+            echo "This push (commit ${{ github.sha }}) is part of PR #$PR_NUMBER, skipping to avoid duplication with pull_request event."
+            exit 0  # Exit successfully to skip subsequent jobs
+          else
+            echo "No associated PR found, proceeding with CI for this push."
+          fi
+
   install-and-build:
     name: 'Install dependencies and build packages'
     runs-on: 'ubuntu-latest'
