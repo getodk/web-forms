@@ -57,9 +57,6 @@ export default defineConfig(({ mode }) => {
 			},
 			exclude: ['@getodk/xforms-engine'],
 			force: true,
-			/**
-			 * Added since it's a xforms-engine's dependency
-			 */
 			include: ['papaparse'],
 		},
 		resolve: {
