@@ -26,11 +26,12 @@ env:
 jobs:
   check-run:
     runs-on: 'ubuntu-latest'
+    outputs:
+      should-skip: ${{ steps.check.outputs.should-skip }}
     steps:
       - name: Check for duplicate push event with PR
+        id: check
         if: github.event_name == 'push'
-        outputs:
-          should-skip: ${{ steps.check.outputs.should-skip }}
         run: |
           # Check if this push is tied to an open PR
           PR_NUMBER=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
