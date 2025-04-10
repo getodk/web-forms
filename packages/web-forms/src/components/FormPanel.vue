@@ -115,6 +115,7 @@ h2 {
 
 .p-panel.p-panel-toggleable {
 	background: var(--odk-base-background-color);
+	border: none;
 	box-shadow: none;
 
 	.p-panel {

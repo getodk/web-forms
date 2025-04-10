@@ -82,7 +82,7 @@ export const odkThemePreset = definePreset(Aura, {
 			colorScheme: {
 				light: {
 					error: {
-						borderColor: '{red.500}',
+						borderColor: '{red.50}',
 						color: '{red.500}',
 					},
 				},

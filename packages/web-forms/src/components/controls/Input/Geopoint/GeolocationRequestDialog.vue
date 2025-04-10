@@ -236,7 +236,7 @@ onBeforeUnmount(cleanup);
 	}
 
 	.icon-warning {
-		font-size: 1.5rem;
+		font-size: var(--odk-icon-size);
 		color: var(--odk-error-text-color);
 	}
 }

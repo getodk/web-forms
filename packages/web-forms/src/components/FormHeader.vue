@@ -68,7 +68,7 @@ const handleLanguageChange = (event: FormLanguage) => {
 
 
 	<!-- for mobile and tablet -->
-	<div class="flex lg:hidden align-items-start smaller-screens">
+	<div class="flex lg:hidden align-items-start justify-content-between smaller-screens">
 		<h1>
 			{{ form.definition.bind.form.title }}
 		</h1>
@@ -101,7 +101,7 @@ const handleLanguageChange = (event: FormLanguage) => {
 
 <style scoped lang="scss">
 .p-button.p-button-icon-only.p-button-rounded {
-	font-size: var(--odk-icon-size-md);
+	font-size: var(--odk-icon-size);
 
 	&:hover {
 		background: var(--odk-primary-light-background-color);
@@ -142,12 +142,11 @@ const handleLanguageChange = (event: FormLanguage) => {
 
 	.form-options {
 		padding-right: 10px;
-		flex-grow: 1;
 		min-width: 50px;
 		container-type: size;
 		container-name: formOptionsContainer;
 		height: 40px;
-		margin-top: 6px;
+		margin-top: 11px;
 
 		.multilingual {
 			display: flex;
@@ -188,5 +187,11 @@ const handleLanguageChange = (event: FormLanguage) => {
 	.btn-menu {
 		color: var(--odk-text-color);
 	}
+}
+</style>
+
+<style>
+.p-menu .p-menu-item-content .p-menu-item-icon {
+	font-size: var(--odk-icon-size);
 }
 </style>

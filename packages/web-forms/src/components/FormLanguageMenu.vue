@@ -53,7 +53,7 @@ defineEmits(['update:activeLanguage']);
 
 	.icon-language {
 		margin-right: 10px;
-		font-size: var(--odk-icon-size-md);
+		font-size: var(--odk-icon-size);
 	}
 }
 </style>

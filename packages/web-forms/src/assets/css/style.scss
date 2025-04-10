@@ -20,11 +20,6 @@
 	--odk-answer-font-size: #{map-get(pf.$font-size-props, 'text-base')};
 	--odk-hint-font-size: #{map-get(pf.$font-size-props, 'text-sm')};
 
-	--odk-icon-size-sm: 0.875rem;
-	--odk-icon-size-md: 1.5rem;
-
-	--odk-radius: 6px;
-
 	--odk-primary-text-color: var(--p-primary-500);
 	--odk-primary-light-background-color: var(--p-primary-100);
 	--odk-primary-lighter-background-color: var(--p-primary-50);
@@ -40,7 +35,12 @@
 	--odk-base-background-color: var(--p-surface-0);
 	--odk-muted-background-color: var(--p-surface-100);
 	--odk-inactive-background-color: var(--p-surface-300);
+
 	--odk-border-color: var(--p-surface-300);
+
+	--odk-icon-size: 1.5rem;
+
+	--odk-radius: 6px;
 }
 
 body {

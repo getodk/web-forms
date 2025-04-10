@@ -204,7 +204,7 @@ const isDev = import.meta.env.DEV;
 
 			p.page-description {
 				margin: 0;
-				font-size: var(--odk-group-font-size);
+				font-size: var(--odk-question-font-size);
 				font-weight: 300;
 			}
 

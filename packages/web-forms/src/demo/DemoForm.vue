@@ -78,7 +78,7 @@ const formXls = computed(() => {
 
 	h2 {
 		margin: 0.5rem 0;
-		font-size: var(--odk-title-font-size);
+		font-size: var(--odk-group-font-size);
 		font-weight: 400;
 	}
 
@@ -95,6 +95,10 @@ const formXls = computed(() => {
 		display: flex;
 		flex-direction: row;
 		gap: 1rem;
+	}
+
+	:deep(.p-button) .p-button-icon {
+		font-size: var(--odk-icon-size);
 	}
 }
 </style>

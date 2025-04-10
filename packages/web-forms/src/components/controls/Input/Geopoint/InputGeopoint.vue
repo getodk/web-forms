@@ -235,6 +235,7 @@ const onSave = (saved: GeolocationRequestSuccess) => {
 	align-items: center;
 	justify-content: center;
 	gap: 0px;
+	font-size: var(--odk-base-font-size);
 
 	svg {
 		margin-right: var(--geo-spacing-s);
@@ -253,7 +254,6 @@ const onSave = (saved: GeolocationRequestSuccess) => {
 
 .retry-button {
 	margin-left: auto;
-	font-size: var(--odk-base-font-size);
 
 	svg path {
 		fill: var(--odk-text-color);
@@ -278,7 +278,7 @@ const onSave = (saved: GeolocationRequestSuccess) => {
 	}
 
 	.icon-warning {
-		font-size: 1.2rem;
+		font-size: var(--odk-icon-size);
 		color: var(--odk-error-text-color);
 	}
 
@@ -300,7 +300,7 @@ const onSave = (saved: GeolocationRequestSuccess) => {
 	padding: var(--geo-spacing-xl);
 
 	.icon-warning {
-		font-size: 1.2rem;
+		font-size: var(--odk-icon-size);
 		margin-right: var(--geo-spacing-s);
 		vertical-align: text-bottom;
 	}

@@ -155,9 +155,7 @@ document.addEventListener(
 					</span>
 					<template v-if="inDevMode">
 						<label>
-							<input
-								v-model="bypassConverterForXml" type="checkbox"
-							>
+							<input v-model="bypassConverterForXml" type="checkbox">
 							Bypass converter for <code>XML</code> upload
 						</label>
 					</template>
@@ -222,7 +220,7 @@ document.addEventListener(
 		text-align: center;
 		gap: 1rem;
 		padding: 1rem;
-		font-size: var(--odk-group-font-size);
+		font-size: var(--odk-question-font-size);
 		font-weight: 300;
 	}
 
@@ -254,6 +252,7 @@ document.addEventListener(
 
 			.p-inputicon {
 				color: var(--odk-muted-text-color);
+				top: 40%;
 			}
 
 			.clear-button {
@@ -306,10 +305,16 @@ document.addEventListener(
 		.p-button-icon {
 			flex-grow: 1;
 			text-align: right;
+			font-size: var(--odk-icon-size);
 		}
+
 		.p-button-label {
 			text-align: left;
 		}
+	}
+
+	.icon-insert_drive_file {
+		font-size: var(--odk-icon-size);
 	}
 }
 </style>
