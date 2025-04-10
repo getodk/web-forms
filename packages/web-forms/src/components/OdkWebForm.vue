@@ -406,10 +406,8 @@ watchEffect(() => {
 <style lang="scss">
 @import 'primeflex/core/_variables.scss';
 :root {
-	/*
-	 * This variable is used to assert the breakpoint from PrimeFlex are loaded
-	 * {@link https://github.com/getodk/web-forms/blob/main/packages/web-forms/e2e/test-cases/build/style.test.ts}
-	 */
+	// This variable is used to assert the breakpoint from PrimeFlex are loaded
+	// {@link https://github.com/getodk/web-forms/blob/main/packages/web-forms/e2e/test-cases/build/style.test.ts}
 	--odk-test-breakpoint-lg: #{$lg};
 }
 
