@@ -125,7 +125,6 @@ h2 {
 	:deep(.p-panel-header) {
 		display: flex;
 		padding: 0;
-		height: 40px;
 		align-items: start;
 	}
 

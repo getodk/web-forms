@@ -66,7 +66,6 @@ const submitPressed = inject<boolean>('submitPressed', false);
 
 <style lang="scss" scoped>
 @use 'primeflex/core/_variables.scss' as pf;
-
 .default-appearance {
 	width: 100%;
 	display: flex;

@@ -20,6 +20,10 @@ defineProps<{ appearances: SelectNodeAppearances }>();
 	margin-bottom: 6px;
 	padding-left: 10px;
 
+	:deep(.control-text) {
+		margin-bottom: 0;
+	}
+
 	.first-col {
 		display: table-cell;
 		width: 100%;
@@ -72,9 +76,14 @@ defineProps<{ appearances: SelectNodeAppearances }>();
 	:deep(.value-option) {
 		cursor: default;
 
+		&.active {
+			border: 2px solid var(--odk-primary-border-color);
+		}
+
 		.p-radiobutton {
 			display: none;
 		}
+
 		.p-checkbox {
 			display: none;
 		}

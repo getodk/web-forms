@@ -51,7 +51,7 @@ const getOptionLabel = (value: string) => {
 .dropdown {
 	width: 100%;
 	border-radius: var(--odk-radius);
-	border-color: var(--odk-radius);
+	border-color: var(--odk-border-color);
 
 	&:not(.p-disabled):hover {
 		border-color: var(--odk-primary-border-color);
