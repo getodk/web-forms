@@ -12,8 +12,9 @@ defineProps<{ question: QuestionNode }>();
 <style scoped lang="scss">
 .hint {
 	font-size: var(--odk-hint-font-size);
+	font-weight: 300;
 	color: var(--odk-muted-text-color);
-	margin: 10px 0;
+	margin: 4px 0 10px 0;
 	line-height: calc(var(--odk-hint-font-size) * 1.45);
 }
 </style>

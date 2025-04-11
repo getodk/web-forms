@@ -13,7 +13,7 @@
 	--odk-font-family: Roboto, sans-serif;
 
 	--odk-base-font-size: #{map-get(pf.$font-size-props, 'text-base')};
-	--odk-heading-font-size: #{map-get(pf.$font-size-props, 'text-3xl')};
+	--odk-heading-font-size: #{map-get(pf.$font-size-props, 'text-4xl')};
 	--odk-title-font-size: #{map-get(pf.$font-size-props, 'text-2xl')};
 	--odk-group-font-size: #{map-get(pf.$font-size-props, 'text-xl')};
 	--odk-question-font-size: #{map-get(pf.$font-size-props, 'text-lg')};

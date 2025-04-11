@@ -129,7 +129,7 @@ h2 {
 	}
 
 	:deep(.p-panel-content) {
-		border-left: 2px solid var(--odk-border-color);
+		border-left: 1px solid var(--odk-border-color);
 		margin-left: 10px;
 		border-radius: 0;
 		padding: 0 0 0 1.5rem;

@@ -298,7 +298,7 @@ const swapItems = (index: number, newPosition: number) => {
 }
 
 .highlight .rank-overlay {
-	background-color: rgba(from var(--odk-inactive-background-color) r g b / 0.9);
+	background-color: rgba(from var(--odk-muted-background-color) r g b / 0.9);
 }
 
 @media screen and (max-width: #{pf.$sm}) {

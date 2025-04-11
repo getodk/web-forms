@@ -210,7 +210,7 @@ document.addEventListener(
 	gap: 14px;
 
 	.dropbox {
-		border: 1px dashed black;
+		border: 1px dashed var(--odk-border-color);
 		border-radius: var(--odk-radius);
 		background-color: var(--odk-primary-lighter-background-color);
 		display: flex;
@@ -219,7 +219,7 @@ document.addEventListener(
 		align-items: center;
 		text-align: center;
 		gap: 1rem;
-		padding: 1rem;
+		padding: 2rem;
 		font-size: var(--odk-question-font-size);
 		font-weight: 300;
 	}

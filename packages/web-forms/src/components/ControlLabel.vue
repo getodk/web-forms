@@ -14,7 +14,7 @@ const props = defineProps<{ question: QuestionNode }>();
 label {
 	font-weight: 400;
 	font-size: var(--odk-question-font-size);
-	line-height: 1.8rem;
+	line-height: 1.5rem;
 	word-wrap: break-word;
 
 	.required {

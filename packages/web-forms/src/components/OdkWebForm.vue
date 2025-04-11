@@ -299,6 +299,7 @@ watchEffect(() => {
 			border-radius: var(--odk-radius);
 			background-color: var(--odk-error-background-color);
 			border: 1px solid var(--p-message-error-border-color);
+			outline: none;
 			max-width: var(--wf-max-form-width);
 			width: 100%;
 			margin: 0rem auto 1rem auto;
