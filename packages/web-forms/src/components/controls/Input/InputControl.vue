@@ -54,17 +54,14 @@ provide('isInvalid', isInvalid);
 
 <style scoped lang="scss">
 .input-control-container {
-	--input-bgcolor-default: var(--surface-100);
-	--input-bgcolor: var(--input-bgcolor-default);
-	--input-bgcolor-emphasized: var(--surface-50);
-	--input-bgcolor-inside-highlighted: var(--surface-0);
-	--input-color: var(--text-color);
+	--input-bgcolor: var(--odk-muted-background-color);
+	--input-bgcolor-emphasized: var(--p-surface-50);
 
 	// Using `:has` allows sharing the same state of these custom properties for the
 	// state of the `input` itself and associated elements (e.g. number
 	// increment/decrement buttons)
 	&:has(input.inside-highlighted) {
-		--input-bgcolor: var(--input-bgcolor-inside-highlighted);
+		--input-bgcolor: var(--odk-base-background-color);
 	}
 
 	// TODO: these styles are probably not long for this world, but it is
@@ -97,7 +94,7 @@ provide('isInvalid', isInvalid);
 		position: absolute;
 		inset-inline-end: 10px;
 		top: 15px;
-		color: var(--error-text-color);
+		color: var(--odk-error-text-color);
 		font-size: 1.2rem;
 	}
 }

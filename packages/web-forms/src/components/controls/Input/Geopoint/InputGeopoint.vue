@@ -118,7 +118,6 @@ const onSave = (saved: GeolocationRequestSuccess) => {
 	<div ref="controlElement" class="geopoint-control">
 		<Button
 			v-if="committedValue == null"
-			rounded
 			class="get-location-button"
 			:disabled="isDisabled"
 			@click="initiateRequest()"
@@ -163,7 +162,6 @@ const onSave = (saved: GeolocationRequestSuccess) => {
 				<GeopointFormattedValue :question="question" />
 				<Button
 					v-if="!isDisabled"
-					rounded
 					outlined
 					severity="contrast"
 					class="retry-button"
@@ -220,7 +218,7 @@ const onSave = (saved: GeolocationRequestSuccess) => {
 </template>
 
 <style scoped lang="scss">
-@import 'primeflex/core/_variables.scss';
+@use 'primeflex/core/_variables.scss' as pf;
 
 // Variable definition
 .geopoint-control {
@@ -229,8 +227,6 @@ const onSave = (saved: GeolocationRequestSuccess) => {
 	--geo-spacing-l: 15px;
 	--geo-spacing-xl: 20px;
 	--geo-spacing-xxl: 30px;
-	--geo-radius: 10px;
-	--geo-text-font-size: 0.9rem;
 }
 
 .get-location-button,
@@ -238,6 +234,8 @@ const onSave = (saved: GeolocationRequestSuccess) => {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
+	gap: 0px;
+	font-size: var(--odk-base-font-size);
 
 	svg {
 		margin-right: var(--geo-spacing-s);
@@ -245,32 +243,29 @@ const onSave = (saved: GeolocationRequestSuccess) => {
 }
 
 .get-location-button {
-	min-width: 270px;
-
 	svg {
-		fill: var(--surface-0);
+		fill: var(--odk-inverted-text-color);
 	}
 
 	&:disabled svg {
-		fill: var(--surface-500);
+		fill: var(--odk-muted-text-color);
 	}
 }
 
 .retry-button {
 	margin-left: auto;
-	font-size: var(--geo-text-font-size);
 
 	svg path {
-		fill: var(--surface-900);
+		fill: var(--odk-text-color);
 	}
 }
 
 .geopoint-value-container {
 	display: flex;
-	background: var(--surface-100);
-	border-radius: var(--geo-radius);
+	background: var(--odk-muted-background-color);
+	border-radius: var(--odk-radius);
 	align-items: center;
-	font-size: var(--geo-text-font-size);
+	font-size: var(--odk-answer-font-size);
 	padding: var(--geo-spacing-m) var(--geo-spacing-l);
 
 	.geo-quality,
@@ -283,8 +278,8 @@ const onSave = (saved: GeolocationRequestSuccess) => {
 	}
 
 	.icon-warning {
-		font-size: 1.2rem;
-		color: var(--error-text-color);
+		font-size: var(--odk-icon-size);
+		color: var(--odk-error-text-color);
 	}
 
 	.geopoint-value {
@@ -297,15 +292,15 @@ const onSave = (saved: GeolocationRequestSuccess) => {
 }
 
 .geopoint-error {
-	font-size: 1rem;
-	color: var(--error-text-color);
-	background-color: var(--error-bg-color);
-	border-radius: var(--geo-radius);
+	font-size: var(--odk-base-font-size);
+	color: var(--odk-error-text-color);
+	background-color: var(--odk-error-background-color);
+	border-radius: var(--odk-radius);
 	margin-top: var(--geo-spacing-xxl);
 	padding: var(--geo-spacing-xl);
 
 	.icon-warning {
-		font-size: 1.2rem;
+		font-size: var(--odk-icon-size);
 		margin-right: var(--geo-spacing-s);
 		vertical-align: text-bottom;
 	}
@@ -316,10 +311,13 @@ const onSave = (saved: GeolocationRequestSuccess) => {
 }
 
 .p-button.p-button-contrast.p-button-outlined.retry-button {
-	background: var(--surface-0);
+	background: var(--odk-base-background-color);
+	&:hover {
+		background: var(--odk-muted-background-color);
+	}
 }
 
-@media screen and (max-width: #{$md}) {
+@media screen and (max-width: #{pf.$md}) {
 	.geopoint-value-container {
 		align-items: flex-start;
 		padding: var(--geo-spacing-xxl) var(--geo-spacing-xl);

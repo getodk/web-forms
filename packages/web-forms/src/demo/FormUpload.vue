@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import PrimeButton from 'primevue/button';
-import PrimeProgressSpinner from 'primevue/progressspinner';
+import Button from 'primevue/button';
+import ProgressSpinner from 'primevue/progressspinner';
 import { RouterLink } from 'vue-router';
 
-import PrimeIconField from 'primevue/iconfield';
-import PrimeInputIcon from 'primevue/inputicon';
-import PrimeInputText from 'primevue/inputtext';
-import PrimeMessage from 'primevue/message';
+import IconField from 'primevue/iconfield';
+import InputIcon from 'primevue/inputicon';
+import InputText from 'primevue/inputtext';
+import Message from 'primevue/message';
 
 import { computed, ref, watch, type HTMLInputElementEvent } from 'vue';
 import { useConfiguration } from './composables/configuration';
@@ -155,15 +155,13 @@ document.addEventListener(
 					</span>
 					<template v-if="inDevMode">
 						<label>
-							<input
-								v-model="bypassConverterForXml" type="checkbox"
-							>
+							<input v-model="bypassConverterForXml" type="checkbox">
 							Bypass converter for <code>XML</code> upload
 						</label>
 					</template>
 				</template>
 				<template v-else>
-					<PrimeProgressSpinner class="spinner" />
+					<ProgressSpinner class="spinner" />
 					<span>
 						Uploading form
 					</span>
@@ -172,37 +170,35 @@ document.addEventListener(
 		</template>
 
 		<div v-else class="preview-wrapper">
-			<PrimeIconField icon-position="left" class="textbox-with-icon">
-				<PrimeInputIcon class="icon-insert_drive_file" />
-				<PrimeInputText :value="uploadedFilename" class="uploaded-file-textbox" />
-				<PrimeButton class="clear-button" icon="icon-clear" text rounded aria-label="Cancel" @click="reset()" />
-			</PrimeIconField>
+			<IconField icon-position="left" class="textbox-with-icon">
+				<InputIcon class="icon-insert_drive_file" />
+				<InputText :value="uploadedFilename" class="uploaded-file-textbox" />
+				<Button class="clear-button" icon="icon-clear" text rounded aria-label="Cancel" @click="reset()" />
+			</IconField>
 
 			<div class="action-buttons">
-				<PrimeButton label="Upload new Form" icon="icon-file_upload" class="upload-new-button" @click="reset" />
+				<Button label="Upload new Form" icon="icon-file_upload" class="upload-new-button" severity="contrast" variant="outlined" @click="reset" />
 				<RouterLink :to="`/form?url=${xformUrl}`" target="_blank" class="preview-link">
-					<PrimeButton label="Preview Form" icon="icon-remove_red_eye" class="preview-link-button" />
+					<Button label="Preview Form" icon="icon-remove_red_eye" class="preview-link-button" />
 				</RouterLink>
 			</div>
 		</div>
 
-		<PrimeMessage v-if="error" severity="error" icon="icon-error" @close="reset()">
+		<Message v-if="error" severity="error" icon="icon-error" @close="reset()">
 			{{ error }}
-		</PrimeMessage>
-		<PrimeMessage v-if="warnings?.length > 0" severity="warn" icon="icon-warning">
+		</Message>
+		<Message v-if="warnings?.length > 0" severity="warn" icon="icon-warning">
 			<span>There are following possible problems in the uploaded Form:</span>
 			<ul>
 				<li v-for="warning in warnings" :key="warning">
 					{{ warning }}
 				</li>
 			</ul>
-		</PrimeMessage>
+		</Message>
 	</div>
 </template>
 
 <style scoped lang="scss">
-@import 'primeflex/core/_variables.scss';
-
 .spinner {
 	width: 40px;
 	height: 40px;
@@ -215,28 +211,27 @@ document.addEventListener(
 
 	.dropbox {
 		border: 1px dashed black;
-		border-radius: 20px;
-		background-color: var(--blue-50);
-		height: 110px;
+		border-radius: var(--odk-radius);
+		background-color: var(--odk-primary-lighter-background-color);
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
 		text-align: center;
 		gap: 1rem;
-		padding: 0 1rem;
-		font-size: 1.1875rem;
+		padding: 1rem;
+		font-size: var(--odk-question-font-size);
 		font-weight: 300;
 	}
 
 	.dropbox.highlighted {
-		border-color: #1a73e8;
-		background-color: var(--blue-100);
+		border-color: var(--odk-border-color);
+		background-color: var(--odk-primary-light-background-color);
 	}
 
 	a.upload-file-link {
 		font-weight: 400;
-		color: var(--primary-color);
+		color: var(--odk-primary-text-color);
 	}
 
 	.preview-wrapper {
@@ -251,59 +246,36 @@ document.addEventListener(
 			.uploaded-file-textbox {
 				width: 100%;
 				padding-right: 3rem;
+				padding-top: 11px;
+				padding-bottom: 11px;
+			}
+
+			.p-inputicon {
+				color: var(--odk-muted-text-color);
+				top: 40%;
 			}
 
 			.clear-button {
 				position: absolute;
 				margin-top: 3px;
 				right: 1rem;
-				color: var(--text-color);
+				color: var(--odk-text-color);
 
 				&:hover,
 				&:active {
-					color: var(--text-color);
+					color: var(--odk-text-color);
+					background: unset;
+					outline: unset;
 				}
 			}
 		}
 
 		.action-buttons {
 			display: flex;
-			flex-direction: column;
-			flex-wrap: wrap;
+			flex-direction: row;
 			gap: 1rem;
-			width: 100%;
-
-			.upload-new-button {
-				flex: 1 1 auto;
-				text-align: center;
-				background-color: var(--secondary-button-background-color);
-				color: var(--secondary-button-text-color);
-
-				&:hover,
-				&:focus {
-					background-color: var(--secondary-button-background-color-hover);
-				}
-				&:active {
-					background-color: var(--secondary-button-background-color-active);
-				}
-			}
-
-			.preview-link {
-				flex: 1 1 auto;
-
-				.preview-link-button {
-					width: 100%;
-					background-color: var(--primary-button-background-color);
-
-					&:hover,
-					&:focus {
-						background-color: var(--primary-button-background-color-hover);
-					}
-					&:active {
-						background-color: var(--primary-button-background-color-active);
-					}
-				}
-			}
+			flex-wrap: wrap;
+			justify-content: center;
 		}
 	}
 
@@ -333,20 +305,16 @@ document.addEventListener(
 		.p-button-icon {
 			flex-grow: 1;
 			text-align: right;
+			font-size: var(--odk-icon-size);
 		}
+
 		.p-button-label {
 			text-align: left;
 		}
 	}
-}
 
-@media screen and (min-width: #{$md}) {
-	.form-upload-component {
-		.preview-wrapper {
-			.action-buttons {
-				flex-direction: row;
-			}
-		}
+	.icon-insert_drive_file {
+		font-size: var(--odk-icon-size);
 	}
 }
 </style>
