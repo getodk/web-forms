@@ -4,7 +4,6 @@ import ProgressSpinner from 'primevue/progressspinner';
 import { RouterLink } from 'vue-router';
 
 import IconField from 'primevue/iconfield';
-import InputIcon from 'primevue/inputicon';
 import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
 
