@@ -2056,7 +2056,7 @@ better-path-resolve@1.0.0:
   dependencies:
     is-windows "^1.0.0"
 
-bin-packer@^1.7.0:
+bin-packer@1.7.0:
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/bin-packer/-/bin-packer-1.7.0.tgz#1f3b934155b51a2478f5c83508c994d5323aea0d"
   integrity sha512-mQlAcFUVSg/IRuCYUg7QYKz7mUrv1FCgE9Aa8gTNkUeDDVbMCIm6h1laV/QT1VE9/ShC+gOQhdCvY6qCC808CQ==
