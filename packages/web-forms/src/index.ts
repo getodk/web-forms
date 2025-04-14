@@ -4,6 +4,7 @@ import { POST_SUBMIT__NEW_INSTANCE } from './lib/constants/control-flow.ts';
 
 import '@fontsource/roboto/300.css';
 import './assets/css/icomoon.css';
+import './assets/css/material-icons.css';
 import './themes/2024-light/theme.scss';
 
 // TODO/sk: Purge it - using postcss-purgecss
