@@ -78,8 +78,7 @@ h2 {
 
 .label-number {
 	display: inline-block;
-	margin: 1px 5px 0 17px;
-	padding-top: 3px;
+	margin: 0 5px 0 17px;
 	width: 20px;
 	height: 20px;
 	font-weight: 500;
@@ -124,8 +123,12 @@ h2 {
 
 	:deep(.p-panel-header) {
 		display: flex;
-		padding: 0;
+		padding: 15px 0;
 		align-items: start;
+
+		.p-panel-header-actions {
+			display: none;
+		}
 	}
 
 	:deep(.p-panel-content) {

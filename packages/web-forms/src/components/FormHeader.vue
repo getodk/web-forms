@@ -119,8 +119,9 @@ const handleLanguageChange = (event: FormLanguage) => {
 	border-top: none;
 	margin-top: 20px;
 
-	:deep(.p-card-content) {
-		padding: 0 1rem;
+	:deep(.p-card-body) {
+		padding-left: 3rem;
+		padding-right: 3rem;
 
 		h1 {
 			font-size: var(--odk-title-font-size);
@@ -135,7 +136,7 @@ const handleLanguageChange = (event: FormLanguage) => {
 	border-bottom: 1px solid var(--odk-border-color);
 
 	h1 {
-		padding-left: 10px;
+		padding-left: 1.5rem;
 		font-size: var(--odk-title-font-size);
 		font-weight: 400;
 	}

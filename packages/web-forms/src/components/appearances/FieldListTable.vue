@@ -116,6 +116,7 @@ defineProps<{ appearances: SelectNodeAppearances }>();
 			position: relative;
 			top: -20px;
 			margin-bottom: 10px;
+			white-space: nowrap;
 		}
 	}
 }

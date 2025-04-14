@@ -80,7 +80,7 @@ const selectValues = (values: readonly string[]) => {
 .no-buttons {
 	:deep(.p-checkbox) {
 		opacity: 0;
-		margin-left: -15px;
+		width: 0; /* Checkbox isn't visible */
 	}
 
 	.label-text {

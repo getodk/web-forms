@@ -260,7 +260,7 @@ watchEffect(() => {
 </template>
 
 <style scoped lang="scss">
-@import 'primeflex/core/_variables.scss';
+@use 'primeflex/core/_variables.scss' as pf;
 
 .form-initialization-status {
 	display: none;
@@ -285,10 +285,10 @@ watchEffect(() => {
 			box-shadow: none;
 			border-top: none;
 			margin-top: 20px;
+		}
 
-			:deep(.p-card-content) {
-				padding: 0;
-			}
+		.questions-card > :deep(.p-card-body) {
+			padding: 2rem;
 		}
 
 		.error-banner-placeholder {
@@ -362,7 +362,7 @@ watchEffect(() => {
 	}
 }
 
-@media screen and (max-width: #{$lg - 1}) {
+@media screen and (max-width: #{pf.$lg - 1}) {
 	.odk-form {
 		.form-wrapper {
 			max-width: unset;
@@ -402,21 +402,27 @@ watchEffect(() => {
 		}
 	}
 }
+
+@media screen and (max-width: #{pf.$sm}) {
+	.odk-form .form-wrapper .questions-card > :deep(.p-card-body) {
+		padding: 2rem 0.5rem;
+	}
+}
 </style>
 
 <style lang="scss">
-@import 'primeflex/core/_variables.scss';
+@use 'primeflex/core/_variables.scss' as pf;
 :root {
 	// This variable is used to assert the breakpoint from PrimeFlex are loaded
 	// {@link https://github.com/getodk/web-forms/blob/main/packages/web-forms/e2e/test-cases/build/style.test.ts}
-	--odk-test-breakpoint-lg: #{$lg};
+	--odk-test-breakpoint-lg: #{pf.$lg};
 }
 
 body {
 	background: var(--odk-muted-background-color);
 }
 
-@media screen and (max-width: #{$lg - 1}) {
+@media screen and (max-width: #{pf.$lg - 1}) {
 	body {
 		background: var(--odk-base-background-color);
 	}

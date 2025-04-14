@@ -87,7 +87,7 @@ const selectValue = (value: string) => {
 .no-buttons {
 	:deep(.p-radiobutton) {
 		opacity: 0;
-		margin-left: -15px;
+		width: 0; /* Radio button isn't visible */
 	}
 
 	.label-text {

@@ -82,7 +82,7 @@ if (props.question.appearances['no-buttons']) {
 	}
 
 	.p-checkbox {
-		margin-left: -20px;
+		width: 0; /* Checkbox isn't visible */
 	}
 
 	.p-multiselect-option {
