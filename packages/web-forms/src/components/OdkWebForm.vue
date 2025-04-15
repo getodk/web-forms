@@ -242,7 +242,7 @@ watchEffect(() => {
 						<div class="flex flex-column gap-2">
 							<QuestionList v-if="!stepperLayout" :nodes="state.root.currentState.children" />
 							<!-- Note that QuestionStepper has the 'Send' button integrated instead of using the button below -->
-							<QuestionStepper v-if="stepperLayout" :nodes="state.root.currentState.children" @sendFormFromStepper="handleSubmit()" />
+							<QuestionStepper v-if="stepperLayout" :nodes="state.root.currentState.children" @sendFormFromStepper="handleSubmit(state)" />
 						</div>
 					</div>
 				</template>
