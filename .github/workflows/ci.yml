@@ -21,9 +21,24 @@ defaults:
 
 env:
   TZ: 'America/Phoenix'
+  LOCALE_ID: 'en-US'
 
 jobs:
+  ci-conditions:
+    name: 'CI conditions'
+    runs-on: 'ubuntu-latest'
+    outputs:
+      IS_FORK: ${{ github.repository_owner != 'getodk' }}
+      IS_PR: ${{ github.event_name == 'pull_request' }}
+
+    steps:
+      - name: Capture CI conditions
+        id: capture-ci-conditions
+        run: exit 0
+
   install-and-build:
+    needs: ci-conditions
+    if: ${{ needs.ci-conditions.outputs.IS_PR != 'true' || needs.ci-conditions.outputs.IS_FORK == 'true' }}
     name: 'Install dependencies and build packages'
     runs-on: 'ubuntu-latest'
 
@@ -454,6 +469,9 @@ jobs:
 
       - if: ${{ matrix.target == 'Web' && matrix.browser != 'webkit' }}
         run: 'yarn workspace @getodk/web-forms test-browser:${{ matrix.browser }}'
+
+      - if: ${{ matrix.target == 'Web' }}
+        run: 'yarn workspace @getodk/web-forms test:e2e:${{ matrix.browser }}'
 
       - if: ${{ matrix.node-version == '22.12.0' && matrix.target == 'Node' }}
         uses: actions/upload-artifact@v4

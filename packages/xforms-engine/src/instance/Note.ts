@@ -5,6 +5,7 @@ import type { NoteNode, NoteNodeAppearances, NoteValue } from '../client/NoteNod
 import type { TextRange } from '../client/TextRange.ts';
 import type { ValueType } from '../client/ValueType.ts';
 import type { XFormsXPathElement } from '../integration/xpath/adapter/XFormsXPathNode.ts';
+import type { StaticLeafElement } from '../integration/xpath/static-dom/StaticElement.ts';
 import { getNoteCodec } from '../lib/codecs/getNoteCodec.ts';
 import type { NoteInputValue, NoteRuntimeValue } from '../lib/codecs/NoteCodec.ts';
 import { createNoteReadonlyThunk } from '../lib/reactivity/createNoteReadonlyThunk.ts';
@@ -19,7 +20,7 @@ import type { NoteNodeDefinition } from '../parse/model/NoteNodeDefinition.ts';
 import { ValueNode, type ValueNodeStateSpec } from './abstract/ValueNode.ts';
 import type { GeneralParentNode } from './hierarchy.ts';
 import type { EvaluationContext } from './internal-api/EvaluationContext.ts';
-import type { ClientReactiveSubmittableValueNode } from './internal-api/submission/ClientReactiveSubmittableValueNode.ts';
+import type { ClientReactiveSerializableValueNode } from './internal-api/serialization/ClientReactiveSerializableValueNode.ts';
 import type { ValidationContext } from './internal-api/ValidationContext.ts';
 
 interface NoteStateSpec<V extends ValueType> extends ValueNodeStateSpec<NoteValue<V>> {
@@ -37,7 +38,7 @@ export class Note<V extends ValueType = ValueType>
 		XFormsXPathElement,
 		EvaluationContext,
 		ValidationContext,
-		ClientReactiveSubmittableValueNode
+		ClientReactiveSerializableValueNode
 {
 	// XFormsXPathElement
 	override readonly [XPathNodeKindKey] = 'element';
@@ -52,16 +53,16 @@ export class Note<V extends ValueType = ValueType>
 	readonly nodeOptions = null;
 	readonly currentState: CurrentState<NoteStateSpec<V>>;
 
-	constructor(parent: GeneralParentNode, definition: NoteNodeDefinition<V>) {
+	constructor(
+		parent: GeneralParentNode,
+		instanceNode: StaticLeafElement | null,
+		definition: NoteNodeDefinition<V>
+	) {
 		const codec = getNoteCodec(definition.valueType);
 
-		super(parent, definition, codec);
+		super(parent, instanceNode, definition, codec);
 
 		this.appearances = definition.bodyElement.appearances;
-
-		const sharedStateOptions = {
-			clientStateFactory: this.engineConfig.stateFactory,
-		};
 
 		const isReadonly = createNoteReadonlyThunk(this, definition);
 		const noteTextComputation = createNoteText(this, definition.noteTextDefinition);
@@ -108,7 +109,7 @@ export class Note<V extends ValueType = ValueType>
 				value: this.valueState,
 				instanceValue: this.getInstanceValue,
 			},
-			sharedStateOptions
+			this.instanceConfig
 		);
 
 		this.state = state;

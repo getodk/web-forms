@@ -1,20 +1,22 @@
 import { XPathNodeKindKey } from '@getodk/xpath';
 import type { Accessor } from 'solid-js';
 import { createSignal } from 'solid-js';
+import type { FormInstanceInitializationMode } from '../client/form/FormInstance.ts';
 import type { ActiveLanguage, FormLanguage, FormLanguages } from '../client/FormLanguage.ts';
 import type { FormNodeID } from '../client/identity.ts';
 import type { RootNode } from '../client/RootNode.ts';
+import type { InstancePayload } from '../client/serialization/InstancePayload.ts';
 import type {
-	SubmissionChunkedType,
-	SubmissionOptions,
-} from '../client/submission/SubmissionOptions.ts';
-import type { SubmissionResult } from '../client/submission/SubmissionResult.ts';
-import type { SubmissionState } from '../client/submission/SubmissionState.ts';
+	InstancePayloadOptions,
+	InstancePayloadType,
+} from '../client/serialization/InstancePayloadOptions.ts';
+import type { InstanceState } from '../client/serialization/InstanceState.ts';
 import type { AncestorNodeValidationState } from '../client/validation.ts';
 import type { XFormsXPathDocument } from '../integration/xpath/adapter/XFormsXPathNode.ts';
 import { EngineXPathEvaluator } from '../integration/xpath/EngineXPathEvaluator.ts';
-import { createInstanceSubmissionState } from '../lib/client-reactivity/submission/createInstanceSubmissionState.ts';
-import { prepareSubmission } from '../lib/client-reactivity/submission/prepareSubmission.ts';
+import type { StaticDocument } from '../integration/xpath/static-dom/StaticDocument.ts';
+import { createPrimaryInstanceState } from '../lib/client-reactivity/instance-state/createPrimaryInstanceState.ts';
+import { prepareInstancePayload } from '../lib/client-reactivity/instance-state/prepareInstancePayload.ts';
 import { createChildrenState } from '../lib/reactivity/createChildrenState.ts';
 import { createTranslationState } from '../lib/reactivity/createTranslationState.ts';
 import type { MaterializedChildren } from '../lib/reactivity/materializeCurrentStateChildren.ts';
@@ -30,10 +32,12 @@ import type { ModelDefinition } from '../parse/model/ModelDefinition.ts';
 import type { RootDefinition } from '../parse/model/RootDefinition.ts';
 import type { SecondaryInstancesDefinition } from '../parse/model/SecondaryInstance/SecondaryInstancesDefinition.ts';
 import { InstanceNode } from './abstract/InstanceNode.ts';
+import { InstanceAttachmentsState } from './attachments/InstanceAttachmentsState.ts';
+import type { InitialInstanceState } from './input/InitialInstanceState.ts';
 import type { EvaluationContext } from './internal-api/EvaluationContext.ts';
 import type { InstanceConfig } from './internal-api/InstanceConfig.ts';
 import type { PrimaryInstanceDocument } from './internal-api/PrimaryInstanceDocument.ts';
-import type { ClientReactiveSubmittableInstance } from './internal-api/submission/ClientReactiveSubmittableInstance.ts';
+import type { ClientReactiveSerializableInstance } from './internal-api/serialization/ClientReactiveSerializableInstance.ts';
 import type { TranslationContext } from './internal-api/TranslationContext.ts';
 import { Root } from './Root.ts';
 
@@ -74,20 +78,52 @@ interface PrimaryInstanceStateSpec {
 	readonly activeLanguage: Accessor<ActiveLanguage>;
 }
 
-export class PrimaryInstance
+interface PrimaryInstanceStateInputByMode {
+	readonly create: null;
+	readonly edit: InitialInstanceState;
+	readonly restore: InitialInstanceState;
+}
+
+export type PrimaryInstanceInitialState<Mode extends FormInstanceInitializationMode> =
+	PrimaryInstanceStateInputByMode[Mode];
+
+export interface BasePrimaryInstanceOptions {
+	readonly scope: ReactiveScope;
+	readonly model: ModelDefinition;
+	readonly secondaryInstances: SecondaryInstancesDefinition;
+}
+
+export interface ModelessPrimaryInstanceOptions extends BasePrimaryInstanceOptions {
+	readonly config: InstanceConfig;
+}
+
+export interface PrimaryInstanceOptions<Mode extends FormInstanceInitializationMode>
+	extends ModelessPrimaryInstanceOptions {
+	readonly mode: Mode;
+	readonly initialState: PrimaryInstanceInitialState<Mode>;
+}
+
+export class PrimaryInstance<
+		Mode extends FormInstanceInitializationMode = FormInstanceInitializationMode,
+	>
 	extends InstanceNode<RootDefinition, PrimaryInstanceStateSpec, null, Root>
 	implements
 		PrimaryInstanceDocument,
 		XFormsXPathDocument,
 		TranslationContext,
 		EvaluationContext,
-		ClientReactiveSubmittableInstance
+		ClientReactiveSerializableInstance
 {
+	readonly initializationMode: FormInstanceInitializationMode;
+	readonly model: ModelDefinition;
+	readonly attachments: InstanceAttachmentsState;
+
 	// InstanceNode
 	protected readonly state: SharedNodeState<PrimaryInstanceStateSpec>;
 	protected readonly engineState: EngineState<PrimaryInstanceStateSpec>;
-	readonly getChildren: Accessor<readonly Root[]>;
 
+	override readonly instanceNode: StaticDocument;
+	readonly getChildren: Accessor<readonly Root[]>;
 	readonly hasReadonlyAncestor = () => false;
 	readonly isReadonly = () => false;
 	readonly hasNonRelevantAncestor = () => false;
@@ -99,7 +135,7 @@ export class PrimaryInstance
 	// XFormsXPathDocument
 	readonly [XPathNodeKindKey] = 'document';
 
-	// PrimaryInstanceDocument, ClientReactiveSubmittableInstance
+	// PrimaryInstanceDocument, ClientReactiveSerializableInstance
 	readonly nodeType = 'primary-instance';
 	readonly appearances = null;
 	readonly nodeOptions = null;
@@ -107,7 +143,7 @@ export class PrimaryInstance
 	readonly root: Root;
 	readonly currentState: MaterializedChildren<CurrentState<PrimaryInstanceStateSpec>, Root>;
 	readonly validationState: AncestorNodeValidationState;
-	readonly submissionState: SubmissionState;
+	readonly instanceState: InstanceState;
 	readonly languages: FormLanguages;
 
 	// TranslationContext (+ EvaluationContext)
@@ -118,18 +154,21 @@ export class PrimaryInstance
 	readonly evaluator: EngineXPathEvaluator;
 	override readonly contextNode = this;
 
-	constructor(
-		scope: ReactiveScope,
-		model: ModelDefinition,
-		secondaryInstances: SecondaryInstancesDefinition,
-		engineConfig: InstanceConfig
-	) {
-		const { root: definition } = model;
+	constructor(options: PrimaryInstanceOptions<Mode>) {
+		const { mode, initialState, scope, model, secondaryInstances, config } = options;
+		const { instance: modelInstance } = model;
+		const activeInstance = initialState?.document ?? modelInstance;
+		const definition = model.getRootDefinition(activeInstance);
 
-		super(engineConfig, null, definition, {
+		super(config, null, activeInstance, definition, {
 			scope,
 			computeReference: () => PRIMARY_INSTANCE_REFERENCE,
 		});
+
+		this.initializationMode = mode;
+		this.model = model;
+		this.attachments = new InstanceAttachmentsState(initialState?.attachments);
+		this.instanceNode = activeInstance;
 
 		const [isAttached, setIsAttached] = createSignal(false);
 
@@ -170,9 +209,7 @@ export class PrimaryInstance
 			children: childrenState.childIds,
 		};
 
-		const state = createSharedNodeState(scope, stateSpec, {
-			clientStateFactory: engineConfig.stateFactory,
-		});
+		const state = createSharedNodeState(scope, stateSpec, config);
 
 		this.state = state;
 		this.engineState = state.engineState;
@@ -187,7 +224,7 @@ export class PrimaryInstance
 				return root.validationState.violations;
 			},
 		};
-		this.submissionState = createInstanceSubmissionState(this);
+		this.instanceState = createPrimaryInstanceState(this);
 
 		childrenState.setChildren([root]);
 		setIsAttached(true);
@@ -231,12 +268,12 @@ export class PrimaryInstance
 		return this.setActiveLanguage(availableFormLanguage);
 	}
 
-	// PrimaryInstanceDocument, ClientReactiveSubmittableInstance
-	prepareSubmission<ChunkedType extends SubmissionChunkedType = 'monolithic'>(
-		options?: SubmissionOptions<ChunkedType>
-	): Promise<SubmissionResult<ChunkedType>> {
-		const result = prepareSubmission(this, {
-			chunked: (options?.chunked ?? 'monolithic') as ChunkedType,
+	// PrimaryInstanceDocument
+	prepareInstancePayload<PayloadType extends InstancePayloadType = 'monolithic'>(
+		options?: InstancePayloadOptions<PayloadType>
+	): Promise<InstancePayload<PayloadType>> {
+		const result = prepareInstancePayload(this, {
+			payloadType: (options?.payloadType ?? 'monolithic') as PayloadType,
 			maxSize: options?.maxSize ?? Infinity,
 		});
 

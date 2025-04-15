@@ -1,24 +1,32 @@
 import type { XFormsElement } from '@getodk/common/test/fixtures/xform-dsl/XFormsElement.ts';
+import { xmlElement } from '@getodk/common/test/fixtures/xform-dsl/index.ts';
 import type {
+	AnyFormInstance,
 	AnyNode,
-	OpaqueReactiveObjectFactory,
+	FormResource,
+	InstancePayload,
+	InstancePayloadOptions,
+	InstancePayloadType,
 	RepeatRangeControlledNode,
 	RepeatRangeNode,
 	RepeatRangeUncontrolledNode,
+	RestoreFormInstanceInput,
 	RootNode,
 	SelectNode,
 } from '@getodk/xforms-engine';
 import { constants as ENGINE_CONSTANTS } from '@getodk/xforms-engine';
-import type { Accessor, Setter } from 'solid-js';
-import { createMemo, createSignal, runWithOwner } from 'solid-js';
+import type { Accessor, Owner, Setter } from 'solid-js';
+import { createMemo, createSignal } from 'solid-js';
 import { afterEach, assert, expect } from 'vitest';
-import { SelectValuesAnswer } from '../answer/SelectValuesAnswer.ts';
 import { RankValuesAnswer } from '../answer/RankValuesAnswer.ts';
+import { SelectValuesAnswer } from '../answer/SelectValuesAnswer.ts';
 import type { ValueNodeAnswer } from '../answer/ValueNodeAnswer.ts';
 import { answerOf } from '../client/answerOf.ts';
-import type { InitializeTestFormOptions, TestFormResource } from '../client/init.ts';
+import { editInstance } from '../client/editInstance.ts';
+import type { InitializableForm, TestFormOptions } from '../client/init.ts';
 import { initializeTestForm } from '../client/init.ts';
 import { isRepeatRange } from '../client/predicates.ts';
+import { runInSolidScope } from '../client/solid-helpers.ts';
 import { getClosestRepeatRange, getNodeForReference } from '../client/traversal.ts';
 import { ImplementationPendingError } from '../error/ImplementationPendingError.ts';
 import { UnclearApplicabilityError } from '../error/UnclearApplicabilityError.ts';
@@ -63,18 +71,15 @@ import { JRTreeReference } from './xpath/JRTreeReference.ts';
  */
 const nonReactiveIdentityStateFactory = <T extends object>(value: T): T => value;
 
-export interface ScenarioConstructorOptions {
-	readonly dispose: VoidFunction;
+interface ScenarioFormMeta {
 	readonly formName: string;
-	readonly instanceRoot: RootNode;
+	readonly formElement: XFormsElement;
+	readonly formOptions: TestFormOptions;
+}
 
-	/**
-	 * No reactivity is provided by default.
-	 *
-	 * @see {@link ReactiveScenario} for tests exercising reactive engine/client
-	 * functionality.
-	 */
-	readonly stateFactory?: OpaqueReactiveObjectFactory;
+export interface ScenarioConfig extends ScenarioFormMeta {
+	readonly owner: Owner;
+	readonly dispose: VoidFunction;
 }
 
 type FormFileName = `${string}.xml`;
@@ -86,7 +91,7 @@ const isFormFileName = (value: FormDefinitionResource | string): value is FormFi
 // prettier-ignore
 type ScenarioStaticInitParameters =
 	| readonly [formFileName: FormFileName]
-	| readonly [formName: string, form: XFormsElement, overrideOptions?: Partial<InitializeTestFormOptions>]
+	| readonly [formName: string, form: XFormsElement, overrideOptions?: Partial<TestFormOptions>]
 	| readonly [resource: FormDefinitionResource];
 
 interface AssertCurrentReferenceOptions {
@@ -125,6 +130,12 @@ const isAnswerItemCollectionParams = (
 	return args.length > 2 && args.every((arg) => typeof arg === 'string');
 };
 
+type ScenarioClass = typeof Scenario;
+
+export interface ScenarioConstructor<T extends Scenario = Scenario> extends ScenarioClass {
+	new (meta: ScenarioConfig, form: InitializableForm, instanceRoot: RootNode): T;
+}
+
 /**
  * **PORTING NOTES**
  *
@@ -151,16 +162,17 @@ export class Scenario {
 	/**
 	 * To be overridden, e.g. by {@link ReactiveScenario}.
 	 */
-
-	static getInitializeTestFormOptions(
-		overrideOptions?: Partial<InitializeTestFormOptions>
-	): InitializeTestFormOptions {
+	static getTestFormOptions(overrideOptions?: Partial<TestFormOptions>): TestFormOptions {
 		return {
 			resourceService: overrideOptions?.resourceService ?? SharedJRResourceService.init(),
 			missingResourceBehavior:
 				overrideOptions?.missingResourceBehavior ??
 				ENGINE_CONSTANTS.MISSING_RESOURCE_BEHAVIOR.DEFAULT,
 			stateFactory: overrideOptions?.stateFactory ?? nonReactiveIdentityStateFactory,
+			instanceAttachments: {
+				fileNameFactory: ({ basename, extension }) => `${basename}${extension ?? ''}`,
+				...overrideOptions?.instanceAttachments,
+			},
 		};
 	}
 
@@ -168,38 +180,47 @@ export class Scenario {
 		this: This,
 		...args: ScenarioStaticInitParameters
 	): Promise<This['prototype']> {
-		let resource: TestFormResource;
-		let formName: string;
-		let options: InitializeTestFormOptions;
+		let formMeta: ScenarioFormMeta;
 
 		if (isFormFileName(args[0])) {
 			return this.init(r(args[0]));
 		} else if (args.length === 1) {
-			const [pathResource] = args;
-			resource = pathResource;
-			formName = pathResource.formName;
-			options = this.getInitializeTestFormOptions();
-		} else {
-			const [name, form, overrideOptions] = args;
+			const [resource] = args;
 
-			formName = name;
-			resource = form;
-			options = this.getInitializeTestFormOptions(overrideOptions);
+			formMeta = {
+				formElement: xmlElement(resource.textContents),
+				formName: resource.formName,
+				formOptions: this.getTestFormOptions(),
+			};
+		} else {
+			const [formName, formElement, overrideOptions] = args;
+
+			formMeta = {
+				formName,
+				formElement,
+				formOptions: this.getTestFormOptions(overrideOptions),
+			};
 		}
 
-		const { dispose, owner, instanceRoot } = await initializeTestForm(resource, options);
+		const { dispose, owner, form, instanceRoot } = await initializeTestForm(
+			formMeta.formElement.asXml() satisfies FormResource,
+			formMeta.formOptions
+		);
 
-		return runWithOwner(owner, () => {
-			return new this({
-				dispose,
-				formName,
-				instanceRoot,
-			});
-		})!;
+		return runInSolidScope(owner, () => {
+			return new this(
+				{
+					...formMeta,
+					owner,
+					dispose,
+				},
+				form,
+				instanceRoot
+			);
+		});
 	}
 
-	readonly formName: string;
-	readonly instanceRoot: RootNode;
+	declare readonly ['constructor']: ScenarioConstructor<this>;
 
 	protected readonly getPositionalEvents: Accessor<PositionalEvents>;
 
@@ -208,12 +229,11 @@ export class Scenario {
 
 	protected readonly getSelectedPositionalEvent: Accessor<AnyPositionalEvent>;
 
-	protected constructor(options: ScenarioConstructorOptions) {
-		const { dispose, formName, instanceRoot } = options;
-
-		this.formName = formName;
-		this.instanceRoot = instanceRoot;
-
+	protected constructor(
+		private readonly config: ScenarioConfig,
+		private readonly form: InitializableForm,
+		readonly instanceRoot: RootNode
+	) {
 		const [getEventPosition, setEventPosition] = createSignal(0);
 
 		this.getPositionalEvents = () => getPositionalEvents(instanceRoot);
@@ -234,7 +254,7 @@ export class Scenario {
 
 		afterEach(() => {
 			PositionalEvent.cleanup();
-			dispose();
+			config.dispose();
 		});
 	}
 
@@ -652,6 +672,63 @@ export class Scenario {
 	/**
 	 * **PORTING NOTES**
 	 *
+	 * At time of writing, this comment contains the following sections:
+	 *
+	 * 1. JavaRosa's current JavaDoc comment for the same-named method.
+	 * 2. Revised understanding of the intended semantics of the method as it
+	 *    exists in JavaRosa, and notes on the accuracy of that JavaDoc comment
+	 *    relative to observations of its call sites.
+	 * 3. Revised explanation of our current deferral of the method's
+	 *    implemenation, as relates to that understanding.
+	 * 4. A quote describing conceptual context for the method's origin in
+	 *    JavaRosa (as preserved from review of the first pass porting JavaRosa
+	 *    tests to Web Forms).
+	 *
+	 * - - -
+	 *
+	 * {@link https://github.com/getodk/javarosa/blob/7986abae78dc0dfe8715fa0071cd04ab698db9bb/src/main/java/org/javarosa/test/Scenario.java#L265-L268 | JR}:
+	 *
+	 * > Returns a new Scenario instance using a new form obtained by serializing
+	 * > and deserializing the form being used by this instance.
+	 *
+	 * - - -
+	 *
+	 * Observing call sites of this method, in tests as they are written in
+	 * JavaRosa (and as they've been ported to Web Forms), the above comment is
+	 * misleading and incomplete! The **semantic intent** of the method—as named
+	 * and as clarified in conversation with @lognaturel—is to serialize and
+	 * deserialize a **form definition** (presumably including attachments and any
+	 * other requisite data _relating to the form definition itself_).
+	 *
+	 * Actual usage in practice frequently goes well beyond that semantic intent!
+	 * In usage, what is actually serialized and deserialized is the composition
+	 * of:
+	 *
+	 * - form definition (etc)
+	 * - instance state, equivalent to
+	 *   {@link proposed_serializeAndRestoreInstanceState} (and roughly equivalent
+	 *   to {@link serializeAndDeserializeInstance})
+	 *
+	 * We have already updated some of ported call sites to this method to reflect
+	 * this mismatch of semantic intent. We will likely make the same change to
+	 * many other call sites, where the same mismatched intent is presumed, and as
+	 * functionality progresses to make the affected tests pertinent.
+	 *
+	 * - - -
+	 *
+	 * We have deferred implementation of this method pending support for **form
+	 * definition serde** (including form attachments, potentially other
+	 * metadata). Our _reasons_ for implementing such functionality will likely be
+	 * different from JavaRosa's (detailed in the quote below, which was
+	 * reiterated almost verbatim in conversation with @lognaturel yesterday!).
+	 * But we will almost certainly implement it! It'll be useful to retain this
+	 * method for its original semantic intent, even as many other call sites
+	 * drift from it.
+	 *
+	 * - - -
+	 *
+	 * **PORTING NOTES** (PRESERVED FROM EARIER ITERATIONS)
+	 *
 	 * From
 	 * {@link https://github.com/getodk/web-forms/pull/110#discussion_r1610546665 | this review comment}:
 	 *
@@ -660,22 +737,32 @@ export class Scenario {
 	 * > reads form definitions from their serialized representation. This
 	 * > improved performance greatly on older hardware and now only leads to
 	 * > notable performance improvements on certain forms.
-	 *
-	 * @todo it is not clear if/how we'll use similar logic in web forms. It seems
-	 * most likely to be applicable to offline capabilities.
 	 */
-	serializeAndDeserializeForm(): Promise<Scenario> {
-		return Promise.reject(new UnclearApplicabilityError('serialization/deserialization'));
+	serializeAndDeserializeForm(): Promise<this> {
+		return Promise.reject(
+			new ImplementationPendingError('Form definition serialization/deserialization')
+		);
 	}
 
 	/**
-	 * @todo JavaRosa mutates the {@link Scenario} instance itself. Do we actually
-	 * want that? Deferred for now, at least until the porting process surfaces a
-	 * test which would exercise it without being expected to fail beforehand for
-	 * other reasons of unclear applicability.
+	 * **PORTING NOTES**
+	 *
+	 * We previously deferred implementation of this method. We noted at the time
+	 * that, upon its implementation, we'd likely want to revise its signature to
+	 * reflect that it returns a new {@link Scenario} class instance, rather than
+	 * performing a stateful operation on the same object.
+	 *
+	 * The engine now supports this method's functionality with a clear conceptual
+	 * equivalent, and so the method is now implemented, differing from JavaRosa's
+	 * signature/statefulness just as we anticipated.
+	 *
+	 * To be absolutely clear: tests calling this method **MUST** reference the
+	 * returned {@link Scenario} class instance to use the (form) instance created
+	 * by this method. References to the source {@link Scenario} object are (and
+	 * will remain) unaffected by those calls.
 	 */
-	newInstance(): Promise<never> {
-		return Promise.reject(new UnclearApplicabilityError('Scenario instance statefulness'));
+	newInstance(): this {
+		return this.fork(this.form.createInstance());
 	}
 
 	getValidationOutcome(): ValidateOutcome {
@@ -964,7 +1051,7 @@ export class Scenario {
 	}
 
 	proposed_serializeInstance(): string {
-		return this.instanceRoot.submissionState.submissionXML;
+		return this.instanceRoot.instanceState.instanceXML;
 	}
 
 	/**
@@ -974,8 +1061,27 @@ export class Scenario {
 	 * more about Collect's responsibility for submission (beyond serialization,
 	 * already handled by {@link proposed_serializeInstance}).
 	 */
-	prepareWebFormsSubmission() {
-		return this.instanceRoot.prepareSubmission();
+	prepareWebFormsInstancePayload<PayloadType extends InstancePayloadType>(
+		options: InstancePayloadOptions<PayloadType> = {
+			payloadType: 'monolithic',
+		} as InstancePayloadOptions<PayloadType>
+	): Promise<InstancePayload<PayloadType>> {
+		return this.instanceRoot.prepareInstancePayload(options);
+	}
+
+	/**
+	 * @todo Naming? The name here was chosen to indicate this creates a "fork" of various aspects of a {@link Scenario} instance (most of which are internal/class-private) with a new {@link RootNode | form instance root} (derived from the current {@link Scenario} instance's {@link })
+	 */
+	private fork(instance: AnyFormInstance): this {
+		return runInSolidScope(this.config.owner, () => {
+			return new this.constructor(this.config, this.form, instance.root);
+		});
+	}
+
+	async restoreWebFormsInstanceState(payload: RestoreFormInstanceInput): Promise<this> {
+		const instance = await this.form.restoreInstance(payload, this.config.formOptions);
+
+		return this.fork(instance);
 	}
 
 	// TODO: consider adapting tests which use the following interfaces to use
@@ -1013,10 +1119,81 @@ export class Scenario {
 	}
 
 	/**
-	 * @todo Mark deprecated?
+	 * @deprecated
+	 *
+	 * @see {@link proposed_serializeAndRestoreInstanceState}, which is almost
+	 * certainly what you want if you're looking here!
+	 *
+	 * **PORTING NOTES**
+	 *
+	 * This method's deprecation is Web Forms-specific! This is **NOT** intended
+	 * to suggest deprecation in JavaRosa! It is meant to guide usage toward this
+	 * method's
+	 * {@link proposed_serializeAndRestoreInstanceState | proposed spiritual successor},
+	 * which is conceptually equivalent except for the methods' respective
+	 * parameter signatures.
+	 *
+	 * Below, as quoted from JavaRosa's comment on the same-named method,
+	 * describes the reasoning for its {@link form} parameter.
+	 *
+	 * - - -
+	 *
+	 * {@link https://github.com/getodk/javarosa/blob/7986abae78dc0dfe8715fa0071cd04ab698db9bb/src/main/java/org/javarosa/test/Scenario.java#L290-L293 | JR}:
+	 *
+	 * > The fact that we need to pass in the same raw form definition that the
+	 * > current scenario is built around suggests that
+	 * > XFormParser.loadXmlInstance(FormDef f, Reader xmlReader) should probably
+	 * > be public. This is also the method that Collect copies because the
+	 * > FormDef may be built from cache meaning there won't be a Reader/Document
+	 * > available and because it makes some extra calls for search(). We pass in
+	 * > an XFormsElement for now until we decide on an interface that Collect can
+	 * > use.
+	 *
+	 * - - -
+	 *
+	 * At time of writing, there is only one test calling this method (both as
+	 * ported and in JavaRosa!). That call site is currently preserved, at least
+	 * pending review of this commentary to confirm we want to swap its usage
+	 * locally (a permanent divergence from JavaRosa on that single test).
 	 */
-	async serializeAndDeserializeInstance(form: XFormsElement): Promise<Scenario> {
-		return Scenario.init(form.getName(), form);
+	async serializeAndDeserializeInstance(form: XFormsElement): Promise<this> {
+		expect(
+			form.asXml(),
+			'Attempted to serialize instance with unexpected form XML. Is instance from an unrelated form?'
+		).toBe(this.config.formElement.asXml());
+
+		return this.proposed_serializeAndRestoreInstanceState();
+	}
+
+	/**
+	 * **PORTING NOTES**
+	 *
+	 * As proposed and implemented here, this method is:
+	 *
+	 * - Semantically equivalent to the **intent** of
+	 *   {@link serializeAndDeserializeInstance}, except that it skips JavaRosa
+	 *   inside baseball requiring a "form" parameter. We retain all requisite
+	 *   references to perform this operation.
+	 *
+	 * - _Also expected_ to be called in place of several JavaRosa-ported calls to
+	 *   {@link serializeAndDeserializeForm}, where tests clearly _intend to
+	 *   express this method's semantics_. These semantics are distinct from the
+	 *   **intent** of {@link serializeAndDeserializeForm}: as its name suggests,
+	 *   the intent is **NOT** to serialize instance state. That it does probably
+	 *   reflects the fact that JavaRosa's `FormDef` implements _both_ form
+	 *   definition and instance state.
+	 */
+	async proposed_serializeAndRestoreInstanceState(): Promise<this> {
+		const payload = await this.instanceRoot.prepareInstancePayload();
+
+		return this.restoreWebFormsInstanceState(payload);
+	}
+
+	/** @see {@link editInstance} */
+	async proposed_editCurrentInstanceState(): Promise<this> {
+		const instance = await editInstance(this.form, this.instanceRoot);
+
+		return this.fork(instance);
 	}
 }
 

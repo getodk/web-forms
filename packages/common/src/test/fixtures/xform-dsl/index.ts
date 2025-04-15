@@ -5,6 +5,7 @@ import { EmptyXFormsElement } from './EmptyXFormsElement.ts';
 import { HeadXFormsElement } from './HeadXFormsElement.ts';
 import type { NamespaceTuples } from './HtmlXFormsElement.ts';
 import { HtmlXFormsElement } from './HtmlXFormsElement.ts';
+import { PROPOSED_XMLLiteralXFormsElement } from './PROPOSED_XMLLiteralXFormsElement.ts';
 import { StringLiteralXFormsElement } from './StringLiteralXFormsElement.ts';
 import { TagXFormsElement } from './TagXFormsElement.ts';
 import type { XFormsElement } from './XFormsElement.ts';
@@ -234,6 +235,60 @@ export const proposed_rankDynamic = (ref: string, nodesetRef: string): XFormsEle
 
 export { proposed_rankDynamic as rankDynamic };
 
+type UploadAttributes = ReadonlyMap<string, string>;
+
+type UploadAttributeParameters = readonly [
+	attributes: UploadAttributes,
+	...children: XFormsElement[],
+];
+
+type UploadRestParameters = UploadAttributeParameters | readonly XFormsElement[];
+
+const isUploadAttributeParameters = (
+	rest: UploadRestParameters
+): rest is UploadAttributeParameters => {
+	return rest[0] instanceof Map;
+};
+
+interface NormalizedUploadParameters {
+	readonly ref: string;
+	readonly attributes: UploadAttributes;
+	readonly children: readonly XFormsElement[];
+}
+
+const normalizeUploadParameters = (
+	ref: string,
+	...rest: UploadRestParameters
+): NormalizedUploadParameters => {
+	if (isUploadAttributeParameters(rest)) {
+		const [attributes, ...children] = rest;
+
+		return {
+			ref,
+			attributes,
+			children,
+		};
+	}
+
+	return {
+		ref,
+		attributes: new Map(),
+		children: rest,
+	};
+};
+
+export const proposed_upload = (ref: string, ...rest: UploadRestParameters): XFormsElement => {
+	const { attributes: uploadAttributes, children } = normalizeUploadParameters(ref, ...rest);
+
+	const attributes = new Map([...uploadAttributes, ['ref', ref]]);
+
+	const childrenXML = children.map((child) => child.asXml()).join('');
+
+	return new StringLiteralXFormsElement('upload', attributes, childrenXML);
+};
+
+export { proposed_upload as upload };
+
 export const group = (ref: string, ...children: XFormsElement[]): XFormsElement => {
 	return t(`group ref="${ref}"`, ...children);
 };
@@ -303,3 +358,9 @@ export const setvalueLiteral = (event: string, ref: string, innerHtml: string): 
 };
 
 export { bind } from './BindBuilderXFormsElement.ts';
+
+export const proposed_xmlElement = (xmlLiteral: string): XFormsElement => {
+	return new PROPOSED_XMLLiteralXFormsElement(xmlLiteral);
+};
+
+export { proposed_xmlElement as xmlElement };
