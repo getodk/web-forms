@@ -199,7 +199,6 @@ const onSave = (saved: GeolocationRequestSuccess) => {
 			class="geopoint-error"
 			:class="{ 'stack-errors': submitPressed && isInvalid }"
 		>
-			<i class="icon-warning" />
 			<!-- TODO: translations -->
 			<strong>Cannot access location</strong>&nbsp;<span>Grant location permission in the browser settings and make sure location is turned on.</span>
 		</div>
@@ -218,8 +217,6 @@ const onSave = (saved: GeolocationRequestSuccess) => {
 </template>
 
 <style scoped lang="scss">
-@use 'primeflex/core/_variables.scss' as pf;
-
 // Variable definition
 .geopoint-control {
 	--geo-spacing-s: 5px;
@@ -253,7 +250,11 @@ const onSave = (saved: GeolocationRequestSuccess) => {
 }
 
 .retry-button {
-	margin-left: auto;
+	margin-left: 0;
+
+	svg {
+		height: 24px;
+	}
 
 	svg path {
 		fill: var(--odk-text-color);
@@ -261,12 +262,12 @@ const onSave = (saved: GeolocationRequestSuccess) => {
 }
 
 .geopoint-value-container {
-	display: flex;
+	display: inline-flex;
 	background: var(--odk-muted-background-color);
 	border-radius: var(--odk-radius);
-	align-items: center;
+	align-items: flex-start;
 	font-size: var(--odk-answer-font-size);
-	padding: var(--geo-spacing-m) var(--geo-spacing-l);
+	padding: var(--geo-spacing-xl);
 
 	.geo-quality,
 	.geopoint-icons {
@@ -284,7 +285,8 @@ const onSave = (saved: GeolocationRequestSuccess) => {
 
 	.geopoint-value {
 		display: flex;
-		align-items: center;
+		flex-direction: column;
+		align-items: flex-start;
 		justify-content: flex-start;
 		flex-wrap: wrap;
 		flex-grow: 2;
@@ -296,7 +298,7 @@ const onSave = (saved: GeolocationRequestSuccess) => {
 	color: var(--odk-error-text-color);
 	background-color: var(--odk-error-background-color);
 	border-radius: var(--odk-radius);
-	margin-top: var(--geo-spacing-xxl);
+	margin-top: var(--geo-spacing-l);
 	padding: var(--geo-spacing-xl);
 
 	.icon-warning {
@@ -306,31 +308,15 @@ const onSave = (saved: GeolocationRequestSuccess) => {
 	}
 
 	&.stack-errors {
-		padding-left: 0;
+		padding: 0;
 	}
 }
 
 .p-button.p-button-contrast.p-button-outlined.retry-button {
 	background: var(--odk-base-background-color);
+
 	&:hover {
 		background: var(--odk-muted-background-color);
-	}
-}
-
-@media screen and (max-width: #{pf.$md}) {
-	.geopoint-value-container {
-		align-items: flex-start;
-		padding: var(--geo-spacing-xxl) var(--geo-spacing-xl);
-
-		.geopoint-value {
-			display: flex;
-			flex-direction: column;
-			align-items: flex-start;
-
-			.retry-button {
-				margin-left: 0;
-			}
-		}
 	}
 }
 </style>

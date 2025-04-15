@@ -29,7 +29,6 @@ const invalid = computed(() => props.node.validationState.violation?.valid === f
 		:required="node.currentState.required"
 		:disabled="node.currentState.readonly"
 		:class="{'inside-highlighted': invalid && submitPressed}"
-		variant="filled"
 		:model-value="node.currentState.value"
 		@update:model-value="setValue"
 		@input="doneAnswering = false"

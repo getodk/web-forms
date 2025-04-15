@@ -42,9 +42,6 @@ provide('isInvalid', isInvalid);
 		<template v-else>
 			<InputText :node="node" />
 		</template>
-
-		<!-- Excluding Geopoint since it doesn't display an error icon in the input box like other input types. TODO: Refactor to allow each input type to determine how errors are displayed. -->
-		<i v-show="isInvalid && (doneAnswering || submitPressed) && node.valueType !== 'geopoint'" class="icon-error" />
 	</div>
 	<ValidationMessage
 		:message="node.validationState.violation?.message.asString"
@@ -88,14 +85,6 @@ provide('isInvalid', isInvalid);
 			opacity: 1;
 			background-image: none;
 		}
-	}
-
-	.icon-error {
-		position: absolute;
-		inset-inline-end: 10px;
-		top: 15px;
-		color: var(--odk-error-text-color);
-		font-size: 1.2rem;
 	}
 }
 </style>

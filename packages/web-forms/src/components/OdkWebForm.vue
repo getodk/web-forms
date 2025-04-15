@@ -292,7 +292,7 @@ watchEffect(() => {
 		}
 
 		.error-banner-placeholder {
-			height: calc(var(--wf-error-banner-gap) + 1rem);
+			height: var(--wf-error-banner-gap);
 		}
 
 		.form-error-message.p-message.p-message-error {
