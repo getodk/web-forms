@@ -19,4 +19,4 @@ docker compose -f contrib/containers/compose.yaml build
 docker compose -f contrib/containers/compose.yaml up -d
 ```
 
-Access web forms preview on: http://localhost:3221
+Access web forms preview on: http://localhost:5173

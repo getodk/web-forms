@@ -7,7 +7,7 @@ services:
     volumes:
       - ../../packages:/app/packages
     ports:
-      - "${WEB_FORMS_PORT:-3221}:3221"
+      - "${WEB_FORMS_PORT:-5173}:5173"
     command: yarn workspace @getodk/web-forms dev
 
   xlsform-online:
@@ -18,6 +18,6 @@ services:
       DJANGO_SECRET_KEY: xxxxxxxxxxxxxxxxxxx
       DJANGO_TMP_HOME: /tmp_home
       DJANGO_PERSISTENT_HOME: /persistent_home
-      DJANGO_CORS_ALLOWED_ORIGIN: http://localhost:${WEB_FORMS_PORT:-3221}
+      DJANGO_CORS_ALLOWED_ORIGIN: http://localhost:${WEB_FORMS_PORT:-5173}
     ports:
       - "${XLSFORM_ONLINE_PORT:-8558}:8000"

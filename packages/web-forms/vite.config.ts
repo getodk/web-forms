@@ -116,7 +116,7 @@ export default defineConfig(({ mode }) => {
 		},
 		server: {
 			host: true,
-			port: 3221,
+			port: 5173,
 		},
 		build: {
 			target: 'esnext',
