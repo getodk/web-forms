@@ -9,8 +9,11 @@ ENV PATH=$PATH:/emsdk:/emsdk/upstream/emscripten
 RUN apt-get update --quiet \
     && DEBIAN_FRONTEND=noninteractive \
     apt-get install -y --quiet --no-install-recommends \
+        "ca-certificates" \
+        "git" \
         "python3" \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && update-ca-certificates
 COPY . .
 RUN corepack enable && corepack install
 RUN yarn install
