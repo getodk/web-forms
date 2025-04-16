@@ -4,6 +4,6 @@ import PrimeVue from 'primevue/config';
 
 export const webFormsPlugin = {
 	install(app: App) {
-		app.use(PrimeVue, { theme: { preset: odkThemePreset } });
+		app.use(PrimeVue, { theme: { preset: odkThemePreset, options: { darkModeSelector: false } } });
 	},
 };
