@@ -20,3 +20,18 @@ docker compose -f contrib/containers/compose.yaml up -d
 ```
 
 Access web forms preview on: http://localhost:5173
+
+## Testing Web Forms
+
+Run all tests:
+
+```bash
+docker compose -f contrib/containers/compose.yaml run --rm tests
+```
+
+Run a specific test:
+
+```bash
+TEST_CMD='yarn workspace @getodk/web-forms run test:e2e:chromium' \
+  docker compose -f contrib/containers/compose.yaml run --rm tests
+```

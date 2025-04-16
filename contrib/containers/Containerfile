@@ -2,7 +2,7 @@ FROM emscripten/emsdk:4.0.4 AS emsdk
 
 
 # We can't use node bundled in emsdk img as v20.18.0 is incompatible with pinned engines
-FROM docker.io/node:22-slim
+FROM docker.io/node:22-slim AS build
 WORKDIR /app
 COPY --from=emsdk /emsdk /emsdk
 ENV PATH=$PATH:/emsdk:/emsdk/upstream/emscripten
@@ -17,7 +17,14 @@ RUN apt-get update --quiet \
 COPY . .
 RUN corepack enable && corepack install
 RUN yarn install
-# Build packages as a sanity check
+# Build packages as a sanity check + make available in tests stage
 RUN yarn workspace @getodk/tree-sitter-xpath build
 RUN yarn workspace @getodk/xpath build
 RUN yarn workspace @getodk/xforms-engine build
+
+
+FROM build AS test
+RUN yarn playwright install chromium --with-deps \
+    && yarn playwright install firefox --with-deps \
+    && yarn playwright install webkit --with-deps \
+    && rm -rf /var/lib/apt/lists/*
