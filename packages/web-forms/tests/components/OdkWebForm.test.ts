@@ -443,4 +443,154 @@ describe('OdkWebForm', () => {
 			expect(textInput.element.value).toBe(expectedPostSubmissionValue);
 		});
 	});
+
+	describe('stepper layout', () => {
+		beforeEach(async () => {
+			// Replace form with one including two questions
+			formXML = await getFormXml('multi-step.xform.xml');
+		});
+
+		it('renders stepper layout when stepperLayout prop is true', async () => {
+			const component = mountComponent(formXML, {
+				overrideProps: { stepperLayout: true },
+			});
+			await flushPromises();
+
+			expect(component.find('.stepper-container').exists()).toBe(true);
+			expect(component.find('.navigation-button').exists()).toBe(true);
+		});
+
+		it('shows only one question at a time in stepper layout and allows navigation', async () => {
+			const component = mountComponent(formXML, {
+				overrideProps: { stepperLayout: true },
+			});
+			await flushPromises();
+
+			// --- First Question ---
+			let visibleQuestions = component.findAll('.question-container').filter((q) => q.isVisible());
+			expect(visibleQuestions.length).toBe(1);
+			expect(
+				visibleQuestions[0].findAll('span').some((span) => span.text().includes('First question'))
+			).toBe(true);
+
+			// Fill first input (assuming it's an input element)
+			await visibleQuestions[0].find('input').setValue('Answer 1');
+
+			expect(component.find('button[aria-label="Back"]').exists()).toBe(false);
+			let nextButton = component.find('button[aria-label="Next"]');
+			expect(nextButton.exists()).toBe(true);
+			expect(component.find('button[aria-label="Send"]').exists()).toBe(false);
+
+			await nextButton.trigger('click');
+
+			// --- Second Question ---
+			visibleQuestions = component.findAll('.question-container').filter((q) => q.isVisible());
+			expect(visibleQuestions.length).toBe(1);
+			expect(
+				visibleQuestions[0].findAll('span').some((span) => span.text().includes('Second question'))
+			).toBe(true);
+
+			// Fill second input
+			await visibleQuestions[0].find('input').setValue('Answer 2');
+
+			const backButton = component.find('button[aria-label="Back"]');
+			expect(backButton.exists()).toBe(true);
+			expect(component.find('button[aria-label="Next"]').exists()).toBe(true);
+			expect(component.find('button[aria-label="Send"]').exists()).toBe(false);
+
+			// Test back button works (return to first question)
+			await backButton.trigger('click');
+
+			visibleQuestions = component.findAll('.question-container').filter((q) => q.isVisible());
+			expect(visibleQuestions.length).toBe(1);
+			expect(
+				visibleQuestions[0].findAll('span').some((span) => span.text().includes('First question'))
+			).toBe(true);
+
+			// Move to final / third question
+			nextButton = component.find('button[aria-label="Next"]');
+			await nextButton.trigger('click');
+			nextButton = component.find('button[aria-label="Next"]');
+			await nextButton.trigger('click');
+
+			// --- Third Question ---
+			visibleQuestions = component.findAll('.question-container').filter((q) => q.isVisible());
+			expect(visibleQuestions.length).toBe(1);
+			expect(
+				visibleQuestions[0].findAll('span').some((span) => span.text().includes('Third question'))
+			).toBe(true);
+
+			// Fill third input
+			await visibleQuestions[0].find('input').setValue('Answer 3');
+
+			expect(component.find('button[aria-label="Back"]').exists()).toBe(true);
+			expect(component.find('button[aria-label="Next"]').exists()).toBe(false);
+			expect(component.find('button[aria-label="Send"]').exists()).toBe(true);
+
+			// Submit form
+			const sendButton = component.find('button[aria-label="Send"]');
+			await sendButton.trigger('click');
+
+			// Ensure no form error messages are shown
+			const errorMessages = component.findAll('.form-error-message').filter((el) => el.isVisible());
+			expect(errorMessages.length).toBe(0);
+		});
+
+		it('blocks navigation and send in stepper layout if current step is invalid', async () => {
+			const component = mountComponent(formXML, {
+				overrideProps: { stepperLayout: true },
+			});
+			await flushPromises();
+
+			let nextButton = component.find('button[aria-label="Next"]');
+			await nextButton.trigger('click');
+
+			// Displays an error, remains on first question
+			expect(component.get('.validation-message').isVisible()).toBe(true);
+			expect(component.get('.validation-message').text()).toBe('Condition not satisfied: required');
+			let visibleQuestions = component.findAll('.question-container').filter((q) => q.isVisible());
+			expect(visibleQuestions.length).toBe(1);
+			expect(
+				visibleQuestions[0].findAll('span').some((span) => span.text().includes('First question'))
+			).toBe(true);
+		});
+
+		it('allows submission once all steps are valid in stepper layout', async () => {
+			const mockSubmit = vi.fn();
+			const component = mountComponent(formXML, {
+				overrideProps: { stepperLayout: true },
+				onSubmit: mockSubmit,
+			});
+			await flushPromises();
+
+			// Progress to end of form
+			let visibleQuestions = component.findAll('.question-container').filter((q) => q.isVisible());
+			await visibleQuestions[0].find('input').setValue('Answer 1');
+			let nextButton = component.find('button[aria-label="Next"]');
+			nextButton = component.find('button[aria-label="Next"]');
+			await nextButton.trigger('click');
+			visibleQuestions = component.findAll('.question-container').filter((q) => q.isVisible());
+			await visibleQuestions[0].find('input').setValue('Answer 2');
+			nextButton = component.find('button[aria-label="Next"]');
+			await nextButton.trigger('click');
+
+			// Check entire form validation works
+			expect(component.get('.form-error-message').isVisible()).toBe(false);
+			const sendButton = component.find('button[aria-label="Send"]');
+			await sendButton.trigger('click');
+			expect(component.get('.form-error-message').isVisible()).toBe(true);
+
+			// Fill final question to make form valid, and check submission sends
+			visibleQuestions = component.findAll('.question-container').filter((q) => q.isVisible());
+			await visibleQuestions[0].find('input').setValue('Answer 3');
+			await sendButton.trigger('click');
+			expect(component.get('.form-error-message').isVisible()).toBe(false);
+			expect(mockSubmit).toHaveBeenCalled();
+		});
+
+		it('always shows the stepper next and back buttons at the bottom of the screen', async () => {
+			// TODO
+			console.log('here');
+		});
+	});
 });
