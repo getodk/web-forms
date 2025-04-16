@@ -36,7 +36,7 @@ export interface OdkWebFormsProps {
 	 * with collapsable groups. This param changes to a stepper layout
 	 * closer to Collect.
 	 */
-	stepperLayout?: boolean;
+	readonly stepperLayout?: boolean;
 
 	/**
 	 * Note: this parameter must be set when subscribing to the
@@ -150,7 +150,6 @@ const emit = defineEmits<OdkWebFormEmits>();
 
 const state = initializeFormState();
 const submitPressed = ref(false);
-const showSendButton = ref(props.stepperLayout ? false : true);
 
 const init = async () => {
 	state.value = await loadFormState(props.formXml, {
@@ -240,20 +239,20 @@ watchEffect(() => {
 				<template #content>
 					<div class="form-questions">
 						<div class="flex flex-column gap-2">
-							<QuestionList v-if="!stepperLayout" :nodes="state.root.currentState.children" />
+							<QuestionList v-if="!props.stepperLayout" :nodes="state.root.currentState.children" />
 							<!-- Note that QuestionStepper has the 'Send' button integrated instead of using the button below -->
-							<QuestionStepper v-if="stepperLayout" :nodes="state.root.currentState.children" @sendFormFromStepper="handleSubmit(state)" />
+							<QuestionStepper v-if="props.stepperLayout" :nodes="state.root.currentState.children" @sendFormFromStepper="handleSubmit(state)" />
 						</div>
 					</div>
 				</template>
 			</Card>
 
-			<div v-if="showSendButton" class="footer flex justify-content-end flex-wrap gap-3">
+			<div v-if="!props.stepperLayout" class="footer flex justify-content-end flex-wrap gap-3">
 				<Button label="Send" rounded @click="handleSubmit(state)" />
 			</div>
 		</div>
 
-		<div v-if="showSendButton" class="powered-by-wrapper">
+		<div v-if="!props.stepperLayout" class="powered-by-wrapper">
 			<a class="anchor" href="https://getodk.org" target="_blank">
 				<span class="caption">Powered by</span>
 				<img
