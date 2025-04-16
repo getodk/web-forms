@@ -47,7 +47,7 @@ const setValue = (value: boolean) => {
 	align-items: center;
 	outline: 1px solid var(--odk-border-color);
 	border-radius: var(--odk-radius);
-	padding: 15px;
+	padding: 12px;
 	background: var(--odk-base-background-color);
 	cursor: pointer;
 

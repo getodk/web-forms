@@ -289,6 +289,7 @@ const swapItems = (index: number, newPosition: number) => {
 
 	button {
 		padding: 10px 20px;
+		font-size: var(--odk-base-font-size);
 
 		&:hover:not(:disabled) {
 			background: var(--odk-inactive-background-color);
