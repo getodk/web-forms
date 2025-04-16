@@ -1,0 +1,48 @@
+services:
+  web-forms:
+    image: ghcr.io/getodk/web-forms:main
+    build:
+      context: ../..
+      dockerfile: contrib/containers/Containerfile
+      target: build
+    volumes:
+      - ../../packages/common:/app/packages/common
+      - ../../packages/web-forms:/app/packages/web-forms
+      # Mount each package individually to avoid overwriting generated dist
+      - ../../packages/xpath/src:/app/packages/xpath/src
+      - ../../packages/xforms-engine/src:/app/packages/xforms-engine/src
+    ports:
+      - "${WEB_FORMS_PORT:-5173}:5173"
+    command: yarn workspace @getodk/web-forms dev
+
+  xlsform-online:
+    image: ghcr.io/getodk/xlsform-online:master
+    build: 
+      context: https://github.com/getodk/xlsform-online.git#master
+    environment:
+      DJANGO_SECRET_KEY: xxxxxxxxxxxxxxxxxxx
+      DJANGO_TMP_HOME: /tmp_home
+      DJANGO_PERSISTENT_HOME: /persistent_home
+      DJANGO_CORS_ALLOWED_ORIGIN: http://localhost:${WEB_FORMS_PORT:-5173}
+    ports:
+      - "${XLSFORM_ONLINE_PORT:-8558}:8000"
+
+  tests:
+    profiles: [test]
+    image: ghcr.io/getodk/web-forms:test
+    build:
+      context: ../..
+      dockerfile: contrib/containers/Containerfile
+      target: test
+    environment:
+      DISPLAY: :0
+    volumes:
+      - ../../packages/common:/app/packages/common
+      - ../../packages/web-forms:/app/packages/web-forms
+      # Mount each package individually to avoid overwriting generated dist
+      - ../../packages/xpath/src:/app/packages/xpath/src
+      - ../../packages/xforms-engine/src:/app/packages/xforms-engine/src
+      - ../../packages/xpath/test:/app/packages/xpath/test
+      - ../../packages/xforms-engine/test:/app/packages/xforms-engine/test
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    command: ${TEST_CMD:-yarn run test}
