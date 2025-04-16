@@ -12,6 +12,7 @@ export interface PanelProps {
 	class?: string[] | string;
 	labelIcon?: string;
 	labelNumber?: number;
+    toggleable?: boolean;
 }
 
 const props = withDefaults(defineProps<PanelProps>(), {
@@ -21,6 +22,7 @@ const props = withDefaults(defineProps<PanelProps>(), {
 	class: undefined,
 	labelIcon: undefined,
 	labelNumber: undefined,
+    toggleable: false,
 });
 
 const panelClass = computed(() => [
@@ -31,7 +33,9 @@ const panelClass = computed(() => [
 const panelState = ref(false);
 
 const toggle = () => {
-	panelState.value = !panelState.value;
+    if (props.toggleable) {
+		panelState.value = !panelState.value;
+    }
 };
 
 const menu = ref<Menu & MenuState>();
@@ -40,10 +44,11 @@ const toggleMenu = (event: Event) => {
 	menu.value?.toggle(event);
 };
 </script>
+
 <template>
-	<Panel v-if="!noUi" :class="panelClass" :toggleable="true" :collapsed="panelState">
+    <Panel v-if="!noUi" :class="[panelClass, { 'toggleable-enabled': toggleable }]" :toggleable="toggleable" :collapsed="toggleable ? panelState : false">
 		<template #header>
-			<div class="panel-title" role="button" @click="toggle">
+            <div v-if="toggleable" class="panel-title" role="button" @click="toggle">
 				<h2>
 					<span class="chevron" :class="panelState ? 'icon-keyboard_arrow_down' : 'icon-keyboard_arrow_up'" />
 					<span v-if="labelNumber" class="label-number">{{ labelNumber }}</span>
@@ -51,6 +56,13 @@ const toggleMenu = (event: Event) => {
 					<span v-if="labelIcon" class="ml-2" :class="labelIcon" />
 				</h2>
 			</div>
+            <div v-else>
+                <h2>
+                    <span v-if="labelNumber" class="label-number">{{ labelNumber }}</span>
+                    <span>{{ title }}</span>
+                    <span v-if="labelIcon" class="ml-2" :class="labelIcon" />
+                </h2>
+            </div>
 		</template>
 		<template v-if="menuItems && menuItems.length > 0" #icons>
 			<Button severity="secondary" rounded class="btn-context" :class="{ 'p-focus': menu?.overlayVisible }" icon="icon-more_vert" aria-label="More" @click="toggleMenu" />
@@ -129,15 +141,19 @@ h2 {
 	}
 
 	:deep(.p-panel-content) {
-		border-left: 2px solid var(--gray-200);
+		box-shadow: none;
 		margin-left: 10px;
-		border-radius: 0;
 		padding: 0 0 0 1.5rem;
 	}
 
 	:deep(.p-panel-toggler) {
 		display: none;
 	}
+}
+
+.toggleable-enabled :deep(.p-panel-content) {
+	border-left: 2px solid var(--gray-200);
+	border-radius: 0;
 }
 
 .content-wrapper {

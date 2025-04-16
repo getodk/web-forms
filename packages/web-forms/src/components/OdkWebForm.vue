@@ -22,6 +22,7 @@ import { computed, getCurrentInstance, provide, ref, watchEffect } from 'vue';
 import FormLoadFailureDialog from './Form/FormLoadFailureDialog.vue';
 import FormHeader from './FormHeader.vue';
 import QuestionList from './QuestionList.vue';
+import QuestionStepper from './QuestionStepper.vue';
 
 const webFormsVersion = __WEB_FORMS_VERSION__;
 
@@ -29,6 +30,13 @@ export interface OdkWebFormsProps {
 	readonly formXml: string;
 	readonly fetchFormAttachment: FetchFormAttachment;
 	readonly missingResourceBehavior?: MissingResourceBehavior;
+
+	/**
+	 * Note: by default all questions will be displayed in a single list,
+	 * with collapsable groups. This param changes to a stepper layout
+	 * closer to Collect.
+	 */
+	readonly stepperLayout?: boolean;
 
 	/**
 	 * Note: this parameter must be set when subscribing to the
@@ -43,7 +51,9 @@ export interface OdkWebFormsProps {
 	readonly editInstance?: EditInstanceOptions;
 }
 
-const props = defineProps<OdkWebFormsProps>();
+const props = withDefaults(defineProps<OdkWebFormsProps>(), {
+	stepperLayout: false,
+});
 
 const hostSubmissionResultCallbackFactory = (
 	currentState: FormStateSuccessResult
@@ -229,18 +239,20 @@ watchEffect(() => {
 				<template #content>
 					<div class="form-questions">
 						<div class="flex flex-column gap-2">
-							<QuestionList :nodes="state.root.currentState.children" />
+							<QuestionList v-if="!props.stepperLayout" :nodes="state.root.currentState.children" />
+							<!-- Note that QuestionStepper has the 'Send' button integrated instead of using the button below -->
+							<QuestionStepper v-if="props.stepperLayout" :nodes="state.root.currentState.children" @sendFormFromStepper="handleSubmit(state)" />
 						</div>
 					</div>
 				</template>
 			</Card>
 
-			<div class="footer flex justify-content-end flex-wrap gap-3">
+			<div v-if="!props.stepperLayout" class="footer flex justify-content-end flex-wrap gap-3">
 				<Button label="Send" rounded @click="handleSubmit(state)" />
 			</div>
 		</div>
 
-		<div class="powered-by-wrapper">
+		<div v-if="!props.stepperLayout" class="powered-by-wrapper">
 			<a class="anchor" href="https://getodk.org" target="_blank">
 				<span class="caption">Powered by</span>
 				<img
