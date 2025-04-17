@@ -123,9 +123,7 @@ const extendNodeKindGuards = <T extends XPathNode>(
  * representation.
  */
 interface IterableOperations<T extends XPathNode> {
-	// Note: iterable -> array is intentional. Can't sort a lazy, arbitrary-order
-	// sequence without iterating every item!
-	readonly sortInDocumentOrder: (nodes: Iterable<T>) => readonly T[];
+	readonly sortInDocumentOrder: (nodes: readonly T[]) => readonly T[];
 }
 
 interface ExtendedIterableOperations<T extends XPathNode>
@@ -141,8 +139,8 @@ const extendIterableOperations = <T extends XPathNode>(
 	base: ExtendedNodeKindGuards<T>
 ): ExtendedIterableOperations<T> => {
 	const extensions: IterableOperations<T> = {
-		sortInDocumentOrder: (nodes: Iterable<T>): readonly T[] => {
-			return Array.from(nodes).sort((a, b) => base.compareDocumentOrder(a, b));
+		sortInDocumentOrder: (nodes: readonly T[]): readonly T[] => {
+			return nodes.slice().sort((a, b) => base.compareDocumentOrder(a, b));
 		},
 	};
 

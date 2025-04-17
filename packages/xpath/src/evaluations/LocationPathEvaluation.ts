@@ -32,15 +32,6 @@ function* concat<T>(...iterables: Array<Iterable<T>>): IterableIterator<T> {
 	}
 }
 
-function* flatMapNodeSets<T extends XPathNode>(
-	contextNodes: Iterable<T>,
-	fn: (contextNode: T) => Iterable<T>
-): Iterable<T> {
-	for (const contextNode of contextNodes) {
-		yield* fn(contextNode);
-	}
-}
-
 // prettier-ignore
 type LocationPathParentContext<T extends XPathNode> =
 	| EvaluationContext<T>
@@ -893,22 +884,20 @@ export class LocationPathEvaluation<T extends XPathNode>
 			visited: new WeakSet(),
 		};
 
-		let nodes = flatMapNodeSets(this.contextNodes, function* (contextNode) {
+		const nodes = Array.from(this.contextNodes).flatMap((contextNode) => {
 			const currentContext = axisEvaluationContext(context, contextNode);
 			const axisNodes = axisEvaluator(currentContext, step);
 
-			for (const axisNode of axisNodes) {
-				if (nodePredicate(axisNode)) {
-					yield axisNode;
-				}
-			}
+			return Array.from(axisNodes).filter(nodePredicate);
 		});
 
 		// TODO: this is out of spec! Tests currently depend on it. We could update
 		// the tests, but making the minimal change necessary for refactor to
 		// eliminate use of TreeWalker
 		if (axisType === 'preceding' || axisType === 'preceding-sibling') {
-			nodes = this.domProvider.sortInDocumentOrder(nodes);
+			const sorted = domProvider.sortInDocumentOrder(nodes);
+
+			return new LocationPathEvaluation(this, sorted);
 		}
 
 		return new LocationPathEvaluation(this, nodes);
