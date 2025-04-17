@@ -47,7 +47,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  #####  $\texttt{Question types (basic functionality)\hspace{5mm}\color{green}████\color{LightGray}███████████ \color{initial} 32\\%}$
+  #####  $\texttt{Question types (basic functionality)\hspace{5mm}\color{green}█████\color{LightGray}██████████ \color{initial} 35\\%}$
 
   </summary>
   <br/>
@@ -68,7 +68,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | geoshape                   |          |
 | start-geopoint             |          |
 | range                      |    🚧    |
-| image                      |          |
+| image                      |    ✅    |
 | barcode                    |          |
 | audio                      |          |
 | background-audio           |          |
