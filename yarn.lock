@@ -3211,11 +3211,6 @@ isexe@^3.1.1:
   resolved "https://registry.yarnpkg.com/isexe/-/isexe-3.1.1.tgz#4a407e2bd78ddfb14bea0c27c6f7072dde775f0d"
   integrity sha512-LpB/54B+/2J5hqQ7imZHfdU31OlgQqx7ZicVlkm9kzg9/w8GKLEcFfJl/t7DCEDueOyBAD6zCCwTO6Fzs0NoEQ==
 
-itertools-ts@^2.2.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/itertools-ts/-/itertools-ts-2.2.0.tgz#f1905051fe50b04cebd40e668ce3b418f57668f3"
-  integrity sha512-mniYtZhO2ZLFiuUjx6y/Rl1ohGVkEaapz7FGx/tT3tehd/cw09JuSTWhgDIPBTMTGn8EWFjK/2Z3HECswzx2aw==
-
 jackspeak@^3.1.2:
   version "3.4.3"
   resolved "https://registry.yarnpkg.com/jackspeak/-/jackspeak-3.4.3.tgz#8833a9d89ab4acde6188942bd1c53b6390ed5a8a"
