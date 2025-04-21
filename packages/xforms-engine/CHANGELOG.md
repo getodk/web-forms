@@ -4,7 +4,7 @@
 
 ### Minor Changes
 
-- [8261eee](https://github.com/getodk/web-forms/pull/363): Support for instance attachments
+- 8261eee: Support for instance attachments
 
 ### Patch Changes
 
