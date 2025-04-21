@@ -4,7 +4,7 @@
 
 ### Minor Changes
 
-- 8261eee: Support for uploading images
+- [8261eee](https://github.com/getodk/web-forms/pull/363): Support for uploading images
 
 ### Patch Changes
 
