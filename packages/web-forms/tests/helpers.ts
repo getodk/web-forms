@@ -1,12 +1,13 @@
 import { xformFixturesByIdentifier } from '@getodk/common/fixtures/xforms.ts';
 import type { AnyFunction } from '@getodk/common/types/helpers.d.ts';
-import type { AnyControlNode, RootNode } from '@getodk/xforms-engine';
+import type { RootNode } from '@getodk/xforms-engine';
 import { createInstance } from '@getodk/xforms-engine';
 import type { MountingOptions } from '@vue/test-utils';
 import PrimeVue from 'primevue/config';
 import type { MockInstance } from 'vitest';
 import { vi } from 'vitest';
 import { reactive } from 'vue';
+import { odkThemePreset } from '../src/odkThemePreset';
 
 /**
  * @todo this does roughly the same thing as {@link getFormXml}, except it
@@ -57,7 +58,7 @@ export const getReactiveForm = async (formPath: string): Promise<RootNode> => {
 type GlobalMountOptions = Required<MountingOptions<unknown>>['global'];
 
 export const globalMountOptions: GlobalMountOptions = {
-	plugins: [[PrimeVue, { ripple: false }]],
+	plugins: [[PrimeVue, { theme: { preset: odkThemePreset } }]],
 	provide: {
 		submitPressed: false,
 	},
@@ -65,9 +66,6 @@ export const globalMountOptions: GlobalMountOptions = {
 		teleport: true,
 	},
 };
-
-export const fakeUnsupportedControlNode = () =>
-	Object.assign({ nodeType: 'dummy', validationState: {} }, {} as AnyControlNode);
 
 // TODO: how the heck is `undefined` a key of anything?!
 type StringKeyOf<T> = Extract<keyof T, string>;

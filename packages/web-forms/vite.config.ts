@@ -106,10 +106,8 @@ export default defineConfig(({ mode }) => {
 				'@': fileURLToPath(new URL('./src', import.meta.url)),
 				'primevue/menuitem': 'primevue/menu',
 				// With following lines, fonts byte array are copied into css file
-				// Roboto fonts - don't want to copy those in our repository
-				'./fonts': resolve(
-					'../../node_modules/primevue-sass-theme/themes/material/material-light/standard/indigo/fonts'
-				),
+				// Roboto fonts
+				'./fonts': resolve('../../node_modules/@fontsource/roboto'),
 				// Icomoon fonts
 				'/fonts': resolve('./src/assets/fonts'),
 			},
@@ -179,11 +177,17 @@ export default defineConfig(({ mode }) => {
 		},
 		optimizeDeps: {
 			force: true,
+			/**
+			 * Linked dependencies outside the local node_modules (e.g., hoisted to the monorepo root)
+			 * are not pre-bundled unless explicitly configured.
+			 */
+			include: ['vue'],
+			entries: [resolve(__dirname, '../../node_modules/vue/dist/vue.esm-bundler.js')],
 		},
 		test: {
 			browser: {
 				enabled: BROWSER_ENABLED,
-				name: BROWSER_NAME!,
+				instances: BROWSER_NAME != null ? [{ browser: BROWSER_NAME }] : [],
 				provider: 'playwright',
 				fileParallelism: false,
 				headless: true,
