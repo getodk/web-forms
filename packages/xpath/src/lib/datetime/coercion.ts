@@ -1,5 +1,9 @@
 import { Temporal } from 'temporal-polyfill';
-import { MILLISECOND_NANOSECONDS } from '@getodk/common/constants/datetime.ts';
+import {
+	MILLISECOND_NANOSECONDS,
+	VALID_OFFSET_VALUE,
+	TIMEZONE_OFFSET_PATTERN,
+} from '@getodk/common/constants/datetime.ts';
 import { isISODateOrDateTimeLike } from './predicates.ts';
 
 export const tryParseDateString = (value: string): Date | null => {
@@ -30,18 +34,12 @@ export const dateTimeFromString = (
 		return Temporal.ZonedDateTime.from(value.replace(/Z$/, '[UTC]')).withTimeZone(timeZone);
 	}
 
-	/*
-	 * Validates a timezone offset (e.g., "+01:00", "-23:59") to ensure it’s within the valid range.
-	 * Webkit (Safari) parses invalid offsets like "-24:00" while Chrome and Firefox reject them.
-	 */
-	const offsetFormatRegex = /[-+]\d{2}:\d{2}$/;
-	const offsetMatch = offsetFormatRegex.exec(value);
-	const offsetValidValueRegex = /^[+-](0[0-9]|1[0-4]):([0-5][0-9])$/;
-	if (offsetMatch != null && !offsetValidValueRegex.test(offsetMatch[0])) {
+	const offsetMatch = TIMEZONE_OFFSET_PATTERN.exec(value);
+	if (offsetMatch != null && !VALID_OFFSET_VALUE.test(offsetMatch[0])) {
 		return null;
 	}
 
-	if (offsetFormatRegex.test(value) || !/^\d{4}/.test(value)) {
+	if (TIMEZONE_OFFSET_PATTERN.test(value) || !/^\d{4}/.test(value)) {
 		const date = tryParseDateString(value);
 
 		if (date == null) {
