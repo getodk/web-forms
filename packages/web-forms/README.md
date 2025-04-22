@@ -87,16 +87,14 @@ This package uses a centralized `z-index` layering system to manage UI stacking 
 
 - **Key Layers**:
 
-  - `--odk-z-index-base: 0` (background)
-  - `--odk-z-index-form-content: 10` (inputs, buttons)
-  - `--odk-z-index-form-floating: 20` (highlights, tooltips)
-  - `--odk-z-index-error-banner: 30` (floating errors)
-  - `--odk-z-index-overlay: 100` (modals)
-  - `--odk-z-index-topmost: 1000` (loaders, notifications)
+  - `--odk-z-index-base` (background)
+  - `--odk-z-index-form-content` (inputs, buttons)
+  - `--odk-z-index-form-floating` (highlights, tooltips)
+  - `--odk-z-index-error-banner` (floating errors)
+  - `--odk-z-index-overlay` (modals)
+  - `--odk-z-index-topmost` (loaders, notifications)
 
 - **Usage**: Apply with `z-index: var(--odk-z-index-error-banner);` on positioned elements (e.g., `position: absolute`).
-
-See [src/assets/css/z-index.css](src/assets/css/z-index.css) for full details.
 
 #### Fonts
 
