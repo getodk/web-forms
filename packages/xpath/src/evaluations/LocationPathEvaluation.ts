@@ -589,7 +589,7 @@ export class LocationPathEvaluation<T extends XPathNode>
 	readonly functions: FunctionLibraryCollection;
 	readonly namespaceResolver: NamespaceResolver<T>;
 
-	readonly timeZone: Temporal.TimeZone;
+	readonly timeZone: Temporal.TimeZoneLike;
 
 	/**
 	 * TODO: this is a temporary accommodation for these cases which are presently

@@ -221,7 +221,7 @@ watchEffect(() => {
 		<div class="form-wrapper">
 			<div v-if="showValidationError" class="error-banner-placeholder"></div>
 			<!-- Closable error message to clear the view and avoid overlap with other elements -->
-			<Message v-if="showValidationError" severity="error" icon="icon-error_outline" class="form-error-message" @close=="floatingErrorActive = false">
+			<Message v-if="showValidationError" severity="error" icon="icon-error_outline" class="form-error-message" @close="floatingErrorActive = false">
 				{{ validationErrorMessage }}
 			</Message>
 

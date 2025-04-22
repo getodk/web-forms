@@ -340,7 +340,7 @@ export const decimalTime = new NumberFunction(
 					month: 1,
 					day: 1,
 				})
-				.toZonedDateTime('utc');
+				.toZonedDateTime('UTC');
 
 			return epochMilliseconds / DAY_MILLISECONDS;
 		}

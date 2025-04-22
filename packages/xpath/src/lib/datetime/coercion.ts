@@ -18,26 +18,8 @@ export const tryParseDateString = (value: string): Date | null => {
 	return null;
 };
 
-/**
- * Validates a timezone offset (e.g., "+01:00", "-23:59") to ensure it’s within the valid range.
- * Webkit (Safari) parses invalid offsets like "-24:00" while Chrome and Firefox reject them.
- * Using `Temporal.TimeZone.from` ensures consistent rejection of out-of-spec offsets
- * across browsers, aligning with the Temporal spec’s max of ±23:59.
- *
- * @param offset - The offset string to validate (e.g., "-24:00", "+01:00").
- * @returns `true` if the offset is valid, `false` otherwise.
- */
-const isValidOffset = (offset: string): boolean => {
-	try {
-		Temporal.TimeZone.from(offset);
-		return true;
-	} catch {
-		return false;
-	}
-};
-
 export const dateTimeFromString = (
-	timeZone: Temporal.TimeZone,
+	timeZone: Temporal.TimeZoneLike,
 	value: string
 ): Temporal.ZonedDateTime | null => {
 	if (!isISODateOrDateTimeLike(value)) {
@@ -48,13 +30,18 @@ export const dateTimeFromString = (
 		return Temporal.ZonedDateTime.from(value.replace(/Z$/, '[UTC]')).withTimeZone(timeZone);
 	}
 
-	const offsetRegex = /[-+]\d{2}:\d{2}$/;
-	const offsetMatch = offsetRegex.exec(value);
-	if (offsetMatch != null && !isValidOffset(offsetMatch[0])) {
+	/*
+	 * Validates a timezone offset (e.g., "+01:00", "-23:59") to ensure it’s within the valid range.
+	 * Webkit (Safari) parses invalid offsets like "-24:00" while Chrome and Firefox reject them.
+	 */
+	const offsetFormatRegex = /[-+]\d{2}:\d{2}$/;
+	const offsetMatch = offsetFormatRegex.exec(value);
+	const offsetValidValueRegex = /^[+-](0[0-9]|1[0-4]):([0-5][0-9])$/;
+	if (offsetMatch != null && !offsetValidValueRegex.test(offsetMatch[0])) {
 		return null;
 	}
 
-	if (offsetRegex.test(value) || !/^\d{4}/.test(value)) {
+	if (offsetFormatRegex.test(value) || !/^\d{4}/.test(value)) {
 		const date = tryParseDateString(value);
 
 		if (date == null) {
@@ -73,12 +60,12 @@ const toNanoseconds = (milliseconds: bigint | number): bigint =>
 	BigInt(milliseconds) * MILLISECOND_NANOSECONDS;
 
 export const dateTimeFromNumber = (
-	timeZone: Temporal.TimeZone,
+	timeZone: Temporal.TimeZoneLike,
 	milliseconds: number
 ): Temporal.ZonedDateTime | null => {
 	if (Number.isNaN(milliseconds)) {
 		return null;
 	}
 
-	return new Temporal.ZonedDateTime(toNanoseconds(milliseconds), timeZone);
+	return new Temporal.ZonedDateTime(toNanoseconds(milliseconds), timeZone.toString());
 };
