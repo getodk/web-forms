@@ -44,9 +44,11 @@ const value = computed<NoteRenderableValue>(() => {
 		case 'string':
 		case 'int':
 		case 'decimal':
-		case 'date':
 		case 'geopoint':
 			return question.currentState.value;
+
+		case 'date':
+			return question.currentState.value?.toString();
 
 		case 'boolean':
 		case 'time':
@@ -72,10 +74,6 @@ const value = computed<NoteRenderableValue>(() => {
 		<div v-if="value != null" class="note-value">
 			<template v-if="question.valueType === 'geopoint'">
 				<GeopointFormattedValue :question="question" />
-			</template>
-
-			<template v-else-if="question.valueType === 'date'">
-				{{ value.toString() }}
 			</template>
 
 			<template v-else>

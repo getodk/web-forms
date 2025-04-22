@@ -23,20 +23,16 @@ export type DatetimeInputValue =
  * @returns A {@link DatetimeRuntimeValue}
  */
 const parseString = (value: string): DatetimeRuntimeValue => {
-	if (value == null || typeof value !== 'string') {
-		return null;
-	}
-
-	if (!ISO_DATE_OR_DATE_TIME_NO_OFFSET_PATTERN.test(value)) {
+	if (
+		value == null ||
+		typeof value !== 'string' ||
+		!ISO_DATE_OR_DATE_TIME_NO_OFFSET_PATTERN.test(value)
+	) {
 		return null;
 	}
 
 	try {
-		const dateOnly = value.split('T')[0];
-		if (dateOnly == null) {
-			return null;
-		}
-
+		const dateOnly = value.split('T')[0]!;
 		return Temporal.PlainDate.from(dateOnly);
 	} catch {
 		// TODO: should we throw when codec cannot interpret the value?
@@ -76,7 +72,7 @@ const toDateString = (value: DatetimeInputValue): string => {
 		}
 
 		const parsed = parseString(String(value));
-		return parsed == null ? '' : parsed.toString();
+		return parsed?.toString() ?? '';
 	} catch {
 		// TODO: should we throw when codec cannot interpret the value?
 		return '';
