@@ -83,7 +83,7 @@ We use CSS variables for theming with two prefixes:
 
 #### Z-Index Layering System
 
-This package uses a centralized `z-index` layering system to manage UI stacking order, defined in `src/assets/css/z-index.css`. Custom properties (e.g., `--odk-z-index-error-banner`) ensure elements like floating error messages, form controls, and overlays stack correctly without overlap.
+This package uses a centralized `z-index` layering system to manage UI stacking order, defined in `src/assets/css/style.scss`. Custom properties (e.g., `--odk-z-index-error-banner`) ensure elements like floating error messages, form controls, and overlays stack correctly without overlap.
 
 - **Key Layers**:
 
