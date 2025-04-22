@@ -1,7 +1,7 @@
 ---
 name: Task
 about: Template for a individual task or a task under an Epic
-title: '[TASK] <Short actionable title>'
+title: '<Short actionable title>'
 labels: needs discussion
 assignees: ''
 ---
@@ -14,14 +14,18 @@ assignees: ''
 ---
 
 ### Checklist
-- [ ] **Does it need UI/UX design?**
-  - If yes, describe the UI/UX requirements or attach a Figma link in the "Design" section.
-- [ ] **Does it need API design?**
-  - If yes, specify the endpoints, methods, or data structures needed.
-- [ ] **Does it need design around state flow?**
-  - If yes, outline the state flow requirements.
-- [ ] **Does it need a test plan?**
-  - If yes, add the test plan as a comment in this task or attach the document.
+- **Does it need UI/UX design?**
+  - [ ] Yes. Describe the UI/UX requirements or attach a Figma link in the "Design" section.
+  - [ ] No
+- **Does it need API design?**
+  - [ ] Yes. Specify the endpoints, methods, or data structures needed.
+  - [ ] No
+- **Does it need design around state flow?**
+  - [ ] Yes. Outline the state flow requirements.
+  - [ ] No
+- **Does it need a test plan?**
+  - [ ] Yes. Add the test plan as a comment in this task or attach the document.
+  - [ ] No
 ---
 
 ### User Stories
@@ -36,9 +40,8 @@ assignees: ''
 ### Design
 <!-- Link to design assets or provide details about the visual or interaction design. -->
 
-- **Figma Link**: [Insert URL]
-- **UI/UX Design Doc Link**: [Insert URL]
-- **Technical Design Doc Links**: [Insert URL]
+- **Figma**: [Insert URL]
+- **Design Docs**: [Insert URL]
 
 ---
 
@@ -49,8 +52,7 @@ List of prerequisites, blockers, or external factors that impact the Epic.
 - [e.g., "Blocked by #123"]
 -->
 
-- [dependency]
-- [dependency]
+-
 
 ---
 
@@ -60,15 +62,12 @@ Add any extra context, considerations, or open questions.
 - [e.g., "Consider scalability for 10+ languages in the future"]
 -->
 
-- [notes]
-- [notes]
+-
 
 ---
 
 ### Related Issues
 <!-- Links to related Epics, issues, or pull requests. -->
 
-- [issue link]
-- [epic issue link, if applicable]
-
+-
 
