@@ -9,7 +9,6 @@ import '@fontsource/roboto/500.css';
 import './assets/css/icomoon.css';
 // TODO/sk: Purge it - postcss-purgecss
 import 'primeflex/primeflex.css';
-import './assets/css/z-index.css';
 import './assets/css/style.scss';
 
 /**

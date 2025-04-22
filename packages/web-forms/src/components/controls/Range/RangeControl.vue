@@ -191,7 +191,7 @@ const orientation = props.node.appearances.vertical ? 'vertical' : 'horizontal';
 		// No clue why PrimeVue has a default `transform` style to shrink this!
 		transform: none;
 
-		z-index: var(--z-index-form-content);
+		z-index: var(--odk-z-index-form-content);
 	}
 }
 </style>

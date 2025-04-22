@@ -221,7 +221,7 @@ watchEffect(() => {
 		<div class="form-wrapper">
 			<div v-if="showValidationError" class="error-banner-placeholder"></div>
 			<!-- Closable error message to clear the view and avoid overlap with other elements -->
-			<Message v-if="showValidationError" severity="error" icon="icon-error_outline" class="form-error-message" @close="floatingErrorActive = false">
+			<Message v-if="showValidationError" severity="error" icon="icon-error_outline" class="form-error-message" :closable="true" @close="floatingErrorActive = false">
 				{{ validationErrorMessage }}
 			</Message>
 
@@ -299,7 +299,7 @@ watchEffect(() => {
 
 		.form-error-message.p-message.p-message-error {
 			position: fixed;
-			z-index: var(--z-index-error-banner);
+			z-index: var(--odk-z-index-error-banner);
 			border-radius: var(--odk-radius);
 			background-color: var(--odk-error-background-color);
 			border: 1px solid var(--p-message-error-border-color);
@@ -384,7 +384,7 @@ watchEffect(() => {
 				margin: var(--wf-error-banner-gap) 1rem 0 1rem;
 				max-width: unset;
 				width: calc(100% - 2rem);
-				top: 0.27rem;
+				top: 22px;
 			}
 
 			.questions-card {
