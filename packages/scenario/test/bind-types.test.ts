@@ -668,6 +668,11 @@ describe('Data (<bind type>) type support', () => {
 				expect(answer.stringValue).toBe('');
 			});
 
+			/**
+			 * TODO: Datetimes with a valid timezone offset are treated as errors.
+			 *       User research is needed to determine whether the date should honor
+			 *       the timezone or be truncated to the yyyy-mm-dd format only.
+			 */
 			it.each([
 				'13:30:55',
 				'2025-23-23',
