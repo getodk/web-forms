@@ -11,7 +11,6 @@ import {
 	title,
 } from '@getodk/common/test/fixtures/xform-dsl/index.ts';
 import type { ValueType } from '@getodk/xforms-engine';
-import { Temporal } from 'temporal-polyfill';
 import { assert, beforeEach, describe, expect, expectTypeOf, it } from 'vitest';
 import { intAnswer } from '../src/answer/ExpectedIntAnswer.ts';
 import { InputNodeAnswer } from '../src/answer/InputNodeAnswer.ts';
@@ -228,18 +227,18 @@ describe('Data (<bind type>) type support', () => {
 				answer = getTypedModelValueNodeAnswer('/root/date-value', 'date');
 			});
 
-			it('has a PlainDate | null static type', () => {
-				expectTypeOf(answer.value).toEqualTypeOf<Temporal.PlainDate | null>();
+			it('has a string static type', () => {
+				expectTypeOf(answer.value).toEqualTypeOf<string>();
 			});
 
-			it('has a date populated value', () => {
-				expect(answer.value).to.deep.equal(Temporal.PlainDate.from('1999-11-23'));
+			it('has a string populated value', () => {
+				expect(answer.value).to.equal('1999-11-23T23:30:05');
 			});
 
-			it('has a null as blank value', () => {
+			it('has a blank value', () => {
 				scenario.answer(modelNodeRelevancePath, 'no');
 				answer = getTypedModelValueNodeAnswer('/root/date-value', 'date');
-				expect(answer.value).toBeNull();
+				expect(answer.value).to.equal('');
 			});
 		});
 	});
@@ -652,20 +651,18 @@ describe('Data (<bind type>) type support', () => {
 				answer = getTypedInputNodeAnswer('/root/date-value', 'date');
 			});
 
-			it('has a PlainDate | null static type', () => {
-				expectTypeOf(answer.value).toEqualTypeOf<Temporal.PlainDate | null>();
+			it('has a string static type', () => {
+				expectTypeOf(answer.value).toEqualTypeOf<string>();
 			});
 
-			it('has a date populated value', () => {
-				expect(answer.value).to.deep.equal(Temporal.PlainDate.from('2025-12-20'));
-				expect(answer.stringValue).toEqual('2025-12-20');
+			it('has a string populated value', () => {
+				expect(answer.value).to.equal('2025-12-20T00:00:00');
 			});
 
-			it('has an null as blank value', () => {
+			it('has a blank value', () => {
 				scenario.answer(inputRelevancePath, 'no');
 				answer = getTypedInputNodeAnswer('/root/date-value', 'date');
-				expect(answer.value).toBeNull();
-				expect(answer.stringValue).toBe('');
+				expect(answer.value).to.equal('');
 			});
 
 			/**
@@ -680,29 +677,25 @@ describe('Data (<bind type>) type support', () => {
 				'2025-03-07T14:30:00+invalid',
 				'2025-03-07T14:30:00-08:00',
 				'2025-03-07T14:30:00Z',
-			])('has null when incorrect value is passed', (expression) => {
+			])('has a blank value when incorrect value is passed', (expression) => {
 				scenario.answer('/root/date-value', expression);
 				answer = getTypedInputNodeAnswer('/root/date-value', 'date');
-				expect(answer.value).toBeNull();
-				expect(answer.stringValue).toBe('');
+				expect(answer.value).to.equal('');
 			});
 
 			it.each([
 				{
 					expression: '2025-03-14',
-					expectedAsObject: Temporal.PlainDate.from('2025-03-14'),
-					expectedAsText: '2025-03-14',
+					expected: '2025-03-14T00:00:00',
 				},
 				{
 					expression: '2025-12-21T14:30:00',
-					expectedAsObject: Temporal.PlainDate.from('2025-12-21'),
-					expectedAsText: '2025-12-21',
+					expected: '2025-12-21T14:30:00',
 				},
-			])('sets value with valid date', ({ expression, expectedAsObject, expectedAsText }) => {
+			])('sets value with valid date', ({ expression, expected }) => {
 				scenario.answer('/root/date-value', expression);
 				answer = getTypedInputNodeAnswer('/root/date-value', 'date');
-				expect(answer.value).to.deep.equal(expectedAsObject);
-				expect(answer.stringValue).toEqual(expectedAsText);
+				expect(answer.value).to.equal(expected);
 			});
 		});
 	});

@@ -2,7 +2,6 @@
 import { computed } from 'vue';
 import DatePicker from 'primevue/datepicker';
 import type { DateInputNode } from '@getodk/xforms-engine';
-import { ISO_DATE_LIKE_PATTERN } from '@getodk/common/constants/datetime.ts';
 
 interface InputDateProps {
 	readonly question: DateInputNode;
@@ -12,17 +11,12 @@ const props = defineProps<InputDateProps>();
 
 const value = computed({
 	get: () => {
-		if (props.question.currentState.value == null) {
+		const date = props.question.currentState.value;
+		if (date == null || date === '') {
 			return null;
 		}
 
-		const temporalValue = props.question.currentState.value.toString();
-		if (!ISO_DATE_LIKE_PATTERN.test(temporalValue)) {
-			return null;
-		}
-
-		// Convert to ISO string (yyyy-mm-dd) and append time for start of day local
-		return new Date(temporalValue + 'T00:00:00');
+		return new Date(date);
 	},
 	set: (newDate) => {
 		props.question.setValue(newDate);

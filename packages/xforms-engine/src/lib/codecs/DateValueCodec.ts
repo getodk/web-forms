@@ -1,8 +1,11 @@
-import { ISO_DATE_OR_DATE_TIME_NO_OFFSET_PATTERN } from '@getodk/common/constants/datetime.ts';
+import {
+	ISO_DATE_OR_DATE_TIME_NO_OFFSET_PATTERN,
+	ISO_DATE_LIKE_PATTERN,
+} from '@getodk/common/constants/datetime.ts';
 import { Temporal } from 'temporal-polyfill';
 import { type CodecDecoder, type CodecEncoder, ValueCodec } from './ValueCodec.ts';
 
-export type DatetimeRuntimeValue = Temporal.PlainDate | null;
+export type DatetimeRuntimeValue = string;
 
 export type DatetimeInputValue =
 	| Date
@@ -14,15 +17,15 @@ export type DatetimeInputValue =
 
 /**
  * Parses a string in the format 'YYYY-MM-DD' or 'YYYY-MM-DDTHH:MM:SS' (no offset)
- * into a Temporal.PlainDate.
+ * into a Temporal.PlainDateTime.
  * TODO: Datetimes with a valid timezone offset are treated as errors.
  *       User research is needed to determine whether the date should honor
  *       the timezone or be truncated to the yyyy-mm-dd format only.
  *
  * @param value - The string to parse.
- * @returns A {@link DatetimeRuntimeValue}
+ * @returns A {@link Temporal.PlainDateTime} or null
  */
-const parseString = (value: string): DatetimeRuntimeValue => {
+const parseString = (value: string): Temporal.PlainDateTime | null => {
 	if (
 		value == null ||
 		typeof value !== 'string' ||
@@ -32,8 +35,8 @@ const parseString = (value: string): DatetimeRuntimeValue => {
 	}
 
 	try {
-		const dateOnly = value.split('T')[0]!;
-		return Temporal.PlainDate.from(dateOnly);
+		const normalizedValue = ISO_DATE_LIKE_PATTERN.test(value) ? `${value}T00:00:00` : value;
+		return Temporal.PlainDateTime.from(normalizedValue);
 	} catch {
 		// TODO: should we throw when codec cannot interpret the value?
 		return null;
@@ -86,7 +89,7 @@ export class DateValueCodec extends ValueCodec<'date', DatetimeRuntimeValue, Dat
 		};
 
 		const decodeValue: CodecDecoder<DatetimeRuntimeValue> = (value: string) => {
-			return parseString(value);
+			return toDateString(value);
 		};
 
 		super('date', encodeValue, decodeValue);

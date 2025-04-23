@@ -4,7 +4,7 @@ export const MILLISECOND_NANOSECONDS = BigInt(1_000_000);
 
 const ISO_DATE_LIKE_SUBPATTERN = '\\d{4}-\\d{2}-\\d{2}';
 
-export const ISO_DATE_LIKE_PATTERN = new RegExp(`^${ISO_DATE_LIKE_SUBPATTERN}(?=T|$)`);
+export const ISO_DATE_LIKE_PATTERN = new RegExp(`^${ISO_DATE_LIKE_SUBPATTERN}$`);
 
 const ISO_TIME_LIKE_SUBPATTERN = `(${[
 	'\\d{2}:\\d{2}:\\d{2}\\.\\d+',
