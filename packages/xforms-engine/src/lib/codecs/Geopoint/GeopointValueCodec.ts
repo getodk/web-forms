@@ -15,6 +15,10 @@ export class GeopointValueCodec extends ValueCodec<
 			return Geopoint.parseString(value);
 		};
 
-		super('geopoint', encodeValue, decodeValue);
+		const decodeToString = (value: GeopointRuntimeValue) => {
+			return Geopoint.toCoordinatesString(value);
+		};
+
+		super('geopoint', encodeValue, decodeValue, decodeToString);
 	}
 }

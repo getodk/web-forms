@@ -27,6 +27,10 @@ export class NoteCodec<V extends ValueType> extends ValueCodec<
 			return value === '' ? null : baseCodec.decodeValue(value);
 		};
 
-		super(baseCodec.valueType, encodeValue, decodeValue);
+		const decodeToString = (value: NoteRuntimeValue<V>) => {
+			return value == null ? null : baseCodec.decodeToString(value);
+		};
+
+		super(baseCodec.valueType, encodeValue, decodeValue, decodeToString);
 	}
 }

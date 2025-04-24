@@ -147,6 +147,10 @@ export class InputControl<V extends ValueType = ValueType>
 
 		return this.root;
 	}
+
+	decodeStateValueToString() {
+		return this.decodeValueToString();
+	}
 }
 
 export type AnyInputControl =

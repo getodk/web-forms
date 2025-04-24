@@ -79,6 +79,11 @@ export interface InputNode<V extends ValueType = ValueType>
 	 * For use by a client to update the value of an {@link InputNode}.
 	 */
 	setValue(value: InputNodeInputValue<V>): RootNode;
+
+	/**
+	 * For use by a client to get the value of an {@link InputNode} as a string.
+	 */
+	decodeStateValueToString(): string | null;
 }
 
 export type StringInputValue = InputValue<'string'>;

@@ -76,6 +76,11 @@ export interface NoteNode<V extends ValueType = ValueType> extends BaseValueNode
 	readonly parent: GeneralParentNode;
 	readonly currentState: NoteNodeState<V>;
 	readonly validationState: LeafNodeValidationState;
+
+	/**
+	 * For use by a client to get the value of an {@link InputNode} as a string.
+	 */
+	decodeStateValueToString(): string | null;
 }
 
 export type StringNoteValue = NoteValue<'string'>;

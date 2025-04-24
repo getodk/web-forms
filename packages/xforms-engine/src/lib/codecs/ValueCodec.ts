@@ -7,6 +7,8 @@ export type CodecEncoder<RuntimeInputValue> = (input: RuntimeInputValue) => stri
 
 export type CodecDecoder<RuntimeValue> = (value: string) => RuntimeValue;
 
+export type CodecDecoderToString<RuntimeValue> = (value: RuntimeValue) => string | null;
+
 type RuntimeValueAccessor<RuntimeValue> = Accessor<RuntimeValue>;
 
 export type RuntimeValueSetter<
@@ -87,12 +89,14 @@ export abstract class ValueCodec<
 	};
 
 	readonly decodeInstanceValue: DecodeInstanceValue;
+	readonly decodeValueToString: CodecDecoderToString<RuntimeValue>;
 	readonly createRuntimeValueState: CreateRuntimeValueState<RuntimeValue, RuntimeInputValue>;
 
 	constructor(
 		readonly valueType: V,
 		readonly encodeValue: CodecEncoder<RuntimeInputValue>,
 		readonly decodeValue: CodecDecoder<RuntimeValue>,
+		readonly decodeToString: CodecDecoderToString<RuntimeValue>,
 		options: ValueCodecOptions<RuntimeValue, RuntimeInputValue> = {}
 	) {
 		const {
@@ -102,5 +106,6 @@ export abstract class ValueCodec<
 
 		this.decodeInstanceValue = decodeInstanceValueFactory(encodeValue, decodeValue);
 		this.createRuntimeValueState = runtimeValueStateFactory(encodeValue, decodeValue);
+		this.decodeValueToString = (runtimeValue) => decodeToString(runtimeValue);
 	}
 }
