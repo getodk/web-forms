@@ -1,7 +1,7 @@
 import type { ValueType } from '../../../client/ValueType.ts';
 import type { SharedValueCodec } from '../getSharedValueCodec.ts';
 import { ValueArrayCodec } from '../ValueArrayCodec.ts';
-import type { CodecDecoder, CodecDecoderToString, CodecEncoder } from '../ValueCodec.ts';
+import type { CodecDecoder, CodecEncoder } from '../ValueCodec.ts';
 
 export type BaseItemValueType = 'string';
 
@@ -13,9 +13,8 @@ export abstract class BaseItemCodec<
 	constructor(
 		baseCodec: SharedValueCodec<'string'>,
 		encodeValue: CodecEncoder<Values>,
-		decodeValue: CodecDecoder<Values>,
-		decodeValueToString: CodecDecoderToString<Values>
+		decodeValue: CodecDecoder<Values>
 	) {
-		super(baseCodec, encodeValue, decodeValue, decodeValueToString);
+		super(baseCodec, encodeValue, decodeValue);
 	}
 }

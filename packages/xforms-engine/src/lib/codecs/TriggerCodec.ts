@@ -19,7 +19,7 @@ type TriggerInstanceValueMapping = typeof TRIGGER_INSTANCE_VALUES;
 
 type TriggerInstanceValue = TriggerInstanceValueMapping[keyof TriggerInstanceValueMapping];
 
-const toValueString = (value: TriggerInputValue): TriggerInstanceValue => {
+const encodeTriggerValue = (value: TriggerInputValue): TriggerInstanceValue => {
 	switch (value) {
 		case true:
 			return TRIGGER_INSTANCE_VALUES.true;
@@ -32,10 +32,6 @@ const toValueString = (value: TriggerInputValue): TriggerInstanceValue => {
 		default:
 			throw new UnreachableError(value);
 	}
-};
-
-const encodeTriggerValue = (value: TriggerInputValue): TriggerInstanceValue => {
-	return toValueString(value);
 };
 
 const decodeTriggerValue = (value: string): TriggerRuntimeValue => {
@@ -57,16 +53,12 @@ const decodeTriggerValue = (value: string): TriggerRuntimeValue => {
 	throw new ErrorProductionDesignPendingError(`Unexpected trigger value: ${value}`);
 };
 
-const decodeToString = (value: TriggerRuntimeValue) => {
-	return value == null ? null : toValueString(value);
-};
-
 export class TriggerCodec extends ValueCodec<
 	TriggerValueType,
 	TriggerRuntimeValue,
 	TriggerInputValue
 > {
 	constructor() {
-		super('string', encodeTriggerValue, decodeTriggerValue, decodeToString);
+		super('string', encodeTriggerValue, decodeTriggerValue);
 	}
 }

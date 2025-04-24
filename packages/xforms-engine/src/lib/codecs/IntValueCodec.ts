@@ -93,12 +93,8 @@ const decodeInt = (value: string): IntRuntimeValue => {
 	return numberToInt(Number(value));
 };
 
-const decodeToString = (value: IntRuntimeValue) => {
-	return value == null ? null : value.toString();
-};
-
 export class IntValueCodec extends ValueCodec<'int', IntRuntimeValue, IntInputValue> {
 	constructor() {
-		super('int', encodeInt, decodeInt, decodeToString);
+		super('int', encodeInt, decodeInt);
 	}
 }

@@ -60,10 +60,6 @@ export class RangeCodec<V extends RangeValueType> extends ValueCodec<
 			return decoded;
 		};
 
-		const decodeToString = (value: RangeRuntimeValue<V>) => {
-			return value == null ? null : baseCodec.decodeToString(value);
-		};
-
-		super(valueType, encodeValue, decodeValue, decodeToString);
+		super(valueType, encodeValue, decodeValue);
 	}
 }

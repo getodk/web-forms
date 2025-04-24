@@ -11,8 +11,12 @@ const props = defineProps<InputDateProps>();
 
 const value = computed({
 	get: () => {
-		const date = props.question.decodeStateValueToString();
-		return date == null ? null : new Date(`${date}T00:00:00`);
+		const date = props.question.currentState.value;
+		if (date == null || date === '') {
+			return null;
+		}
+
+		return new Date(date);
 	},
 	set: (newDate) => {
 		props.question.setValue(newDate);

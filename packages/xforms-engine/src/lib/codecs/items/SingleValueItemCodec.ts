@@ -1,5 +1,5 @@
 import type { SharedValueCodec } from '../getSharedValueCodec.ts';
-import { type CodecDecoder, type CodecDecoderToString, type CodecEncoder } from '../ValueCodec.ts';
+import { type CodecDecoder, type CodecEncoder } from '../ValueCodec.ts';
 import { BaseItemCodec } from './BaseItemCodec.ts';
 import type { MultipleValueItemCodec } from './MultipleValueItemCodec.ts';
 
@@ -62,14 +62,6 @@ export class SingleValueItemCodec extends BaseItemCodec<SingleValueSelectCodecVa
 			return [value];
 		};
 
-		const decodeToString: CodecDecoderToString<SingleValueSelectCodecValues> = (value) => {
-			if (value?.[0] == null) {
-				return null;
-			}
-
-			return baseCodec.decodeValueToString(value[0]);
-		};
-
-		super(baseCodec, encodeValue, decodeValue, decodeToString);
+		super(baseCodec, encodeValue, decodeValue);
 	}
 }

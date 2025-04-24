@@ -116,10 +116,6 @@ export class Note<V extends ValueType = ValueType>
 		this.engineState = state.engineState;
 		this.currentState = state.currentState;
 	}
-
-	decodeStateValueToString() {
-		return this.decodeValueToString();
-	}
 }
 
 export type AnyNote =

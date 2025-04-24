@@ -35,16 +35,12 @@ const decodeDecimal = (value: string): DecimalRuntimeValue => {
 	return decoded;
 };
 
-const decodeToString = (value: DecimalRuntimeValue) => {
-	return value == null ? null : Number(value).toString();
-};
-
 export class DecimalValueCodec extends ValueCodec<
 	'decimal',
 	DecimalRuntimeValue,
 	DecimalInputValue
 > {
 	constructor() {
-		super('decimal', encodeDecimal, decodeDecimal, decodeToString);
+		super('decimal', encodeDecimal, decodeDecimal);
 	}
 }

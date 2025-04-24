@@ -17,17 +17,12 @@ export class MultipleValueItemCodec extends BaseItemCodec<readonly string[]> {
 		const encodeValue: CodecEncoder<readonly string[]> = (value) => {
 			return value.join(' ');
 		};
-
 		const decodeValue: CodecDecoder<readonly string[]> = (value) => {
 			return xmlXPathWhitespaceSeparatedList(value, {
 				ignoreEmpty: true,
 			});
 		};
 
-		const decodeToString = (value: readonly string[]) => {
-			return value == null ? null : value.join(' ');
-		};
-
-		super(baseCodec, encodeValue, decodeValue, decodeToString);
+		super(baseCodec, encodeValue, decodeValue);
 	}
 }
