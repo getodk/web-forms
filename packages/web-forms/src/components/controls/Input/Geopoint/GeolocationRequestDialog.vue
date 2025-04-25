@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Icon from '@/components/widgets/Icon.vue';
+import IconSVG from '@/components/widgets/IconSVG.vue';
 import { computed, onBeforeUnmount, ref, watchEffect } from 'vue';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
@@ -128,7 +128,7 @@ onBeforeUnmount(cleanup);
 					<strong>Finding your location</strong>
 				</div>
 				<button class="close-icon" @click="cancel()">
-					<Icon name="mdiClose" />
+					<IconSVG name="mdiClose" />
 				</button>
 			</div>
 		</template>
@@ -136,8 +136,8 @@ onBeforeUnmount(cleanup);
 		<template #default>
 			<div class="geo-dialog-body">
 				<div v-if="accuracy.value != null" class="geopoint-icons">
-					<Icon v-if="accuracy.quality === GeopointAccuracy.POOR" name="mdiAlert" variant="error" />
-					<Icon v-else name="mdiCheck" variant="primary" />
+					<IconSVG v-if="accuracy.quality === GeopointAccuracy.POOR" name="mdiAlert" variant="error" />
+					<IconSVG v-else name="mdiCheck" variant="primary" />
 				</div>
 
 				<div class="geopoint-information">

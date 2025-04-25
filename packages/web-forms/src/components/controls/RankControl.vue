@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import ControlText from '@/components/ControlText.vue';
-import Icon from '@/components/widgets/Icon.vue';
+import IconSVG from '@/components/widgets/IconSVG.vue';
 import ValidationMessage from '@/components/ValidationMessage.vue';
 import type { TimerID } from '@getodk/common/types/timers.ts';
 import type { RankNode } from '@getodk/xforms-engine';
@@ -111,7 +111,7 @@ const swapItems = (index: number, newPosition: number) => {
 	<div class="rank-control-container">
 		<div v-if="!touched" class="rank-overlay">
 			<button :disabled="disabled" @click="selectDefaultOrder">
-				<Icon name="mdiUnfoldMoreHorizontal" size="sm" :variant="disabled ? 'muted' : null" />
+				<IconSVG name="mdiUnfoldMoreHorizontal" size="sm" :variant="disabled ? 'muted' : 'base'" />
 				<!-- TODO: translations -->
 				<span>Rank items</span>
 			</button>
@@ -138,7 +138,7 @@ const swapItems = (index: number, newPosition: number) => {
 				@keydown.down.prevent="moveDown(index)"
 			>
 				<div class="rank-label">
-					<Icon name="mdiDragVertical" />
+					<IconSVG name="mdiDragVertical" />
 					<span>{{ props.question.getValueLabel(value)?.asString }}</span>
 				</div>
 
@@ -149,7 +149,7 @@ const swapItems = (index: number, newPosition: number) => {
 						@click="moveUp(index)"
 						@mousedown="setHighlight(index)"
 					>
-						<Icon name="mdiChevronUp" size="sm" :variant="disabled || index === 0 ? 'muted' : null" />
+						<IconSVG name="mdiChevronUp" size="sm" :variant="disabled || index === 0 ? 'muted' : 'base'" />
 					</button>
 
 					<button
@@ -158,7 +158,7 @@ const swapItems = (index: number, newPosition: number) => {
 						@click="moveDown(index)"
 						@mousedown="setHighlight(index)"
 					>
-						<Icon name="mdiChevronDown" size="sm" :variant="disabled || index === values.length - 1 ? 'muted' : null" />
+						<IconSVG name="mdiChevronDown" size="sm" :variant="disabled || index === values.length - 1 ? 'muted' : 'base'" />
 					</button>
 				</div>
 			</div>

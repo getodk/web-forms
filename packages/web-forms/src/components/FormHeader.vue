@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Icon from '@/components/widgets/Icon.vue';
+import IconSVG from '@/components/widgets/IconSVG.vue';
 import {
 	type FormLanguage,
 	type RootNode,
@@ -52,7 +52,7 @@ const handleLanguageChange = (event: FormLanguage) => {
 	<div class="hidden lg:inline larger-screens">
 		<div class="flex justify-content-end flex-wrap gap-3">
 			<Button class="print-button" severity="secondary" rounded @click="print">
-				<Icon name="mdiPrinter" />
+				<IconSVG name="mdiPrinter" />
 			</Button>
 			<FormLanguageMenu
 				:active-language="form.currentState.activeLanguage"
@@ -79,18 +79,18 @@ const handleLanguageChange = (event: FormLanguage) => {
 		<div class="form-options">
 			<!-- if Form is not multilingual then we always show print button -->
 			<Button v-if="languages.length === 0" class="print-button" severity="secondary" rounded @click="print">
-				<Icon name="mdiPrinter" />
+				<IconSVG name="mdiPrinter" />
 			</Button>
 
 			<!-- show either hamburger or (print button and language changer) based on container size -->
 			<div v-else class="multilingual">
 				<Button class="btn-menu" text rounded aria-label="Menu" @click="menu?.toggle">
-					<Icon name="mdiMenu" />
+					<IconSVG name="mdiMenu" />
 				</Button>
 				<Menu id="overlay_menu" ref="menu" :model="items" :popup="true">
 					<template #item="{ item }">
-						<a class="p-menu-item-link" @click="item.command">
-							<Icon :name="item.icon" />
+						<a class="p-menu-item-link" v-if="item.command != null" @click="(event) => item.command?.({ originalEvent: event, item })">
+							<IconSVG v-if="item.icon != null" :name="item.icon" />
 							<span>{{ item.label }}</span>
 						</a>
 					</template>
@@ -103,7 +103,7 @@ const handleLanguageChange = (event: FormLanguage) => {
 				/>
 
 				<Button class="print-button" severity="secondary" rounded @click="print">
-					<Icon name="mdiPrinter" />
+					<IconSVG name="mdiPrinter" />
 				</Button>
 				<FormLanguageMenu
 					:active-language="form.currentState.activeLanguage"

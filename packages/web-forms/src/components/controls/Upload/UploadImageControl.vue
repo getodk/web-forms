@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import ControlText from '@/components/ControlText.vue';
 import ValidationMessage from '@/components/ValidationMessage.vue';
-import Icon from '@/components/widgets/Icon.vue';
+import IconSVG from '@/components/widgets/IconSVG.vue';
 import type { UploadNode } from '@getodk/xforms-engine';
 import Button from 'primevue/button';
 import type { HTMLInputElementEvent, Ref } from 'vue';
@@ -76,7 +76,7 @@ watchEffect(() => {
 				:disabled="isDisabled"
 				@click="triggerInputField(takePictureInput)"
 			>
-				<Icon name="mdiCamera" variant="inverted" />
+				<IconSVG name="mdiCamera" variant="inverted" />
 				<!-- TODO: translations -->
 				<span>Take picture</span>
 			</Button>
@@ -96,7 +96,7 @@ watchEffect(() => {
 			:disabled="isDisabled"
 			@click="triggerInputField(selectImageInput)"
 		>
-			<Icon name="mdiImage" variant="inverted" />
+			<IconSVG name="mdiImage" variant="inverted" />
 			<!-- TODO: Good candidate for <slot> in a general component -->
 			<!-- TODO: translations -->
 			<span>Choose image</span>

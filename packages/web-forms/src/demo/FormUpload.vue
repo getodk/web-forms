@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Icon from '@/components/widgets/Icon.vue';
+import IconSVG from '@/components/widgets/IconSVG.vue';
 import Button from 'primevue/button';
 import ProgressSpinner from 'primevue/progressspinner';
 import { RouterLink } from 'vue-router';
@@ -149,7 +149,7 @@ document.addEventListener(
 				<template	v-if="!formUploading">
 					<input ref="fileInput" type="file" hidden accept=".xls, .xlsx, .xml" @change="fileChangeHandler">
 					<span>
-						<Icon name="mdiFileDocumentOutline" variant="muted" />
+						<IconSVG name="mdiFileDocumentOutline" variant="muted" />
 						Drag and drop XLSForm or <a href="javascript:;" class="upload-file-link" @click="fileInput.click()">upload form</a>
 					</span>
 					<template v-if="inDevMode">
@@ -168,19 +168,19 @@ document.addEventListener(
 
 		<div v-else class="preview-wrapper">
 			<div class="textbox-with-icon">
-				<Icon name="mdiFileDocumentOutline" class="doc-input-icon" variant="muted" />
+				<IconSVG name="mdiFileDocumentOutline" class="doc-input-icon" variant="muted" />
 				<InputText :value="uploadedFilename" class="uploaded-file-textbox" />
-				<Icon name="mdiClose" class="reset-action" aria-label="Cancel" @click="reset()" />
+				<IconSVG name="mdiClose" class="reset-action" aria-label="Cancel" @click="reset()" />
 			</div>
 
 			<div class="action-buttons">
 				<Button class="upload-new-button" severity="contrast" variant="outlined" @click="reset">
-					<Icon name="mdiUpload" />
+					<IconSVG name="mdiUpload" />
 					<span>Upload new Form</span>
 				</Button>
 				<RouterLink :to="`/form?url=${xformUrl}`" target="_blank" class="preview-link">
 					<Button class="preview-link-button">
-						<Icon name="mdiEye" variant="inverted" />
+						<IconSVG name="mdiEye" variant="inverted" />
 						<span>Preview Form</span>
 					</Button>
 				</RouterLink>
@@ -191,7 +191,7 @@ document.addEventListener(
 			{{ error }}
 		</Message>
 		<Message v-if="warnings?.length > 0" severity="warn">
-			<Icon name="mdiAlert" variant="warning" />
+			<IconSVG name="mdiAlert" variant="warning" />
 			<span>There are following possible problems in the uploaded Form:</span>
 			<ul>
 				<li v-for="warning in warnings" :key="warning">
@@ -300,7 +300,7 @@ document.addEventListener(
 	}
 
 	:deep(.p-message .p-message-content .odk-icon) {
-			margin-right: 10px;
+		margin-right: 10px;
 	}
 
 	:deep(.p-button) {

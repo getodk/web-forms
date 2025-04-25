@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Icon from '@/components/widgets/Icon.vue';
+import IconSVG from '@/components/widgets/IconSVG.vue';
 import { computed, inject, ref } from 'vue';
 import Button from 'primevue/button';
 import type { GeopointInputNode } from '@getodk/xforms-engine';
@@ -123,15 +123,15 @@ const onSave = (saved: GeolocationRequestSuccess) => {
 			:disabled="isDisabled"
 			@click="initiateRequest()"
 		>
-			<Icon name="mdiMapMarkerOutline" variant="inverted" />
+			<IconSVG name="mdiMapMarkerOutline" variant="inverted" />
 			<!-- TODO: translations -->
 			<span>Get location</span>
 		</Button>
 
 		<div v-if="committedValue != null" class="geopoint-value-container">
 			<div class="geopoint-icons">
-				<Icon v-if="committedValueAccuracy.quality === GeopointAccuracy.POOR" name="mdiAlert" variant="error" />
-				<Icon v-else name="mdiCheck" variant="primary" />
+				<IconSVG v-if="committedValueAccuracy.quality === GeopointAccuracy.POOR" name="mdiAlert" variant="error" />
+				<IconSVG v-else name="mdiCheck" variant="primary" />
 			</div>
 			<div class="geopoint-value">
 				<strong class="geo-quality">{{ committedValueAccuracy.label }}</strong>
@@ -143,7 +143,7 @@ const onSave = (saved: GeolocationRequestSuccess) => {
 					class="retry-button"
 					@click="initiateRequest()"
 				>
-					<Icon name="mdiRefresh" />
+					<IconSVG name="mdiRefresh" />
 					<!-- TODO: translations -->
 					<span>Try again</span>
 				</Button>

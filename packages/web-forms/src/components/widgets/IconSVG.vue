@@ -46,8 +46,8 @@ const iconMap: Record<string, string> = {
 };
 
 type IconName = keyof typeof iconMap;
-type IconVariant = 'base' | 'primary' | 'inverted' | 'muted' | 'error' | 'warning';
-type IconSize = 'sm' | 'md';
+type IconVariant = 'base' | 'error' | 'inverted' | 'muted' | 'primary' | 'warning';
+type IconSize = 'md' | 'sm';
 
 /**
  * Defines the icon's display and appearance.
@@ -114,7 +114,7 @@ const iconSize = computed(() => props.size ?? 'md');
 	width: 14px;
 
 	path {
-		transform: scale(0.8) translate(-4px, -4px);;
+		transform: scale(0.8) translate(-4px, -4px);
 	}
 }
 

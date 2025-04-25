@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Icon from '@/components/widgets/Icon.vue';
+import IconSVG from '@/components/widgets/IconSVG.vue';
 import type { ObjectURL } from '@getodk/common/lib/web-compat/url.ts';
 import { createObjectURL, revokeObjectURL } from '@getodk/common/lib/web-compat/url.ts';
 import type { UploadNode } from '@getodk/xforms-engine';
@@ -77,7 +77,7 @@ watchEffect(() => {
 <template>
 	<div v-if="imageURL" class="preview-captured-image" :class="{ 'small-image': isSmallImage }">
 		<Button v-if="!isDisabled" severity="secondary" outlined class="clear-button" @click="emit('clear')">
-			<Icon name="mdiClose" variant="muted" size="sm" />
+			<IconSVG name="mdiClose" variant="muted" size="sm" />
 		</Button>
 		<img :src="imageURL" alt="Captured image preview" @load="onPreviewLoad">
 	</div>
