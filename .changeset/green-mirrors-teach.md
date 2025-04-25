@@ -2,4 +2,4 @@
 '@getodk/web-forms': patch
 ---
 
-Adds icon component with Material Design Icons to replace Icomoon
+Adds icon component with Material Design icons to replace Icomoon

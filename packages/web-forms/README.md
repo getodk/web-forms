@@ -109,7 +109,7 @@ This package uses the Material Design system for the UI, though not strictly. Th
 The `Icon` component renders Material Design Icons (MDI) with customizable size and style variants. It uses the `@mdi/js` library for icon data and supports a predefined set of icons.
 
 ```js
-<Icon name="mdiCamera" size="md" variant="primary" />
+<IconSVG name="mdiCamera" size="md" variant="primary" />
 ```
 
 To add a new icon:
