@@ -3,15 +3,21 @@ import { computed } from 'vue';
 import {
 	mdiAlert,
 	mdiAlertCircleOutline,
+	mdiCamera,
 	mdiCheck,
+	mdiChevronDown,
+	mdiChevronUp,
 	mdiClose,
 	mdiDownload,
+	mdiDragVertical,
 	mdiEye,
 	mdiFileDocumentOutline,
+	mdiImage,
 	mdiMapMarkerOutline,
 	mdiMenu,
 	mdiPrinter,
 	mdiRefresh,
+	mdiUnfoldMoreHorizontal,
 	mdiUpload,
 	mdiWeb,
 } from '@mdi/js';
@@ -20,15 +26,21 @@ import {
 const iconMap: Record<string, string> = {
 	mdiAlert,
 	mdiAlertCircleOutline,
+	mdiCamera,
 	mdiCheck,
+	mdiChevronDown,
+	mdiChevronUp,
 	mdiClose,
 	mdiDownload,
+	mdiDragVertical,
 	mdiEye,
 	mdiFileDocumentOutline,
+	mdiImage,
 	mdiMapMarkerOutline,
 	mdiMenu,
 	mdiPrinter,
 	mdiRefresh,
+	mdiUnfoldMoreHorizontal,
 	mdiUpload,
 	mdiWeb,
 };
@@ -102,7 +114,7 @@ const iconSize = computed(() => props.size ?? 'md');
 	width: 14px;
 
 	path {
-		transform: scale(0.66) translate(-1px, -1px);
+		transform: scale(0.8) translate(-4px, -4px);;
 	}
 }
 
