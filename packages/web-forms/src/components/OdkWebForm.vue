@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon from '@/components/widgets/Icon.vue';
 import type { FormStateSuccessResult } from '@/lib/init/FormState.ts';
 import { initializeFormState } from '@/lib/init/initializeFormState.ts';
 import type { EditInstanceOptions } from '@/lib/init/loadFormState';
@@ -221,8 +222,9 @@ watchEffect(() => {
 		<div class="form-wrapper">
 			<div v-if="showValidationError" class="error-banner-placeholder"></div>
 			<!-- Closable error message to clear the view and avoid overlap with other elements -->
-			<Message v-if="showValidationError" severity="error" icon="icon-error_outline" class="form-error-message" :closable="true" @close="floatingErrorActive = false">
-				{{ validationErrorMessage }}
+			<Message v-if="showValidationError" severity="error" class="form-error-message" :closable="true" @close="floatingErrorActive = false">
+				<Icon name="mdiAlertCircleOutline" variant="error" />
+				<span>{{ validationErrorMessage }}</span>
 			</Message>
 
 			<FormHeader :form="state.root" />
@@ -315,15 +317,25 @@ watchEffect(() => {
 			}
 
 			:deep(.p-message-text) {
+				display: flex;
+				align-items: center;
 				font-weight: 400;
-				flex-grow: 1;
+			}
+
+			.odk-icon {
+				margin-right: 10px;
 			}
 		}
 	}
 
-	.print-button.p-button {
-		height: 2rem;
-		width: 2rem;
+	:deep(.print-button.p-button) {
+		display: flex;
+		height: var(--p-button-icon-only-width);
+		width: var(--p-button-icon-only-width);
+		padding-inline-start: 0;
+		padding-inline-end: 0;
+		gap: 0;
+		border-radius: 50%;
 	}
 
 	.footer {

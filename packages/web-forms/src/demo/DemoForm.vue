@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import Icon from '@/components/widgets/Icon.vue';
 import { xformFixturesByIdentifier } from '@getodk/common/fixtures/xforms';
 import { xlsFormUrlMap } from '@getodk/common/fixtures/xlsforms';
 import Button from 'primevue/button';
@@ -45,10 +46,16 @@ const formXls = computed(() => {
 			</p>
 			<div class="actions">
 				<RouterLink :to="`/form?url=${formXml}`" target="_blank" class="form-preview-link">
-					<Button class="preview-button" label="View Form" icon="icon-remove_red_eye" />
+					<Button class="preview-button">
+						<Icon name="mdiEye" variant="inverted" />
+						<span>View Form</span>
+					</Button>
 				</RouterLink>
 				<a :href="formXls">
-					<Button class="download-button" label="Download" severity="contrast" variant="outlined" icon="icon-file_download" />
+					<Button class="download-button" severity="contrast" variant="outlined">
+						<Icon name="mdiDownload" />
+						<span>Download</span>
+					</Button>
 				</a>
 			</div>
 		</div>
@@ -94,10 +101,6 @@ const formXls = computed(() => {
 		display: flex;
 		flex-direction: row;
 		gap: 1rem;
-	}
-
-	:deep(.p-button) .p-button-icon {
-		font-size: var(--odk-icon-size);
 	}
 }
 </style>

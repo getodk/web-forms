@@ -1,14 +1,40 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { mdiAccount, mdiAlertRhombus } from '@mdi/js';
+import {
+	mdiAlert,
+	mdiAlertCircleOutline,
+	mdiCheck,
+	mdiClose,
+	mdiDownload,
+	mdiEye,
+	mdiFileDocumentOutline,
+	mdiMapMarkerOutline,
+	mdiMenu,
+	mdiPrinter,
+	mdiRefresh,
+	mdiUpload,
+	mdiWeb,
+} from '@mdi/js';
 
+// Find icons here: https://pictogrammers.com/library/mdi/
 const iconMap: Record<string, string> = {
-	mdiAccount,
-	mdiAlertRhombus,
+	mdiAlert,
+	mdiAlertCircleOutline,
+	mdiCheck,
+	mdiClose,
+	mdiDownload,
+	mdiEye,
+	mdiFileDocumentOutline,
+	mdiMapMarkerOutline,
+	mdiMenu,
+	mdiPrinter,
+	mdiRefresh,
+	mdiUpload,
+	mdiWeb,
 };
 
 type IconName = keyof typeof iconMap;
-type IconVariant = 'base' | 'primary' | 'inverted' | 'error' | 'muted';
+type IconVariant = 'base' | 'primary' | 'inverted' | 'muted' | 'error' | 'warning';
 type IconSize = 'sm' | 'md';
 
 /**
@@ -34,7 +60,8 @@ const iconSize = computed(() => props.size ?? 'md');
 	<svg
 		xmlns="http://www.w3.org/2000/svg"
 		class="odk-icon"
-		:class="[iconVariant, `odk-icon-${iconSize}`]">
+		:class="[iconVariant, `odk-icon-${iconSize}`]"
+	>
 		<path :d="iconData" />
 	</svg>
 </template>
@@ -58,12 +85,16 @@ const iconSize = computed(() => props.size ?? 'md');
 	fill: var(--odk-inverted-text-color);
 }
 
+.odk-icon.muted path {
+	fill: var(--odk-muted-text-color);
+}
+
 .odk-icon.error path {
 	fill: var(--odk-error-text-color);
 }
 
-.odk-icon.muted path {
-	fill: var(--odk-muted-text-color);
+.odk-icon.warning path {
+	fill: var(--odk-warning-text-color);
 }
 
 .odk-icon.odk-icon-sm {
