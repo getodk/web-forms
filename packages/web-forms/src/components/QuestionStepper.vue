@@ -144,10 +144,16 @@ const prevStep = () => {
 
     <div class="navigation-button-group">
         <!-- If swapping to arrows: 🡨 🡪 -->
-        <Button v-if="currentStep > firstStep" class="navigation-button" label="Back" @click="prevStep" rounded outlined />
-        <Button v-if="currentStep === finalStep" class="navigation-button" label="Send" @click="allFieldsValid ? emit('sendFormFromStepper') : null" rounded />
+        <Button v-if="currentStep > firstStep" class="navigation-button" @click="prevStep" rounded outlined>
+					<span class="icon-keyboard_arrow_left"></span>
+				</Button>
+        <Button v-if="currentStep === finalStep" class="navigation-button" @click="allFieldsValid ? emit('sendFormFromStepper') : null" rounded>
+					<span class="icon-cloud_upload"></span>
+				</Button>
         <!-- Note the button ordering is important here as we use a last-child selector for styling -->
-        <Button v-if="currentStep < finalStep" class="navigation-button" label="Next" @click="nextStep" rounded outlined />
+        <Button v-if="currentStep < finalStep" class="navigation-button" @click="nextStep" rounded outlined>
+					<span class="icon-keyboard_arrow_right"></span>
+				</Button>
     </div>
 </template>
 
@@ -190,5 +196,10 @@ const prevStep = () => {
     padding-left: 3rem;
     padding-right: 3rem;
     font-size: 1rem;
+}
+
+.navigation-button > span {
+		font-weight: bold;
+		font-size: 30px;	
 }
 </style>
