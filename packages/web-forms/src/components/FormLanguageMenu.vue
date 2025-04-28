@@ -53,7 +53,7 @@ defineEmits(['update:activeLanguage']);
 	}
 
 	.odk-icon {
-		margin-right: 0.5rem;;
+		margin-right: 0.5rem;
 	}
 }
 </style>
