@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import IconSVG from '@/components/widgets/IconSVG.vue';
 import Button from 'primevue/button';
 import Menu, { type MenuState } from 'primevue/menu';
 import { type MenuItem } from 'primevue/menuitem';
@@ -34,7 +35,7 @@ const toggle = () => {
 	panelState.value = !panelState.value;
 };
 
-const menu = ref<Menu & MenuState>();
+const menu = ref<InstanceType<typeof Menu> & MenuState>();
 
 const toggleMenu = (event: Event) => {
 	menu.value?.toggle(event);
@@ -45,7 +46,8 @@ const toggleMenu = (event: Event) => {
 		<template #header>
 			<div class="panel-title" role="button" @click="toggle">
 				<h2>
-					<span class="chevron" :class="panelState ? 'icon-keyboard_arrow_down' : 'icon-keyboard_arrow_up'" />
+					<IconSVG v-if="panelState" name="mdiChevronDown" />
+					<IconSVG v-if="!panelState" name="mdiChevronUp" />
 					<span v-if="labelNumber" class="label-number">{{ labelNumber }}</span>
 					<span>{{ title }}</span>
 					<span v-if="labelIcon" class="ml-2" :class="labelIcon" />
@@ -69,7 +71,7 @@ const toggleMenu = (event: Event) => {
 
 <style scoped lang="scss">
 h2 {
-	font-size: 1.2rem;
+	font-size: var(--odk-group-font-size);
 	font-weight: 400;
 	margin: 0;
 	display: flex;
@@ -78,14 +80,13 @@ h2 {
 
 .label-number {
 	display: inline-block;
-	margin: 1px 5px 0 17px;
-	padding-top: 3px;
+	margin: 0 5px 0 17px;
 	width: 20px;
 	height: 20px;
 	font-weight: 500;
-	border-radius: 30px;
-	background-color: var(--gray-200);
-	font-size: 12px;
+	border-radius: var(--odk-radius);
+	background-color: var(--odk-muted-background-color);
+	font-size: var(--odk-base-font-size);
 	text-align: center;
 }
 
@@ -100,11 +101,11 @@ h2 {
 		&:active,
 		&:focus,
 		&.p-focus {
-			background: var(--primary-50);
+			background: var(--odk-primary-lighter-background-color);
 		}
 
 		&:hover {
-			background: var(--primary-100);
+			background: var(--odk-primary-light-background-color);
 		}
 	}
 
@@ -114,7 +115,8 @@ h2 {
 }
 
 .p-panel.p-panel-toggleable {
-	background: var(--surface-0);
+	background: var(--odk-base-background-color);
+	border: none;
 	box-shadow: none;
 
 	.p-panel {
@@ -123,13 +125,16 @@ h2 {
 
 	:deep(.p-panel-header) {
 		display: flex;
-		padding: 0;
-		height: 40px;
+		padding: 15px 0;
 		align-items: start;
+
+		.p-panel-header-actions {
+			display: none;
+		}
 	}
 
 	:deep(.p-panel-content) {
-		border-left: 2px solid var(--gray-200);
+		border-left: 1px solid var(--odk-border-color);
 		margin-left: 10px;
 		border-radius: 0;
 		padding: 0 0 0 1.5rem;

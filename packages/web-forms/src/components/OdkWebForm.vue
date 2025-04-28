@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import IconSVG from '@/components/widgets/IconSVG.vue';
 import type { FormStateSuccessResult } from '@/lib/init/FormState.ts';
 import { initializeFormState } from '@/lib/init/initializeFormState.ts';
 import type { EditInstanceOptions } from '@/lib/init/loadFormState';
@@ -16,8 +17,7 @@ import type {
 } from '@getodk/xforms-engine';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
-import PrimeMessage from 'primevue/message';
-import type { ComponentPublicInstance } from 'vue';
+import Message from 'primevue/message';
 import { computed, getCurrentInstance, provide, ref, watchEffect } from 'vue';
 import FormLoadFailureDialog from './Form/FormLoadFailureDialog.vue';
 import FormHeader from './FormHeader.vue';
@@ -140,6 +140,8 @@ const emit = defineEmits<OdkWebFormEmits>();
 
 const state = initializeFormState();
 const submitPressed = ref(false);
+const floatingErrorActive = ref(false);
+const showValidationError = ref(false);
 
 const init = async () => {
 	state.value = await loadFormState(props.formXml, {
@@ -157,17 +159,17 @@ const handleSubmit = (currentState: FormStateSuccessResult) => {
 	const { root } = currentState;
 
 	if (root.validationState.violations.length === 0) {
+		floatingErrorActive.value = false;
 		// eslint-disable-next-line @typescript-eslint/no-floating-promises
 		emitSubmit(currentState);
 		// eslint-disable-next-line @typescript-eslint/no-floating-promises
 		emitSubmitChunked(currentState);
 	} else {
+		floatingErrorActive.value = true;
 		submitPressed.value = true;
 		document.scrollingElement?.scrollTo(0, 0);
 	}
 };
-
-const validationErrorMessagePopover = ref<ComponentPublicInstance | null>(null);
 
 provide('submitPressed', submitPressed);
 
@@ -181,10 +183,10 @@ const validationErrorMessage = computed(() => {
 });
 
 watchEffect(() => {
-	if (submitPressed.value && validationErrorMessage.value) {
-		(validationErrorMessagePopover.value?.$el as HTMLElement)?.showPopover?.();
+	if (floatingErrorActive.value && validationErrorMessage.value?.length) {
+		showValidationError.value = true;
 	} else {
-		(validationErrorMessagePopover.value?.$el as HTMLElement)?.hidePopover?.();
+		showValidationError.value = false;
 	}
 });
 </script>
@@ -218,10 +220,12 @@ watchEffect(() => {
 		:class="{ 'submit-pressed': submitPressed }"
 	>
 		<div class="form-wrapper">
-			<div v-show="submitPressed && validationErrorMessage" class="error-banner-placeholder" />
-			<PrimeMessage ref="validationErrorMessagePopover" popover="manual" severity="error" icon="icon-error_outline" class="form-error-message" :closable="false">
-				{{ validationErrorMessage }}
-			</PrimeMessage>
+			<div v-if="showValidationError" class="error-banner-placeholder" />
+			<!-- Closable error message to clear the view and avoid overlap with other elements -->
+			<Message v-if="showValidationError" severity="error" class="form-error-message" :closable="true" @close="floatingErrorActive = false">
+				<IconSVG name="mdiAlertCircleOutline" variant="error" />
+				<span>{{ validationErrorMessage }}</span>
+			</Message>
 
 			<FormHeader :form="state.root" />
 
@@ -236,7 +240,7 @@ watchEffect(() => {
 			</Card>
 
 			<div class="footer flex justify-content-end flex-wrap gap-3">
-				<Button label="Send" rounded @click="handleSubmit(state)" />
+				<Button label="Send" @click="handleSubmit(state)" />
 			</div>
 		</div>
 
@@ -260,7 +264,7 @@ watchEffect(() => {
 </template>
 
 <style scoped lang="scss">
-@import 'primeflex/core/_variables.scss';
+@use 'primeflex/core/_variables.scss' as pf;
 
 .form-initialization-status {
 	display: none;
@@ -268,7 +272,7 @@ watchEffect(() => {
 
 .odk-form {
 	width: 100%;
-	color: var(--text-color);
+	color: var(--odk-text-color);
 	--wf-error-banner-gap: 4rem;
 	--wf-max-form-width: 900px;
 
@@ -277,49 +281,61 @@ watchEffect(() => {
 		flex-direction: column;
 		max-width: var(--wf-max-form-width);
 		min-height: calc(100vh - 5.5rem);
-		min-height: calc(100dvh - 5.5rem);
 		margin: auto;
 		padding-top: 10px;
 
 		.questions-card {
-			border-radius: 10px;
+			border-radius: var(--odk-radius);
 			box-shadow: none;
 			border-top: none;
 			margin-top: 20px;
+		}
 
-			:deep(.p-card-content) {
-				padding: 0;
-			}
+		.questions-card > :deep(.p-card-body) {
+			padding: 2rem;
 		}
 
 		.error-banner-placeholder {
-			height: calc(var(--wf-error-banner-gap) + 1rem);
+			height: var(--wf-error-banner-gap);
 		}
 
 		.form-error-message.p-message.p-message-error {
-			border-radius: 10px;
-			background-color: var(--error-bg-color);
-			border: 1px solid var(--error-text-color);
+			position: fixed;
+			z-index: var(--odk-z-index-error-banner);
+			border-radius: var(--odk-radius);
+			background-color: var(--odk-error-background-color);
+			border: 1px solid var(--p-message-error-border-color);
+			outline: none;
 			max-width: var(--wf-max-form-width);
 			width: 100%;
 			margin: 0rem auto 1rem auto;
 			top: 1rem;
 
 			:deep(.p-message-wrapper) {
-				padding: 0.75rem 0.75rem;
+				padding: 8px 15px;
 				flex-grow: 1;
 			}
 
 			:deep(.p-message-text) {
+				display: flex;
+				align-items: center;
 				font-weight: 400;
-				flex-grow: 1;
+			}
+
+			.odk-icon {
+				margin-right: 10px;
 			}
 		}
 	}
 
-	.print-button.p-button {
-		height: 2rem;
-		width: 2rem;
+	:deep(.print-button.p-button) {
+		display: flex;
+		height: var(--p-button-icon-only-width);
+		width: var(--p-button-icon-only-width);
+		padding-inline-start: 0;
+		padding-inline-end: 0;
+		gap: 0;
+		border-radius: 50%;
 	}
 
 	.footer {
@@ -336,8 +352,8 @@ watchEffect(() => {
 		margin-left: 0.5rem;
 
 		.anchor {
-			color: var(--gray-500);
-			font-size: 0.85rem;
+			color: var(--odk-muted-text-color);
+			font-size: var(--odk-hint-font-size);
 			font-weight: 300;
 			text-decoration: none;
 			margin-left: 1rem;
@@ -357,12 +373,12 @@ watchEffect(() => {
 		.version {
 			font-size: 0.7rem;
 			margin: 0.5rem 0 0 0.85rem;
-			color: var(--gray-500);
+			color: var(--odk-muted-text-color);
 		}
 	}
 }
 
-@media screen and (max-width: #{$lg - 1}) {
+@media screen and (max-width: #{pf.$lg - 1}) {
 	.odk-form {
 		.form-wrapper {
 			max-width: unset;
@@ -380,6 +396,7 @@ watchEffect(() => {
 				margin: var(--wf-error-banner-gap) 1rem 0 1rem;
 				max-width: unset;
 				width: calc(100% - 2rem);
+				top: 22px;
 			}
 
 			.questions-card {
@@ -402,20 +419,29 @@ watchEffect(() => {
 		}
 	}
 }
+
+@media screen and (max-width: #{pf.$sm}) {
+	.odk-form .form-wrapper .questions-card > :deep(.p-card-body) {
+		padding: 2rem 0.5rem;
+	}
+}
 </style>
 
 <style lang="scss">
-@import 'primeflex/core/_variables.scss';
+@use 'primeflex/core/_variables.scss' as pf;
 :root {
-	--breakpoint-lg: #{$lg};
+	// This variable is used to assert the breakpoint from PrimeFlex are loaded
+	// {@link https://github.com/getodk/web-forms/blob/main/packages/web-forms/e2e/test-cases/build/style.test.ts}
+	--odk-test-breakpoint-lg: #{pf.$lg};
 }
 
 body {
-	background: var(--gray-200);
+	background: var(--odk-muted-background-color);
 }
-@media screen and (max-width: #{$lg - 1}) {
+
+@media screen and (max-width: #{pf.$lg - 1}) {
 	body {
-		background: white;
+		background: var(--odk-base-background-color);
 	}
 }
 </style>

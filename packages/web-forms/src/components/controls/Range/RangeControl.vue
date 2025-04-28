@@ -146,7 +146,7 @@ const orientation = props.node.appearances.vertical ? 'vertical' : 'horizontal';
 
 // = track (full-width; full-height in vertical orientation)
 .p-slider {
-	background-color: rgb(from var(--primary-color) r g b / 25%);
+	background-color: var(--odk-primary-light-background-color);
 
 	// = emphasized range between `min` and current value
 	:deep(.p-slider-range) {
@@ -191,13 +191,7 @@ const orientation = props.node.appearances.vertical ? 'vertical' : 'horizontal';
 		// No clue why PrimeVue has a default `transform` style to shrink this!
 		transform: none;
 
-		z-index: 1;
-
-		&:focus-visible {
-			box-shadow:
-				var(--thumb-shadow),
-				0 0 1px 10px rgb(from var(--primary-color) r g b / 20%);
-		}
+		z-index: var(--odk-z-index-form-content);
 	}
 }
 </style>

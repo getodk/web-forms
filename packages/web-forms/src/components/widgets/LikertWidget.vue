@@ -48,14 +48,14 @@ defineEmits(['change']);
 			content: '';
 			display: block;
 			position: relative;
-			background-color: #ccc;
+			background-color: var(--odk-border-color);
 			height: 3px;
 			width: calc(100% + 20px);
 			top: 11px;
 		}
 
 		&:hover {
-			background-color: var(--primary-100);
+			background-color: var(--odk-primary-light-background-color);
 		}
 
 		&.active {
@@ -63,13 +63,13 @@ defineEmits(['change']);
 			outline: none;
 
 			&:hover {
-				background-color: var(--primary-100);
+				background-color: var(--odk-primary-light-background-color);
 			}
 		}
 
 		.p-radiobutton {
 			position: relative;
-			z-index: 10;
+			z-index: var(--odk-z-index-form-content);
 		}
 
 		.label-text {

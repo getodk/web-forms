@@ -13,10 +13,13 @@ const props = defineProps<{ question: QuestionNode }>();
 <style scoped lang="scss">
 label {
 	font-weight: 400;
-	line-height: 1.8rem;
+	font-size: var(--odk-question-font-size);
+	line-height: 1.5rem;
+	word-wrap: break-word;
+	white-space: pre-wrap;
 
 	.required {
-		color: var(--error-text-color);
+		color: var(--odk-error-text-color);
 	}
 }
 </style>

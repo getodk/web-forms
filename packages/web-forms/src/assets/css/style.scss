@@ -1,3 +1,84 @@
+/**
+ * Global Styles
+ * Defines styles applied to the Web Forms' Preview (demo) page and Web Forms' components.
+ */
+
+@use 'primeflex/primeflex.scss' as pf;
+
+/**
+ * ODK CSS Variables
+ * Establishes root-level variables for consistent styling and easy theming customization.
+ */
+:root {
+	--odk-font-family: Roboto, sans-serif;
+
+	--odk-base-font-size: #{map-get(pf.$font-size-props, 'text-base')};
+	--odk-heading-font-size: #{map-get(pf.$font-size-props, 'text-4xl')};
+	--odk-title-font-size: #{map-get(pf.$font-size-props, 'text-2xl')};
+	--odk-group-font-size: #{map-get(pf.$font-size-props, 'text-xl')};
+	--odk-question-font-size: #{map-get(pf.$font-size-props, 'text-lg')};
+	--odk-answer-font-size: #{map-get(pf.$font-size-props, 'text-base')};
+	--odk-hint-font-size: #{map-get(pf.$font-size-props, 'text-sm')};
+
+	--odk-primary-text-color: var(--p-primary-500);
+	--odk-primary-light-background-color: var(--p-primary-100);
+	--odk-primary-lighter-background-color: var(--p-primary-50);
+	--odk-primary-border-color: var(--p-primary-500);
+
+	--odk-error-text-color: var(--p-red-600);
+	--odk-error-background-color: var(--p-red-50);
+
+	--odk-warning-text-color: var(--p-yellow-600);
+	--odk-warning-background-color: var(--p-yellow-50);
+
+	--odk-text-color: var(--p-surface-900);
+	--odk-inverted-text-color: var(--p-surface-0);
+	--odk-muted-text-color: var(--p-surface-500);
+
+	--odk-base-background-color: var(--p-surface-0);
+	--odk-muted-background-color: var(--p-surface-100);
+	--odk-inactive-background-color: var(--p-surface-300);
+
+	--odk-border-color: var(--p-surface-300);
+
+	--odk-radius: 6px;
+
+	/*
+	 * This project uses a centralized z-index layering system to manage the stacking order of UI
+	 * elements, preventing overlap issues and ensuring maintainability.
+	 *
+	 * Purpose:
+	 * - Avoid z-index conflicts by assigning predefined layers to UI components.
+	 * - Provide clarity on stacking priorities for developers and maintainers.
+	 * - Allow flexibility for future additions without restructuring existing values.
+	 */
+
+	/* Base layer for static content (e.g., page content, form background) */
+	--odk-z-index-base: 0;
+
+	/* Standard form controls (e.g., inputs, labels, buttons) */
+	--odk-z-index-form-content: 10;
+
+	/* Floating form elements (e.g., validation highlights, tooltips) */
+	--odk-z-index-form-floating: 20;
+
+	/* Floating error messages or banners above the form */
+	--odk-z-index-error-banner: 30;
+
+	/* Overlays like modals, popups, or dialogs above form content */
+	--odk-z-index-overlay: 100;
+
+	/* Critical UI elements (e.g., loading spinners, toast notifications) */
+	--odk-z-index-topmost: 1000;
+}
+
 body {
 	margin: 0;
+	font-family: var(--odk-font-family);
+	font-weight: 400;
+	font-size: var(--odk-base-font-size);
+}
+
+button.p-button {
+	min-height: 40px;
 }
