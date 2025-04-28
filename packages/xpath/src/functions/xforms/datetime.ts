@@ -292,7 +292,7 @@ export const date = new FunctionImplementation(
 				break;
 
 			default:
-				throw '';
+				throw new Error('Invalid input type for date function: expected STRING or NUMBER.');
 		}
 
 		const dateTime = evaluateDateTime(context, results);

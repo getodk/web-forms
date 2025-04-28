@@ -383,7 +383,7 @@ export const randomize = new NodeSetFunction(
 
 		const seed = seedExpression.evaluate(context);
 		const asNumber = seed.toNumber(); // TODO: There are some peculiarities to address: https://github.com/getodk/web-forms/issues/240
-		let finalSeed: number | bigint | undefined;
+		let finalSeed: bigint | number | undefined;
 		if (Number.isNaN(asNumber)) {
 			// Specific behaviors for when a seed value is not interpretable as numeric.
 			// We still want to derive a seed in those cases, see https://github.com/getodk/javarosa/issues/800
