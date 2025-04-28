@@ -149,7 +149,7 @@ document.addEventListener(
 				<template	v-if="!formUploading">
 					<input ref="fileInput" type="file" hidden accept=".xls, .xlsx, .xml" @change="fileChangeHandler">
 					<span>
-						<IconSVG name="mdiFileDocumentOutline" variant="muted" />
+						<IconSVG name="mdiFileOutline" variant="muted" />
 						Drag and drop XLSForm or <a href="javascript:;" class="upload-file-link" @click="fileInput.click()">upload form</a>
 					</span>
 					<template v-if="inDevMode">
@@ -168,7 +168,7 @@ document.addEventListener(
 
 		<div v-else class="preview-wrapper">
 			<div class="textbox-with-icon">
-				<IconSVG name="mdiFileDocumentOutline" class="doc-input-icon" variant="muted" />
+				<IconSVG name="mdiFileOutline" class="doc-input-icon" />
 				<InputText :value="uploadedFilename" class="uploaded-file-textbox" />
 				<IconSVG name="mdiClose" class="reset-action" aria-label="Cancel" @click="reset()" />
 			</div>
@@ -180,7 +180,7 @@ document.addEventListener(
 				</Button>
 				<RouterLink :to="`/form?url=${xformUrl}`" target="_blank" class="preview-link">
 					<Button class="preview-link-button">
-						<IconSVG name="mdiEye" variant="inverted" />
+						<IconSVG name="mdiEyeOutline" variant="inverted" />
 						<span>Preview Form</span>
 					</Button>
 				</RouterLink>
@@ -228,7 +228,7 @@ document.addEventListener(
 		font-weight: 300;
 
 		.odk-icon {
-			vertical-align: bottom;
+			margin-top: -4px;
 		}
 	}
 
@@ -259,14 +259,14 @@ document.addEventListener(
 
 			.odk-icon.doc-input-icon {
 				position: absolute;
-				top: 9px;
-				left: 8px;
+				top: 12px;
+				left: 10px;
 			}
 
 			.odk-icon.reset-action {
 				position: absolute;
-				top: 11px;
-				right: 7px;
+				top: 13px;
+				right: 9px;
 				cursor: pointer;
 			}
 		}
@@ -301,12 +301,25 @@ document.addEventListener(
 
 	:deep(.p-message .p-message-content .odk-icon) {
 		margin-right: 10px;
+		margin-top: -3px;
+
+		path {
+			transform: scale(0.91);
+		}
 	}
 
 	:deep(.p-button) {
 		.p-button-label {
 			text-align: left;
 		}
+	}
+
+	.preview-link-button :deep(.odk-icon) path {
+		transform: scale(0.91);
+	}
+
+	.upload-new-button :deep(.odk-icon) path {
+		transform: scale(1.17) translate(-3px, -3px);
 	}
 }
 </style>

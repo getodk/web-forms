@@ -130,8 +130,8 @@ const onSave = (saved: GeolocationRequestSuccess) => {
 
 		<div v-if="committedValue != null" class="geopoint-value-container">
 			<div class="geopoint-icons">
-				<IconSVG v-if="committedValueAccuracy.quality === GeopointAccuracy.POOR" name="mdiAlert" variant="error" />
-				<IconSVG v-else name="mdiCheck" variant="primary" />
+				<IconSVG v-if="committedValueAccuracy.quality === GeopointAccuracy.POOR" class="warning-icon" name="mdiAlert" variant="error" />
+				<IconSVG v-else class="check-icon" name="mdiCheck" variant="primary" />
 			</div>
 			<div class="geopoint-value">
 				<strong class="geo-quality">{{ committedValueAccuracy.label }}</strong>
@@ -206,6 +206,14 @@ const onSave = (saved: GeolocationRequestSuccess) => {
 		justify-content: flex-start;
 		flex-wrap: wrap;
 		flex-grow: 2;
+	}
+
+	:deep(.odk-icon.warning-icon) path {
+		transform: scale(0.91) translate(-1px, -1px);
+	}
+
+	:deep(.odk-icon.check-icon) path {
+		transform: scale(1.14) translate(-3px, -3px);
 	}
 }
 

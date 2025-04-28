@@ -172,8 +172,8 @@ const handleLanguageChange = (event: FormLanguage) => {
 			justify-content: end;
 			gap: 0.5rem;
 
-			.btn-menu {
-				color: var(--odk-text-color);
+			.btn-menu :deep(.odk-icon) path {
+				transform: scale(1.1) translate(-3px, -3px);
 			}
 
 			.print-button {
@@ -201,10 +201,6 @@ const handleLanguageChange = (event: FormLanguage) => {
 				}
 			}
 		}
-	}
-
-	.btn-menu {
-		color: var(--odk-text-color);
 	}
 }
 </style>

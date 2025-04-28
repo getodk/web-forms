@@ -47,7 +47,7 @@ const formXls = computed(() => {
 			<div class="actions">
 				<RouterLink :to="`/form?url=${formXml}`" target="_blank" class="form-preview-link">
 					<Button class="preview-button">
-						<IconSVG name="mdiEye" variant="inverted" />
+						<IconSVG name="mdiEyeOutline" variant="inverted" />
 						<span>View Form</span>
 					</Button>
 				</RouterLink>
@@ -101,6 +101,14 @@ const formXls = computed(() => {
 		display: flex;
 		flex-direction: row;
 		gap: 1rem;
+	}
+
+	.preview-button :deep(.odk-icon) path {
+		transform: scale(0.91);
+	}
+
+	.download-button :deep(.odk-icon) path {
+		transform: scale(1.17) translate(-3px, -3px);
 	}
 }
 </style>

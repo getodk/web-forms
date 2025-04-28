@@ -266,6 +266,7 @@ const swapItems = (index: number, newPosition: number) => {
 	position: absolute;
 	width: 100%;
 	height: 100%;
+	min-height: 50px;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -273,7 +274,7 @@ const swapItems = (index: number, newPosition: number) => {
 	border-radius: var(--odk-radius);
 
 	button {
-		padding: 10px 20px;
+		padding: 12px 20px;
 		font-size: var(--odk-base-font-size);
 
 		&:hover:not(:disabled) {

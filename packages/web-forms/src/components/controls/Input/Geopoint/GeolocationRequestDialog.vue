@@ -136,8 +136,8 @@ onBeforeUnmount(cleanup);
 		<template #default>
 			<div class="geo-dialog-body">
 				<div v-if="accuracy.value != null" class="geopoint-icons">
-					<IconSVG v-if="accuracy.quality === GeopointAccuracy.POOR" name="mdiAlert" variant="error" />
-					<IconSVG v-else name="mdiCheck" variant="primary" />
+					<IconSVG v-if="accuracy.quality === GeopointAccuracy.POOR" class="warning-icon" name="mdiAlert" variant="error" />
+					<IconSVG v-else class="check-icon" name="mdiCheck" variant="primary" />
 				</div>
 
 				<div class="geopoint-information">
@@ -211,6 +211,14 @@ onBeforeUnmount(cleanup);
 	.geopoint-icons {
 		margin-top: -4px;
 		margin-right: var(--geo-spacing-l);
+
+		.warning-icon path {
+			transform: scale(0.91) translate(-1px, -1px);
+		}
+
+		.check-icon path {
+			transform: scale(1.14) translate(-3px, -3px);
+		}
 	}
 }
 

@@ -46,14 +46,14 @@ defineEmits(['update:activeLanguage']);
 	}
 
 	:deep(.p-select-label) {
-		padding: 5px 16px;
+		padding: 5px 12px;
 		span {
 			vertical-align: middle;
 		}
 	}
 
 	.odk-icon {
-		margin-right: 10px;
+		margin-right: 0.5rem;;
 	}
 }
 </style>

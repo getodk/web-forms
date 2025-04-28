@@ -10,8 +10,8 @@ import {
 	mdiClose,
 	mdiDownload,
 	mdiDragVertical,
-	mdiEye,
-	mdiFileDocumentOutline,
+	mdiEyeOutline,
+	mdiFileOutline,
 	mdiImage,
 	mdiMapMarkerOutline,
 	mdiMenu,
@@ -33,8 +33,8 @@ const iconMap: Record<string, string> = {
 	mdiClose,
 	mdiDownload,
 	mdiDragVertical,
-	mdiEye,
-	mdiFileDocumentOutline,
+	mdiEyeOutline,
+	mdiFileOutline,
 	mdiImage,
 	mdiMapMarkerOutline,
 	mdiMenu,
@@ -119,7 +119,11 @@ const iconSize = computed(() => props.size ?? 'md');
 }
 
 .odk-icon.odk-icon-md {
-	height: 24px;
-	width: 24px;
+	height: 20px;
+	width: 20px;
+
+	path {
+		transform: translate(-2px, -2px);
+	}
 }
 </style>
