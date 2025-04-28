@@ -239,7 +239,9 @@ const evaluateDateTime = <T extends XPathNode>(
 		}
 
 		default:
-			throw new Error('Expected a NUMBER or STRING evaluation type for date-time conversion, but received an invalid type.');
+			throw new Error(
+				'Expected a NUMBER or STRING evaluation type for date-time conversion, but received an invalid type.'
+			);
 	}
 };
 

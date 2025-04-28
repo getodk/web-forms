@@ -125,7 +125,9 @@ export const namespaceURI = new StringFunction(
 		const evaluated = expression?.evaluate(context) ?? context;
 
 		if (!(evaluated instanceof LocationPathEvaluation)) {
-			throw new Error('Expected a node-set for namespace-uri function, but received an invalid type.');
+			throw new Error(
+				'Expected a node-set for namespace-uri function, but received an invalid type.'
+			);
 		}
 
 		const node = evaluated.first()?.value;

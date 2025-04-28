@@ -17,7 +17,9 @@ export const countNonEmpty = new NumberFunction(
 		const results = expression!.evaluate(context);
 
 		if (results.type !== 'NODE') {
-			throw new Error('Expected a node-set for count-non-empty function, but received an invalid type.');
+			throw new Error(
+				'Expected a node-set for count-non-empty function, but received an invalid type.'
+			);
 		}
 
 		let result = 0;
@@ -324,7 +326,9 @@ export const position = new NumberFunction(
 		}
 
 		if (next != null) {
-			throw new Error('Expected a single node for position function, but multiple nodes were provided.');
+			throw new Error(
+				'Expected a single node for position function, but multiple nodes were provided.'
+			);
 		}
 
 		const { domProvider } = context;
