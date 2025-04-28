@@ -89,7 +89,7 @@ const handleLanguageChange = (event: FormLanguage) => {
 				</Button>
 				<Menu id="overlay_menu" ref="menu" :model="items" :popup="true">
 					<template #item="{ item }">
-						<a class="p-menu-item-link" v-if="item.command != null" @click="(event) => item.command?.({ originalEvent: event, item })">
+						<a v-if="item.command != null" class="p-menu-item-link" @click="(event) => item.command && item.command({ originalEvent: event, item })">
 							<IconSVG v-if="item.icon != null" :name="item.icon" />
 							<span>{{ item.label }}</span>
 						</a>
