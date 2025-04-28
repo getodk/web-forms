@@ -248,7 +248,7 @@ export const uuid = new StringFunction(
 		const outputLength = lengthExpression.evaluate(context).toNumber();
 
 		if (Number.isNaN(outputLength)) {
-			throw 'todo';
+			throw new Error('Expected a valid number for the UUID length, but received NaN.');
 		}
 
 		while (result.length < outputLength) {

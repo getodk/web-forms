@@ -17,7 +17,7 @@ export const countNonEmpty = new NumberFunction(
 		const results = expression!.evaluate(context);
 
 		if (results.type !== 'NODE') {
-			throw 'todo';
+			throw new Error('Expected a node-set for count-non-empty function, but received an invalid type.');
 		}
 
 		let result = 0;
@@ -252,7 +252,7 @@ export const once = new StringFunction(
 		const [contextNode] = context.contextNodes;
 
 		if (contextNode == null) {
-			throw 'todo once no context';
+			throw new Error('No context node available for the once function.');
 		}
 
 		const string = context.domProvider.getNodeValue(contextNode);
@@ -324,7 +324,7 @@ export const position = new NumberFunction(
 		}
 
 		if (next != null) {
-			throw 'todo enforce single node(?)';
+			throw new Error('Expected a single node for position function, but multiple nodes were provided.');
 		}
 
 		const { domProvider } = context;
