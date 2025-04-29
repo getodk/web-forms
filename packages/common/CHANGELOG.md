@@ -1,5 +1,12 @@
 # @getodk/common
 
+## 0.6.0
+
+### Minor Changes
+
+- ab3be86: - Support for date questions with no appearance
+  - Support for date notes
+
 ## 0.5.2
 
 ### Patch Changes
