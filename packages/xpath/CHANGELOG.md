@@ -4,8 +4,7 @@
 
 ### Minor Changes
 
-- ab3be86: - Support for date questions with no appearance
-  - Support for date notes
+- ab3be86: Support for date questions with no appearance and support for date notes
 
 ### Patch Changes
 

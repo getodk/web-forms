@@ -4,9 +4,8 @@
 
 ### Patch Changes
 
-- c44bc24: Adds error message descriptions
-- ab3be86: - Support for date questions with no appearance
-  - Support for date notes
+- c44bc24: Adds error message descriptions.
+- ab3be86: Support for date questions with no appearance and support for date notes.
 
 ## 0.6.1
 
