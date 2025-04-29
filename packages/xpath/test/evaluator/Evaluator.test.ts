@@ -72,6 +72,8 @@ describe('Evaluator convenience methods', () => {
 			{ expression: '2', expected: '2' },
 			{ expression: '/root/a', expected: '3' },
 			{ expression: '/root/b', expected: '' },
+			{ expression: '/root/b', expected: '' },
+			{ expression: '3 div abc ', expected: '' },
 		])('evaluates $expression to boolean $expected', ({ expression, expected }) => {
 			const actual = evaluator.evaluateString(expression);
 
