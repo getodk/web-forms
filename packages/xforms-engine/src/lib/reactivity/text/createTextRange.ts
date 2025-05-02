@@ -20,7 +20,7 @@ const createComputedTextChunk = (
 	const { source } = textSource;
 
 	if (source === 'literal') {
-		const { literalValue: stringValue } = textSource;
+		const { stringValue: stringValue } = textSource;
 
 		return {
 			source,

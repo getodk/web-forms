@@ -5,9 +5,9 @@ import type { AnyTextRangeDefinition } from '../text/abstract/TextRangeDefinitio
 import { isTranslationExpression } from '../xpath/semantic-analysis.ts';
 import { DependentExpression } from './abstract/DependentExpression.ts';
 
-type TextChunkExpressionOptions = {
+interface TextChunkExpressionOptions {
 	readonly isTranslated?: true;
-};
+}
 
 interface OutputElement extends KnownAttributeLocalNamedElement<'output', 'value'> {}
 
@@ -18,14 +18,14 @@ const isOutputElement = (element: Element): element is OutputElement => {
 export class TextChunkExpression extends DependentExpression<'string'> {
 	readonly source: TextChunkSource;
 	// Set for the literal source, blank otherwise
-	readonly literalValue: string;
+	readonly stringValue: string;
 
 	constructor(
 		context: AnyTextRangeDefinition,
 		expression: string,
 		source: TextChunkSource,
 		options: TextChunkExpressionOptions = {},
-		literalValue: string = ''
+		literalValue = ''
 	) {
 		super(context, 'string', expression, {
 			semanticDependencies: {
@@ -35,7 +35,7 @@ export class TextChunkExpression extends DependentExpression<'string'> {
 		});
 
 		this.source = source;
-		this.literalValue = literalValue;
+		this.stringValue = literalValue;
 	}
 
 	static fromLiteral(context: AnyTextRangeDefinition, stringValue: string): TextChunkExpression {
