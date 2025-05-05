@@ -1,11 +1,17 @@
 import { UpsertableWeakMap } from '@getodk/common/lib/collections/UpsertableWeakMap.ts';
 import type { XPathNode } from '../adapter/interface/XPathNode.ts';
 import type { XPathDOMProvider } from '../adapter/xpathDOMProvider.ts';
-import type { itext } from '../functions/javarosa/string.ts';
+import type { itext } from '../functions/javarosa/node-set.ts';
 import type { XFormsElementRepresentation } from './XFormsElementRepresentation.ts';
 import type { XFormsXPathEvaluator } from './XFormsXPathEvaluator.ts';
 
 type XFormsItextTextID = string;
+
+export type XFormsItextTranslationValueElement<T extends XPathNode> = XFormsElementRepresentation<
+	T,
+	'value',
+	'form'
+>;
 
 type XFormsItextTranslationTextElement<T extends XPathNode> = XFormsElementRepresentation<
 	T,
@@ -155,35 +161,6 @@ export class XFormsItextTranslations<T extends XPathNode> implements XFormsItext
 		return textMap.get(itextID) ?? null;
 	}
 
-	/**
-	 * @package
-	 *
-	 * Here, "default" is meant as more precise language than "regular" as
-	 * {@link https://getodk.github.io/xforms-spec/#languages | specified by ODK XForms}. In other words, this is equivalent to the following hypothetical XPath pseudo-code (whitespace added to improve structural clarity):
-	 *
-	 * ```xpath
-	 * string(
-	 *   imaginary:itext-translation(
-	 *     xpath3-fn:environment-variable('activeLanguage')
-	 *   )
-	 *     /text[@id = $itextID]
-	 *       /value[not(@form)]
-	 * )
-	 * ```
-	 *
-	 * Or alternately:
-	 *
-	 * ```xpath
-	 * string(
-	 *   imaginary:itext-root()
-	 *     /translation[@lang = xpath3-fn:environment-variable('activeLanguage')]
-	 *       /text[@id = $itextID]
-	 *         /value[not(@form)]
-	 * )
-	 * ```
-	 *
-	 * @todo The above really feels like it adds some helpful clarity to how `jr:itext()` is designed to work, and the kinds of structures, state and input involved. Since there's already some discomfort around that API as specified, it's worth considering
-	 */
 	getDefaultTranslationText(itextID: string): string {
 		const textElement = this.getTranslationTextElement(itextID);
 
@@ -194,13 +171,50 @@ export class XFormsItextTranslations<T extends XPathNode> implements XFormsItext
 		const { domProvider } = this;
 
 		for (const valueElement of domProvider.getChildrenByLocalName(textElement, 'value')) {
-			//
 			if (!domProvider.hasLocalNamedAttribute(valueElement, 'form')) {
 				return domProvider.getNodeValue(valueElement);
 			}
 		}
 
 		return '';
+	}
+
+	/**
+	 * Retrieves all translation value elements for a given Itext in the active language.
+	 *
+	 * @package
+	 *
+	 * This method fetches the `text` element matching `itextID` and returns its child `value` elements,
+	 * which may have an optional `@form` attribute.
+	 *
+	 * The operation is conceptually similar to the following XPath query:
+	 *
+	 * ```xpath
+	 * imaginary:itext-translation(
+	 *   xpath3-fn:environment-variable('activeLanguage')
+	 * )
+	 *   /text[@id = $itextID]
+	 *     /value
+	 * ```
+	 *
+	 * Or alternately:
+	 *
+	 * ```xpath
+	 * imaginary:itext-root()
+	 *   /translation[@lang = xpath3-fn:environment-variable('activeLanguage')]
+	 *     /text[@id = $itextID]
+	 *       /value
+	 * ```
+	 * Returns an array of `XFormsItextTranslationValueElement<T>` or `null` if no matching `text` element is found.
+	 */
+	getTranslationValues(itextID: string): Array<XFormsItextTranslationValueElement<T>> | null {
+		const textElement = this.getTranslationTextElement(itextID);
+
+		if (textElement == null) {
+			return null;
+		}
+
+		return this.domProvider.getChildrenByLocalName(textElement, 'value');
 	}
 
 	getLanguages(): readonly XFormsItextTranslationLanguage[] {

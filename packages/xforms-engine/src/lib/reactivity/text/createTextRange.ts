@@ -74,7 +74,29 @@ export const createTextRange = <Role extends TextRole>(
 	definition: TextRangeDefinition<Role>
 ): ComputedFormTextRange<Role> => {
 	return context.scope.runTask(() => {
-		const getTextChunks = createTextChunks(context, definition.chunks);
+		const getTextChunks = () => {
+			const result = createComputedExpression(context, definition.chunks);
+			const values = result();
+			console.warn('getTextChunks', values)
+
+			return values;
+		};
+
+		/*const getTextMedia = () => {
+			if (definition.media != null) {
+				const result = createComputedExpression(context, definition.media);
+				const values = result();
+
+				return values.filter(val => {
+					if (val.attributes.length > 0) {
+						return !!val.attributes.find(attr => attr.value === 'image');
+					}
+					return false;
+				});
+			}
+
+			return null;
+		};*/
 
 		return createMemo(() => {
 			return new TextRange('form', role, getTextChunks());

@@ -1,12 +1,11 @@
-import { StringFunction } from '../../evaluator/functions/StringFunction.ts';
+import { NodeSetFunction } from '../../evaluator/functions/NodeSetFunction.ts';
 import { XFormsXPathEvaluator } from '../../xforms/XFormsXPathEvaluator.ts';
 
-export const itext = new StringFunction(
+export const itext = new NodeSetFunction(
 	'itext',
 	[{ arityType: 'required', typeHint: 'string' }],
 	(context, [itextIDExpression]) => {
 		const itextID = itextIDExpression!.evaluate(context).toString();
-
-		return XFormsXPathEvaluator.getDefaultTranslationText(context, itextID);
+		return XFormsXPathEvaluator.getTranslationTextValues(context, itextID);
 	}
 );

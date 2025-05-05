@@ -112,6 +112,15 @@ export class XFormsXPathEvaluator<T extends XPathNode>
 		return context.evaluator.itextTranslations.getDefaultTranslationText(itextID);
 	}
 
+	static getTranslationTextValues<T extends XPathNode>(
+		context: EvaluationContext<T>,
+		itextID: string
+	) {
+		assertInternalXFormsXPathEvaluatorContext(context);
+
+		return context.evaluator.itextTranslations.getTranslationValues(itextID);
+	}
+
 	override readonly rootNode: AdapterParentNode<T>;
 
 	/**
