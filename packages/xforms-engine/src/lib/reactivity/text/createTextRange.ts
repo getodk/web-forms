@@ -1,67 +1,70 @@
 import type { Accessor } from 'solid-js';
 import { createMemo } from 'solid-js';
-import type { TextChunkSource, TextRole } from '../../../client/TextRange.ts';
+import type { TextRole } from '../../../client/TextRange.ts';
 import type { EvaluationContext } from '../../../instance/internal-api/EvaluationContext.ts';
 import { TextChunk } from '../../../instance/text/TextChunk.ts';
 import { TextRange } from '../../../instance/text/TextRange.ts';
+import type { StaticElement } from '../../../integration/xpath/static-dom/StaticElement.ts';
 import type { TextChunkExpression } from '../../../parse/expression/TextChunkExpression.ts';
 import type { TextRangeDefinition } from '../../../parse/text/abstract/TextRangeDefinition.ts';
 import { createComputedExpression } from '../createComputedExpression.ts';
 
-interface TextChunkComputation {
-	readonly source: TextChunkSource;
-	readonly getText: Accessor<string>;
+interface TextContent {
+	chunks: readonly TextChunk[];
+	image: string | null;
 }
 
-const createComputedTextChunk = (
-	context: EvaluationContext,
-	textSource: TextChunkExpression
-): TextChunkComputation => {
-	const { source } = textSource;
-
-	if (source === 'literal') {
-		const { stringValue } = textSource;
-
-		return {
-			source,
-			getText: () => stringValue,
-		};
-	}
-
-	return context.scope.runTask(() => {
-		const getText = createComputedExpression(context, textSource, {
-			defaultValue: '',
-		});
-
-		return {
-			source,
-			getText,
-		};
-	});
-};
-
+/**
+ * Creates a reactive accessor for text chunks and an optional image from text source expressions.
+ * - Combines chunks from literal and computed sources into a single array.
+ * - Captures the first image found with a 'from="image"' attribute.
+ *
+ * @param context - The evaluation context for reactive computations.
+ * @param textSources - Array of text source expressions to process.
+ * @returns An accessor for an object with all chunks and the first image (if any).
+ */
 const createTextChunks = (
 	context: EvaluationContext,
 	textSources: readonly TextChunkExpression[]
-): Accessor<readonly TextChunk[]> => {
+): Accessor<TextContent> => {
 	return context.scope.runTask(() => {
-		const chunkComputations = textSources.map((textSource) => {
-			return createComputedTextChunk(context, textSource);
-		});
+		const chunks: TextChunk[] = [];
+		let image: string | null = null;
 
-		return createMemo(() => {
-			return chunkComputations.map(({ source, getText }) => {
-				return new TextChunk(context, source, getText());
+		textSources.forEach((textSource) => {
+			if (textSource.source === 'literal') {
+				chunks.push({ source: textSource.source, getText: () => textSource.stringValue });
+				return;
+			}
+
+			context.scope.runTask(() => {
+				const computed = createComputedExpression(context, textSource, { defaultValue: '' })();
+				const items = Array.isArray(computed) ? computed : [computed];
+
+				items.forEach((item: StaticElement) => {
+					if (!item.attributes?.length) {
+						chunks.push({ source: textSource.source, getText: () => item.value });
+						return;
+					}
+
+					const isImage = !!item.attributes.find(
+						(attr) => attr.qualifiedName.localName === 'form' && attr.value === 'image'
+					);
+					if (isImage && image == null) {
+						image = item.value;
+					}
+				});
 			});
 		});
+
+		return { chunks, image };
 	});
 };
 
 type ComputedFormTextRange<Role extends TextRole> = Accessor<TextRange<Role, 'form'>>;
 
 /**
- * Creates a text range (e.g. label or hint) from the provided definition,
- * reactive to:
+ * Creates a text range (e.g. label or hint) from the provided definition, reactive to:
  *
  * - The form's current language (e.g. `<label ref="jr:itext('text-id')" />`)
  * - Direct `<output>` references within the label's children
@@ -74,32 +77,14 @@ export const createTextRange = <Role extends TextRole>(
 	definition: TextRangeDefinition<Role>
 ): ComputedFormTextRange<Role> => {
 	return context.scope.runTask(() => {
-		const getTextChunks = () => {
-			const result = createComputedExpression(context, definition.chunks);
-			const values = result();
-			console.warn('getTextChunks', values)
+		const textChunks = createTextChunks(context, definition.chunks);
 
-			return values;
-		};
-
-		/*const getTextMedia = () => {
-			if (definition.media != null) {
-				const result = createComputedExpression(context, definition.media);
-				const values = result();
-
-				return values.filter(val => {
-					if (val.attributes.length > 0) {
-						return !!val.attributes.find(attr => attr.value === 'image');
-					}
-					return false;
-				});
-			}
-
-			return null;
-		};*/
-
-		return createMemo(() => {
-			return new TextRange('form', role, getTextChunks());
+		const reactiveChunks = createMemo(() => {
+			return textChunks.chunks.map(
+				({ source, getText }) => new TextChunk(context, source, getText())
+			);
 		});
+
+		return createMemo(() => new TextRange('form', role, reactiveChunks(), textChunks.image));
 	});
 };

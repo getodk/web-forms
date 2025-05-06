@@ -34,7 +34,7 @@ export class ItemsetLabelDefinition extends TextRangeDefinition<'item-label'> {
 		}
 
 		const refChunk =
-			TextChunkExpression.fromTranslation(this, refExpression) ??
+			TextChunkExpression.fromTranslationNodeSet(this, refExpression) ??
 			TextChunkExpression.fromReference(this, refExpression);
 
 		this.chunks = [refChunk];

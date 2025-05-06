@@ -18,17 +18,13 @@ export class TextRange<Role extends TextRole, Origin extends TextOrigin>
 	}
 
 	get asString(): string {
-		return this.chunks.map((chunk) => chunk.asString).join(''); //
+		return this.chunks.map((chunk) => chunk.asString).join('');
 	}
-
-	/*get image(): string | null {
-		return null;
-	}*/
 
 	constructor(
 		readonly origin: Origin,
 		readonly role: Role,
 		protected readonly chunks: readonly TextChunk[],
-		//readonly image,
+		readonly image: string | null,
 	) {}
 }
