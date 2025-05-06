@@ -27,33 +27,31 @@ const createTextChunks = (
 	context: EvaluationContext,
 	textSources: readonly TextChunkExpression[]
 ): Accessor<TextContent> => {
-	return context.scope.runTask(() => {
+	return createMemo(() => {
 		const chunks: TextChunk[] = [];
 		let image: string | null = null;
 
 		textSources.forEach((textSource) => {
 			if (textSource.source === 'literal') {
-				chunks.push({ source: textSource.source, getText: () => textSource.stringValue });
+				chunks.push(new TextChunk(context, textSource.source, textSource.stringValue));
 				return;
 			}
 
-			context.scope.runTask(() => {
-				const computed = createComputedExpression(context, textSource, { defaultValue: '' })();
-				const items = Array.isArray(computed) ? computed : [computed];
+			const computed = createComputedExpression(context, textSource, { defaultValue: '' })();
+			const items = Array.isArray(computed) ? computed : [computed];
 
-				items.forEach((item: StaticElement) => {
-					if (!item.attributes?.length) {
-						chunks.push({ source: textSource.source, getText: () => item.value });
-						return;
-					}
+			items.forEach((item: StaticElement) => {
+				if (!item.attributes?.length) {
+					chunks.push(new TextChunk(context, textSource.source, item.value ));
+					return;
+				}
 
-					const isImage = !!item.attributes.find(
-						(attr) => attr.qualifiedName.localName === 'form' && attr.value === 'image'
-					);
-					if (isImage && image == null) {
-						image = item.value;
-					}
-				});
+				const isImage = !!item.attributes.find(
+					(attr) => attr.qualifiedName.localName === 'form' && attr.value === 'image'
+				);
+				if (isImage && image == null) {
+					image = item.value;
+				}
 			});
 		});
 
@@ -79,12 +77,6 @@ export const createTextRange = <Role extends TextRole>(
 	return context.scope.runTask(() => {
 		const textChunks = createTextChunks(context, definition.chunks);
 
-		const reactiveChunks = createMemo(() => {
-			return textChunks.chunks.map(
-				({ source, getText }) => new TextChunk(context, source, getText())
-			);
-		});
-
-		return createMemo(() => new TextRange('form', role, reactiveChunks(), textChunks.image));
+		return createMemo(() => new TextRange('form', role, textChunks().chunks, textChunks().image));
 	});
 };
