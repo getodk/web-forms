@@ -11,23 +11,31 @@ import type { LabelDefinition, LabelOwner } from '../LabelDefinition.ts';
 import type { TextSourceNode } from './TextRangeDefinition.ts';
 import { TextRangeDefinition } from './TextRangeDefinition.ts';
 
-type TextElementChunks = readonly TextChunkExpression[];
-
 type TextElementOwner = ItemDefinition | LabelOwner;
 
 export abstract class TextElementDefinition<
 	Role extends ElementTextRole,
 > extends TextRangeDefinition<Role> {
-	readonly chunks: TextElementChunks;
+	readonly chunks: Array<TextChunkExpression<'nodes' | 'string'>>;
 
 	constructor(form: XFormDefinition, owner: TextElementOwner, sourceNode: TextSourceNode<Role>) {
 		super(form, owner, sourceNode);
 
 		const context = this as AnyTextElementDefinition;
-		const refExpression = parseNodesetReference(owner, sourceNode, 'ref');
+		this.chunks = this.getTextChunkExpressions(
+			sourceNode.childNodes,
+			context,
+			parseNodesetReference(owner, sourceNode, 'ref')
+		);
+	}
 
+	private getTextChunkExpressions = (
+		childNodes: NodeListOf<ChildNode>,
+		context: AnyTextElementDefinition,
+		refExpression: string
+	): Array<TextChunkExpression<'nodes' | 'string'>> => {
 		if (refExpression == null) {
-			this.chunks = Array.from(sourceNode.childNodes).flatMap((childNode) => {
+			return Array.from(childNodes).flatMap((childNode) => {
 				if (isElementNode(childNode)) {
 					return TextChunkExpression.fromOutput(context, childNode) ?? [];
 				}
@@ -38,13 +46,15 @@ export abstract class TextElementDefinition<
 
 				return [];
 			});
-		} else {
-			const refChunk =
-				TextChunkExpression.fromTranslationNodeSet(context, refExpression) ??
-				TextChunkExpression.fromReference(context, refExpression);
-			this.chunks = [refChunk];
 		}
-	}
+
+		const expression = TextChunkExpression.fromTranslation(this, refExpression);
+		if (expression != null) {
+			return [expression];
+		}
+
+		return [TextChunkExpression.fromReference(this, refExpression)];
+	};
 }
 
 // prettier-ignore

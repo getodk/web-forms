@@ -154,8 +154,6 @@ export interface TextRange<Role extends TextRole, Origin extends TextOrigin = Te
 
 	[Symbol.iterator](): Iterable<TextChunk>;
 
-	get image(): string | null;
-
 	get asString(): string;
 	get formatted(): unknown;
 }

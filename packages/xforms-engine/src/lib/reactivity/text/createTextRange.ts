@@ -4,6 +4,7 @@ import type { TextRole } from '../../../client/TextRange.ts';
 import type { EvaluationContext } from '../../../instance/internal-api/EvaluationContext.ts';
 import { TextChunk } from '../../../instance/text/TextChunk.ts';
 import { TextRange } from '../../../instance/text/TextRange.ts';
+import type { StaticAttribute } from '../../../integration/xpath/static-dom/StaticAttribute.ts';
 import type { StaticElement } from '../../../integration/xpath/static-dom/StaticElement.ts';
 import type { TextChunkExpression } from '../../../parse/expression/TextChunkExpression.ts';
 import type { TextRangeDefinition } from '../../../parse/text/abstract/TextRangeDefinition.ts';
@@ -14,16 +15,17 @@ interface TextContent {
 	image: string | null;
 }
 
-const isFormAttribute = (attribute) => attribute?.qualifiedName?.localName === 'form';
+const isFormAttribute = (attribute: StaticAttribute) =>
+	attribute?.qualifiedName?.localName === 'form';
 
-const isDefaultValue = (item) => !item.attributes?.length;
+const isDefaultValue = (item: StaticElement) => !item.attributes?.length;
 
-const getImageValue = (item) => {
+const getImageValue = (item: StaticElement) => {
 	if (isDefaultValue(item)) {
 		return null;
 	}
 
-	const isImage = (attribute) => isFormAttribute(attribute) && attribute.value === 'image';
+	const isImage = (attr: StaticAttribute) => isFormAttribute(attr) && attr.value === 'image';
 	return item.attributes.find(isImage) ? item.value : null;
 };
 
@@ -34,7 +36,7 @@ const getImageValue = (item) => {
  * 			 should create a {@link: TextElementDefinition}, so that createTextChunks function can
  * 			 request the computed value to XPath and create the TextChunk.
  */
-const processChildrenValues = (item) => {
+const processChildrenValues = (item: StaticElement) => {
 	let value = '';
 	item.children?.forEach((child) => (value += child.value ?? ''));
 	return value;
@@ -51,7 +53,7 @@ const processChildrenValues = (item) => {
  */
 const createTextChunks = (
 	context: EvaluationContext,
-	textSources: readonly TextChunkExpression[]
+	textSources: Array<TextChunkExpression<'nodes' | 'string'>>
 ): Accessor<TextContent> => {
 	return createMemo(() => {
 		const chunks: TextChunk[] = [];

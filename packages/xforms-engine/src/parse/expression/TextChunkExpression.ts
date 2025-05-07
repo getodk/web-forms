@@ -17,7 +17,7 @@ const isOutputElement = (element: Element): element is OutputElement => {
 	return element.localName === 'output' && element.hasAttribute('value');
 };
 
-export class TextChunkExpression<T> extends DependentExpression<T> {
+export class TextChunkExpression<T extends 'nodes' | 'string'> extends DependentExpression<T> {
 	readonly source: TextChunkSource;
 	// Set for the literal source, blank otherwise
 	readonly stringValue: string;
@@ -41,11 +41,17 @@ export class TextChunkExpression<T> extends DependentExpression<T> {
 		this.stringValue = literalValue;
 	}
 
-	static fromLiteral(context: AnyTextRangeDefinition, stringValue: string): TextChunkExpression {
+	static fromLiteral(
+		context: AnyTextRangeDefinition,
+		stringValue: string
+	): TextChunkExpression<'string'> {
 		return new TextChunkExpression<'string'>(context, 'string', 'null', 'literal', {}, stringValue);
 	}
 
-	static fromReference(context: AnyTextRangeDefinition, ref: string): TextChunkExpression {
+	static fromReference(
+		context: AnyTextRangeDefinition,
+		ref: string
+	): TextChunkExpression<'string'> {
 		return new TextChunkExpression<'string'>(context, 'string', ref, 'reference');
 	}
 
@@ -66,23 +72,6 @@ export class TextChunkExpression<T> extends DependentExpression<T> {
 	}
 
 	static fromTranslation(
-		context: AnyTextRangeDefinition,
-		maybeExpression: string
-	): TextChunkExpression<'string'> | null {
-		if (isTranslationExpression(maybeExpression)) {
-			return new TextChunkExpression<'string'>(context, 'string', maybeExpression, 'translation', {
-				isTranslated: true,
-			});
-		}
-
-		return null;
-	}
-
-	/**
-	 * Use this when you need the entire translation node of itext,
-	 * such as for displaying media or accessing alternate values (e.g., `<value form="short">`).
-	 */
-	static fromTranslationNodeSet(
 		context: AnyTextRangeDefinition,
 		maybeExpression: string
 	): TextChunkExpression<'nodes'> | null {

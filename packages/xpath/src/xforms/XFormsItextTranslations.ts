@@ -161,24 +161,6 @@ export class XFormsItextTranslations<T extends XPathNode> implements XFormsItext
 		return textMap.get(itextID) ?? null;
 	}
 
-	getDefaultTranslationText(itextID: string): string {
-		const textElement = this.getTranslationTextElement(itextID);
-
-		if (textElement == null) {
-			return '';
-		}
-
-		const { domProvider } = this;
-
-		for (const valueElement of domProvider.getChildrenByLocalName(textElement, 'value')) {
-			if (!domProvider.hasLocalNamedAttribute(valueElement, 'form')) {
-				return domProvider.getNodeValue(valueElement);
-			}
-		}
-
-		return '';
-	}
-
 	/**
 	 * Retrieves all translation value elements for a given Itext in the active language.
 	 *
