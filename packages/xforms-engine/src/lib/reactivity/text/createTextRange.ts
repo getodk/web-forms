@@ -41,6 +41,11 @@ const createTextChunks = (
 			const items = Array.isArray(computed) ? computed : [computed];
 
 			items.forEach((item: StaticElement) => {
+				if (textSource.resultType === 'string') {
+					chunks.push(new TextChunk(context, textSource.source, item ));
+					return;
+				}
+
 				if (!item.attributes?.length) {
 					chunks.push(new TextChunk(context, textSource.source, item.value ));
 					return;
