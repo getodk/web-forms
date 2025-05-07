@@ -32,7 +32,7 @@ export class MessageDefinition<
 		super(bind.form, bind, null);
 
 		const chunk: TextChunkExpression =
-			TextChunkExpression.fromTranslation(this, message) ??
+			TextChunkExpression.fromTranslationNodeSet(this, message) ??
 			TextChunkExpression.fromLiteral(this, message);
 
 		this.chunks = [chunk];

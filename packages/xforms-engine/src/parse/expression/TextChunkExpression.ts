@@ -2,7 +2,10 @@ import type { KnownAttributeLocalNamedElement } from '@getodk/common/types/dom.t
 import type { TextChunkSource } from '../../client/TextRange.ts';
 import type { AnyTextRangeDefinition } from '../text/abstract/TextRangeDefinition.ts';
 import { isTranslationExpression } from '../xpath/semantic-analysis.ts';
-import { DependentExpression, DependentExpressionResultType } from './abstract/DependentExpression.ts';
+import {
+	DependentExpression,
+	DependentExpressionResultType,
+} from './abstract/DependentExpression.ts';
 
 interface TextChunkExpressionOptions {
 	readonly isTranslated?: true;
@@ -46,12 +49,20 @@ export class TextChunkExpression<T> extends DependentExpression<T> {
 		return new TextChunkExpression<'string'>(context, 'string', ref, 'reference');
 	}
 
-	static fromOutput(context: AnyTextRangeDefinition, element: Element): TextChunkExpression<'string'> | null {
+	static fromOutput(
+		context: AnyTextRangeDefinition,
+		element: Element
+	): TextChunkExpression<'string'> | null {
 		if (!isOutputElement(element)) {
 			return null;
 		}
 
-		return new TextChunkExpression<'string'>(context, 'string', element.getAttribute('value'), 'output');
+		return new TextChunkExpression<'string'>(
+			context,
+			'string',
+			element.getAttribute('value'),
+			'output'
+		);
 	}
 
 	static fromTranslation(

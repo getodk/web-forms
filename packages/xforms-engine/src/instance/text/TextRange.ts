@@ -25,6 +25,6 @@ export class TextRange<Role extends TextRole, Origin extends TextOrigin>
 		readonly origin: Origin,
 		readonly role: Role,
 		protected readonly chunks: readonly TextChunk[],
-		readonly image: string | null,
+		readonly image: string | null
 	) {}
 }

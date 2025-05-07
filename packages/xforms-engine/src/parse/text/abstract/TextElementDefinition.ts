@@ -40,7 +40,7 @@ export abstract class TextElementDefinition<
 			});
 		} else {
 			const refChunk =
-				TextChunkExpression.fromTranslation(context, refExpression) ??
+				TextChunkExpression.fromTranslationNodeSet(context, refExpression) ??
 				TextChunkExpression.fromReference(context, refExpression);
 			this.chunks = [refChunk];
 		}

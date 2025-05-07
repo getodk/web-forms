@@ -37,7 +37,7 @@ const selectValue = (value: string) => {
 			@change="$emit('change')"
 		/>
 		<span class="label-text">
-			{{ option.label.asString + '  (' +option.image + ')' }}
+			{{ option.label.asString }}
 		</span>
 	</label>
 </template>

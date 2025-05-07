@@ -14,6 +14,32 @@ interface TextContent {
 	image: string | null;
 }
 
+const isFormAttribute = (attribute) => attribute?.qualifiedName?.localName === 'form';
+
+const isDefaultValue = (item) => !item.attributes?.length;
+
+const getImageValue = (item) => {
+	if (isDefaultValue(item)) {
+		return null;
+	}
+
+	const isImage = (attribute) => isFormAttribute(attribute) && attribute.value === 'image';
+	return item.attributes.find(isImage) ? item.value : null;
+};
+
+/**
+ * The function temporarily supports itext with multiple nested nodes.
+ * TODO: Build support for <output> nodes.
+ * 			 A child might be a node that needs XPath to compute its value. For that, the engine
+ * 			 should create a {@link: TextElementDefinition}, so that createTextChunks function can
+ * 			 request the computed value to XPath and create the TextChunk.
+ */
+const processChildrenValues = (item) => {
+	let value = '';
+	item.children?.forEach((child) => (value += child.value ?? ''));
+	return value;
+};
+
 /**
  * Creates a reactive accessor for text chunks and an optional image from text source expressions.
  * - Combines chunks from literal and computed sources into a single array.
@@ -37,26 +63,23 @@ const createTextChunks = (
 				return;
 			}
 
-			const computed = createComputedExpression(context, textSource, { defaultValue: '' })();
+			const computed = createComputedExpression(context, textSource)();
 			const items = Array.isArray(computed) ? computed : [computed];
 
 			items.forEach((item: StaticElement) => {
 				if (textSource.resultType === 'string') {
-					chunks.push(new TextChunk(context, textSource.source, item ));
+					chunks.push(new TextChunk(context, textSource.source, item));
 					return;
 				}
 
-				if (!item.attributes?.length) {
-					chunks.push(new TextChunk(context, textSource.source, item.value ));
+				if (isDefaultValue(item)) {
+					const value = item.value ?? processChildrenValues(item);
+					chunks.push(new TextChunk(context, textSource.source, value));
 					return;
 				}
 
-				const isImage = !!item.attributes.find(
-					(attr) => attr.qualifiedName.localName === 'form' && attr.value === 'image'
-				);
-				if (isImage && image == null) {
-					image = item.value;
-				}
+				// TODO: Add support for: video, audio, short, etc.
+				image ??= getImageValue(item);
 			});
 		});
 
