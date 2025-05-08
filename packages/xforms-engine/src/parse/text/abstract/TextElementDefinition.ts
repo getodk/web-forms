@@ -13,33 +13,6 @@ import { TextRangeDefinition } from './TextRangeDefinition.ts';
 
 type TextElementOwner = ItemDefinition | LabelOwner;
 
-const getTextChunkExpressions = (
-	childNodes: NodeListOf<ChildNode>,
-	context: AnyTextElementDefinition,
-	refExpression: string | null
-): Array<TextChunkExpression<'nodes' | 'string'>> => {
-	if (refExpression == null) {
-		return Array.from(childNodes).flatMap((childNode) => {
-			if (isElementNode(childNode)) {
-				return TextChunkExpression.fromOutput(context, childNode) ?? [];
-			}
-
-			if (isTextNode(childNode)) {
-				return TextChunkExpression.fromLiteral(context, childNode.data);
-			}
-
-			return [];
-		});
-	}
-
-	const expression = TextChunkExpression.fromTranslation(context, refExpression);
-	if (expression != null) {
-		return [expression];
-	}
-
-	return [TextChunkExpression.fromReference(context, refExpression)];
-};
-
 export abstract class TextElementDefinition<
 	Role extends ElementTextRole,
 > extends TextRangeDefinition<Role> {
@@ -49,11 +22,28 @@ export abstract class TextElementDefinition<
 		super(form, owner, sourceNode);
 
 		const context = this as AnyTextElementDefinition;
-		this.chunks = getTextChunkExpressions(
-			sourceNode.childNodes,
-			context,
-			parseNodesetReference(owner, sourceNode, 'ref')
-		);
+		const refExpression = parseNodesetReference(owner, sourceNode, 'ref');
+
+		if (refExpression == null) {
+			this.chunks = Array.from(sourceNode.childNodes).flatMap((childNode) => {
+				if (isElementNode(childNode)) {
+					return TextChunkExpression.fromOutput(context, childNode) ?? [];
+				}
+
+				if (isTextNode(childNode)) {
+					return TextChunkExpression.fromLiteral(context, childNode.data);
+				}
+
+				return [];
+			});
+		} else {
+			const expression = TextChunkExpression.fromTranslation(context, refExpression);
+			if (expression != null) {
+				this.chunks = [expression];
+			} else {
+				this.chunks = [TextChunkExpression.fromReference(context, refExpression)];
+			}
+		}
 	}
 }
 
