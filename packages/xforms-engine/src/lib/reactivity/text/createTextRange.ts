@@ -4,8 +4,10 @@ import type { TextRole } from '../../../client/TextRange.ts';
 import type { EvaluationContext } from '../../../instance/internal-api/EvaluationContext.ts';
 import { TextChunk } from '../../../instance/text/TextChunk.ts';
 import { TextRange } from '../../../instance/text/TextRange.ts';
-import type { StaticAttribute } from '../../../integration/xpath/static-dom/StaticAttribute.ts';
-import type { StaticElement } from '../../../integration/xpath/static-dom/StaticElement.ts';
+import type {
+	EngineXPathNode,
+	EngineXPathAttribute,
+} from '../../../integration/xpath/adapter/kind.ts';
 import type { TextChunkExpression } from '../../../parse/expression/TextChunkExpression.ts';
 import type { TextRangeDefinition } from '../../../parse/text/abstract/TextRangeDefinition.ts';
 import { createComputedExpression } from '../createComputedExpression.ts';
@@ -15,18 +17,31 @@ interface TextContent {
 	image: string | null;
 }
 
-const isFormAttribute = (attribute: StaticAttribute) =>
-	attribute?.qualifiedName?.localName === 'form';
+const isElementNode = (
+	node: EngineXPathNode | string
+): node is EngineXPathNode & {
+	attributes: EngineXPathAttribute[];
+	children: EngineXPathNode[];
+	value?: string;
+} => {
+	return typeof node !== 'string' && 'attributes' in node && 'children' in node && 'value' in node;
+};
 
-const isDefaultValue = (item: StaticElement) => !item.attributes?.length;
+const isFormAttribute = (attribute: EngineXPathAttribute) => {
+	return attribute?.qualifiedName?.localName === 'form';
+};
 
-const getImageValue = (item: StaticElement) => {
-	if (isDefaultValue(item)) {
+const isDefaultValue = (item: EngineXPathNode | string) => {
+	return isElementNode(item) && !item?.attributes?.length;
+};
+
+const getImageValue = (item: EngineXPathNode): string | null => {
+	if (!isElementNode(item) || isDefaultValue(item)) {
 		return null;
 	}
 
-	const isImage = (attr: StaticAttribute) => isFormAttribute(attr) && attr.value === 'image';
-	return item.attributes.find(isImage) ? item.value : null;
+	const isImage = (attr: EngineXPathAttribute) => isFormAttribute(attr) && attr.value === 'image';
+	return item.attributes.find(isImage) ? (item.value ?? null) : null;
 };
 
 /**
@@ -36,9 +51,18 @@ const getImageValue = (item: StaticElement) => {
  * 			 should create a {@link: TextElementDefinition}, so that createTextChunks function can
  * 			 request the computed value to XPath and create the TextChunk.
  */
-const processChildrenValues = (item: StaticElement) => {
+const processChildrenValues = (item: EngineXPathNode) => {
 	let value = '';
-	item.children?.forEach((child) => (value += child.value ?? ''));
+
+	if (isElementNode(item)) {
+		item.children?.forEach((child: EngineXPathNode) => {
+			if (!isElementNode(child) || child.value == null) {
+				return;
+			}
+			value += child.value;
+		});
+	}
+
 	return value;
 };
 
@@ -68,13 +92,13 @@ const createTextChunks = (
 			const computed = createComputedExpression(context, textSource)();
 			const items = Array.isArray(computed) ? computed : [computed];
 
-			items.forEach((item: StaticElement) => {
-				if (textSource.resultType === 'string') {
+			items.forEach((item: EngineXPathNode | string) => {
+				if (typeof item === 'string') {
 					chunks.push(new TextChunk(context, textSource.source, item));
 					return;
 				}
 
-				if (isDefaultValue(item)) {
+				if (isElementNode(item) && isDefaultValue(item)) {
 					const value = item.value ?? processChildrenValues(item);
 					chunks.push(new TextChunk(context, textSource.source, value));
 					return;

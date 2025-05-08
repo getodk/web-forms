@@ -196,7 +196,9 @@ export class XFormsItextTranslations<T extends XPathNode> implements XFormsItext
 			return null;
 		}
 
-		return this.domProvider.getChildrenByLocalName(textElement, 'value');
+		return [...this.domProvider.getChildrenByLocalName(textElement, 'value')] as Array<
+			XFormsItextTranslationValueElement<T>
+		>;
 	}
 
 	getLanguages(): readonly XFormsItextTranslationLanguage[] {

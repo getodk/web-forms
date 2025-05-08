@@ -6,6 +6,6 @@ export const itext = new NodeSetFunction(
 	[{ arityType: 'required', typeHint: 'string' }],
 	(context, [itextIDExpression]) => {
 		const itextID = itextIDExpression!.evaluate(context).toString();
-		return XFormsXPathEvaluator.getTranslationTextValues(context, itextID);
+		return XFormsXPathEvaluator.getTranslationTextValues(context, itextID) ?? [];
 	}
 );

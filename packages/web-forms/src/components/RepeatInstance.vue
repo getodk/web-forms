@@ -1,10 +1,5 @@
 <script setup lang="ts">
-import type {
-	GeneralChildNode,
-	GroupNode,
-	RepeatInstanceNode,
-	TextChunk,
-} from '@getodk/xforms-engine';
+import type { GeneralChildNode, GroupNode, RepeatInstanceNode } from '@getodk/xforms-engine';
 import { type MenuItem } from 'primevue/menuitem';
 import { computed } from 'vue';
 import FormPanel from './FormPanel.vue';
@@ -32,7 +27,7 @@ const label = computed(() => {
 
 	// Use parent (repeat range) label if it's there
 	// TODO/sk: use state.label.asString
-	const chunks: TextChunk[] = props.instance.parent.definition.bodyElement.label?.chunks;
+	const chunks = props.instance.parent.definition.bodyElement.label?.chunks;
 	const firstChunk = chunks?.length ? chunks[0] : null;
 	if (firstChunk?.stringValue) {
 		return `${firstChunk.stringValue}`;
