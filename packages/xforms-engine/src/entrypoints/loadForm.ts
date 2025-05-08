@@ -115,6 +115,7 @@ const loadFormResult = async (
 			scope,
 			model,
 			secondaryInstances,
+			resourceOptions,
 		};
 
 		return new FormSuccessResult({
