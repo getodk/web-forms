@@ -9,10 +9,10 @@ import { ErrorProductionDesignPendingError } from '../../../error/ErrorProductio
 import type { EngineXPathNode } from '../../../integration/xpath/adapter/kind.ts';
 import type { StaticDocument } from '../../../integration/xpath/static-dom/StaticDocument.ts';
 import type { StaticElement } from '../../../integration/xpath/static-dom/StaticElement.ts';
+import type { FormAttachmentResourceOptions } from '../../attachments/FormAttachmentResource.ts';
 import type { XFormDOM } from '../../XFormDOM.ts';
 import { BlankSecondaryInstanceSource } from './sources/BlankSecondaryInstanceSource.ts';
 import { CSVExternalSecondaryInstanceSource } from './sources/CSVExternalSecondaryInstance.ts';
-import type { ExternalSecondaryInstanceResourceLoadOptions } from './sources/ExternalSecondaryInstanceResource.ts';
 import { ExternalSecondaryInstanceResource } from './sources/ExternalSecondaryInstanceResource.ts';
 import { GeoJSONExternalSecondaryInstanceSource } from './sources/GeoJSONExternalSecondaryInstance.ts';
 import { InternalSecondaryInstanceSource } from './sources/InternalSecondaryInstanceSource.ts';
@@ -62,7 +62,7 @@ export class SecondaryInstancesDefinition
 
 	static async load(
 		xformDOM: XFormDOM,
-		options: ExternalSecondaryInstanceResourceLoadOptions
+		options: FormAttachmentResourceOptions
 	): Promise<SecondaryInstancesDefinition> {
 		const { secondaryInstanceElements } = xformDOM;
 
@@ -92,19 +92,19 @@ export class SecondaryInstancesDefinition
 					return new BlankSecondaryInstanceSource(instanceId, resourceURL, domElement);
 				}
 
-				switch (resource.format) {
-					case 'csv':
-						return new CSVExternalSecondaryInstanceSource(domElement, resource);
-
-					case 'geojson':
-						return new GeoJSONExternalSecondaryInstanceSource(domElement, resource);
-
-					case 'xml':
-						return new XMLExternalSecondaryInstanceSource(domElement, resource);
-
-					default:
-						throw new UnreachableError(resource);
+				if (resource.isCSVResource()) {
+					return new CSVExternalSecondaryInstanceSource(domElement, resource);
 				}
+
+				if (resource.isGeoJSONResource()) {
+					return new GeoJSONExternalSecondaryInstanceSource(domElement, resource);
+				}
+
+				if (resource.isXMLResource()) {
+					return new XMLExternalSecondaryInstanceSource(domElement, resource);
+				}
+
+				throw new UnreachableError(resource as never);
 			})
 		);
 
