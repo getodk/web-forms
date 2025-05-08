@@ -27,21 +27,30 @@ const isElementNode = (
 	return typeof node !== 'string' && 'attributes' in node && 'children' in node && 'value' in node;
 };
 
+const isTextNode = (
+	node: EngineXPathNode | string
+): node is EngineXPathNode & {
+	children: EngineXPathNode[];
+	value?: string;
+} => {
+	return typeof node !== 'string' && 'children' in node && 'value' in node;
+};
+
 const isFormAttribute = (attribute: EngineXPathAttribute) => {
 	return attribute?.qualifiedName?.localName === 'form';
 };
 
 const isDefaultValue = (item: EngineXPathNode | string) => {
-	return isElementNode(item) && !item?.attributes?.length;
+	return isTextNode(item) || (isElementNode(item) && !item.attributes?.length);
 };
 
 const getImageValue = (item: EngineXPathNode): string | null => {
-	if (!isElementNode(item) || isDefaultValue(item)) {
+	if (isDefaultValue(item)) {
 		return null;
 	}
 
 	const isImage = (attr: EngineXPathAttribute) => isFormAttribute(attr) && attr.value === 'image';
-	return item.attributes.find(isImage) ? (item.value ?? null) : null;
+	return isElementNode(item) && item.attributes.find(isImage) ? (item.value ?? null) : null;
 };
 
 /**
@@ -54,12 +63,9 @@ const getImageValue = (item: EngineXPathNode): string | null => {
 const processChildrenValues = (item: EngineXPathNode) => {
 	let value = '';
 
-	if (isElementNode(item)) {
+	if (isElementNode(item) || isTextNode(item)) {
 		item.children?.forEach((child: EngineXPathNode) => {
-			if (!isElementNode(child) || child.value == null) {
-				return;
-			}
-			value += child.value;
+			value += isElementNode(child) || isTextNode(child) ? child.value : '';
 		});
 	}
 
@@ -98,7 +104,7 @@ const createTextChunks = (
 					return;
 				}
 
-				if (isElementNode(item) && isDefaultValue(item)) {
+				if (isDefaultValue(item)) {
 					const value = item.value ?? processChildrenValues(item);
 					chunks.push(new TextChunk(context, textSource.source, value));
 					return;
