@@ -263,7 +263,7 @@ describe('jr:itext(id)', () => {
 			{ expression: 'jr:itext("two")', language: null, expectedTextId: 'two' },
 			{ expression: 'jr:itext("three")', language: null, expectedTextId: 'three' },
 		] as const)(
-			'gets itext translation node set $expected, for expression $expression, in language $language',
+			'gets a list of itext translation nodes, for expression $expression, in language $language',
 			({ expression, language, expectedTextId }) => {
 				testContext.setLanguage(language);
 				const expectedNodes = testContext.document.querySelectorAll(

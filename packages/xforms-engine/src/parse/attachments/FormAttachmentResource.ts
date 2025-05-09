@@ -37,10 +37,6 @@ export interface FormAttachmentResourceOptions {
 	readonly missingResourceBehavior: MissingResourceBehavior;
 }
 
-interface MissingResourceResponse extends FetchResourceResponse {
-	readonly status: 404;
-}
-
 export interface LoadResult<T extends FormAttachmentDataType> {
 	response: FetchResourceResponse;
 	data: FormAttachmentData<T>;
@@ -55,9 +51,7 @@ export abstract class FormAttachmentResource<DataType extends FormAttachmentData
 		readonly data: FormAttachmentData<DataType>
 	) {}
 
-	protected static isMissingResource(
-		response: FetchResourceResponse
-	): response is MissingResourceResponse {
+	protected static isMissingResource(response: FetchResourceResponse) {
 		return response.status === 404;
 	}
 
@@ -68,7 +62,7 @@ export abstract class FormAttachmentResource<DataType extends FormAttachmentData
 		const { ok = true, status = 200 } = response;
 
 		if (!ok || status !== 200) {
-			throw new ErrorProductionDesignPendingError(`Failed to load ${resourceURL.href}`);
+			throw new ErrorProductionDesignPendingError(`Failed to load resource: ${resourceURL.href}`);
 		}
 	}
 
@@ -85,9 +79,7 @@ export abstract class FormAttachmentResource<DataType extends FormAttachmentData
 				const blankData = dataType === 'media' ? new Blob() : '';
 				return { response, isBlank: true, data: blankData as FormAttachmentData<T> };
 			}
-			throw new ErrorProductionDesignPendingError(
-				`Failed to load resource: ${resourceURL.href}: resource is missing (status: ${response.status})`
-			);
+			throw new ErrorProductionDesignPendingError(`Resource not found: ${resourceURL.href}`);
 		}
 
 		this.assertResponseSuccess(resourceURL, response);

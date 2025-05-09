@@ -57,13 +57,13 @@ const getImageValue = (item: EngineXPathNode): string | null => {
 };
 
 /**
- * The function temporarily supports itext with multiple nested nodes.
+ * The function temporarily supports a <value> node with multiple nested nodes.
  * TODO: Build support for <output> nodes.
- * 			 A child might be a node that needs XPath to compute its value. For that, the engine
- * 			 should create a {@link: TextElementDefinition}, so that createTextChunks function can
- * 			 request the computed value to XPath and create the TextChunk.
+ *  A child might be a node that needs XPath to compute its value. For that, the engine
+ *  should create a {@link: TextElementDefinition}, so that createTextChunks function can
+ *  request the computed value to XPath and create the TextChunk.
  */
-const processChildrenValues = (item: EngineXPathNode) => {
+const processValueNodeChildren = (item: EngineXPathNode) => {
 	let value = '';
 
 	if (isElementNode(item) || isTextNode(item)) {
@@ -108,7 +108,7 @@ const createTextChunks = (
 				}
 
 				if (isDefaultValue(item)) {
-					const value = item.value ?? processChildrenValues(item);
+					const value = item.value ?? processValueNodeChildren(item);
 					chunks.push(new TextChunk(context, textSource.source, value));
 					return;
 				}
