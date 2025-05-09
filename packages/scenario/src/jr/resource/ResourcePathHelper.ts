@@ -21,11 +21,11 @@ const testFixtures = await Promise.all(
 				return null;
 			}
 
-			return({
+			return {
 				identifier,
 				localPath,
 				fixtureXML,
-			})
+			};
 		});
 	})
 );
@@ -38,7 +38,7 @@ testFixtures.forEach((testFixture) => {
 
 	const { identifier } = testFixture;
 	if (testFixturesByIdentifier.has(identifier)) {
-		throw new Error(`Duplicate test fixture with identifier: ${ identifier }`);
+		throw new Error(`Duplicate test fixture with identifier: ${identifier}`);
 	}
 
 	testFixturesByIdentifier.set(identifier, testFixture);

@@ -34,7 +34,9 @@ const isTextNode = (
 	children: EngineXPathNode[];
 	value?: string;
 } => {
-	return typeof node !== 'string' && 'children' in node && 'value' in node && !('attributes' in node);
+	return (
+		typeof node !== 'string' && 'children' in node && 'value' in node && !('attributes' in node)
+	);
 };
 
 const isFormAttribute = (attribute: EngineXPathAttribute) => {
