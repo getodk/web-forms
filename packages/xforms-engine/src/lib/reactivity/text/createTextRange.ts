@@ -25,7 +25,7 @@ const isElementNode = (
 	children: EngineXPathNode[];
 	value?: string;
 } => {
-	return typeof node !== 'string' && 'attributes' in node && 'children' in node && 'value' in node;
+	return typeof node !== 'string' && 'children' in node && 'value' in node && 'attributes' in node;
 };
 
 const isTextNode = (
@@ -34,7 +34,7 @@ const isTextNode = (
 	children: EngineXPathNode[];
 	value?: string;
 } => {
-	return typeof node !== 'string' && 'children' in node && 'value' in node;
+	return typeof node !== 'string' && 'children' in node && 'value' in node && !('attributes' in node);
 };
 
 const isFormAttribute = (attribute: EngineXPathAttribute) => {
@@ -42,7 +42,7 @@ const isFormAttribute = (attribute: EngineXPathAttribute) => {
 };
 
 const isDefaultValue = (item: EngineXPathNode | string) => {
-	return isTextNode(item) || (isElementNode(item) && !item.attributes?.length);
+	return (isElementNode(item) && !item.attributes?.length) || isTextNode(item);
 };
 
 const getImageValue = (item: EngineXPathNode): string | null => {
