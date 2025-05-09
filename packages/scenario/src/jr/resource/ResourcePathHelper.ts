@@ -8,7 +8,7 @@ interface TestFixture {
 }
 
 const testFixtures = await Promise.all(
-	xformFixtures.flatMap((fixture): Promise<TestFixture | null> | readonly [] => {
+	xformFixtures.flatMap((fixture): Promise<TestFixture> | readonly [] => {
 		const { category, identifier, localPath } = fixture;
 
 		if (category !== 'test-javarosa' && category !== 'test-scenario') {
@@ -16,9 +16,8 @@ const testFixtures = await Promise.all(
 		}
 
 		return fixture.loadXML().then((fixtureXML) => {
-			if (fixtureXML instanceof Blob) {
-				// ToDo: handle this case
-				return null;
+			if (typeof fixtureXML !== 'string') {
+				throw new Error('Wrong XML Form type. Expected a string');
 			}
 
 			return {
@@ -30,19 +29,17 @@ const testFixtures = await Promise.all(
 	})
 );
 
-const testFixturesByIdentifier = new Map<string, TestFixture>();
-testFixtures.forEach((testFixture) => {
-	if (testFixture == null) {
-		return;
-	}
-
+const testFixturesByIdentifier = testFixtures.reduce((acc, testFixture) => {
 	const { identifier } = testFixture;
-	if (testFixturesByIdentifier.has(identifier)) {
+
+	if (acc.has(identifier)) {
 		throw new Error(`Duplicate test fixture with identifier: ${identifier}`);
 	}
 
-	testFixturesByIdentifier.set(identifier, testFixture);
-});
+	acc.set(identifier, testFixture);
+
+	return acc;
+}, new Map<string, TestFixture>());
 
 /**
  * Exposed as a plain function; addresses the semantic intent of JavaRosa's
