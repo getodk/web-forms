@@ -11,6 +11,7 @@ import {
 	title,
 } from '@getodk/common/test/fixtures/xform-dsl';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import type { FetchResourceResponse } from '../../src';
 import type { ActiveLanguage } from '../../src/client/FormLanguage.ts';
 import type { OpaqueReactiveObjectFactory } from '../../src/client/OpaqueReactiveObjectFactory.ts';
 import type { RootNode } from '../../src/client/RootNode.ts';
@@ -76,6 +77,14 @@ describe('PrimaryInstance engine representation of instance state', () => {
 	const createPrimaryInstance = (
 		clientStateFactory: OpaqueReactiveObjectFactory
 	): PrimaryInstance => {
+		const mockFetchResource = () =>
+			Promise.resolve({
+				status: 200,
+				ok: true,
+				blob: () => Promise.resolve(new Blob(['mock image data'], { type: 'image/jpeg' })),
+				text: () => Promise.resolve(''),
+			} as FetchResourceResponse);
+
 		return scope.runTask(() => {
 			return new PrimaryInstance({
 				mode: 'create',
@@ -83,6 +92,10 @@ describe('PrimaryInstance engine representation of instance state', () => {
 				scope,
 				model: xformDefinition.model,
 				secondaryInstances,
+				resourceOptions: {
+					fetchResource: mockFetchResource,
+					missingResourceBehavior: 'BLANK',
+				},
 				config: {
 					clientStateFactory,
 					computeAttachmentName: () => null,

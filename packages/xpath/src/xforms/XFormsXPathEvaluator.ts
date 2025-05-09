@@ -103,13 +103,13 @@ export class XFormsXPathEvaluator<T extends XPathNode>
 		return context.evaluator.secondaryInstancesById.get(id) ?? null;
 	}
 
-	static getDefaultTranslationText<T extends XPathNode>(
+	static getTranslationTextValues<T extends XPathNode>(
 		context: EvaluationContext<T>,
 		itextID: string
-	): string {
+	) {
 		assertInternalXFormsXPathEvaluatorContext(context);
 
-		return context.evaluator.itextTranslations.getDefaultTranslationText(itextID);
+		return context.evaluator.itextTranslations.getTranslationValues(itextID);
 	}
 
 	override readonly rootNode: AdapterParentNode<T>;

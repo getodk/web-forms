@@ -5,14 +5,17 @@ import {
 	html,
 	input,
 	instance,
+	item,
 	mainInstance,
 	model,
+	select1,
 	t,
 	title,
 } from '@getodk/common/test/fixtures/xform-dsl/index.ts';
 import type { ExpectStatic } from 'vitest';
 import { describe, expect, it } from 'vitest';
 import { intAnswer } from '../src/answer/ExpectedIntAnswer.ts';
+import { stringAnswer } from '../src/answer/ExpectedStringAnswer.ts';
 import { Scenario } from '../src/jr/Scenario.ts';
 
 describe('TriggerableDagTest.java', () => {
@@ -162,5 +165,64 @@ describe('MultiplePredicateTest.java', () => {
 			// assertThat(scenario.answerOf("/data/calc").getValue(), equalTo(3));
 			expect(scenario.answerOf('/data/calc')).toEqualAnswer(intAnswer(3));
 		});
+	});
+});
+
+describe('jr:itext function in calculate expressions', () => {
+	it('should retrieve the correct itext value', async () => {
+		const scenario = await Scenario.init(
+			'Itext with calculation',
+			html(
+				head(
+					title('Itext with calculation'),
+					model(
+						mainInstance(
+							t('data id="dynamic-choices-predicates"', t('country'), t('city'), t('city_name'))
+						),
+
+						t(
+							'itext',
+							t(
+								'translation lang="default"',
+								t('text id="static_instance-cities-0"', t('value', 'Montréal')),
+								t('text id="static_instance-cities-1"', t('value', 'Grenoble'))
+							)
+						),
+
+						t(
+							'instance id="cities"',
+							t(
+								'root',
+								t(
+									'item',
+									t('itextId', 'static_instance-cities-0'),
+									t('name', 'montreal'),
+									t('country', 'canada')
+								),
+								t(
+									'item',
+									t('itextId', 'static_instance-cities-1'),
+									t('name', 'grenoble'),
+									t('country', 'france')
+								)
+							)
+						),
+						bind('/data/country').type('string'),
+						bind('/data/city_name')
+							.type('string')
+							.calculate(
+								"if(/data/country ='canada', jr:itext(instance('cities')/root/item[name='montreal']/itextId), jr:itext(instance('cities')/root/item[name='grenoble']/itextId))"
+							)
+					)
+				),
+				body(select1('/data/country', item('canada', 'Canada'), item('france', 'France')))
+			)
+		);
+
+		scenario.answer('/data/country', 'france');
+		expect(scenario.answerOf('/data/city_name')).toEqualAnswer(stringAnswer('Grenoble'));
+
+		scenario.answer('/data/country', 'canada');
+		expect(scenario.answerOf('/data/city_name')).toEqualAnswer(stringAnswer('Montréal'));
 	});
 });
