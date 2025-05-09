@@ -8,32 +8,41 @@ interface TestFixture {
 }
 
 const testFixtures = await Promise.all(
-	xformFixtures.flatMap((fixture): Promise<TestFixture> | readonly [] => {
+	xformFixtures.flatMap((fixture): Promise<TestFixture | null> | readonly [] => {
 		const { category, identifier, localPath } = fixture;
 
 		if (category !== 'test-javarosa' && category !== 'test-scenario') {
 			return [];
 		}
 
-		return fixture.loadXML().then((fixtureXML) => ({
-			identifier,
-			localPath,
-			fixtureXML,
-		}));
+		return fixture.loadXML().then((fixtureXML) => {
+			if (fixtureXML instanceof Blob) {
+				// ToDo: handle this case
+				return null;
+			}
+
+			return({
+				identifier,
+				localPath,
+				fixtureXML,
+			})
+		});
 	})
 );
 
-const testFixturesByIdentifier = testFixtures.reduce((acc, testFixture) => {
-	const { identifier } = testFixture;
-
-	if (acc.has(identifier)) {
-		throw new Error(`Duplicate test fixture with identifier: ${identifier}`);
+const testFixturesByIdentifier = new Map<string, TestFixture>();
+testFixtures.forEach((testFixture) => {
+	if (testFixture == null) {
+		return;
 	}
 
-	acc.set(identifier, testFixture);
+	const { identifier } = testFixture;
+	if (testFixturesByIdentifier.has(identifier)) {
+		throw new Error(`Duplicate test fixture with identifier: ${ identifier }`);
+	}
 
-	return acc;
-}, new Map<string, TestFixture>());
+	testFixturesByIdentifier.set(identifier, testFixture);
+});
 
 /**
  * Exposed as a plain function; addresses the semantic intent of JavaRosa's
