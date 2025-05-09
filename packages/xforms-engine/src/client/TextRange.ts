@@ -1,5 +1,6 @@
+import { EngineXPathEvaluator } from '../integration/xpath/EngineXPathEvaluator.ts';
+import type { MediaResource } from '../parse/attachments/MediaResource.ts';
 import type { ActiveLanguage } from './FormLanguage.ts';
-import type { RootNodeState } from './RootNode.ts';
 
 /**
  * **COMMENTARY**
@@ -149,6 +150,7 @@ export type TextOrigin =
  * {@link https://getodk.github.io/xforms-spec/#languages | translation}).
  */
 export interface TextRange<Role extends TextRole, Origin extends TextOrigin = TextOrigin> {
+	readonly evaluator: EngineXPathEvaluator | null; // TODO: can it be null?
 	readonly origin: Origin;
 	readonly role: Role;
 
@@ -156,4 +158,5 @@ export interface TextRange<Role extends TextRole, Origin extends TextOrigin = Te
 
 	get asString(): string;
 	get formatted(): unknown;
+	get image(): Promise<MediaResource> | null;
 }

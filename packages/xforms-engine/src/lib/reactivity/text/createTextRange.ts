@@ -8,6 +8,7 @@ import type {
 	EngineXPathNode,
 	EngineXPathAttribute,
 } from '../../../integration/xpath/adapter/kind.ts';
+import { isEngineXPathEvaluator } from '../../../integration/xpath/EngineXPathEvaluator.ts';
 import type { TextChunkExpression } from '../../../parse/expression/TextChunkExpression.ts';
 import type { TextRangeDefinition } from '../../../parse/text/abstract/TextRangeDefinition.ts';
 import { createComputedExpression } from '../createComputedExpression.ts';
@@ -136,7 +137,17 @@ export const createTextRange = <Role extends TextRole>(
 ): ComputedFormTextRange<Role> => {
 	return context.scope.runTask(() => {
 		const textChunks = createTextChunks(context, definition.chunks);
+		const evaluator = isEngineXPathEvaluator(context.evaluator) ? context.evaluator : null;
 
-		return createMemo(() => new TextRange('form', role, textChunks().chunks, textChunks().image));
+		return createMemo(() => {
+			return new TextRange(
+				evaluator,
+				'form',
+				role,
+				textChunks().chunks,
+				// TODO: build video and audio support
+				{ image: textChunks().image, video: null, audio: null }
+			);
+		});
 	});
 };
