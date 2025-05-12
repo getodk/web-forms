@@ -139,17 +139,17 @@ export const createTextRange = <Role extends TextRole>(
 ): ComputedFormTextRange<Role> => {
 	return context.scope.runTask(() => {
 		const textChunks = createTextChunks(context, definition.chunks);
-		const evaluator = isEngineXPathEvaluator(context.evaluator) ? context.evaluator : null;
 
 		return createMemo(() => {
-			return new TextRange(
-				evaluator,
-				'form',
-				role,
-				textChunks().chunks,
-				// TODO: build video and audio support
-				{ image: textChunks().image, video: null, audio: null }
-			);
+			if (isEngineXPathEvaluator(context.evaluator)) {
+				return new TextRange('form', role, textChunks().chunks, {
+					evaluator: context.evaluator,
+					// TODO: build video and audio support
+					mediaSource: { image: textChunks().image ?? '', video: '', audio: '' },
+				});
+			}
+
+			return new TextRange('form', role, textChunks().chunks);
 		});
 	});
 };

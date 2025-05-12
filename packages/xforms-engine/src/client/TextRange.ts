@@ -119,6 +119,17 @@ export type TextOrigin =
 	| 'form-derived'
 	| 'engine';
 
+interface TextMediaSource {
+	image?: string;
+	video?: string;
+	audio?: string;
+}
+
+export interface TextMediaContext {
+	evaluator: EngineXPathEvaluator;
+	mediaSource: TextMediaSource;
+}
+
 /**
  * Represents aspects of a form which produce text, which _might_ be:
  *
@@ -150,7 +161,7 @@ export type TextOrigin =
  * {@link https://getodk.github.io/xforms-spec/#languages | translation}).
  */
 export interface TextRange<Role extends TextRole, Origin extends TextOrigin = TextOrigin> {
-	readonly evaluator: EngineXPathEvaluator | null; // TODO: can it be null?
+	readonly textMediaContext?: TextMediaContext | undefined;
 	readonly origin: Origin;
 	readonly role: Role;
 
@@ -158,5 +169,5 @@ export interface TextRange<Role extends TextRole, Origin extends TextOrigin = Te
 
 	get asString(): string;
 	get formatted(): unknown;
-	get image(): Promise<MediaResource> | null;
+	get image(): Promise<MediaResource>;
 }

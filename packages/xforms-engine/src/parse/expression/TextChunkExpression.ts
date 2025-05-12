@@ -42,14 +42,14 @@ export class TextChunkExpression<T extends 'nodes' | 'string'> extends Dependent
 		context: AnyTextRangeDefinition,
 		stringValue: string
 	): TextChunkExpression<'string'> {
-		return new TextChunkExpression<'string'>(context, 'string', 'null', 'literal', {}, stringValue);
+		return new TextChunkExpression(context, 'string', 'null', 'literal', {}, stringValue);
 	}
 
 	static fromReference(
 		context: AnyTextRangeDefinition,
 		ref: string
 	): TextChunkExpression<'string'> {
-		return new TextChunkExpression<'string'>(context, 'string', ref, 'reference');
+		return new TextChunkExpression(context, 'string', ref, 'reference');
 	}
 
 	static fromOutput(
@@ -60,12 +60,7 @@ export class TextChunkExpression<T extends 'nodes' | 'string'> extends Dependent
 			return null;
 		}
 
-		return new TextChunkExpression<'string'>(
-			context,
-			'string',
-			element.getAttribute('value'),
-			'output'
-		);
+		return new TextChunkExpression(context, 'string', element.getAttribute('value'), 'output');
 	}
 
 	static fromTranslation(
@@ -73,7 +68,7 @@ export class TextChunkExpression<T extends 'nodes' | 'string'> extends Dependent
 		maybeExpression: string
 	): TextChunkExpression<'nodes'> | null {
 		if (isTranslationExpression(maybeExpression)) {
-			return new TextChunkExpression<'nodes'>(context, 'nodes', maybeExpression, 'translation', {
+			return new TextChunkExpression(context, 'nodes', maybeExpression, 'translation', {
 				isTranslated: true,
 			});
 		}

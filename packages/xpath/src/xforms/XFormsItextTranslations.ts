@@ -187,13 +187,13 @@ export class XFormsItextTranslations<T extends XPathNode> implements XFormsItext
 	 *     /text[@id = $itextID]
 	 *       /value
 	 * ```
-	 * Returns an array of `XFormsItextTranslationValueElement<T>` or `null` if no matching `text` element is found.
+	 * Returns an array of `XFormsItextTranslationValueElement<T>`
 	 */
-	getTranslationValues(itextID: string): Array<XFormsItextTranslationValueElement<T>> | null {
+	getTranslationValues(itextID: string): Array<XFormsItextTranslationValueElement<T>> {
 		const textElement = this.getTranslationTextElement(itextID);
 
 		if (textElement == null) {
-			return null;
+			return [];
 		}
 
 		return [...this.domProvider.getChildrenByLocalName(textElement, 'value')] as Array<

@@ -16,7 +16,6 @@ import type {
 import type { ValidationContext } from '../../../instance/internal-api/ValidationContext.ts';
 import { TextChunk } from '../../../instance/text/TextChunk.ts';
 import { TextRange } from '../../../instance/text/TextRange.ts';
-import { isEngineXPathEvaluator } from '../../../integration/xpath/EngineXPathEvaluator.ts';
 import type { MessageDefinition } from '../../../parse/text/MessageDefinition.ts';
 import { createComputedExpression } from '../createComputedExpression.ts';
 import type {
@@ -35,10 +34,7 @@ const engineViolationMessage = <Role extends ValidationTextRole>(
 ): Accessor<EngineViolationMessage<Role>> => {
 	const messageText = VALIDATION_TEXT[role];
 	const chunk = new TextChunk(context, 'literal', messageText);
-	const evaluator = isEngineXPathEvaluator(context.evaluator) ? context.evaluator : null;
-	const message = new TextRange(evaluator, 'engine', role, [chunk], null);
-
-	return () => message;
+	return () => new TextRange('engine', role, [chunk]);
 };
 
 const createViolationMessage = <Role extends ValidationTextRole>(

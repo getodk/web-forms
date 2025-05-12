@@ -3,20 +3,12 @@ import type {
 	TextChunk,
 	TextOrigin,
 	TextRole,
+	TextMediaContext,
 } from '../../client/TextRange.ts';
-import {
-	EngineXPathEvaluator,
-	isEngineXPathEvaluator,
-} from '../../integration/xpath/EngineXPathEvaluator.ts';
+import { isEngineXPathEvaluator } from '../../integration/xpath/EngineXPathEvaluator.ts';
 import type { MediaResource } from '../../parse/attachments/MediaResource.ts';
 import type { PrimaryInstance } from '../PrimaryInstance.ts';
 import { FormattedTextStub } from './FormattedTextStub.ts';
-
-interface TextMediaSource {
-	image: string | null;
-	video: string | null;
-	audio: string | null;
-}
 
 export class TextRange<Role extends TextRole, Origin extends TextOrigin>
 	implements ClientTextRange<Role, Origin>
@@ -33,19 +25,19 @@ export class TextRange<Role extends TextRole, Origin extends TextOrigin>
 		return this.chunks.map((chunk) => chunk.asString).join('');
 	}
 
-	get image(): Promise<MediaResource> | null {
-		if (this.media?.image == null || !isEngineXPathEvaluator(this.evaluator)) {
-			return null;
+	get image(): Promise<MediaResource> {
+		if (this.textMediaContext == null || !isEngineXPathEvaluator(this.textMediaContext.evaluator)) {
+			return Promise.reject(new Error('No media available'));
 		}
 
-		return (this.evaluator.rootNode as PrimaryInstance).loadMediaResources(this.media.image);
+		const rootNode = this.textMediaContext.evaluator.rootNode as PrimaryInstance;
+		return rootNode.loadMediaResources(this.textMediaContext.mediaSource.image ?? '');
 	}
 
 	constructor(
-		readonly evaluator: EngineXPathEvaluator | null, // TODO: can it be null?
 		readonly origin: Origin,
 		readonly role: Role,
 		protected readonly chunks: readonly TextChunk[],
-		protected readonly media: TextMediaSource | null
+		readonly textMediaContext?: TextMediaContext
 	) {}
 }
