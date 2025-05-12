@@ -240,10 +240,8 @@ describe('jr:itext(id)', () => {
 			{ expression: 'jr:itext("three")', language: 'en', expected: 'Three' },
 			{ expression: 'jr:itext("one")', language: 'fr', expected: 'Un' },
 			{ expression: 'jr:itext("two")', language: 'fr', expected: 'Deux' },
-			{ expression: 'jr:itext("three")', language: 'fr', expected: 'Ignored' },
 			{ expression: 'jr:itext("one")', language: null, expected: 'Un' },
 			{ expression: 'jr:itext("two")', language: null, expected: 'Deux' },
-			{ expression: 'jr:itext("three")', language: null, expected: 'Ignored' },
 		] as const)(
 			'gets itext translation string $expected, for expression $expression, in language $language',
 			({ expression, language, expected }) => {
@@ -270,6 +268,26 @@ describe('jr:itext(id)', () => {
 					`translation[lang="${language ?? 'fr'}"] text[id="${expectedTextId}"] > value`
 				);
 				testContext.assertNodeSet(expression, Array.from(expectedNodes));
+			}
+		);
+
+
+		/**
+		 * Retrieves the `value` text of an `itext` node for the given ID (e.g., "three").
+		 * Should return the default `value` node (without a `form` attribute), but currently
+		 * returns the first `value` node, regardless of `form` attributes.
+		 * Note: The jr:itext usage in this test case is rare in form design, making this an edge case.
+		 * TODO: Fix to prioritize the default `value` node without a `form` attribute.
+		 *   ref: https://github.com/getodk/web-forms/issues/400
+		 */
+		it.fails.each([
+			{ expression: 'jr:itext("three")', language: 'fr', expected: 'three' },
+			{ expression: 'jr:itext("three")', language: null, expected: 'three' },
+		] as const)(
+			'gets itext translation string $expected, for expression $expression, in language $language',
+			({ expression, language, expected }) => {
+				testContext.setLanguage(language);
+				testContext.assertStringValue(expression, expected);
 			}
 		);
 	});
