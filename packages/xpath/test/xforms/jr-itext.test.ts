@@ -271,7 +271,6 @@ describe('jr:itext(id)', () => {
 			}
 		);
 
-
 		/**
 		 * Retrieves the `value` text of an `itext` node for the given ID (e.g., "three").
 		 * Should return the default `value` node (without a `form` attribute), but currently

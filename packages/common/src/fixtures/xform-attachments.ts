@@ -26,6 +26,8 @@ const xformAttachmentFileExtensions = [
 	'.png',
 	'.jpg',
 	'.jpeg',
+	'.gif',
+	'.svg',
 ] as const;
 
 type XFormAttachmentFileExtensions = typeof xformAttachmentFileExtensions;
@@ -99,6 +101,14 @@ export class XFormAttachmentFixture {
 
 			case '.jpeg':
 				this.mimeType = 'image/jpeg';
+				break;
+
+			case '.gif':
+				this.mimeType = 'image/gif';
+				break;
+
+			case '.svg':
+				this.mimeType = 'image/svg+xml';
 				break;
 
 			default:
