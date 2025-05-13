@@ -94,13 +94,22 @@ export class SecondaryInstancesDefinition
 
 				switch (resource.format) {
 					case 'csv':
-						return new CSVExternalSecondaryInstanceSource(domElement, resource as ExternalSecondaryInstanceResource<'csv'>);
+						return new CSVExternalSecondaryInstanceSource(
+							domElement,
+							resource as ExternalSecondaryInstanceResource<'csv'>
+						);
 
 					case 'geojson':
-						return new GeoJSONExternalSecondaryInstanceSource(domElement, resource as ExternalSecondaryInstanceResource<'geojson'>);
+						return new GeoJSONExternalSecondaryInstanceSource(
+							domElement,
+							resource as ExternalSecondaryInstanceResource<'geojson'>
+						);
 
 					case 'xml':
-						return new XMLExternalSecondaryInstanceSource(domElement, resource as ExternalSecondaryInstanceResource<'xml'>);
+						return new XMLExternalSecondaryInstanceSource(
+							domElement,
+							resource as ExternalSecondaryInstanceResource<'xml'>
+						);
 
 					default:
 						throw new UnreachableError(resource as never);

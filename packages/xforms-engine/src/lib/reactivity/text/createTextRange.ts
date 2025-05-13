@@ -15,7 +15,7 @@ import { createComputedExpression } from '../createComputedExpression.ts';
 
 interface TextContent {
 	chunks: readonly TextChunk[];
-	image: string | null;
+	image: string | undefined;
 }
 
 const isElementNode = (
@@ -47,13 +47,13 @@ const isDefaultValue = (item: EngineXPathNode | string) => {
 	return (isElementNode(item) && !item.attributes?.length) || isTextNode(item);
 };
 
-const getImageValue = (item: EngineXPathNode): string | null => {
+const getImageValue = (item: EngineXPathNode): string => {
 	if (isDefaultValue(item)) {
-		return null;
+		return '';
 	}
 
 	const isImage = (attr: EngineXPathAttribute) => isFormAttribute(attr) && attr.value === 'image';
-	return isElementNode(item) && item.attributes.find(isImage) ? (item.value ?? null) : null;
+	return isElementNode(item) && item.attributes.find(isImage) ? (item.value ?? '') : '';
 };
 
 /**
@@ -90,7 +90,7 @@ const createTextChunks = (
 ): Accessor<TextContent> => {
 	return createMemo(() => {
 		const chunks: TextChunk[] = [];
-		let image: string | null = null;
+		let image;
 
 		textSources.forEach((textSource) => {
 			if (textSource.source === 'literal') {

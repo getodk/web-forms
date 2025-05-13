@@ -13,7 +13,7 @@ interface EngineXPathEvaluatorOptions {
 }
 
 export const isEngineXPathEvaluator = (
-	evaluator: XFormsXPathEvaluator<EngineXPathNode> | null
+	evaluator: XFormsXPathEvaluator<EngineXPathNode>
 ): evaluator is EngineXPathEvaluator => {
 	return evaluator instanceof EngineXPathEvaluator;
 };

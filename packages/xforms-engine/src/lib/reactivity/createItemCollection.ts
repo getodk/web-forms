@@ -25,6 +25,7 @@ type DerivedItemLabel = ClientTextRange<'item-label', 'form-derived'>;
 
 const derivedItemLabel = (context: TranslationContext, value: string): DerivedItemLabel => {
 	const chunk = new TextChunk(context, 'literal', value);
+
 	return new TextRange('form-derived', 'item-label', [chunk]);
 };
 

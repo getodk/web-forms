@@ -27,10 +27,8 @@ const label = computed(() => {
 
 	// Use parent (repeat range) label if it's there
 	// TODO/sk: use state.label.asString
-	const chunks = props.instance.parent.definition.bodyElement.label?.chunks;
-	const firstChunk = chunks?.length ? chunks[0] : null;
-	if (firstChunk?.stringValue) {
-		return `${firstChunk.stringValue}`;
+	if (props.instance.parent.definition.bodyElement.label?.chunks[0]?.stringValue) {
+		return `${props.instance.parent.definition.bodyElement.label?.chunks[0].stringValue}`;
 	}
 
 	// TODO: translations
