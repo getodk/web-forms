@@ -96,9 +96,6 @@ export class XFormAttachmentFixture {
 				break;
 
 			case '.jpg':
-				this.mimeType = 'image/jpg';
-				break;
-
 			case '.jpeg':
 				this.mimeType = 'image/jpeg';
 				break;

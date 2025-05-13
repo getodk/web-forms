@@ -92,19 +92,19 @@ export class SecondaryInstancesDefinition
 					return new BlankSecondaryInstanceSource(instanceId, resourceURL, domElement);
 				}
 
-				if (resource.isCSVResource()) {
-					return new CSVExternalSecondaryInstanceSource(domElement, resource);
-				}
+				switch (resource.format) {
+					case 'csv':
+						return new CSVExternalSecondaryInstanceSource(domElement, resource as ExternalSecondaryInstanceResource<'csv'>);
 
-				if (resource.isGeoJSONResource()) {
-					return new GeoJSONExternalSecondaryInstanceSource(domElement, resource);
-				}
+					case 'geojson':
+						return new GeoJSONExternalSecondaryInstanceSource(domElement, resource as ExternalSecondaryInstanceResource<'geojson'>);
 
-				if (resource.isXMLResource()) {
-					return new XMLExternalSecondaryInstanceSource(domElement, resource);
-				}
+					case 'xml':
+						return new XMLExternalSecondaryInstanceSource(domElement, resource as ExternalSecondaryInstanceResource<'xml'>);
 
-				throw new UnreachableError(resource as never);
+					default:
+						throw new UnreachableError(resource as never);
+				}
 			})
 		);
 

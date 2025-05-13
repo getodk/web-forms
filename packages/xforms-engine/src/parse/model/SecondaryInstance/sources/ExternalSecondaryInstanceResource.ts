@@ -158,16 +158,4 @@ export class ExternalSecondaryInstanceResource<
 			this.isBlank = false;
 		}
 	}
-
-	isCSVResource(): this is ExternalSecondaryInstanceResource<'csv'> {
-		return this.format === 'csv';
-	}
-
-	isGeoJSONResource(): this is ExternalSecondaryInstanceResource<'geojson'> {
-		return this.format === 'geojson';
-	}
-
-	isXMLResource(): this is ExternalSecondaryInstanceResource<'xml'> {
-		return this.format === 'xml';
-	}
 }
