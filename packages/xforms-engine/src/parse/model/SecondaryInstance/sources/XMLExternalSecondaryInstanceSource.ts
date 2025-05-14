@@ -5,7 +5,7 @@ import type { SecondaryInstanceDefinition } from '../SecondaryInstancesDefinitio
 import { ExternalSecondaryInstanceSource } from './ExternalSecondaryInstanceSource.ts';
 import type { InternalSecondaryInstanceSource } from './InternalSecondaryInstanceSource.ts';
 
-export class XMLExternalSecondaryInstanceSource extends ExternalSecondaryInstanceSource<'xml'> {
+export class XMLExternalSecondaryInstanceSource extends ExternalSecondaryInstanceSource {
 	/**
 	 * Note: this logic is a superset of the logic in
 	 * {@link InternalSecondaryInstanceSource.parseDefinition}. That subset is so

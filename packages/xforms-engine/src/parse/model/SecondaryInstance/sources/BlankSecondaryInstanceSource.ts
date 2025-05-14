@@ -4,7 +4,7 @@ import { defineSecondaryInstance } from '../defineSecondaryInstance.ts';
 import type { SecondaryInstanceDefinition } from '../SecondaryInstancesDefinition.ts';
 import { SecondaryInstanceSource } from './SecondaryInstanceSource.ts';
 
-export class BlankSecondaryInstanceSource extends SecondaryInstanceSource<'blank'> {
+export class BlankSecondaryInstanceSource extends SecondaryInstanceSource {
 	constructor(
 		instanceId: string,
 		resourceURL: JRResourceURL,
