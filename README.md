@@ -151,7 +151,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  #####  $\texttt{Parameters\hspace{43mm}\color{green}██████\color{LightGray}█████████ \color{initial} 44\\%}$
+  #####  $\texttt{Parameters\hspace{43mm}\color{green}██████████\color{LightGray}█████ \color{initial} 70\\%}$
 
   </summary>
   <br/>
@@ -160,8 +160,9 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | -------------------------------------------------------------------------------------------------------------------------------- | :------: |
 | randomize                                                                                                                        |    ✅    |
 | seed                                                                                                                             |    ✅    |
-| value                                                                                                                            |          |
-| label                                                                                                                            |          |
+| value                                                                                                                            |    ✅    |
+| label                                                                                                                            |    ✅    |
+| rows                                                                                                                             |    ✅    |
 | geopoint capture-accuracy, warning-accur<br/>acy, allow-mock-accuracy                                                            |    ✅    |
 | range start, end, step                                                                                                           |    ✅    |
 | image max-pixels                                                                                                                 |          |
