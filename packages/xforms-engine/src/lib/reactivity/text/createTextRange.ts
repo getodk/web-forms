@@ -143,7 +143,7 @@ export const createTextRange = <Role extends TextRole>(
 			const image = textChunks().image;
 			if (image?.length) {
 				// TODO: build video and audio support
-				return new TextRange('form', role, textChunks().chunks,{ image, video: '', audio: '' });
+				return new TextRange('form', role, textChunks().chunks, { image, video: '', audio: '' });
 			}
 
 			return new TextRange('form', role, textChunks().chunks);
