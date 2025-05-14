@@ -1,5 +1,3 @@
-import { EngineXPathEvaluator } from '../integration/xpath/EngineXPathEvaluator.ts';
-import type { MediaResource } from '../parse/attachments/MediaResource.ts';
 import type { ActiveLanguage } from './FormLanguage.ts';
 
 /**
@@ -119,15 +117,10 @@ export type TextOrigin =
 	| 'form-derived'
 	| 'engine';
 
-interface TextMediaSource {
+export interface TextMediaSource {
 	image?: string;
 	video?: string;
 	audio?: string;
-}
-
-export interface TextMediaContext {
-	evaluator: EngineXPathEvaluator;
-	mediaSource: TextMediaSource;
 }
 
 /**
@@ -161,7 +154,6 @@ export interface TextMediaContext {
  * {@link https://getodk.github.io/xforms-spec/#languages | translation}).
  */
 export interface TextRange<Role extends TextRole, Origin extends TextOrigin = TextOrigin> {
-	readonly textMediaContext?: TextMediaContext | undefined;
 	readonly origin: Origin;
 	readonly role: Role;
 
@@ -169,5 +161,5 @@ export interface TextRange<Role extends TextRole, Origin extends TextOrigin = Te
 
 	get asString(): string;
 	get formatted(): unknown;
-	get image(): Promise<MediaResource>;
+	get imageSource(): string;
 }

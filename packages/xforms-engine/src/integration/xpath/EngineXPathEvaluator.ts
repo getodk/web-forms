@@ -12,12 +12,6 @@ interface EngineXPathEvaluatorOptions {
 	readonly secondaryInstancesById: XFormsSecondaryInstanceMap<SecondaryInstanceRootDefinition>;
 }
 
-export const isEngineXPathEvaluator = (
-	evaluator: XFormsXPathEvaluator<EngineXPathNode>
-): evaluator is EngineXPathEvaluator => {
-	return evaluator instanceof EngineXPathEvaluator;
-};
-
 export class EngineXPathEvaluator extends XFormsXPathEvaluator<EngineXPathNode> {
 	constructor(options: EngineXPathEvaluatorOptions) {
 		super({

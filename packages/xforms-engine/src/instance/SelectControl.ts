@@ -22,6 +22,7 @@ import { createSharedNodeState } from '../lib/reactivity/node-state/createShared
 import { createFieldHint } from '../lib/reactivity/text/createFieldHint.ts';
 import { createNodeLabel } from '../lib/reactivity/text/createNodeLabel.ts';
 import type { SimpleAtomicState } from '../lib/reactivity/types.ts';
+import type { MediaResource } from '../parse/attachments/MediaResource.ts';
 import type { SelectType } from '../parse/body/control/SelectControlDefinition.ts';
 import type { Root } from './Root.ts';
 import type { ValueNodeStateSpec } from './abstract/ValueNode.ts';
@@ -224,5 +225,14 @@ export class SelectControl
 		this.setValueState(effectiveValues);
 
 		return this.root;
+	}
+
+	loadImage(item: SelectItem): Promise<MediaResource> {
+		const imageSource = item.label?.imageSource;
+		if (!imageSource) {
+			return Promise.reject(new Error('No media resource URL provided.'));
+		}
+
+		return this.parent.rootDocument.loadMediaResources(imageSource);
 	}
 }
