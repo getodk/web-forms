@@ -162,4 +162,6 @@ export interface TextRange<Role extends TextRole, Origin extends TextOrigin = Te
 	get asString(): string;
 	get formatted(): unknown;
 	get imageSource(): string;
+	get audioSource(): string;
+	get videoSource(): string;
 }

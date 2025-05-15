@@ -26,6 +26,14 @@ export class TextRange<Role extends TextRole, Origin extends TextOrigin>
 		return this.textMediaSource?.image ?? '';
 	}
 
+	get audioSource(): string {
+		return this.textMediaSource?.audio ?? '';
+	}
+
+	get videoSource(): string {
+		return this.textMediaSource?.video ?? '';
+	}
+
 	constructor(
 		readonly origin: Origin,
 		readonly role: Role,
