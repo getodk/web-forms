@@ -20,6 +20,8 @@ export interface SelectItem {
 export type SelectValueOptions = readonly SelectItem[];
 
 export interface SelectNodeState extends BaseValueNodeState<readonly string[]> {
+	get isSelectWithImages(): boolean;
+
 	get children(): null;
 
 	get valueOptions(): readonly SelectItem[];

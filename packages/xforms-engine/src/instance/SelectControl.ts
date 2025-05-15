@@ -52,6 +52,7 @@ interface SelectControlStateSpec extends ValueNodeStateSpec<readonly string[]> {
 	readonly label: Accessor<TextRange<'label'> | null>;
 	readonly hint: Accessor<TextRange<'hint'> | null>;
 	readonly valueOptions: Accessor<SelectValueOptions>;
+	readonly isSelectWithImages: Accessor<boolean>;
 }
 
 export class SelectControl
@@ -110,6 +111,10 @@ export class SelectControl
 
 		const valueOptions = createItemCollection(this);
 
+		const isSelectWithImages = this.scope.runTask(() => {
+			return createMemo(() => valueOptions().some((item) => item.label.imageSource.length));
+		});
+
 		const mapOptionsByValue: Accessor<SelectItemMap> = this.scope.runTask(() => {
 			return createMemo(() => {
 				return new Map(valueOptions().map((item) => [item.value, item]));
@@ -151,6 +156,7 @@ export class SelectControl
 				valueOptions,
 				value: valueState,
 				instanceValue: this.getInstanceValue,
+				isSelectWithImages,
 			},
 			this.instanceConfig
 		);
