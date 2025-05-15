@@ -1,6 +1,6 @@
 import type { Accessor } from 'solid-js';
 import { createMemo } from 'solid-js';
-import type { TextRole } from '../../../client/TextRange.ts';
+import type { TextMediaSource, TextRole } from '../../../client/TextRange.ts';
 import type { EvaluationContext } from '../../../instance/internal-api/EvaluationContext.ts';
 import { TextChunk } from '../../../instance/text/TextChunk.ts';
 import { TextRange } from '../../../instance/text/TextRange.ts';
@@ -14,7 +14,7 @@ import { createComputedExpression } from '../createComputedExpression.ts';
 
 interface TextContent {
 	chunks: readonly TextChunk[];
-	image: string | undefined;
+	mediaSource: TextMediaSource | undefined;
 }
 
 const isElementNode = (
@@ -46,13 +46,19 @@ const isDefaultValue = (item: EngineXPathNode | string) => {
 	return (isElementNode(item) && !item.attributes?.length) || isTextNode(item);
 };
 
-const getImageValue = (item: EngineXPathNode): string => {
-	if (isDefaultValue(item)) {
-		return '';
+const getMediaSource = (item: EngineXPathNode): TextMediaSource | undefined => {
+	if (isDefaultValue(item) || !isElementNode(item)) {
+		return;
 	}
 
-	const isImage = (attr: EngineXPathAttribute) => isFormAttribute(attr) && attr.value === 'image';
-	return isElementNode(item) && item.attributes.find(isImage) ? (item.value ?? '') : '';
+	const value = item.value ?? '';
+	const mediaType = item.attributes.find(isFormAttribute)?.value;
+
+	return {
+		image: mediaType === 'image' ? value : '',
+		video: mediaType === 'video' ? value : '',
+		audio: mediaType === 'audio' ? value : '',
+	};
 };
 
 /**
@@ -89,7 +95,7 @@ const createTextChunks = (
 ): Accessor<TextContent> => {
 	return createMemo(() => {
 		const chunks: TextChunk[] = [];
-		let image;
+		let mediaSource;
 
 		textSources.forEach((textSource) => {
 			if (textSource.source === 'literal') {
@@ -112,12 +118,11 @@ const createTextChunks = (
 					return;
 				}
 
-				// TODO: Add support for: video, audio, short, etc.
-				image ??= getImageValue(item);
+				mediaSource = getMediaSource(item);
 			});
 		});
 
-		return { chunks, image };
+		return { chunks, mediaSource };
 	});
 };
 
@@ -140,13 +145,7 @@ export const createTextRange = <Role extends TextRole>(
 		const textChunks = createTextChunks(context, definition.chunks);
 
 		return createMemo(() => {
-			const image = textChunks().image;
-			if (image?.length) {
-				// TODO: build video and audio support
-				return new TextRange('form', role, textChunks().chunks, { image, video: '', audio: '' });
-			}
-
-			return new TextRange('form', role, textChunks().chunks);
+			return new TextRange('form', role, textChunks().chunks, textChunks().mediaSource);
 		});
 	});
 };
