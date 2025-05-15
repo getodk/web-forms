@@ -1,3 +1,4 @@
+import type { MediaResource } from '../parse/attachments/MediaResource.ts';
 import type {
 	AnySelectControlDefinition,
 	SelectType,
@@ -19,6 +20,8 @@ export interface SelectItem {
 export type SelectValueOptions = readonly SelectItem[];
 
 export interface SelectNodeState extends BaseValueNodeState<readonly string[]> {
+	get isSelectWithImages(): boolean;
+
 	get children(): null;
 
 	get valueOptions(): readonly SelectItem[];
@@ -99,4 +102,6 @@ export interface SelectNode extends BaseValueNode<'string', readonly string[]> {
 	 * provided {@link values} should produce at most one value.
 	 */
 	selectValues(values: readonly string[]): RootNode;
+
+	loadImage(item: SelectItem): Promise<MediaResource>;
 }

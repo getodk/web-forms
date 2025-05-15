@@ -1,24 +1,16 @@
 import type { JRResourceURL } from '@getodk/common/jr-resources/JRResourceURL.ts';
-import type { MissingResourceBehavior } from '../../../../client/constants.ts';
-import type { FetchResource, FetchResourceResponse } from '../../../../client/resources.ts';
+import type { FetchResourceResponse } from '../../../../client/resources.ts';
 import { ErrorProductionDesignPendingError } from '../../../../error/ErrorProductionDesignPendingError.ts';
 import { getResponseContentType } from '../../../../lib/resource-helpers.ts';
-import { FormAttachmentResource } from '../../../attachments/FormAttachmentResource.ts';
+import {
+	FormAttachmentResource,
+	type FormAttachmentResourceOptions,
+} from '../../../attachments/FormAttachmentResource.ts';
 import type { ExternalSecondaryInstanceSourceFormat } from './SecondaryInstanceSource.ts';
 
-const assertResponseSuccess = (resourceURL: JRResourceURL, response: FetchResourceResponse) => {
-	const { ok = true, status = 200 } = response;
-
-	if (!ok || status !== 200) {
-		throw new ErrorProductionDesignPendingError(`Failed to load ${resourceURL.href}`);
-	}
-};
-
-interface ExternalSecondaryInstanceResourceMetadata<
-	Format extends ExternalSecondaryInstanceSourceFormat = ExternalSecondaryInstanceSourceFormat,
-> {
+interface ExternalSecondaryInstanceResourceMetadata {
 	readonly contentType: string;
-	readonly format: Format;
+	readonly format: ExternalSecondaryInstanceSourceFormat;
 }
 
 const inferSecondaryInstanceResourceMetadata = (
@@ -28,7 +20,7 @@ const inferSecondaryInstanceResourceMetadata = (
 ): ExternalSecondaryInstanceResourceMetadata => {
 	const url = resourceURL.href;
 
-	let format: ExternalSecondaryInstanceSourceFormat | null = null;
+	let format: ExternalSecondaryInstanceSourceFormat;
 
 	if (url.endsWith('.xml') && data.startsWith('<')) {
 		format = 'xml';
@@ -36,9 +28,7 @@ const inferSecondaryInstanceResourceMetadata = (
 		format = 'csv';
 	} else if (url.endsWith('.geojson') && data.startsWith('{')) {
 		format = 'geojson';
-	}
-
-	if (format == null) {
+	} else {
 		throw new ErrorProductionDesignPendingError(
 			`Failed to infer external secondary instance format/content type for resource ${url} (response content type: ${contentType}, data: ${data})`
 		);
@@ -61,7 +51,7 @@ const detectSecondaryInstanceResourceMetadata = (
 		return inferSecondaryInstanceResourceMetadata(resourceURL, contentType, data);
 	}
 
-	let format: ExternalSecondaryInstanceSourceFormat | null = null;
+	let format: ExternalSecondaryInstanceSourceFormat;
 
 	switch (contentType) {
 		case 'text/csv':
@@ -75,12 +65,11 @@ const detectSecondaryInstanceResourceMetadata = (
 		case 'text/xml':
 			format = 'xml';
 			break;
-	}
 
-	if (format == null) {
-		throw new ErrorProductionDesignPendingError(
-			`Failed to detect external secondary instance format for resource ${resourceURL.href} (response content type: ${contentType}, data: ${data})`
-		);
+		default:
+			throw new ErrorProductionDesignPendingError(
+				`Failed to detect external secondary instance format for resource ${resourceURL.href} (response content type: ${contentType}, data: ${data})`
+			);
 	}
 
 	return {
@@ -89,41 +78,27 @@ const detectSecondaryInstanceResourceMetadata = (
 	};
 };
 
-interface MissingResourceResponse extends FetchResourceResponse {
-	readonly status: 404;
-}
-
-export interface ExternalSecondaryInstanceResourceLoadOptions {
-	readonly fetchResource: FetchResource<JRResourceURL>;
-	readonly missingResourceBehavior: MissingResourceBehavior;
-}
-
-type LoadedExternalSecondaryInstanceResource = {
-	[Format in ExternalSecondaryInstanceSourceFormat]: ExternalSecondaryInstanceResource<Format>;
-}[ExternalSecondaryInstanceSourceFormat];
-
 interface ExternalSecondaryInstanceResourceOptions {
 	readonly isExplicitlyBlank?: boolean;
 }
 
-export class ExternalSecondaryInstanceResource<
-	Format extends ExternalSecondaryInstanceSourceFormat = ExternalSecondaryInstanceSourceFormat,
-> extends FormAttachmentResource<'secondary-instance'> {
-	private static isMissingResource(
-		response: FetchResourceResponse
-	): response is MissingResourceResponse {
-		return response.status === 404;
-	}
+interface ExternalSecondaryInstanceLoadResult {
+	response: FetchResourceResponse;
+	data: string;
+	isBlank: boolean;
+}
 
-	private static createBlankResource(
+export class ExternalSecondaryInstanceResource extends FormAttachmentResource {
+	static async load(
 		instanceId: string,
 		resourceURL: JRResourceURL,
-		response: MissingResourceResponse,
-		options: ExternalSecondaryInstanceResourceLoadOptions
-	) {
-		if (options.missingResourceBehavior === 'BLANK') {
+		options: FormAttachmentResourceOptions
+	): Promise<ExternalSecondaryInstanceResource> {
+		const { response, data, isBlank } = await this.fetch(resourceURL, options);
+
+		if (isBlank) {
 			return new this(
-				response.status,
+				response.status ?? null,
 				instanceId,
 				resourceURL,
 				{
@@ -135,55 +110,57 @@ export class ExternalSecondaryInstanceResource<
 			);
 		}
 
-		throw new ErrorProductionDesignPendingError(
-			`Failed to load resource: ${resourceURL.href}: resource is missing (status: ${response.status})`
-		);
-	}
-
-	static async load(
-		instanceId: string,
-		resourceURL: JRResourceURL,
-		options: ExternalSecondaryInstanceResourceLoadOptions
-	): Promise<LoadedExternalSecondaryInstanceResource> {
-		const response = await options.fetchResource(resourceURL);
-
-		if (this.isMissingResource(response)) {
-			return this.createBlankResource(instanceId, resourceURL, response, options);
-		}
-
-		assertResponseSuccess(resourceURL, response);
-
-		const data = await response.text();
 		const metadata = detectSecondaryInstanceResourceMetadata(resourceURL, response, data);
 
 		return new this(response.status ?? null, instanceId, resourceURL, metadata, data, {
 			isExplicitlyBlank: false,
-		}) satisfies ExternalSecondaryInstanceResource as LoadedExternalSecondaryInstanceResource;
+		});
 	}
 
-	readonly format: Format;
+	private static async fetch(
+		resourceURL: JRResourceURL,
+		options: FormAttachmentResourceOptions
+	): Promise<ExternalSecondaryInstanceLoadResult> {
+		const { fetchResource, missingResourceBehavior } = options;
+		const response = await fetchResource(resourceURL);
+
+		if (this.isMissingResource(response)) {
+			if (missingResourceBehavior === 'BLANK') {
+				return { response, isBlank: true, data: '' };
+			}
+			throw new ErrorProductionDesignPendingError(`Resource not found: ${resourceURL.href}`);
+		}
+
+		this.assertResponseSuccess(resourceURL, response);
+
+		return { response, isBlank: false, data: await response.text() };
+	}
+
+	readonly format: ExternalSecondaryInstanceSourceFormat;
+	readonly data: string;
 	readonly isBlank: boolean;
 
 	private constructor(
 		readonly responseStatus: number | null,
 		readonly instanceId: string,
 		resourceURL: JRResourceURL,
-		metadata: ExternalSecondaryInstanceResourceMetadata<Format>,
+		metadata: ExternalSecondaryInstanceResourceMetadata,
 		data: string,
 		options: ExternalSecondaryInstanceResourceOptions
 	) {
 		const { contentType, format } = metadata;
 
-		super('secondary-instance', resourceURL, contentType, data);
+		super(resourceURL, contentType);
 
 		this.format = format;
+		this.data = data;
 
 		if (data === '') {
 			if (options.isExplicitlyBlank) {
 				this.isBlank = true;
 			} else {
 				throw new ErrorProductionDesignPendingError(
-					`Failed to load blank external secndary instance ${resourceURL.href}`
+					`Failed to load blank external secondary instance ${resourceURL.href}`
 				);
 			}
 		} else {

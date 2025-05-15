@@ -1,67 +1,135 @@
 import type { Accessor } from 'solid-js';
 import { createMemo } from 'solid-js';
-import type { TextChunkSource, TextRole } from '../../../client/TextRange.ts';
+import type { TextMediaSource, TextRole } from '../../../client/TextRange.ts';
 import type { EvaluationContext } from '../../../instance/internal-api/EvaluationContext.ts';
 import { TextChunk } from '../../../instance/text/TextChunk.ts';
 import { TextRange } from '../../../instance/text/TextRange.ts';
+import type {
+	EngineXPathNode,
+	EngineXPathAttribute,
+} from '../../../integration/xpath/adapter/kind.ts';
 import type { TextChunkExpression } from '../../../parse/expression/TextChunkExpression.ts';
 import type { TextRangeDefinition } from '../../../parse/text/abstract/TextRangeDefinition.ts';
 import { createComputedExpression } from '../createComputedExpression.ts';
 
-interface TextChunkComputation {
-	readonly source: TextChunkSource;
-	readonly getText: Accessor<string>;
+interface TextContent {
+	chunks: readonly TextChunk[];
+	mediaSource: TextMediaSource | undefined;
 }
 
-const createComputedTextChunk = (
-	context: EvaluationContext,
-	textSource: TextChunkExpression
-): TextChunkComputation => {
-	const { source } = textSource;
-
-	if (source === 'literal') {
-		const { stringValue } = textSource;
-
-		return {
-			source,
-			getText: () => stringValue,
-		};
-	}
-
-	return context.scope.runTask(() => {
-		const getText = createComputedExpression(context, textSource, {
-			defaultValue: '',
-		});
-
-		return {
-			source,
-			getText,
-		};
-	});
+const isElementNode = (
+	node: EngineXPathNode | string
+): node is EngineXPathNode & {
+	attributes: EngineXPathAttribute[];
+	children: EngineXPathNode[];
+	value?: string;
+} => {
+	return typeof node !== 'string' && 'children' in node && 'value' in node && 'attributes' in node;
 };
 
+const isTextNode = (
+	node: EngineXPathNode | string
+): node is EngineXPathNode & {
+	children: EngineXPathNode[];
+	value?: string;
+} => {
+	return (
+		typeof node !== 'string' && 'children' in node && 'value' in node && !('attributes' in node)
+	);
+};
+
+const isFormAttribute = (attribute: EngineXPathAttribute) => {
+	return attribute?.qualifiedName?.localName === 'form';
+};
+
+const isDefaultValue = (item: EngineXPathNode | string) => {
+	return (isElementNode(item) && !item.attributes?.length) || isTextNode(item);
+};
+
+const getMediaSource = (item: EngineXPathNode): TextMediaSource | undefined => {
+	if (isDefaultValue(item) || !isElementNode(item)) {
+		return;
+	}
+
+	const value = item.value ?? '';
+	const mediaType = item.attributes.find(isFormAttribute)?.value;
+
+	return {
+		image: mediaType === 'image' ? value : '',
+		video: mediaType === 'video' ? value : '',
+		audio: mediaType === 'audio' ? value : '',
+	};
+};
+
+/**
+ * The function temporarily supports a <value> node with multiple nested nodes.
+ * TODO: Build support for <output> nodes.
+ *  A child might be a node that needs XPath to compute its value. For that, the engine
+ *  should create a {@link: TextElementDefinition}, so that createTextChunks function can
+ *  request the computed value to XPath and create the TextChunk.
+ */
+const processValueNodeChildren = (item: EngineXPathNode) => {
+	let value = '';
+
+	if (isElementNode(item) || isTextNode(item)) {
+		item.children?.forEach((child: EngineXPathNode) => {
+			value += isElementNode(child) || isTextNode(child) ? child.value : '';
+		});
+	}
+
+	return value;
+};
+
+/**
+ * Creates a reactive accessor for text chunks and an optional image from text source expressions.
+ * - Combines chunks from literal and computed sources into a single array.
+ * - Captures the first image found with a 'from="image"' attribute.
+ *
+ * @param context - The evaluation context for reactive computations.
+ * @param textSources - Array of text source expressions to process.
+ * @returns An accessor for an object with all chunks and the first image (if any).
+ */
 const createTextChunks = (
 	context: EvaluationContext,
-	textSources: readonly TextChunkExpression[]
-): Accessor<readonly TextChunk[]> => {
-	return context.scope.runTask(() => {
-		const chunkComputations = textSources.map((textSource) => {
-			return createComputedTextChunk(context, textSource);
-		});
+	textSources: Array<TextChunkExpression<'nodes' | 'string'>>
+): Accessor<TextContent> => {
+	return createMemo(() => {
+		const chunks: TextChunk[] = [];
+		let mediaSource;
 
-		return createMemo(() => {
-			return chunkComputations.map(({ source, getText }) => {
-				return new TextChunk(context, source, getText());
+		textSources.forEach((textSource) => {
+			if (textSource.source === 'literal') {
+				chunks.push(new TextChunk(context, textSource.source, textSource.stringValue));
+				return;
+			}
+
+			const computed = createComputedExpression(context, textSource)();
+			const items = Array.isArray(computed) ? computed : [computed];
+
+			items.forEach((item: EngineXPathNode | string) => {
+				if (typeof item === 'string') {
+					chunks.push(new TextChunk(context, textSource.source, item));
+					return;
+				}
+
+				if (isDefaultValue(item)) {
+					const value = item.value ?? processValueNodeChildren(item);
+					chunks.push(new TextChunk(context, textSource.source, value));
+					return;
+				}
+
+				mediaSource = getMediaSource(item);
 			});
 		});
+
+		return { chunks, mediaSource };
 	});
 };
 
 type ComputedFormTextRange<Role extends TextRole> = Accessor<TextRange<Role, 'form'>>;
 
 /**
- * Creates a text range (e.g. label or hint) from the provided definition,
- * reactive to:
+ * Creates a text range (e.g. label or hint) from the provided definition, reactive to:
  *
  * - The form's current language (e.g. `<label ref="jr:itext('text-id')" />`)
  * - Direct `<output>` references within the label's children
@@ -74,10 +142,10 @@ export const createTextRange = <Role extends TextRole>(
 	definition: TextRangeDefinition<Role>
 ): ComputedFormTextRange<Role> => {
 	return context.scope.runTask(() => {
-		const getTextChunks = createTextChunks(context, definition.chunks);
+		const textChunks = createTextChunks(context, definition.chunks);
 
 		return createMemo(() => {
-			return new TextRange('form', role, getTextChunks());
+			return new TextRange('form', role, textChunks().chunks, textChunks().mediaSource);
 		});
 	});
 };

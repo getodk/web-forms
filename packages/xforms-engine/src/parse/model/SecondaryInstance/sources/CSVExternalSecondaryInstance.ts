@@ -119,7 +119,7 @@ const csvExternalSecondaryInstanceDefinition = (
 	return defineSecondaryInstance(instanceId, rootChildOption(items));
 };
 
-export class CSVExternalSecondaryInstanceSource extends ExternalSecondaryInstanceSource<'csv'> {
+export class CSVExternalSecondaryInstanceSource extends ExternalSecondaryInstanceSource {
 	/**
 	 * Based on
 	 * {@link https://github.com/getodk/central-frontend/blob/42c9277709e593480d1462e28b4be5f1364532b7/src/util/csv.js#L79} (and {@link https://github.com/getodk/central-frontend/blob/42c9277709e593480d1462e28b4be5f1364532b7/src/util/csv.js#L13}).

@@ -4,7 +4,7 @@ import { assertSecondaryInstanceDefinition } from '../assertSecondaryInstanceDef
 import type { SecondaryInstanceDefinition } from '../SecondaryInstancesDefinition.ts';
 import { SecondaryInstanceSource } from './SecondaryInstanceSource.ts';
 
-export class InternalSecondaryInstanceSource extends SecondaryInstanceSource<'internal'> {
+export class InternalSecondaryInstanceSource extends SecondaryInstanceSource {
 	constructor(instanceId: string, resourceURL: null, domElement: DOMSecondaryInstanceElement) {
 		super('internal', instanceId, resourceURL, domElement);
 	}

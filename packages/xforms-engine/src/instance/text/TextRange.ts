@@ -3,6 +3,7 @@ import type {
 	TextChunk,
 	TextOrigin,
 	TextRole,
+	TextMediaSource,
 } from '../../client/TextRange.ts';
 import { FormattedTextStub } from './FormattedTextStub.ts';
 
@@ -21,9 +22,22 @@ export class TextRange<Role extends TextRole, Origin extends TextOrigin>
 		return this.chunks.map((chunk) => chunk.asString).join('');
 	}
 
+	get imageSource(): string {
+		return this.textMediaSource?.image ?? '';
+	}
+
+	get audioSource(): string {
+		return this.textMediaSource?.audio ?? '';
+	}
+
+	get videoSource(): string {
+		return this.textMediaSource?.video ?? '';
+	}
+
 	constructor(
 		readonly origin: Origin,
 		readonly role: Role,
-		protected readonly chunks: readonly TextChunk[]
+		protected readonly chunks: readonly TextChunk[],
+		protected readonly textMediaSource?: TextMediaSource
 	) {}
 }

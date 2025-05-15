@@ -22,6 +22,7 @@ import { createSharedNodeState } from '../lib/reactivity/node-state/createShared
 import { createFieldHint } from '../lib/reactivity/text/createFieldHint.ts';
 import { createNodeLabel } from '../lib/reactivity/text/createNodeLabel.ts';
 import type { SimpleAtomicState } from '../lib/reactivity/types.ts';
+import type { MediaResource } from '../parse/attachments/MediaResource.ts';
 import type { SelectType } from '../parse/body/control/SelectControlDefinition.ts';
 import type { Root } from './Root.ts';
 import type { ValueNodeStateSpec } from './abstract/ValueNode.ts';
@@ -51,6 +52,7 @@ interface SelectControlStateSpec extends ValueNodeStateSpec<readonly string[]> {
 	readonly label: Accessor<TextRange<'label'> | null>;
 	readonly hint: Accessor<TextRange<'hint'> | null>;
 	readonly valueOptions: Accessor<SelectValueOptions>;
+	readonly isSelectWithImages: Accessor<boolean>;
 }
 
 export class SelectControl
@@ -109,6 +111,10 @@ export class SelectControl
 
 		const valueOptions = createItemCollection(this);
 
+		const isSelectWithImages = this.scope.runTask(() => {
+			return createMemo(() => valueOptions().some((item) => item.label.imageSource.length));
+		});
+
 		const mapOptionsByValue: Accessor<SelectItemMap> = this.scope.runTask(() => {
 			return createMemo(() => {
 				return new Map(valueOptions().map((item) => [item.value, item]));
@@ -150,6 +156,7 @@ export class SelectControl
 				valueOptions,
 				value: valueState,
 				instanceValue: this.getInstanceValue,
+				isSelectWithImages,
 			},
 			this.instanceConfig
 		);
@@ -224,5 +231,14 @@ export class SelectControl
 		this.setValueState(effectiveValues);
 
 		return this.root;
+	}
+
+	loadImage(item: SelectItem): Promise<MediaResource> {
+		const imageSource = item.label?.imageSource;
+		if (!imageSource) {
+			return Promise.reject(new Error('No media resource URL provided.'));
+		}
+
+		return this.parent.rootDocument.loadMediaResources(imageSource);
 	}
 }

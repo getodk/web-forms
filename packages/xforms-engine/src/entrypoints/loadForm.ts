@@ -106,14 +106,16 @@ const loadFormResult = async (
 		});
 		const xformDOM = XFormDOM.from(sourceXML);
 		const { model } = new XFormDefinition(xformDOM);
-		const secondaryInstances = await SecondaryInstancesDefinition.load(xformDOM, {
+		const resourceOptions = {
 			fetchResource: fetchFormAttachment,
 			missingResourceBehavior,
-		});
+		};
+		const secondaryInstances = await SecondaryInstancesDefinition.load(xformDOM, resourceOptions);
 		const instanceOptions = {
 			scope,
 			model,
 			secondaryInstances,
+			resourceOptions,
 		};
 
 		return new FormSuccessResult({

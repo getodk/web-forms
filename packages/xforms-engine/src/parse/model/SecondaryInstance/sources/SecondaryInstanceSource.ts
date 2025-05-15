@@ -10,16 +10,14 @@ export type ExternalSecondaryInstanceSourceFormat =
 
 // prettier-ignore
 export type SecondaryInstanceSourceFormat =
-	// eslint-disable-next-line @typescript-eslint/sort-type-constituents
+// eslint-disable-next-line @typescript-eslint/sort-type-constituents
 	| ExternalSecondaryInstanceSourceFormat
 	| 'internal'
 	| 'blank';
 
-export abstract class SecondaryInstanceSource<
-	Format extends SecondaryInstanceSourceFormat = SecondaryInstanceSourceFormat,
-> {
+export abstract class SecondaryInstanceSource {
 	constructor(
-		readonly format: Format,
+		readonly format: SecondaryInstanceSourceFormat,
 		readonly instanceId: string,
 		readonly resourceURL: JRResourceURL | null,
 		readonly domElement: DOMSecondaryInstanceElement
