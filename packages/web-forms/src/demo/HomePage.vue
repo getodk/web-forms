@@ -143,7 +143,8 @@ const isDev = import.meta.env.DEV;
 .home-page-component {
 	/* Using 'Hanken Grotesk' font in the Preview page to match ODK site. Forms and fields use Roboto only. */
 	font-family: 'Hanken Grotesk', Roboto, sans-serif;
-
+	font-weight: 400;
+	font-size: var(--odk-base-font-size);
 	background-color: var(--odk-base-background-color);
 	display: flex;
 	flex-direction: column;
@@ -218,11 +219,11 @@ const isDev = import.meta.env.DEV;
 	.sample-preview {
 		overflow: hidden;
 		border-radius: var(--odk-radius);
+		height: 517px;
 
 		.sample-image {
 			width: 517px;
 		}
-		height: 517px;
 	}
 
 	h1.demo-form-heading {
@@ -234,6 +235,10 @@ const isDev = import.meta.env.DEV;
 
 	a.inline-anchor {
 		color: var(--odk-primary-text-color);
+	}
+
+	button.p-button {
+		min-height: 40px;
 	}
 }
 
@@ -252,10 +257,8 @@ const isDev = import.meta.env.DEV;
 			}
 		}
 
-		.intro-wrapper {
-			.intro-block {
-				margin-right: 20px;
-			}
+		.intro-wrapper .intro-block {
+			margin-right: 20px;
 		}
 
 		h1.demo-form-heading {
