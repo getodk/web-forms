@@ -275,7 +275,6 @@ watchEffect(() => {
 		display: flex;
 		flex-direction: column;
 		max-width: var(--odk-max-form-width);
-		min-height: calc(100vh - 5.5rem);
 		margin: auto;
 		padding-top: 10px;
 
@@ -349,7 +348,8 @@ watchEffect(() => {
 		display: flex;
 		align-items: center;
 		flex-direction: column;
-		margin: 140px 0 40px 0;
+		padding: 140px 0 40px 0;
+		background: var(--odk-muted-background-color);
 
 		.anchor {
 			color: var(--odk-muted-text-color);
@@ -415,6 +415,10 @@ watchEffect(() => {
 				}
 			}
 		}
+
+		.powered-by-wrapper {
+			background: var(--odk-base-background-color);
+		}
 	}
 }
 
@@ -424,7 +428,7 @@ watchEffect(() => {
 	}
 
 	.odk-form .powered-by-wrapper {
-		margin-top: 100px;
+		padding-top: 100px;
 	}
 }
 </style>
