@@ -270,6 +270,7 @@ watchEffect(() => {
 	background: var(--odk-muted-background-color);
 	color: var(--odk-text-color);
 	width: 100%;
+	min-height: 100vh;
 
 	.form-wrapper {
 		display: flex;

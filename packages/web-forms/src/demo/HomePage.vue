@@ -207,6 +207,7 @@ const isDev = import.meta.env.DEV;
 				margin: 0;
 				font-size: var(--odk-question-font-size);
 				font-weight: 300;
+				line-height: 1.5rem;
 			}
 
 			p.xls-tutorial-text {

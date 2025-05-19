@@ -227,6 +227,12 @@ document.addEventListener(
 		font-size: var(--odk-question-font-size);
 		font-weight: 300;
 
+		p,
+		span,
+		label {
+			font-weight: 300;
+		}
+
 		.odk-icon {
 			margin-top: -4px;
 		}
