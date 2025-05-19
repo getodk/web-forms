@@ -364,6 +364,7 @@ watchEffect(() => {
 				vertical-align: middle;
 				width: 49px;
 				margin-left: 7px;
+				margin-top: -4px;
 			}
 		}
 
@@ -371,7 +372,7 @@ watchEffect(() => {
 			font-size: 18px;
 			font-weight: 300;
 			color: var(--odk-muted-text-color);
-			margin-top: 5px;
+			margin-top: 10px;
 		}
 	}
 }
