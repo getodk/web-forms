@@ -1,4 +1,5 @@
 body {
+	all: revert;
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
@@ -43,15 +44,6 @@ textarea {
 	border: none;
 	background: none;
 	appearance: none;
-	-webkit-appearance: none;
-	-moz-appearance: none;
-}
-
-button,
-[type='button'],
-[type='reset'],
-[type='submit'] {
-	-webkit-appearance: button;
 }
 
 progress {
@@ -64,17 +56,11 @@ progress {
 }
 
 [type='search'] {
-	-webkit-appearance: textfield;
 	outline-offset: -2px;
 }
 
 ::-webkit-search-decoration {
 	-webkit-appearance: none;
-}
-
-::-webkit-file-upload-button {
-	-webkit-appearance: button;
-	font: inherit;
 }
 
 summary {
