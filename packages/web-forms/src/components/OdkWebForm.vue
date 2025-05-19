@@ -249,7 +249,9 @@ watchEffect(() => {
 				<span class="caption">Powered by</span>
 				<img class="logo" src="../assets/images/odk-logo.svg" alt="ODK">
 			</a>
-			<div class="version">{{ webFormsVersion }}</div>
+			<div class="version">
+				{{ webFormsVersion }}
+			</div>
 		</div>
 	</div>
 </template>
