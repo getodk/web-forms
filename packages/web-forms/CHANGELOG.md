@@ -1,5 +1,17 @@
 # @getodk/web-forms
 
+## 0.11.1
+
+### Patch Changes
+
+- 59d5257: Normalize Web Forms styles
+
+## 0.11.0
+
+### Minor Changes
+
+- 3aedccb: Add support for a multiline text question type.
+
 ## 0.10.0
 
 ### Minor Changes
