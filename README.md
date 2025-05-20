@@ -238,7 +238,6 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | -------------------------- | :------: |
 | grid                       |          |
 | pages                      |          |
-| print                      |          |
 | logo                       |          |
 | theme color                |          |
 | Submissions                |          |
