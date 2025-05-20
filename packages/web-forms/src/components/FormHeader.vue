@@ -1,29 +1,24 @@
 <script setup lang="ts">
-import IconSVG from '@/components/widgets/IconSVG.vue';
 import {
 	type FormLanguage,
 	type RootNode,
 	type SyntheticDefaultLanguage,
 } from '@getodk/xforms-engine';
-import Button from 'primevue/button';
 import Card from 'primevue/card';
-import Menu from 'primevue/menu';
 import { ref } from 'vue';
-import FormLanguageDialog from './FormLanguageDialog.vue';
 import FormLanguageMenu from './FormLanguageMenu.vue';
 
 const props = defineProps<{ form: RootNode }>();
 const languageDialogState = ref(false);
-const menu = ref<InstanceType<typeof Menu>>();
 
 const isFormLanguage = (lang: FormLanguage | SyntheticDefaultLanguage): lang is FormLanguage => {
 	return !lang.isSyntheticDefault;
 };
 
+type DropdownItem = Array<{ label: string; icon: string; command: () => void }>;
+const items = ref<DropdownItem>([]);
+
 const languages = props.form.languages.filter(isFormLanguage);
-
-const items = ref([]);
-
 if (languages.length > 0) {
 	items.value.unshift({
 		// TODO: translations
