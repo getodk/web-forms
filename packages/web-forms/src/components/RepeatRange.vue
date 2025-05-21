@@ -1,17 +1,21 @@
 <script setup lang="ts">
+import type { FormSetupOptions } from '@/lib/init/loadFormState.ts';
 import type { RepeatRangeNode } from '@getodk/xforms-engine';
 import Button from 'primevue/button';
 import { computed } from 'vue';
 import FormPanel from './FormPanel.vue';
 import RepeatInstance from './RepeatInstance.vue';
 
-const props = defineProps<{ node: RepeatRangeNode }>();
+const props = defineProps<{
+	node: RepeatRangeNode;
+	readonly formSetupOptions: FormSetupOptions;
+}>();
 
 const label = computed(() => props.node.currentState.label?.asString);
 </script>
 <template>
 	<FormPanel :title="label" :no-ui="!label" class="repeat" label-icon="icon-repeat">
-		<RepeatInstance v-for="(instance, index) in node.currentState.children" :key="index" :instance="instance" :instance-index="index" />
+		<RepeatInstance v-for="(instance, index) in node.currentState.children" :key="index" :instance="instance" :instance-index="index" :form-setup-options="formSetupOptions" />
 
 		<div
 			v-if="node.nodeType === 'repeat-range:uncontrolled'"

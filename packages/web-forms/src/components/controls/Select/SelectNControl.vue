@@ -1,36 +1,44 @@
 <script lang="ts" setup>
+import ColumnarAppearance from '@/components/appearances/ColumnarAppearance.vue';
+import FieldListTable from '@/components/appearances/FieldListTable.vue';
+import SelectWithImages from '@/components/controls/Select/SelectWithImages.vue';
+import UnsupportedAppearance from '@/components/controls/UnsupportedAppearance.vue';
+import ControlText from '@/components/ControlText.vue';
+import ValidationMessage from '@/components/ValidationMessage.vue';
+import CheckboxWidget from '@/components/widgets/CheckboxWidget.vue';
+import MultiselectDropdown from '@/components/widgets/MultiselectDropdown.vue';
+import type { FormSetupOptions } from '@/lib/init/loadFormState.ts';
 import type { SelectNode } from '@getodk/xforms-engine';
-import { inject, ref } from 'vue';
-import ControlText from '../ControlText.vue';
-import ValidationMessage from '../ValidationMessage.vue';
-import ColumnarAppearance from '../appearances/ColumnarAppearance.vue';
-import FieldListTable from '../appearances/FieldListTable.vue';
-import CheckboxWidget from '../widgets/CheckboxWidget.vue';
-import MultiselectDropdown from '../widgets/MultiselectDropdown.vue';
-import UnsupportedAppearance from './UnsupportedAppearance.vue';
+import { computed, inject, ref } from 'vue';
 
 interface SelectNControlProps {
 	readonly question: SelectNode;
+	readonly formSetupOptions: FormSetupOptions;
 }
 
 const props = defineProps<SelectNControlProps>();
 
-const hasColumnsAppearance =
-	[...props.question.appearances].filter((a) => a.startsWith('columns')).length > 0;
-
-const fieldListRelatedAppearances = new Set(['label', 'list-nolabel', 'list']);
-const hasFieldListRelatedAppearance = !![...props.question.appearances].find((a) =>
-	fieldListRelatedAppearances.has(a)
-);
+const appearances = [...props.question.appearances];
+const hasColumnsAppearance = appearances.some((appearance) => appearance.startsWith('columns'));
+const hasFieldListRelatedAppearance = appearances.some((appearance) => {
+	return ['label', 'list-nolabel', 'list'].includes(appearance);
+});
 
 const touched = ref(false);
 const submitPressed = inject<boolean>('submitPressed', false);
+const isSelectWithImages = computed(() => props.question.currentState.isSelectWithImages === true);
 </script>
 
 <template>
 	<ControlText v-if="!hasFieldListRelatedAppearance" :question="question" />
 
-	<MultiselectDropdown v-if="question.appearances.autocomplete || question.appearances.minimal" :question="question" @change="touched = true" />
+	<SelectWithImages v-if="isSelectWithImages" :form-setup-options="formSetupOptions" :question="question" />
+
+	<MultiselectDropdown
+		v-else-if="question.appearances.autocomplete || question.appearances.minimal"
+		:question="question"
+		@change="touched = true"
+	/>
 
 	<FieldListTable v-else-if="hasFieldListRelatedAppearance" :appearances="question.appearances">
 		<template #firstColumn>
@@ -47,7 +55,10 @@ const submitPressed = inject<boolean>('submitPressed', false);
 
 	<template v-else>
 		<template v-if="question.appearances.map || question.appearances['image-map']">
-			<UnsupportedAppearance :appearance="[...question.appearances].toString()" node-type="Select" />
+			<UnsupportedAppearance
+				:appearance="[...question.appearances].toString()"
+				node-type="Select"
+			/>
 		</template>
 		<div class="default-appearance">
 			<CheckboxWidget :question="question" @change="touched = true" />

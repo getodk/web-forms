@@ -1,10 +1,14 @@
 <script setup lang="ts">
+import type { FormSetupOptions } from '@/lib/init/loadFormState.ts';
 import type { GroupNode } from '@getodk/xforms-engine';
 import { computed } from 'vue';
 import FormPanel from './FormPanel.vue';
 import QuestionList from './QuestionList.vue';
 
-const props = defineProps<{ node: GroupNode }>();
+const props = defineProps<{
+	node: GroupNode;
+	readonly formSetupOptions: FormSetupOptions;
+}>();
 
 const classes = ['group'];
 
@@ -20,7 +24,7 @@ const tableLayout = computed(() => {
 <template>
 	<FormPanel :title="node.currentState.label?.asString" :no-ui="!node.currentState.label" :class="classes">
 		<div :class="{ 'table-layout': tableLayout, 'gap-2': !tableLayout, 'flex': true, 'flex-column': true }">
-			<QuestionList :nodes="node.currentState.children" />
+			<QuestionList :form-setup-options="formSetupOptions" :nodes="node.currentState.children" />
 		</div>
 	</FormPanel>
 </template>

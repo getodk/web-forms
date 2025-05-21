@@ -1,6 +1,6 @@
 import InputControl from '@/components/controls/Input/InputControl.vue';
 import RankControl from '@/components/controls/RankControl.vue';
-import SelectControl from '@/components/controls/SelectControl.vue';
+import SelectControl from '@/components/controls/Select/SelectControl.vue';
 import FormQuestion from '@/components/FormQuestion.vue';
 import type { SelectNode } from '@getodk/xforms-engine';
 import { mount } from '@vue/test-utils';
@@ -13,6 +13,13 @@ const mountComponent = async (formPath: string, questionNumber: number) => {
 	return mount(FormQuestion, {
 		props: {
 			question: xform.currentState.children[questionNumber] as SelectNode,
+			formSetupOptions: {
+				form: {
+					fetchFormAttachment: () => Promise.reject(new Error('Not configured in Test Case')),
+					missingResourceBehavior: 'BLANK',
+				},
+				editInstance: null,
+			},
 		},
 		global: globalMountOptions,
 	});

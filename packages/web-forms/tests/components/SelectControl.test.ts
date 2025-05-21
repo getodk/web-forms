@@ -1,4 +1,4 @@
-import SelectControl from '@/components/controls/SelectControl.vue';
+import SelectControl from '@/components/controls/Select/SelectControl.vue';
 import type { AnyNode, RootNode, SelectNode } from '@getodk/xforms-engine';
 import { DOMWrapper, mount } from '@vue/test-utils';
 import { afterAll, assert, beforeAll, beforeEach, describe, expect, it } from 'vitest';
@@ -57,6 +57,13 @@ const mountComponent = (selectNode: SelectNode, options?: MountComponentOptions)
 	return mount(SelectControl, {
 		props: {
 			question: selectNode,
+			formSetupOptions: {
+				form: {
+					fetchFormAttachment: () => Promise.reject(new Error('Not configured in Test Case')),
+					missingResourceBehavior: 'BLANK',
+				},
+				editInstance: null,
+			},
 		},
 		global: {
 			...globalMountOptions,

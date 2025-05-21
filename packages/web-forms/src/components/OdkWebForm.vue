@@ -2,7 +2,7 @@
 import IconSVG from '@/components/widgets/IconSVG.vue';
 import type { FormStateSuccessResult } from '@/lib/init/FormState.ts';
 import { initializeFormState } from '@/lib/init/initializeFormState.ts';
-import type { EditInstanceOptions } from '@/lib/init/loadFormState';
+import type { EditInstanceOptions, FormSetupOptions } from '@/lib/init/loadFormState';
 import { loadFormState } from '@/lib/init/loadFormState';
 import { updateSubmittedFormState } from '@/lib/init/updateSubmittedFormState.ts';
 import type {
@@ -139,18 +139,19 @@ const emitSubmitChunked = async (currentState: FormStateSuccessResult) => {
 const emit = defineEmits<OdkWebFormEmits>();
 
 const state = initializeFormState();
+const formSetupOptions = ref<FormSetupOptions>({
+	form: {
+		fetchFormAttachment: props.fetchFormAttachment,
+		missingResourceBehavior: props.missingResourceBehavior,
+	},
+	editInstance: props.editInstance ?? null,
+});
 const submitPressed = ref(false);
 const floatingErrorActive = ref(false);
 const showValidationError = ref(false);
 
 const init = async () => {
-	state.value = await loadFormState(props.formXml, {
-		form: {
-			fetchFormAttachment: props.fetchFormAttachment,
-			missingResourceBehavior: props.missingResourceBehavior,
-		},
-		editInstance: props.editInstance ?? null,
-	});
+	state.value = await loadFormState(props.formXml, formSetupOptions.value);
 };
 
 void init();
@@ -233,7 +234,7 @@ watchEffect(() => {
 				<template #content>
 					<div class="form-questions">
 						<div class="flex flex-column gap-2">
-							<QuestionList :nodes="state.root.currentState.children" />
+							<QuestionList :form-setup-options="formSetupOptions" :nodes="state.root.currentState.children" />
 						</div>
 					</div>
 				</template>

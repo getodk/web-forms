@@ -19,6 +19,13 @@ const mountComponent = async (fileName: string) => {
 	return mount(RepeatRange, {
 		props: {
 			node,
+			formSetupOptions: {
+				form: {
+					fetchFormAttachment: () => Promise.reject(new Error('Not configured in Test Case')),
+					missingResourceBehavior: 'BLANK',
+				},
+				editInstance: null,
+			},
 		},
 		global: globalMountOptions,
 	});

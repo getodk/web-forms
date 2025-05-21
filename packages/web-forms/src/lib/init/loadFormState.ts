@@ -63,7 +63,7 @@ const resolvableFormInstanceInput = (options: EditInstanceOptions): ResolvableFo
 	};
 };
 
-interface LoadFormStateOptions {
+export interface FormSetupOptions {
 	readonly form: FormOptions;
 	readonly editInstance?: EditInstanceOptions | null;
 }
@@ -90,7 +90,7 @@ const success = (form: InstantiableForm, instance: AnyFormInstance): FormStateSu
 
 export const loadFormState = async (
 	formResource: FormResource,
-	options: LoadFormStateOptions
+	options: FormSetupOptions
 ): Promise<FormState> => {
 	const form = await loadForm(formResource, options.form);
 
