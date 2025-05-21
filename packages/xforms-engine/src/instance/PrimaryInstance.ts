@@ -1,4 +1,3 @@
-import { JRResourceURL } from '@getodk/common/jr-resources/JRResourceURL.ts';
 import { XPathNodeKindKey } from '@getodk/xpath';
 import type { Accessor } from 'solid-js';
 import { createSignal } from 'solid-js';
@@ -13,7 +12,6 @@ import type {
 } from '../client/serialization/InstancePayloadOptions.ts';
 import type { InstanceState } from '../client/serialization/InstanceState.ts';
 import type { AncestorNodeValidationState } from '../client/validation.ts';
-import { ErrorProductionDesignPendingError } from '../error/ErrorProductionDesignPendingError.ts';
 import type { XFormsXPathDocument } from '../integration/xpath/adapter/XFormsXPathNode.ts';
 import { EngineXPathEvaluator } from '../integration/xpath/EngineXPathEvaluator.ts';
 import type { StaticDocument } from '../integration/xpath/static-dom/StaticDocument.ts';
@@ -29,8 +27,6 @@ import type { SharedNodeState } from '../lib/reactivity/node-state/createSharedN
 import { createSharedNodeState } from '../lib/reactivity/node-state/createSharedNodeState.ts';
 import type { ReactiveScope } from '../lib/reactivity/scope.ts';
 import type { SimpleAtomicStateSetter } from '../lib/reactivity/types.ts';
-import type { FormAttachmentResourceOptions } from '../parse/attachments/FormAttachmentResource.ts';
-import { MediaResource } from '../parse/attachments/MediaResource.ts';
 import type { BodyClassList } from '../parse/body/BodyDefinition.ts';
 import type { ModelDefinition } from '../parse/model/ModelDefinition.ts';
 import type { RootDefinition } from '../parse/model/RootDefinition.ts';
@@ -95,7 +91,6 @@ export interface BasePrimaryInstanceOptions {
 	readonly scope: ReactiveScope;
 	readonly model: ModelDefinition;
 	readonly secondaryInstances: SecondaryInstancesDefinition;
-	readonly resourceOptions: FormAttachmentResourceOptions;
 }
 
 export interface ModelessPrimaryInstanceOptions extends BasePrimaryInstanceOptions {
@@ -134,9 +129,6 @@ export class PrimaryInstance<
 	readonly hasNonRelevantAncestor = () => false;
 	readonly isRelevant = () => true;
 
-	// ResourceContext
-	private readonly resourceOptions;
-
 	// TranslationContext (support)
 	private readonly setActiveLanguage: SimpleAtomicStateSetter<FormLanguage>;
 
@@ -163,16 +155,7 @@ export class PrimaryInstance<
 	override readonly contextNode = this;
 
 	constructor(options: PrimaryInstanceOptions<Mode>) {
-		// prettier-ignore
-		const {
-			mode,
-			initialState,
-			scope,
-			model,
-			secondaryInstances,
-			config,
-			resourceOptions
-		} = options;
+		const { mode, initialState, scope, model, secondaryInstances, config } = options;
 		const { instance: modelInstance } = model;
 		const activeInstance = initialState?.document ?? modelInstance;
 		const definition = model.getRootDefinition(activeInstance);
@@ -186,7 +169,6 @@ export class PrimaryInstance<
 		this.model = model;
 		this.attachments = new InstanceAttachmentsState(initialState?.attachments);
 		this.instanceNode = activeInstance;
-		this.resourceOptions = resourceOptions;
 
 		const [isAttached, setIsAttached] = createSignal(false);
 
@@ -296,15 +278,5 @@ export class PrimaryInstance<
 		});
 
 		return Promise.resolve(result);
-	}
-
-	loadMediaResources(resourceURL: string): Promise<MediaResource> {
-		if (resourceURL == null || !JRResourceURL.isJRResourceReference(resourceURL)) {
-			throw new ErrorProductionDesignPendingError(
-				`Invalid media resource URL: ${resourceURL}. Expected a valid JR URL reference.`
-			);
-		}
-
-		return MediaResource.load(JRResourceURL.from(resourceURL), this.resourceOptions);
 	}
 }

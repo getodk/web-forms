@@ -1,3 +1,4 @@
+import { JRResourceURL } from '@getodk/common/jr-resources/JRResourceURL.ts';
 import type {
 	TextRange as ClientTextRange,
 	TextChunk,
@@ -22,16 +23,16 @@ export class TextRange<Role extends TextRole, Origin extends TextOrigin>
 		return this.chunks.map((chunk) => chunk.asString).join('');
 	}
 
-	get imageSource(): string {
-		return this.textMediaSource?.image ?? '';
+	get imageSource(): JRResourceURL | null {
+		return this.getMediaSourceURL(this.textMediaSource?.image);
 	}
 
-	get audioSource(): string {
-		return this.textMediaSource?.audio ?? '';
+	get audioSource(): JRResourceURL | null {
+		return this.getMediaSourceURL(this.textMediaSource?.audio);
 	}
 
-	get videoSource(): string {
-		return this.textMediaSource?.video ?? '';
+	get videoSource(): JRResourceURL | null {
+		return this.getMediaSourceURL(this.textMediaSource?.video);
 	}
 
 	constructor(
@@ -40,4 +41,12 @@ export class TextRange<Role extends TextRole, Origin extends TextOrigin>
 		protected readonly chunks: readonly TextChunk[],
 		protected readonly textMediaSource?: TextMediaSource
 	) {}
+
+	private getMediaSourceURL(mediaSource: string | undefined): JRResourceURL | null {
+		if (mediaSource == null || !JRResourceURL.isJRResourceReference(mediaSource)) {
+			return null;
+		}
+
+		return JRResourceURL.from(mediaSource);
+	}
 }

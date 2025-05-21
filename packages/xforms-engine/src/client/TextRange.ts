@@ -1,3 +1,4 @@
+import { JRResourceURL } from '@getodk/common/jr-resources/JRResourceURL.ts';
 import type { ActiveLanguage } from './FormLanguage.ts';
 
 /**
@@ -161,7 +162,7 @@ export interface TextRange<Role extends TextRole, Origin extends TextOrigin = Te
 
 	get asString(): string;
 	get formatted(): unknown;
-	get imageSource(): string;
-	get audioSource(): string;
-	get videoSource(): string;
+	get imageSource(): JRResourceURL | null;
+	get audioSource(): JRResourceURL | null;
+	get videoSource(): JRResourceURL | null;
 }
