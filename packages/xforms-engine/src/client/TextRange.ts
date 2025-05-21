@@ -1,4 +1,7 @@
 import type { ActiveLanguage } from './FormLanguage.ts';
+import type { AudioMediaResource } from './media/AudioMediaResource.ts';
+import type { ImageMediaResource } from './media/ImageMediaResource.ts';
+import type { VideoMediaResource } from './media/VideoMediaResource.ts';
 import type { RootNodeState } from './RootNode.ts';
 
 /**
@@ -57,6 +60,19 @@ import type { RootNodeState } from './RootNode.ts';
  * opaque (as in, the `jr:itext` implementation is encapsulated in the `xpath`
  * package, and the engine doesn't really deal with itext translations at the
  * node level at all).
+ *
+ * @todo Once media is parsed ({@link TextRange.audio}, {@link TextRange.image},
+ * {@link TextRange.video}), the 'translation' case will be parsed as a node
+ * rather than as a string. That will unblock output-in-itext. If a minimal
+ * first pass is to retain the current 'translation' interface, it will need to
+ * reproduce the bug preventing output-in-itext functionality by identifying the
+ * (potentially media-adjacent) `<value>` node and casting it back to a string.
+ * Future iterations could then remove this reproduction-of-bug, allowing
+ * output-in-itext to work as expected... at which point the design for the
+ * 'translation' will have increased depth (i.e. establishing {@link TextRange}
+ * as a tree rather than a list). Alternatively, the 'translation' case could be
+ * hoisted up to {@link TextRange} to preserve the current depth (until support
+ * for Markdown would, potentially, establish a tree).
  */
 // prettier-ignore
 export type TextChunkSource =
@@ -147,12 +163,36 @@ export type TextOrigin =
  * reasoned about differently by clients depending on their role (for instance,
  * a text range's role may correspond to the "short" or "guidance" `form` of a
  * {@link https://getodk.github.io/xforms-spec/#languages | translation}).
+ *
+ * @todo In following revisions, this could:
+ *
+ * - be renamed `RichText` to better represent its semantics
+ * - support cases with multiple text variants (`<label>`/`<value
+ *   form="short">`; `<hint>`: `<value form="guidance">`)
+ *
+ * Supporting the latter would imply adding one layer of depth so that the
+ * {@link TextChunk} (or whatever appropriate future naming) descendants
+ * representing a single case could represent multiple cases, e.g.
+ *
+ * ```ts
+ * get text(): {
+ *   // ... some way to access `TextChunk`s
+ * };
+ *
+ * get shortText(): {
+ *   // ... some way to access `TextChunk`s
+ * }
+ * ```
  */
 export interface TextRange<Role extends TextRole, Origin extends TextOrigin = TextOrigin> {
 	readonly origin: Origin;
 	readonly role: Role;
 
 	[Symbol.iterator](): Iterable<TextChunk>;
+
+	get audio(): AudioMediaResource | null;
+	get image(): ImageMediaResource | null;
+	get video(): VideoMediaResource | null;
 
 	get asString(): string;
 	get formatted(): unknown;
