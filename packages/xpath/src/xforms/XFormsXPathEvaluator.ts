@@ -107,7 +107,7 @@ export class XFormsXPathEvaluator<T extends XPathNode>
 	static getTranslationValues<T extends XPathNode>(
 		context: EvaluationContext<T>,
 		itextID: string
-	): Array<XFormsItextTranslationValueElement<T>> {
+	): XFormsItextTranslationValueElement<T>[] {
 		assertInternalXFormsXPathEvaluatorContext(context);
 
 		return context.evaluator.itextTranslations.getTranslationValues(itextID);

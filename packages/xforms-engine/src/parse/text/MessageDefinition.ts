@@ -20,7 +20,7 @@ export class MessageDefinition<
 		return new this(bind, type, message);
 	}
 
-	readonly chunks: Array<TextChunkExpression<'nodes' | 'string'>>;
+	readonly chunks: TextChunkExpression<'nodes' | 'string'>[];
 
 	private constructor(
 		bind: BindDefinition,

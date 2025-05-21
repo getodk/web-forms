@@ -5,8 +5,8 @@ import type { EvaluationContext } from '../../../instance/internal-api/Evaluatio
 import { TextChunk } from '../../../instance/text/TextChunk.ts';
 import { TextRange } from '../../../instance/text/TextRange.ts';
 import type {
-	EngineXPathNode,
 	EngineXPathAttribute,
+	EngineXPathNode,
 } from '../../../integration/xpath/adapter/kind.ts';
 import type { TextChunkExpression } from '../../../parse/expression/TextChunkExpression.ts';
 import type { TextRangeDefinition } from '../../../parse/text/abstract/TextRangeDefinition.ts';
@@ -91,7 +91,7 @@ const processValueNodeChildren = (item: EngineXPathNode) => {
  */
 const createTextChunks = (
 	context: EvaluationContext,
-	textSources: Array<TextChunkExpression<'nodes' | 'string'>>
+	textSources: TextChunkExpression<'nodes' | 'string'>[]
 ): Accessor<TextContent> => {
 	return createMemo(() => {
 		const chunks: TextChunk[] = [];
