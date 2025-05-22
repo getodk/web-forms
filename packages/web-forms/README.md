@@ -95,6 +95,15 @@ web-forms/
 ├── playwright.config.ts
 ```
 
+#### Naming convention
+- Folders: use `kebab-case` and plural for collections. Example: `question-types`.
+- Files:
+  - Vue Components: use `PascalCase` with a minimum of two words. Example: `InputText.vue`.
+  - TypeScript/JavaScript: use `kebab-case` for utilities, composables, and API modules. Example: `initialize-form-state.ts`, `forms.ts`.
+  - Styles: use `kebab-case` and descriptive of purpose. Example: `reset.scss`.
+  - Tests: Match name of the component or file being tested, suffixed with `.test.ts`. Example: `InputText.test.ts`, `initialize-form-state.test.ts`.
+  - JSON and Other Files (.json, .md, etc.): use `kebab-case`.
+
 ### Styling Overview
 
 This project uses a combination of [PrimeFlex](https://primeflex.org/) and [PrimeVue](https://primevue.org/) for consistent styling, alongside specific font rules for the ODK Website's Web Forms Preview.
