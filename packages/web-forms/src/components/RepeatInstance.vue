@@ -69,7 +69,7 @@ const menuItems = computed((): MenuItem[] | undefined => {
 </script>
 <template>
 	<FormPanel :title="label" :menu-items="menuItems" class="repeat-instance" :label-number="instanceIndex + 1">
-		<QuestionList :form-setup-options="formSetupOptions" :nodes="children" />
+		<QuestionList :nodes="children" />
 	</FormPanel>
 </template>
 
