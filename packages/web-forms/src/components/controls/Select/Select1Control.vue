@@ -8,13 +8,11 @@ import ValidationMessage from '@/components/ValidationMessage.vue';
 import LikertWidget from '@/components/widgets/LikertWidget.vue';
 import RadioButton from '@/components/widgets/RadioButton.vue';
 import SearchableDropdown from '@/components/widgets/SearchableDropdown.vue';
-import type { FormSetupOptions } from '@/lib/init/loadFormState.ts';
 import type { SelectNode } from '@getodk/xforms-engine';
 import { computed, inject, ref } from 'vue';
 
 interface Select1ControlProps {
 	readonly question: SelectNode;
-	readonly formSetupOptions: FormSetupOptions;
 }
 
 const props = defineProps<Select1ControlProps>();
@@ -33,7 +31,7 @@ const isSelectWithImages = computed(() => props.question.currentState.isSelectWi
 <template>
 	<ControlText v-if="!hasFieldListRelatedAppearance" :question="question" />
 
-	<SelectWithImages v-if="isSelectWithImages" :form-setup-options="formSetupOptions" :question="question" />
+	<SelectWithImages v-if="isSelectWithImages" :question="question" />
 
 	<SearchableDropdown
 		v-else-if="question.appearances.autocomplete || question.appearances.minimal"

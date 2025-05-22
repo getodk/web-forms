@@ -1,22 +1,13 @@
-import type { FormSetupOptions } from '@/lib/init/loadFormState.ts';
 import { describe, expect, it } from 'vitest';
 import { DOMWrapper, mount, VueWrapper } from '@vue/test-utils';
 import { getReactiveForm, globalMountOptions } from '../helpers';
 import QuestionList from '@/components/QuestionList.vue';
 import FormQuestion from '@/components/FormQuestion.vue';
-import SelectControl from '@/components/controls/Select/SelectControl.vue';
+import SelectControl from '@/components/controls/SelectControl.vue';
 import RankControl from '@/components/controls/RankControl.vue';
 import type { RankNode } from '@getodk/xforms-engine';
 
 describe('RankControl', () => {
-	const formSetupOptions: FormSetupOptions = {
-		form: {
-			fetchFormAttachment: () => Promise.reject(new Error('Not configured in Test Case')),
-			missingResourceBehavior: 'BLANK',
-		},
-		editInstance: null,
-	};
-
 	const getAllOptions = (rankControl: VueWrapper): string[] => {
 		return rankControl.findAll('.rank-label').map((element) => element.text());
 	};
@@ -33,7 +24,6 @@ describe('RankControl', () => {
 		const component = mount(FormQuestion, {
 			props: {
 				question: xform.currentState.children[0] as RankNode,
-				formSetupOptions,
 			},
 			global: globalMountOptions,
 		});
@@ -47,7 +37,6 @@ describe('RankControl', () => {
 		return mount(QuestionList, {
 			props: {
 				nodes: xform.currentState.children,
-				formSetupOptions,
 			},
 			global: globalMountOptions,
 		}) as VueWrapper;

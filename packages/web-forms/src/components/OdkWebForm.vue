@@ -2,13 +2,15 @@
 import IconSVG from '@/components/widgets/IconSVG.vue';
 import type { FormStateSuccessResult } from '@/lib/init/FormState.ts';
 import { initializeFormState } from '@/lib/init/initializeFormState.ts';
-import type { EditInstanceOptions, FormSetupOptions } from '@/lib/init/loadFormState';
+import type { EditInstanceOptions, FormOptions } from '@/lib/init/loadFormState';
 import { loadFormState } from '@/lib/init/loadFormState';
 import { updateSubmittedFormState } from '@/lib/init/updateSubmittedFormState.ts';
 import type {
 	HostSubmissionResultCallback,
 	OptionalAwaitableHostSubmissionResult,
 } from '@/lib/submission/HostSubmissionResultCallback.ts';
+import type { JRResourceURLString } from '@getodk/common/jr-resources/JRResourceURL.ts';
+import type { ObjectURL } from '@getodk/common/lib/web-compat/url.ts';
 import type {
 	ChunkedInstancePayload,
 	FetchFormAttachment,
@@ -18,7 +20,7 @@ import type {
 import Button from 'primevue/button';
 import Card from 'primevue/card';
 import Message from 'primevue/message';
-import { computed, getCurrentInstance, provide, ref, watchEffect } from 'vue';
+import { computed, getCurrentInstance, provide, readonly, ref, watchEffect } from 'vue';
 import FormLoadFailureDialog from './Form/FormLoadFailureDialog.vue';
 import FormHeader from './FormHeader.vue';
 import QuestionList from './QuestionList.vue';
@@ -138,20 +140,23 @@ const emitSubmitChunked = async (currentState: FormStateSuccessResult) => {
 
 const emit = defineEmits<OdkWebFormEmits>();
 
-const state = initializeFormState();
-const formSetupOptions = ref<FormSetupOptions>({
-	form: {
-		fetchFormAttachment: props.fetchFormAttachment,
-		missingResourceBehavior: props.missingResourceBehavior,
-	},
-	editInstance: props.editInstance ?? null,
+const formOptions = readonly<FormOptions>({
+	fetchFormAttachment: props.fetchFormAttachment,
+	missingResourceBehavior: props.missingResourceBehavior,
 });
+provide('formOptions', formOptions);
+provide('imageCache', new Map<JRResourceURLString, ObjectURL>());
+
+const state = initializeFormState();
 const submitPressed = ref(false);
 const floatingErrorActive = ref(false);
 const showValidationError = ref(false);
 
 const init = async () => {
-	state.value = await loadFormState(props.formXml, formSetupOptions.value);
+	state.value = await loadFormState(props.formXml, {
+		form: formOptions,
+		editInstance: props.editInstance ?? null,
+	});
 };
 
 void init();
@@ -234,7 +239,7 @@ watchEffect(() => {
 				<template #content>
 					<div class="form-questions">
 						<div class="flex flex-column gap-2">
-							<QuestionList :form-setup-options="formSetupOptions" :nodes="state.root.currentState.children" />
+							<QuestionList :nodes="state.root.currentState.children" />
 						</div>
 					</div>
 				</template>

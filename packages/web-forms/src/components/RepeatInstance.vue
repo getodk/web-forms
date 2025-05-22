@@ -1,16 +1,11 @@
 <script setup lang="ts">
-import type { FormSetupOptions } from '@/lib/init/loadFormState.ts';
 import type { GeneralChildNode, GroupNode, RepeatInstanceNode } from '@getodk/xforms-engine';
 import { type MenuItem } from 'primevue/menuitem';
 import { computed } from 'vue';
 import FormPanel from './FormPanel.vue';
 import QuestionList from './QuestionList.vue';
 
-const props = defineProps<{
-	instance: RepeatInstanceNode;
-	instanceIndex: number;
-	readonly formSetupOptions: FormSetupOptions;
-}>();
+const props = defineProps<{ instance: RepeatInstanceNode; instanceIndex: number }>();
 
 const isGroup = (child: GeneralChildNode) => {
 	return (

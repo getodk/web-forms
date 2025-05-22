@@ -1,15 +1,11 @@
 <script setup lang="ts">
 import ImageDisplay from '@/components/widgets/ImageDisplay.vue';
-import { clearImageCache } from '@/lib/cache/image.ts';
-import type { FormSetupOptions } from '@/lib/init/loadFormState.ts';
 import RadioButton from 'primevue/radiobutton';
 import { selectOptionId } from '@/lib/format/selectOptionId.ts';
 import type { SelectNode } from '@getodk/xforms-engine';
-import { onUnmounted } from 'vue';
 
 interface SelectWithImagesProps {
 	readonly question: SelectNode;
-	readonly formSetupOptions: FormSetupOptions;
 }
 
 const props = defineProps<SelectWithImagesProps>();
@@ -19,10 +15,6 @@ defineEmits(['update:modelValue', 'change']);
 const selectValue = (value: string) => {
 	props.question.selectValue(value);
 };
-
-onUnmounted(() => {
-	clearImageCache();
-});
 </script>
 
 <template>
@@ -62,7 +54,6 @@ onUnmounted(() => {
 			<ImageDisplay
 				:src="option.label.imageSource"
 				:alt="option.label.asString"
-				:form-setup-options="formSetupOptions"
 				@error="console.error('Image failed to load:', $event)"
 			/>
 		</div>

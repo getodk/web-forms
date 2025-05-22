@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { FormSetupOptions } from '@/lib/init/loadFormState.ts';
 import type {
 	AnyInputNode,
 	AnyNoteNode,
@@ -16,10 +15,7 @@ import SelectControl from './controls/Select/SelectControl.vue';
 import TriggerControl from './controls/TriggerControl.vue';
 import UploadControl from './controls/Upload/UploadControl.vue';
 
-defineProps<{
-	question: ControlNode;
-	readonly formSetupOptions: FormSetupOptions;
-}>();
+defineProps<{ question: ControlNode }>();
 
 const isInputNode = (node: ControlNode): node is AnyInputNode => node.nodeType === 'input';
 const isSelectNode = (node: ControlNode): node is SelectNode => node.nodeType === 'select';
@@ -42,7 +38,7 @@ const submitPressed = inject('submitPressed');
 	>
 		<InputControl v-if="isInputNode(question)" :node="question" />
 
-		<SelectControl v-else-if="isSelectNode(question)" :form-setup-options="formSetupOptions" :question="question" />
+		<SelectControl v-else-if="isSelectNode(question)" :question="question" />
 
 		<RankControl v-else-if="isRankNode(question)" :question="question" />
 

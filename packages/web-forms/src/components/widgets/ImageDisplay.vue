@@ -1,35 +1,38 @@
 <script setup lang="ts">
-import type { JRResourceURL } from '@getodk/common/jr-resources/JRResourceURL.ts';
-import type { FormSetupOptions } from '@/lib/init/loadFormState.ts';
-import { createObjectURL } from '@getodk/common/lib/web-compat/url.ts';
-import { ref, watchEffect } from 'vue';
-import { getCachedImage, cacheImage } from '@/lib/cache/image.ts';
+import type { FormOptions } from '@/lib/init/loadFormState.ts';
+import type {
+	JRResourceURL,
+	JRResourceURLString,
+} from '@getodk/common/jr-resources/JRResourceURL.ts';
+import { createObjectURL, type ObjectURL } from '@getodk/common/lib/web-compat/url.ts';
+import { inject, ref, watchEffect } from 'vue';
 
 interface ImageDisplayProps {
 	readonly src: JRResourceURL | null;
 	readonly alt: string;
-	readonly formSetupOptions: FormSetupOptions;
 }
 
 const props = defineProps<ImageDisplayProps>();
+const formOptions = inject<FormOptions>('formOptions');
+const imageCache = inject<Map<JRResourceURLString, ObjectURL>>('imageCache', new Map());
 const imageUrl = ref<string | null>(null);
 
 const loadImage = async (src: JRResourceURL | null) => {
-	if (src == null || props.formSetupOptions?.form?.fetchFormAttachment == null) {
+	if (src == null || formOptions?.fetchFormAttachment == null) {
 		// ToDo handle
 		throw new Error('Failed to load media resource.');
 	}
 
-	const cachedImage = getCachedImage(src);
+	const cachedImage = imageCache.get(src.href);
 	if (cachedImage != null) {
 		imageUrl.value = cachedImage;
 		return;
 	}
 
 	try {
-		const response = await props.formSetupOptions.form.fetchFormAttachment(src);
+		const response = await formOptions.fetchFormAttachment(src);
 		if (response.status === 404) {
-			if (props.formSetupOptions.form.missingResourceBehavior === 'BLANK') {
+			if (formOptions.missingResourceBehavior === 'BLANK') {
 				// ToDo handle
 				throw new Error('No media resource.');
 			}
@@ -44,7 +47,7 @@ const loadImage = async (src: JRResourceURL | null) => {
 
 		const data = await response.blob();
 		const blobUrl = createObjectURL(data);
-		cacheImage(src, blobUrl);
+		imageCache.set(src.href, blobUrl);
 		imageUrl.value = blobUrl;
 	} catch (error) {
 		// ToDo handle

@@ -17,7 +17,7 @@ import type {
 } from './FormState.ts';
 import { ENGINE_FORM_INSTANCE_CONFIG } from './engine-config.ts';
 
-interface FormOptions {
+export interface FormOptions {
 	readonly fetchFormAttachment: FetchFormAttachment;
 	readonly missingResourceBehavior?: MissingResourceBehavior;
 }
@@ -63,7 +63,7 @@ const resolvableFormInstanceInput = (options: EditInstanceOptions): ResolvableFo
 	};
 };
 
-export interface FormSetupOptions {
+interface LoadFormStateOptions {
 	readonly form: FormOptions;
 	readonly editInstance?: EditInstanceOptions | null;
 }
@@ -90,7 +90,7 @@ const success = (form: InstantiableForm, instance: AnyFormInstance): FormStateSu
 
 export const loadFormState = async (
 	formResource: FormResource,
-	options: FormSetupOptions
+	options: LoadFormStateOptions
 ): Promise<FormState> => {
 	const form = await loadForm(formResource, options.form);
 

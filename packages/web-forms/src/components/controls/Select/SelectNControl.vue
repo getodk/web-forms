@@ -7,13 +7,11 @@ import ControlText from '@/components/ControlText.vue';
 import ValidationMessage from '@/components/ValidationMessage.vue';
 import CheckboxWidget from '@/components/widgets/CheckboxWidget.vue';
 import MultiselectDropdown from '@/components/widgets/MultiselectDropdown.vue';
-import type { FormSetupOptions } from '@/lib/init/loadFormState.ts';
 import type { SelectNode } from '@getodk/xforms-engine';
 import { computed, inject, ref } from 'vue';
 
 interface SelectNControlProps {
 	readonly question: SelectNode;
-	readonly formSetupOptions: FormSetupOptions;
 }
 
 const props = defineProps<SelectNControlProps>();
@@ -32,7 +30,7 @@ const isSelectWithImages = computed(() => props.question.currentState.isSelectWi
 <template>
 	<ControlText v-if="!hasFieldListRelatedAppearance" :question="question" />
 
-	<SelectWithImages v-if="isSelectWithImages" :form-setup-options="formSetupOptions" :question="question" />
+	<SelectWithImages v-if="isSelectWithImages" :question="question" />
 
 	<MultiselectDropdown
 		v-else-if="question.appearances.autocomplete || question.appearances.minimal"

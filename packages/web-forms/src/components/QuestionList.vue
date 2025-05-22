@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { FormSetupOptions } from '@/lib/init/loadFormState.ts';
 import type {
 	AnyControlNode as ControlNode,
 	GeneralChildNode,
@@ -11,10 +10,7 @@ import FormQuestion from './FormQuestion.vue';
 import RepeatRange from './RepeatRange.vue';
 import ExpectModelNode from './dev-only/ExpectModelNode.vue';
 
-defineProps<{
-	nodes: readonly GeneralChildNode[];
-	readonly formSetupOptions: FormSetupOptions;
-}>();
+defineProps<{ nodes: readonly GeneralChildNode[] }>();
 
 const isGroupNode = (node: GeneralChildNode): node is GroupNode => {
 	return node.nodeType === 'group';
@@ -49,14 +45,13 @@ const isControlNode = (node: NonStructuralNode): node is ControlNode => {
 	<template v-for="node in nodes" :key="node.nodeId">
 		<template v-if="node.currentState.relevant">
 			<!-- Render group nodes -->
-			<FormGroup v-if="isGroupNode(node)" :form-setup-options="formSetupOptions" :node="node" />
+			<FormGroup v-if="isGroupNode(node)" :node="node" />
 
 			<!-- Render repeat nodes -->
-			<RepeatRange v-else-if="isRepeatRangeNode(node)" :form-setup-options="formSetupOptions" :node="node" />
-
+			<RepeatRange v-else-if="isRepeatRangeNode(node)" :node="node" />
 
 			<!-- Render leaf nodes like string, select, etc -->
-			<FormQuestion v-else-if="isControlNode(node)" :form-setup-options="formSetupOptions" :question="node" />
+			<FormQuestion v-else-if="isControlNode(node)" :question="node" />
 
 			<ExpectModelNode v-else :node="node" />
 		</template>
