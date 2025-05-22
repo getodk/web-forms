@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import ColumnarAppearance from '@/components/appearances/ColumnarAppearance.vue';
 import FieldListTable from '@/components/appearances/FieldListTable.vue';
-import SelectWithImages from '@/components/controls/Select/SelectWithImages.vue';
 import UnsupportedAppearance from '@/components/controls/UnsupportedAppearance.vue';
 import ControlText from '@/components/ControlText.vue';
 import ValidationMessage from '@/components/ValidationMessage.vue';
@@ -9,7 +8,7 @@ import LikertWidget from '@/components/widgets/LikertWidget.vue';
 import RadioButton from '@/components/widgets/RadioButton.vue';
 import SearchableDropdown from '@/components/widgets/SearchableDropdown.vue';
 import type { SelectNode } from '@getodk/xforms-engine';
-import { computed, inject, ref } from 'vue';
+import { inject, ref } from 'vue';
 
 interface Select1ControlProps {
 	readonly question: SelectNode;
@@ -25,16 +24,13 @@ const hasFieldListRelatedAppearance = appearances.some((appearance) => {
 
 const touched = ref(false);
 const submitPressed = inject<boolean>('submitPressed', false);
-const isSelectWithImages = computed(() => props.question.currentState.isSelectWithImages === true);
 </script>
 
 <template>
 	<ControlText v-if="!hasFieldListRelatedAppearance" :question="question" />
 
-	<SelectWithImages v-if="isSelectWithImages" :question="question" />
-
 	<SearchableDropdown
-		v-else-if="question.appearances.autocomplete || question.appearances.minimal"
+		v-if="question.appearances.autocomplete || question.appearances.minimal"
 		:question="question"
 		@change="touched = true"
 	/>

@@ -7,12 +7,12 @@ import type {
 import { createObjectURL, type ObjectURL } from '@getodk/common/lib/web-compat/url.ts';
 import { inject, ref, watchEffect } from 'vue';
 
-interface ImageDisplayProps {
+interface ImageBlockProps {
 	readonly src: JRResourceURL | null;
 	readonly alt: string;
 }
 
-const props = defineProps<ImageDisplayProps>();
+const props = defineProps<ImageBlockProps>();
 const formOptions = inject<FormOptions>('formOptions');
 const imageCache = inject<Map<JRResourceURLString, ObjectURL>>('imageCache', new Map());
 const imageUrl = ref<string | null>(null);
@@ -65,7 +65,7 @@ watchEffect(() => {
 </script>
 
 <template>
-	<div class="image-display">
+	<div class="image-block">
 		<!-- TODO: handle error emit -->
 		<img
 			v-if="imageUrl"
@@ -82,11 +82,11 @@ watchEffect(() => {
 </template>
 
 <style scoped lang="scss">
-.image-display {
+.image-block {
 	--imageSize: 300px;
 }
 
-.image-display {
+.image-block {
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -94,7 +94,6 @@ watchEffect(() => {
 	width: fit-content;
 	height: var(--imageSize);
 	background: var(--odk-muted-background-color);
-	border-radius: var(--odk-radius);
 	overflow: hidden;
 
 	img {
