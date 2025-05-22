@@ -424,3 +424,55 @@ If you'd like to try the functionality available on `main`, see the preview [on 
 1. Verify that the changelogs look good, commit changes, open a PR, merge the PR
 1. Push tags for each package in the format `package@x.x.x`. A Github action will publish the packages on NPM
 1. Update dependencies to kick off the new release cycle. We do this so that dependency updates get verified implicitly during development.
+
+## Contributing to the project
+
+Thank you for your interest in contributing! This section outlines guidelines to ensure smooth collaboration and maintainable code.
+
+### Commit message guidelines
+
+We use a standardized commit message format inspired by [Conventional Commits](https://www.conventionalcommits.org/) to enable automated releases and maintain clear project history. The format is:
+
+```
+<type>(<issue>): <description>
+
+<optional body with details>
+
+<optional footer, e.g., BREAKING CHANGE or Co-authored-by>
+```
+
+- **Type**: Use `feat`, `fix`, `docs`, `test`, `chore`, or `perf`.
+- **Issue**: Reference the ticket/issue (e.g., `#33`).
+- **Description**: Concise (≤50 chars), present tense, lowercase (e.g., `add geopoint input component`).
+- **Body**: Optional, lists specific changes (e.g., `- add geopoint.xml demo form`).
+- **Footer**: Use `Co-authored-by: @<username>` or `BREAKING CHANGE:` for automation.
+
+Our commit message format enables automated release management. This standard ensures commits are categorized to trigger appropriate version bumps:
+
+- **Feature Commits (`feat`)**: Introduce new functionality and result in a **minor** version bump (e.g., `1.2.3` → `1.3.0`).
+- **Fix Commits (`fix`)**: Address bugs and trigger a **patch** version bump (e.g., `1.2.3` → `1.2.4`).
+- **Non-Releasing Commits (`test`, `docs`)**: Improve code quality or documentation without affecting production code, so they don’t trigger a release.
+- **Chore Commits (`chore`)**: Handle maintenance tasks (e.g., dependency updates) and trigger a **patch** release.
+- **Breaking Changes**: Marked with `BREAKING CHANGE:` in the footer, these trigger a **major** version bump (e.g., `1.2.3` → `2.0.0`). Example: Changing the component library to another one.
+
+This structure ensures that only meaningful changes (features, fixes, or breaking changes) drive releases, while tests or chores are excluded or minimized, keeping our versioning predictable and automated changelogs clear.
+
+**Example Commit**:
+```
+feat(#33): add input and readonly components
+
+- Implement geopoint input component in Vue client
+- Add XPath evaluator for geopoint
+
+Co-authored-by: @jane_doe and @tom_smith
+```
+
+This commit triggers a **minor** release because it’s a `feat`, includes a clear description, credits contributors (@jane_doe, @john_smith), and links to issue #33 for traceability.
+
+### Other Guidelines
+
+- **Code Style**: Follow the project's linting rules (e.g., ESLint, Prettier).
+- **Testing**: Include tests for new features or bug fixes.
+- **Pull Requests**: Reference related issues and describe changes clearly.
+
+For questions, reach out to the maintainers. Happy contributing!
