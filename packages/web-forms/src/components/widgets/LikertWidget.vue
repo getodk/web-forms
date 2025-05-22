@@ -28,6 +28,7 @@ defineEmits(['change']);
 		flex-direction: column;
 		flex: 1;
 		align-items: center;
+		flex-wrap: nowrap;
 		cursor: pointer;
 		outline: none;
 		padding: 10px 0;
@@ -70,17 +71,22 @@ defineEmits(['change']);
 		.p-radiobutton {
 			position: relative;
 			z-index: var(--odk-z-index-form-content);
+			margin: 0;
+			align-self: unset;
 		}
 
-		.label-text {
+		.text-content {
 			text-align: center;
-			margin-top: -11.5px;
-			margin-left: 0;
+			margin: -11.5px 0 10px 0;
 			width: 100%;
 			position: relative;
 			padding-top: 20px;
 			display: block;
 			word-break: break-word;
+		}
+
+		.media-content {
+			flex-basis: unset;
 		}
 	}
 }

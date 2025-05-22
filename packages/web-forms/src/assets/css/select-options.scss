@@ -38,20 +38,21 @@
 		cursor: not-allowed;
 	}
 
-	:deep(.image-block) {
+	:deep(.media-content) {
 		flex-basis: 100%;
 	}
 
-	&:has(:nth-child(3)) {
+	&:has(.media-content) {
 		padding: 0;
 
-		& > :first-child {
+		:deep(.p-checkbox),
+		:deep(.p-radiobutton) {
 			margin: auto 0 auto 20px;
 			align-self: flex-start;
 		}
 
-		& > :nth-child(2) {
-			margin: 15px 20px 15px 10px;
+		:deep(.text-content) {
+			margin: 15px 20px;
 			max-width: calc(100% - 70px);
 			display: -webkit-box;
 			-webkit-line-clamp: 2;

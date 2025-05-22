@@ -18,13 +18,15 @@ const audio = computed(() => props.label.audioSource);
 <template>
 	<span v-if="text != null" class="text-content">text</span>
 
-	<ImageBlock v-if="image != null" :src="image" :alt="text" />
+	<div v-if="image || video || audio" class="media-content">
+		<ImageBlock v-if="image" :src="image" :alt="text" />
 
-	<!-- TODO: Implement VideoBlock component -->
-	<span v-else-if="video != null">🚧 Video media type is not supported</span>
+		<!-- TODO: Implement VideoBlock component -->
+		<span v-else-if="video">🚧 Video media type is not supported</span>
 
-	<!-- TODO: Implement AudioBlock component -->
-	<span v-else-if="audio != null">🚧 Video media type is not supported</span>
+		<!-- TODO: Implement AudioBlock component -->
+		<span v-else-if="audio">🚧 Video media type is not supported</span>
+	</div>
 </template>
 
 <style scoped lang="scss">

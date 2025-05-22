@@ -49,7 +49,7 @@ defineProps<{ appearances: SelectNodeAppearances }>();
 			background: unset;
 		}
 
-		.label-text {
+		.text-content {
 			display: block;
 			margin-left: 0;
 		}
@@ -64,7 +64,7 @@ defineProps<{ appearances: SelectNodeAppearances }>();
 	:deep(.value-option) {
 		border-radius: var(--odk-radius);
 		background-color: transparent;
-		.label-text {
+		.text-content {
 			display: none;
 		}
 	}
@@ -93,6 +93,10 @@ defineProps<{ appearances: SelectNodeAppearances }>();
 			background-color: unset;
 			outline: none;
 		}
+
+		.text-content {
+			margin-left: 0;
+		}
 	}
 }
 
@@ -112,9 +116,10 @@ defineProps<{ appearances: SelectNodeAppearances }>();
 			top: 26px;
 		}
 
-		.label-text {
+		.text-content {
 			position: relative;
 			top: -20px;
+			margin-left: 0;
 			margin-bottom: 10px;
 			white-space: nowrap;
 		}

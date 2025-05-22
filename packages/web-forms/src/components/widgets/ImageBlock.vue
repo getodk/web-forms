@@ -91,7 +91,7 @@ watchEffect(() => {
 	justify-content: center;
 	align-items: center;
 	position: relative;
-	width: fit-content;
+	width: 100%;
 	height: var(--imageSize);
 	background: var(--odk-muted-background-color);
 	overflow: hidden;
