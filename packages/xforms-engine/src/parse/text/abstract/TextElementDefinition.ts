@@ -16,7 +16,7 @@ type TextElementOwner = ItemDefinition | LabelOwner;
 export abstract class TextElementDefinition<
 	Role extends ElementTextRole,
 > extends TextRangeDefinition<Role> {
-	readonly chunks: TextChunkExpression<'nodes' | 'string'>[];
+	readonly chunks: ReadonlyArray<TextChunkExpression<'nodes' | 'string'>>;
 
 	constructor(form: XFormDefinition, owner: TextElementOwner, sourceNode: TextSourceNode<Role>) {
 		super(form, owner, sourceNode);

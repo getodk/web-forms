@@ -4,9 +4,14 @@ import type {
 	TextChunk,
 	TextOrigin,
 	TextRole,
-	TextMediaSource,
 } from '../../client/TextRange.ts';
 import { FormattedTextStub } from './FormattedTextStub.ts';
+
+export interface MediaSources {
+	image?: JRResourceURL;
+	video?: JRResourceURL;
+	audio?: JRResourceURL;
+}
 
 export class TextRange<Role extends TextRole, Origin extends TextOrigin>
 	implements ClientTextRange<Role, Origin>
@@ -23,30 +28,22 @@ export class TextRange<Role extends TextRole, Origin extends TextOrigin>
 		return this.chunks.map((chunk) => chunk.asString).join('');
 	}
 
-	get imageSource(): JRResourceURL | null {
-		return this.getMediaSourceURL(this.textMediaSource?.image);
+	get imageSource(): JRResourceURL | undefined {
+		return this.mediaSources?.image;
 	}
 
-	get audioSource(): JRResourceURL | null {
-		return this.getMediaSourceURL(this.textMediaSource?.audio);
+	get audioSource(): JRResourceURL | undefined {
+		return this.mediaSources?.audio;
 	}
 
-	get videoSource(): JRResourceURL | null {
-		return this.getMediaSourceURL(this.textMediaSource?.video);
+	get videoSource(): JRResourceURL | undefined {
+		return this.mediaSources?.video;
 	}
 
 	constructor(
 		readonly origin: Origin,
 		readonly role: Role,
 		protected readonly chunks: readonly TextChunk[],
-		protected readonly textMediaSource?: TextMediaSource
+		protected readonly mediaSources?: MediaSources
 	) {}
-
-	private getMediaSourceURL(mediaSource: string | undefined): JRResourceURL | null {
-		if (mediaSource == null || !JRResourceURL.isJRResourceReference(mediaSource)) {
-			return null;
-		}
-
-		return JRResourceURL.from(mediaSource);
-	}
 }
