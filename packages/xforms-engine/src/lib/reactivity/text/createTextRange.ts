@@ -1,128 +1,72 @@
+import { JRResourceURL } from '@getodk/common/jr-resources/JRResourceURL.ts';
 import type { Accessor } from 'solid-js';
 import { createMemo } from 'solid-js';
-import type { TextMediaSource, TextRole } from '../../../client/TextRange.ts';
+import type { TextRole } from '../../../client/TextRange.ts';
 import type { EvaluationContext } from '../../../instance/internal-api/EvaluationContext.ts';
 import { TextChunk } from '../../../instance/text/TextChunk.ts';
-import { TextRange } from '../../../instance/text/TextRange.ts';
-import type {
-	EngineXPathNode,
-	EngineXPathAttribute,
-} from '../../../integration/xpath/adapter/kind.ts';
-import type { TextChunkExpression } from '../../../parse/expression/TextChunkExpression.ts';
+import { TextRange, type MediaSources } from '../../../instance/text/TextRange.ts';
+import { isEngineXPathElement } from '../../../integration/xpath/adapter/kind.ts';
+import { StaticElement } from '../../../integration/xpath/static-dom/StaticElement.ts';
+import { type TextChunkExpression } from '../../../parse/expression/TextChunkExpression.ts';
 import type { TextRangeDefinition } from '../../../parse/text/abstract/TextRangeDefinition.ts';
 import { createComputedExpression } from '../createComputedExpression.ts';
 
-interface TextContent {
+interface ChunksAndMedia {
 	chunks: readonly TextChunk[];
-	mediaSource: TextMediaSource | undefined;
+	mediaSources: MediaSources;
 }
-
-const isElementNode = (
-	node: EngineXPathNode | string
-): node is EngineXPathNode & {
-	attributes: EngineXPathAttribute[];
-	children: EngineXPathNode[];
-	value?: string;
-} => {
-	return typeof node !== 'string' && 'children' in node && 'value' in node && 'attributes' in node;
-};
-
-const isTextNode = (
-	node: EngineXPathNode | string
-): node is EngineXPathNode & {
-	children: EngineXPathNode[];
-	value?: string;
-} => {
-	return (
-		typeof node !== 'string' && 'children' in node && 'value' in node && !('attributes' in node)
-	);
-};
-
-const isFormAttribute = (attribute: EngineXPathAttribute) => {
-	return attribute?.qualifiedName?.localName === 'form';
-};
-
-const isDefaultValue = (item: EngineXPathNode | string) => {
-	return (isElementNode(item) && !item.attributes?.length) || isTextNode(item);
-};
-
-const getMediaSource = (item: EngineXPathNode): TextMediaSource | undefined => {
-	if (isDefaultValue(item) || !isElementNode(item)) {
-		return;
-	}
-
-	const value = item.value ?? '';
-	const mediaType = item.attributes.find(isFormAttribute)?.value;
-
-	return {
-		image: mediaType === 'image' ? value : '',
-		video: mediaType === 'video' ? value : '',
-		audio: mediaType === 'audio' ? value : '',
-	};
-};
-
-/**
- * The function temporarily supports a <value> node with multiple nested nodes.
- * TODO: Build support for <output> nodes.
- *  A child might be a node that needs XPath to compute its value. For that, the engine
- *  should create a {@link: TextElementDefinition}, so that createTextChunks function can
- *  request the computed value to XPath and create the TextChunk.
- */
-const processValueNodeChildren = (item: EngineXPathNode) => {
-	let value = '';
-
-	if (isElementNode(item) || isTextNode(item)) {
-		item.children?.forEach((child: EngineXPathNode) => {
-			value += isElementNode(child) || isTextNode(child) ? child.value : '';
-		});
-	}
-
-	return value;
-};
 
 /**
  * Creates a reactive accessor for text chunks and an optional image from text source expressions.
  * - Combines chunks from literal and computed sources into a single array.
  * - Captures the first image found with a 'from="image"' attribute.
  *
- * @param context - The evaluation context for reactive computations.
- * @param textSources - Array of text source expressions to process.
+ * @param context - The evaluation context for reactive XPath computations.
+ * @param chunkExpressions - Array of text source expressions to process.
  * @returns An accessor for an object with all chunks and the first image (if any).
  */
 const createTextChunks = (
 	context: EvaluationContext,
-	textSources: Array<TextChunkExpression<'nodes' | 'string'>>
-): Accessor<TextContent> => {
+	chunkExpressions: ReadonlyArray<TextChunkExpression<'nodes' | 'string'>>
+): Accessor<ChunksAndMedia> => {
 	return createMemo(() => {
 		const chunks: TextChunk[] = [];
-		let mediaSource;
+		const mediaSources: MediaSources = {};
 
-		textSources.forEach((textSource) => {
-			if (textSource.source === 'literal') {
-				chunks.push(new TextChunk(context, textSource.source, textSource.stringValue));
+		chunkExpressions.forEach((chunkExpression) => {
+			if (chunkExpression.source === 'literal') {
+				chunks.push(new TextChunk(context, chunkExpression.source, chunkExpression.stringValue));
 				return;
 			}
 
-			const computed = createComputedExpression(context, textSource)();
-			const items = Array.isArray(computed) ? computed : [computed];
+			const computed = createComputedExpression(context, chunkExpression)();
 
-			items.forEach((item: EngineXPathNode | string) => {
-				if (typeof item === 'string') {
-					chunks.push(new TextChunk(context, textSource.source, item));
-					return;
-				}
+			if (typeof computed === 'string') {
+				// not a translation expression
+				chunks.push(new TextChunk(context, chunkExpression.source, computed));
+				return;
+			} else {
+				// translation expression evaluates to an entire itext block, process forms separately
+				computed.forEach((itextForm) => {
+					if (isEngineXPathElement(itextForm) && itextForm instanceof StaticElement) {
+						const formAttribute = itextForm.getAttributeValue('form');
 
-				if (isDefaultValue(item)) {
-					const value = item.value ?? processValueNodeChildren(item);
-					chunks.push(new TextChunk(context, textSource.source, value));
-					return;
-				}
+						if (!formAttribute) {
+							const defaultFormValue = itextForm.getXPathValue();
+							chunks.push(new TextChunk(context, chunkExpression.source, defaultFormValue));
+						} else if (['image', 'video', 'audio'].includes(formAttribute)) {
+							const formValue = itextForm.getXPathValue();
 
-				mediaSource = getMediaSource(item);
-			});
+							if (JRResourceURL.isJRResourceReference(formValue)) {
+								mediaSources[formAttribute as keyof MediaSources] = JRResourceURL.from(formValue);
+							}
+						}
+					}
+				});
+			}
 		});
 
-		return { chunks, mediaSource };
+		return { chunks, mediaSources };
 	});
 };
 
@@ -145,7 +89,8 @@ export const createTextRange = <Role extends TextRole>(
 		const textChunks = createTextChunks(context, definition.chunks);
 
 		return createMemo(() => {
-			return new TextRange('form', role, textChunks().chunks, textChunks().mediaSource);
+			const chunks = textChunks();
+			return new TextRange('form', role, chunks.chunks, chunks.mediaSources);
 		});
 	});
 };

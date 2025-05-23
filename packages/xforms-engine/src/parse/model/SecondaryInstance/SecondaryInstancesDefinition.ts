@@ -9,10 +9,10 @@ import { ErrorProductionDesignPendingError } from '../../../error/ErrorProductio
 import type { EngineXPathNode } from '../../../integration/xpath/adapter/kind.ts';
 import type { StaticDocument } from '../../../integration/xpath/static-dom/StaticDocument.ts';
 import type { StaticElement } from '../../../integration/xpath/static-dom/StaticElement.ts';
-import type { FormAttachmentResourceOptions } from '../../attachments/FormAttachmentResource.ts';
 import type { XFormDOM } from '../../XFormDOM.ts';
 import { BlankSecondaryInstanceSource } from './sources/BlankSecondaryInstanceSource.ts';
 import { CSVExternalSecondaryInstanceSource } from './sources/CSVExternalSecondaryInstance.ts';
+import type { ExternalSecondaryInstanceResourceLoadOptions } from './sources/ExternalSecondaryInstanceResource.ts';
 import { ExternalSecondaryInstanceResource } from './sources/ExternalSecondaryInstanceResource.ts';
 import { GeoJSONExternalSecondaryInstanceSource } from './sources/GeoJSONExternalSecondaryInstance.ts';
 import { InternalSecondaryInstanceSource } from './sources/InternalSecondaryInstanceSource.ts';
@@ -62,7 +62,7 @@ export class SecondaryInstancesDefinition
 
 	static async load(
 		xformDOM: XFormDOM,
-		options: FormAttachmentResourceOptions
+		options: ExternalSecondaryInstanceResourceLoadOptions
 	): Promise<SecondaryInstancesDefinition> {
 		const { secondaryInstanceElements } = xformDOM;
 
@@ -103,7 +103,7 @@ export class SecondaryInstancesDefinition
 						return new XMLExternalSecondaryInstanceSource(domElement, resource);
 
 					default:
-						throw new UnreachableError(resource as never);
+						throw new UnreachableError(resource);
 				}
 			})
 		);

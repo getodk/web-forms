@@ -250,6 +250,25 @@ describe('jr:itext(id)', () => {
 			}
 		);
 
+		/**
+		 * For itext blocks with additional translation "form"s, should return the default `value` node
+		 * (without a `form` attribute), but currently returns the first `value` node, regardless of
+		 * `form` attributes.
+		 * Note: The jr:itext usage in this test case is rare in form design, making this an edge case.
+		 * TODO: Fix to prioritize the default `value` node without a `form` attribute.
+		 *   ref: https://github.com/getodk/web-forms/issues/400
+		 */
+		it.fails.each([
+			{ expression: 'jr:itext("three")', language: 'fr', expected: 'Trois' },
+			{ expression: 'jr:itext("three")', language: null, expected: 'Trois' },
+		] as const)(
+			'gets itext translation string $expected, for expression $expression, in language $language',
+			({ expression, language, expected }) => {
+				testContext.setLanguage(language);
+				testContext.assertStringValue(expression, expected);
+			}
+		);
+
 		it.each([
 			{ expression: 'jr:itext("one")', language: 'en', expectedTextId: 'one' },
 			{ expression: 'jr:itext("two")', language: 'en', expectedTextId: 'two' },
@@ -268,25 +287,6 @@ describe('jr:itext(id)', () => {
 					`translation[lang="${language ?? 'fr'}"] text[id="${expectedTextId}"] > value`
 				);
 				testContext.assertNodeSet(expression, Array.from(expectedNodes));
-			}
-		);
-
-		/**
-		 * Retrieves the `value` text of an `itext` node for the given ID (e.g., "three").
-		 * Should return the default `value` node (without a `form` attribute), but currently
-		 * returns the first `value` node, regardless of `form` attributes.
-		 * Note: The jr:itext usage in this test case is rare in form design, making this an edge case.
-		 * TODO: Fix to prioritize the default `value` node without a `form` attribute.
-		 *   ref: https://github.com/getodk/web-forms/issues/400
-		 */
-		it.fails.each([
-			{ expression: 'jr:itext("three")', language: 'fr', expected: 'three' },
-			{ expression: 'jr:itext("three")', language: null, expected: 'three' },
-		] as const)(
-			'gets itext translation string $expected, for expression $expression, in language $language',
-			({ expression, language, expected }) => {
-				testContext.setLanguage(language);
-				testContext.assertStringValue(expression, expected);
 			}
 		);
 	});

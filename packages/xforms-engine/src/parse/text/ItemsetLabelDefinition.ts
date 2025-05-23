@@ -19,7 +19,7 @@ export class ItemsetLabelDefinition extends TextRangeDefinition<'item-label'> {
 	}
 
 	readonly role = 'item-label';
-	readonly chunks: Array<TextChunkExpression<'nodes' | 'string'>>;
+	readonly chunks: ReadonlyArray<TextChunkExpression<'nodes' | 'string'>>;
 
 	private constructor(form: XFormDefinition, owner: ItemsetDefinition, element: LabelElement) {
 		super(form, owner, element);

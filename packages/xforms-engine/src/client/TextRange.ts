@@ -118,12 +118,6 @@ export type TextOrigin =
 	| 'form-derived'
 	| 'engine';
 
-export interface TextMediaSource {
-	image?: string;
-	video?: string;
-	audio?: string;
-}
-
 /**
  * Represents aspects of a form which produce text, which _might_ be:
  *
@@ -162,7 +156,8 @@ export interface TextRange<Role extends TextRole, Origin extends TextOrigin = Te
 
 	get asString(): string;
 	get formatted(): unknown;
-	get imageSource(): JRResourceURL | null;
-	get audioSource(): JRResourceURL | null;
-	get videoSource(): JRResourceURL | null;
+
+	get imageSource(): JRResourceURL | undefined;
+	get audioSource(): JRResourceURL | undefined;
+	get videoSource(): JRResourceURL | undefined;
 }
