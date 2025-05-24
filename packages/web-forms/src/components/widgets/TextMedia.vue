@@ -7,6 +7,7 @@ interface TextMediaProps {
 	readonly label: TextRange<'item-label'>;
 }
 
+defineEmits(['error']);
 const props = defineProps<TextMediaProps>();
 
 const text = computed(() => props.label.asString);
@@ -19,7 +20,7 @@ const audio = computed(() => props.label.audioSource);
 	<span v-if="text != null" class="text-content">text</span>
 
 	<div v-if="image || video || audio" class="media-content">
-		<ImageBlock v-if="image" :src="image" :alt="text" />
+		<ImageBlock v-if="image" :resource-url="image" :alt="text" @error="(error) => $emit('error', error)" />
 
 		<!-- TODO: Implement VideoBlock component -->
 		<span v-else-if="video">🚧 Video media type is not supported</span>

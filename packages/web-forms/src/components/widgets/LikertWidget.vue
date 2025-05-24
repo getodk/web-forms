@@ -7,12 +7,12 @@ interface LikertWidgetProps {
 }
 
 defineProps<LikertWidgetProps>();
-defineEmits(['change']);
+defineEmits(['change', 'error']);
 </script>
 
 <template>
 	<div class="likert">
-		<RadioButton :question="question" @change="$emit('change')" />
+		<RadioButton :question="question" @change="$emit('change')" @error="(error) => $emit('error', error)" />
 	</div>
 </template>
 

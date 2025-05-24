@@ -3,13 +3,13 @@ import TextMedia from '@/components/widgets/TextMedia.vue';
 import { selectOptionId } from '@/lib/format/selectOptionId.ts';
 import type { SelectNode } from '@getodk/xforms-engine';
 import RadioButton from 'primevue/radiobutton';
+
 interface RadioButtonProps {
 	readonly question: SelectNode;
 }
 
+defineEmits(['update:modelValue', 'change', 'error']);
 const props = defineProps<RadioButtonProps>();
-
-defineEmits(['update:modelValue', 'change']);
 
 const selectValue = (value: string) => {
 	props.question.selectValue(value);
@@ -37,7 +37,7 @@ const selectValue = (value: string) => {
 			@update:model-value="selectValue"
 			@change="$emit('change')"
 		/>
-		<TextMedia :label="option.label" />
+		<TextMedia :label="option.label" @error="(error) => $emit('error', error)" />
 	</label>
 </template>
 

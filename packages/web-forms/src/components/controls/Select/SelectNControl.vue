@@ -7,7 +7,7 @@ import ValidationMessage from '@/components/ValidationMessage.vue';
 import CheckboxWidget from '@/components/widgets/CheckboxWidget.vue';
 import MultiselectDropdown from '@/components/widgets/MultiselectDropdown.vue';
 import type { SelectNode } from '@getodk/xforms-engine';
-import { inject, ref } from 'vue';
+import { inject, ref, watch } from 'vue';
 
 interface SelectNControlProps {
 	readonly question: SelectNode;
@@ -23,6 +23,16 @@ const hasFieldListRelatedAppearance = appearances.some((appearance) => {
 
 const touched = ref(false);
 const submitPressed = inject<boolean>('submitPressed', false);
+const errorMessage = ref<string>('');
+
+const handleError = (error: Error) => {
+	errorMessage.value = error.message;
+};
+
+watch(
+	() => props.question.currentState.valueOptions,
+	() => (errorMessage.value = '')
+);
 </script>
 
 <template>
@@ -39,12 +49,12 @@ const submitPressed = inject<boolean>('submitPressed', false);
 			<ControlText :question="question" />
 		</template>
 		<template #default>
-			<CheckboxWidget :question="question" @change="touched = true" />
+			<CheckboxWidget :question="question" @change="touched = true" @error="handleError" />
 		</template>
 	</FieldListTable>
 
 	<ColumnarAppearance v-else-if="hasColumnsAppearance" :appearances="question.appearances">
-		<CheckboxWidget :question="question" @change="touched = true" />
+		<CheckboxWidget :question="question" @change="touched = true" @error="handleError" />
 	</ColumnarAppearance>
 
 	<template v-else>
@@ -55,7 +65,7 @@ const submitPressed = inject<boolean>('submitPressed', false);
 			/>
 		</template>
 		<div class="default-appearance">
-			<CheckboxWidget :question="question" @change="touched = true" />
+			<CheckboxWidget :question="question" @change="touched = true" @error="handleError" />
 		</div>
 	</template>
 
