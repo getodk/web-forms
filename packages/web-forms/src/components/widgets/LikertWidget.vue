@@ -81,8 +81,12 @@ defineEmits(['change', 'error']);
 			width: 100%;
 			position: relative;
 			padding-top: 20px;
-			display: block;
 			word-break: break-word;
+			max-width: unset;
+		}
+
+		.image-block {
+			height: auto;
 		}
 
 		.media-content {

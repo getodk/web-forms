@@ -54,7 +54,7 @@ const loadImage = async (src?: JRResourceURL) => {
 			return;
 		}
 		// TODO: translations
-		throw new Error('Image not found.');
+		throw new Error('Image not found. File: ' + src.href);
 	}
 
 	const data = await response.blob();
@@ -100,7 +100,7 @@ watchEffect(() => {
 			:src="imageUrl ?? IMAGE_PLACEHOLDER"
 			:alt="alt"
 			@load="setDimensions"
-			@error="handleError(new Error('Failed to load image.'))"
+			@error="handleError(new Error('Failed to load image. File' + props.resourceUrl?.href))"
 		>
 		<div v-else class="skeleton-loading" />
 	</div>
@@ -132,7 +132,7 @@ watchEffect(() => {
 
 	&.small-image,
 	&.broken-image {
-		width: var(--imageSize);
+		max-width: var(--imageSize);
 	}
 
 	&.broken-image {
