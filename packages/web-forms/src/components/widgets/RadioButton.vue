@@ -8,7 +8,7 @@ interface RadioButtonProps {
 	readonly question: SelectNode;
 }
 
-defineEmits(['update:modelValue', 'change', 'error']);
+defineEmits(['update:modelValue', 'change']);
 const props = defineProps<RadioButtonProps>();
 
 const selectValue = (value: string) => {
@@ -37,7 +37,7 @@ const selectValue = (value: string) => {
 			@update:model-value="selectValue"
 			@change="$emit('change')"
 		/>
-		<TextMedia :label="option.label" @error="(error) => $emit('error', error)" />
+		<TextMedia :label="option.label" />
 	</label>
 </template>
 

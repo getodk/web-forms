@@ -7,12 +7,12 @@ interface LikertWidgetProps {
 }
 
 defineProps<LikertWidgetProps>();
-defineEmits(['change', 'error']);
+defineEmits(['change']);
 </script>
 
 <template>
 	<div class="likert">
-		<RadioButton :question="question" @change="$emit('change')" @error="(error) => $emit('error', error)" />
+		<RadioButton :question="question" @change="$emit('change')" />
 	</div>
 </template>
 
@@ -34,6 +34,7 @@ defineEmits(['change', 'error']);
 		padding: 10px 0;
 		margin-left: 10px;
 		margin-right: 10px;
+		background: transparent;
 
 		&:last-of-type::before {
 			width: calc(50% + 20px);
@@ -55,17 +56,11 @@ defineEmits(['change', 'error']);
 			top: 11px;
 		}
 
-		&:hover {
-			background-color: var(--odk-primary-light-background-color);
-		}
-
-		&.active {
-			background-color: unset;
+		&:hover,
+		&.active,
+		&.active:hover {
+			background-color: transparent;
 			outline: none;
-
-			&:hover {
-				background-color: var(--odk-primary-light-background-color);
-			}
 		}
 
 		.p-radiobutton {

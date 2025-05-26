@@ -8,32 +8,31 @@ import LikertWidget from '@/components/widgets/LikertWidget.vue';
 import RadioButton from '@/components/widgets/RadioButton.vue';
 import SearchableDropdown from '@/components/widgets/SearchableDropdown.vue';
 import type { SelectNode } from '@getodk/xforms-engine';
-import { inject, ref, watch } from 'vue';
+import { computed, inject, ref, watchEffect } from 'vue';
 
 interface Select1ControlProps {
 	readonly question: SelectNode;
 }
 
 const props = defineProps<Select1ControlProps>();
-
-const appearances = [...props.question.appearances];
-const hasColumnsAppearance = appearances.some((appearance) => appearance.startsWith('columns'));
-const hasFieldListRelatedAppearance = appearances.some((appearance) => {
-	return ['label', 'list-nolabel', 'list'].includes(appearance);
-});
-
+const isSelectWithImages = computed(() => props.question.currentState.isSelectWithImages);
+const hasColumnsAppearance = ref(false);
+const hasFieldListRelatedAppearance = ref(false);
 const touched = ref(false);
 const submitPressed = inject<boolean>('submitPressed', false);
-const errorMessage = ref<string>('');
 
-const handleError = (error: Error) => {
-	errorMessage.value = error.message;
-};
+watchEffect(() => {
+	const appearances = [...props.question.appearances];
+	hasFieldListRelatedAppearance.value = appearances.some((appearance) => {
+		return ['label', 'list-nolabel', 'list'].includes(appearance);
+	});
 
-watch(
-	() => props.question.currentState.valueOptions,
-	() => (errorMessage.value = '')
-);
+	if (appearances.length === 0 && isSelectWithImages.value) {
+		hasColumnsAppearance.value = true;
+	} else {
+		hasColumnsAppearance.value = appearances.some((appearance) => appearance.startsWith('columns'));
+	}
+});
 </script>
 
 <template>
@@ -47,22 +46,22 @@ watch(
 
 	<LikertWidget
 		v-else-if="question.appearances.likert"
+		:class="{ 'select-with-images': isSelectWithImages }"
 		:question="question"
 		@change="touched = true"
-		@error="handleError"
 	/>
 
-	<FieldListTable v-else-if="hasFieldListRelatedAppearance" :appearances="question.appearances">
+	<FieldListTable v-else-if="hasFieldListRelatedAppearance" :class="{ 'select-with-images': isSelectWithImages }" :appearances="question.appearances">
 		<template #firstColumn>
 			<ControlText :question="question" />
 		</template>
 		<template #default>
-			<RadioButton :question="question" @change="touched = true" @error="handleError" />
+			<RadioButton :question="question" @change="touched = true" />
 		</template>
 	</FieldListTable>
 
-	<ColumnarAppearance v-else-if="hasColumnsAppearance" :appearances="question.appearances">
-		<RadioButton :question="question" @change="touched = true" @error="handleError" />
+	<ColumnarAppearance v-else-if="hasColumnsAppearance" :class="{ 'select-with-images': isSelectWithImages }" :appearances="question.appearances">
+		<RadioButton :question="question" @change="touched = true" />
 	</ColumnarAppearance>
 
 	<template v-else>
@@ -73,13 +72,13 @@ watch(
 			/>
 		</template>
 		<div class="default-appearance">
-			<RadioButton :question="question" @change="touched = true" @error="handleError" />
+			<RadioButton :question="question" @change="touched = true" />
 		</div>
 	</template>
 
 	<ValidationMessage
-		:message="errorMessage || question.validationState.violation?.message.asString"
-		:show-message="!!errorMessage || touched || submitPressed"
+		:message="question.validationState.violation?.message.asString"
+		:show-message="touched || submitPressed"
 		:add-placeholder="!hasFieldListRelatedAppearance"
 	/>
 </template>

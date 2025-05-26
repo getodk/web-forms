@@ -7,32 +7,31 @@ import ValidationMessage from '@/components/ValidationMessage.vue';
 import CheckboxWidget from '@/components/widgets/CheckboxWidget.vue';
 import MultiselectDropdown from '@/components/widgets/MultiselectDropdown.vue';
 import type { SelectNode } from '@getodk/xforms-engine';
-import { inject, ref, watch } from 'vue';
+import { computed, inject, ref, watchEffect } from 'vue';
 
 interface SelectNControlProps {
 	readonly question: SelectNode;
 }
 
 const props = defineProps<SelectNControlProps>();
-
-const appearances = [...props.question.appearances];
-const hasColumnsAppearance = appearances.some((appearance) => appearance.startsWith('columns'));
-const hasFieldListRelatedAppearance = appearances.some((appearance) => {
-	return ['label', 'list-nolabel', 'list'].includes(appearance);
-});
-
+const isSelectWithImages = computed(() => props.question.currentState.isSelectWithImages);
+const hasColumnsAppearance = ref(false);
+const hasFieldListRelatedAppearance = ref(false);
 const touched = ref(false);
 const submitPressed = inject<boolean>('submitPressed', false);
-const errorMessage = ref<string>('');
 
-const handleError = (error: Error) => {
-	errorMessage.value = error.message;
-};
+watchEffect(() => {
+	const appearances = [...props.question.appearances];
+	hasFieldListRelatedAppearance.value = appearances.some((appearance) => {
+		return ['label', 'list-nolabel', 'list'].includes(appearance);
+	});
 
-watch(
-	() => props.question.currentState.valueOptions,
-	() => (errorMessage.value = '')
-);
+	if (appearances.length === 0 && isSelectWithImages.value) {
+		hasColumnsAppearance.value = true;
+	} else {
+		hasColumnsAppearance.value = appearances.some((appearance) => appearance.startsWith('columns'));
+	}
+});
 </script>
 
 <template>
@@ -44,17 +43,17 @@ watch(
 		@change="touched = true"
 	/>
 
-	<FieldListTable v-else-if="hasFieldListRelatedAppearance" :appearances="question.appearances">
+	<FieldListTable v-else-if="hasFieldListRelatedAppearance" :class="{ 'select-with-images': isSelectWithImages }" :appearances="question.appearances">
 		<template #firstColumn>
 			<ControlText :question="question" />
 		</template>
 		<template #default>
-			<CheckboxWidget :question="question" @change="touched = true" @error="handleError" />
+			<CheckboxWidget :question="question" @change="touched = true" />
 		</template>
 	</FieldListTable>
 
-	<ColumnarAppearance v-else-if="hasColumnsAppearance" :appearances="question.appearances">
-		<CheckboxWidget :question="question" @change="touched = true" @error="handleError" />
+	<ColumnarAppearance v-else-if="hasColumnsAppearance" :class="{ 'select-with-images': isSelectWithImages }" :appearances="question.appearances">
+		<CheckboxWidget :question="question" @change="touched = true" />
 	</ColumnarAppearance>
 
 	<template v-else>
@@ -65,7 +64,7 @@ watch(
 			/>
 		</template>
 		<div class="default-appearance">
-			<CheckboxWidget :question="question" @change="touched = true" @error="handleError" />
+			<CheckboxWidget :question="question" @change="touched = true" />
 		</div>
 	</template>
 

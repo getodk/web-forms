@@ -21,7 +21,6 @@ interface NaturalDimensions {
 const IMAGE_PLACEHOLDER = 'src/assets/images/broken-image.svg';
 const SMALL_IMAGE_SIZE = 300;
 
-const emit = defineEmits(['error']);
 const props = defineProps<ImageBlockProps>();
 
 const formOptions = inject<FormOptions>('formOptions');
@@ -29,6 +28,7 @@ const loading = ref<boolean>(true);
 const imageCache = inject<Map<JRResourceURLString, ObjectURL>>('imageCache', new Map());
 const imageUrl = ref<string | null>(null);
 const loadedDimensions = ref<NaturalDimensions>({ naturalWidth: 0, naturalHeight: 0 });
+const errorMessage = ref<string>('');
 
 const isSmallImage = computed(() => {
 	const { naturalWidth, naturalHeight } = loadedDimensions.value;
@@ -49,12 +49,8 @@ const loadImage = async (src?: JRResourceURL) => {
 
 	const response = await formOptions.fetchFormAttachment(src);
 	if (!response.ok || response.status !== 200) {
-		if (formOptions.missingResourceBehavior === 'BLANK') {
-			setImage(null);
-			return;
-		}
 		// TODO: translations
-		throw new Error('Image not found. File: ' + src.href);
+		throw new Error(`Image not found. File: ${src.href}`);
 	}
 
 	const data = await response.blob();
@@ -77,11 +73,12 @@ const setDimensions = (event: Event) => {
 
 const handleError = (error: Error) => {
 	setImage(null);
-	emit('error', error);
+	errorMessage.value = error.message;
 };
 
 watchEffect(() => {
 	loadedDimensions.value = { naturalWidth: 0, naturalHeight: 0 };
+	errorMessage.value = '';
 
 	if (props.blobUrl != null) {
 		setImage(props.blobUrl);
@@ -100,9 +97,10 @@ watchEffect(() => {
 			:src="imageUrl ?? IMAGE_PLACEHOLDER"
 			:alt="alt"
 			@load="setDimensions"
-			@error="handleError(new Error('Failed to load image. File' + props.resourceUrl?.href))"
+			@error="handleError(new Error(`Failed to load image. File: ${props.resourceUrl?.href}`))"
 		>
 		<div v-else class="skeleton-loading" />
+		<p v-if="errorMessage?.length" class="image-error-message">{{ errorMessage }}</p>
 	</div>
 </template>
 
@@ -115,10 +113,11 @@ watchEffect(() => {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	flex-direction: column;
 	position: relative;
 	width: 100%;
 	height: var(--imageSize);
-	background: var(--odk-muted-background-color);
+	background: var(--odk-base-background-color);
 	overflow: hidden;
 
 	img {
@@ -130,13 +129,21 @@ watchEffect(() => {
 		object-fit: contain;
 	}
 
-	&.small-image,
-	&.broken-image {
+	&.small-image {
 		max-width: var(--imageSize);
 	}
 
 	&.broken-image {
 		background: var(--odk-base-background-color);
+		width: 100%;
+		max-width: 100%;
+	}
+
+	.image-error-message {
+		margin: 20px;
+		font-size: var(--odk-hint-font-size);
+		font-weight: 300;
+		color: var(--odk-muted-text-color);
 	}
 }
 </style>

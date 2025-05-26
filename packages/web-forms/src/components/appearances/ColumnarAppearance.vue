@@ -24,12 +24,12 @@ const nColumnstyle = computed(() => {
 .columns-pack {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 10px 20px;
+	gap: 20px;
 }
 
 .columns {
 	display: grid;
-	gap: 10px 20px;
+	gap: 20px;
 	grid-template-columns: repeat(2, 1fr);
 
 	@media screen and (min-width: #{pf.$md}) {

@@ -1,6 +1,5 @@
 .value-option {
 	display: flex;
-	flex-wrap: wrap;
 	align-items: center;
 	outline: 1px solid var(--odk-border-color);
 	border-radius: var(--odk-radius);
@@ -55,11 +54,6 @@
 		:deep(.text-content) {
 			margin: 15px 20px;
 			max-width: calc(100% - 70px);
-			display: -webkit-box;
-			-webkit-line-clamp: 2;
-			-webkit-box-orient: vertical;
-			overflow: hidden;
-			text-overflow: ellipsis;
 		}
 	}
 }
@@ -77,4 +71,10 @@
 	:deep(.text-content) {
 		margin-left: 10px;
 	}
+}
+
+.select-with-images .value-option {
+	background: var(--p-surface-50);
+	align-content: flex-start;
+	flex-wrap: wrap;
 }

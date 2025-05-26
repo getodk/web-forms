@@ -9,7 +9,7 @@ interface CheckboxWidgetProps {
 	readonly style?: string;
 }
 
-defineEmits(['update:modelValue', 'change', 'error']);
+defineEmits(['update:modelValue', 'change']);
 const props = defineProps<CheckboxWidgetProps>();
 
 const selectValues = (values: readonly string[]) => {
@@ -37,7 +37,7 @@ const selectValues = (values: readonly string[]) => {
 			@update:model-value="selectValues"
 			@change="$emit('change')"
 		/>
-		<TextMedia :label="option.label" @error="(error) => $emit('error', error)" />
+		<TextMedia :label="option.label" />
 	</label>
 </template>
 

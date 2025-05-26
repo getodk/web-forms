@@ -12,7 +12,7 @@ export interface UploadImagePreviewProps {
 	readonly isDisabled: boolean;
 }
 
-defineEmits(['error', 'clear']);
+defineEmits(['clear']);
 const props = defineProps<UploadImagePreviewProps>();
 
 const imageURL = computed((previous: ObjectURL | null = null) => {
@@ -35,7 +35,7 @@ const imageURL = computed((previous: ObjectURL | null = null) => {
 			<IconSVG name="mdiClose" variant="muted" size="sm" />
 		</Button>
 		<!-- TODO Add form edit support. Ref: https://github.com/getodk/web-forms/issues/392 -->
-		<ImageBlock :blob-url="imageURL" alt="Captured image preview" @error="(error) => $emit('error', error)" />
+		<ImageBlock :blob-url="imageURL" alt="Captured image preview" />
 	</div>
 </template>
 
@@ -57,6 +57,11 @@ const imageURL = computed((previous: ObjectURL | null = null) => {
 		width: 38px;
 		height: 38px;
 		z-index: var(--odk-z-index-form-floating);
+	}
+
+	.image-block {
+		background: var(--odk-muted-background-color);
+		min-width: 300px;
 	}
 }
 
