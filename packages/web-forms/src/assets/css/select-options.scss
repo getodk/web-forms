@@ -1,4 +1,8 @@
 .value-option {
+	--text-content-margin: 15px;
+}
+
+.value-option {
 	display: flex;
 	align-items: center;
 	outline: 1px solid var(--odk-border-color);
@@ -38,7 +42,9 @@
 	}
 
 	:deep(.media-content) {
-		flex-basis: 100%;
+		background: var(--odk-base-background-color);
+		height: calc(100% - (var(--odk-base-font-size) + (var(--text-content-margin) * 2)));
+		width: 100%;
 		justify-items: center;
 	}
 
@@ -52,7 +58,7 @@
 		}
 
 		:deep(.text-content) {
-			margin: 15px 20px;
+			margin: var(--text-content-margin) 20px;
 			max-width: calc(100% - 70px);
 		}
 	}

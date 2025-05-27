@@ -108,22 +108,16 @@ watchEffect(() => {
 
 <style scoped lang="scss">
 .image-block {
-	--imageSize: 300px;
-}
-
-.image-block {
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	flex-direction: column;
 	position: relative;
 	width: 100%;
-	height: var(--imageSize);
-	background: var(--odk-base-background-color);
 	overflow: hidden;
 
 	img {
-		max-height: var(--imageSize);
+		max-height: var(--odk-image-size);
 		max-width: 100%;
 		width: auto;
 		height: auto;
@@ -132,13 +126,12 @@ watchEffect(() => {
 	}
 
 	&.small-image {
-		max-width: var(--imageSize);
+		max-width: var(--odk-image-size);
 	}
 
-	&.broken-image {
-		background: var(--odk-base-background-color);
-		width: 100%;
-		max-width: 100%;
+	&.broken-image img {
+		max-width: 90%;
+		margin-top: 10px;
 	}
 
 	.image-error-message {
