@@ -100,7 +100,9 @@ watchEffect(() => {
 			@error="handleError(new Error(`Failed to load image. File: ${props.resourceUrl?.href}`))"
 		>
 		<div v-else class="skeleton-loading" />
-		<p v-if="errorMessage?.length" class="image-error-message">{{ errorMessage }}</p>
+		<p v-if="errorMessage?.length" class="image-error-message">
+			{{ errorMessage }}
+		</p>
 	</div>
 </template>
 
