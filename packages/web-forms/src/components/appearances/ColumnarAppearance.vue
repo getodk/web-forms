@@ -25,6 +25,10 @@ const nColumnstyle = computed(() => {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 20px;
+
+	:deep(.value-option) .text-content {
+		min-width: fit-content;
+	}
 }
 
 .columns {
