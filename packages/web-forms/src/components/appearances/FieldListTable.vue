@@ -49,9 +49,11 @@ defineProps<{ appearances: SelectNodeAppearances }>();
 			background: unset;
 		}
 
-		.text-content {
+		span.text-content {
 			display: block;
-			margin-left: 0;
+			min-width: fit-content;
+			word-break: normal;
+			margin: 0 auto;
 		}
 	}
 }
@@ -64,6 +66,7 @@ defineProps<{ appearances: SelectNodeAppearances }>();
 	:deep(.value-option) {
 		border-radius: var(--odk-radius);
 		background-color: transparent;
+
 		.text-content {
 			display: none;
 		}
@@ -93,10 +96,6 @@ defineProps<{ appearances: SelectNodeAppearances }>();
 			background-color: unset;
 			outline: none;
 		}
-
-		.text-content {
-			margin-left: 0;
-		}
 	}
 }
 
@@ -119,7 +118,6 @@ defineProps<{ appearances: SelectNodeAppearances }>();
 		.text-content {
 			position: relative;
 			top: -20px;
-			margin-left: 0;
 			margin-bottom: 10px;
 			white-space: nowrap;
 		}
