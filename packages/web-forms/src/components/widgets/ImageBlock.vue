@@ -89,7 +89,7 @@ watchEffect(() => {
 </script>
 
 <template>
-	<div :class="{ 'image-block': true, 'broken-image': errorMessage?.length, 'small-image': isSmallImage }">
+	<div :class="{ 'image-block': true, 'broken-image': errorMessage?.length, 'small-image': !loading && isSmallImage }">
 		<!-- TODO: translations -->
 		<img
 			v-if="!loading && !errorMessage?.length"
@@ -145,6 +145,11 @@ watchEffect(() => {
 		word-break: break-word;
 		text-align: center;
 		color: var(--odk-muted-text-color);
+	}
+
+	.skeleton-loading {
+		min-width: 300px;
+		min-height: 300px;
 	}
 }
 </style>
