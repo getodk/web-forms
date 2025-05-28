@@ -138,6 +138,8 @@ watchEffect(() => {
 		margin: 20px;
 		font-size: var(--odk-hint-font-size);
 		font-weight: 300;
+		word-break: break-word;
+		text-align: center;
 		color: var(--odk-muted-text-color);
 	}
 }
