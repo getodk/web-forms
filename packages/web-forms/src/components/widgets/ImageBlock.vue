@@ -18,7 +18,6 @@ interface NaturalDimensions {
 	readonly naturalHeight: number;
 }
 
-const IMAGE_PLACEHOLDER = 'src/assets/images/broken-image.svg';
 const SMALL_IMAGE_SIZE = 300;
 
 const props = defineProps<ImageBlockProps>();
@@ -26,7 +25,7 @@ const props = defineProps<ImageBlockProps>();
 const formOptions = inject<FormOptions>('formOptions');
 const loading = ref<boolean>(true);
 const imageCache = inject<Map<JRResourceURLString, ObjectURL>>('imageCache', new Map());
-const imageUrl = ref<string | null>(null);
+const imageUrl = ref<string>('');
 const loadedDimensions = ref<NaturalDimensions>({ naturalWidth: 0, naturalHeight: 0 });
 const errorMessage = ref<string>('');
 
@@ -59,7 +58,7 @@ const loadImage = async (src?: JRResourceURL) => {
 	setImage(url);
 };
 
-const setImage = (value: string | null) => {
+const setImage = (value: string) => {
 	imageUrl.value = value;
 	loading.value = false;
 };
@@ -72,7 +71,7 @@ const setDimensions = (event: Event) => {
 };
 
 const handleError = (error: Error) => {
-	setImage(null);
+	setImage('');
 	errorMessage.value = error.message;
 };
 
@@ -90,19 +89,24 @@ watchEffect(() => {
 </script>
 
 <template>
-	<div :class="{ 'image-block': true, 'broken-image': imageUrl == null, 'small-image': isSmallImage }">
+	<div :class="{ 'image-block': true, 'broken-image': errorMessage?.length, 'small-image': isSmallImage }">
 		<!-- TODO: translations -->
 		<img
-			v-if="!loading"
-			:src="imageUrl ?? IMAGE_PLACEHOLDER"
+			v-if="!loading && !errorMessage?.length"
+			:src="imageUrl"
 			:alt="alt"
 			@load="setDimensions"
 			@error="handleError(new Error(`Failed to load image. File: ${props.resourceUrl?.href}`))"
 		>
-		<div v-else class="skeleton-loading" />
-		<p v-if="errorMessage?.length" class="image-error-message">
-			{{ errorMessage }}
-		</p>
+
+		<div v-if="loading" class="skeleton-loading" />
+
+		<template v-if="errorMessage?.length">
+			<img src="../../assets/images/broken-image.svg" :alt="alt">
+			<p class="image-error-message">
+				{{ errorMessage }}
+			</p>
+		</template>
 	</div>
 </template>
 
