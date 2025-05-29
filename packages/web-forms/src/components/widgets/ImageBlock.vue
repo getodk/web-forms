@@ -121,7 +121,7 @@ watchEffect(() => {
 	overflow: hidden;
 
 	img {
-		max-height: var(--odk-image-size);
+		max-height: var(--odk-max-image-height);
 		max-width: 100%;
 		width: auto;
 		height: auto;
@@ -130,7 +130,7 @@ watchEffect(() => {
 	}
 
 	&.small-image {
-		max-width: var(--odk-image-size);
+		max-width: var(--odk-image-container-size);
 	}
 
 	&.broken-image img {

@@ -61,8 +61,8 @@ const imageURL = computed((previous: ObjectURL | null = null) => {
 
 	.image-block {
 		background: var(--odk-muted-background-color);
-		min-width: var(--odk-image-size);
-		height: var(--odk-image-size);
+		min-width: var(--odk-image-container-size);
+		height: var(--odk-max-image-height);
 	}
 }
 

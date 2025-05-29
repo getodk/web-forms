@@ -16,7 +16,7 @@ const audio = computed(() => props.label.audioSource);
 </script>
 
 <template>
-	<span v-if="text != null" class="text-content">{{ label.asString }}</span>
+	<span v-if="text != null" class="text-content">{{ text }}</span>
 
 	<div v-if="image || video || audio" class="media-content">
 		<ImageBlock v-if="image" :resource-url="image" :alt="text" />
