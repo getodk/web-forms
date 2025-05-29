@@ -39,6 +39,11 @@
 	&.disabled,
 	&.disabled label {
 		cursor: not-allowed;
+
+		&:hover {
+			outline-color: var(--odk-border-color);
+			background-color: unset;
+		}
 	}
 
 	:deep(.text-content) {
@@ -86,4 +91,9 @@
 	background: var(--p-surface-50);
 	align-content: flex-start;
 	flex-wrap: wrap;
+
+	&.disabled,
+	&.disabled label {
+		opacity: 0.5;
+	}
 }
