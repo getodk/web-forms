@@ -70,8 +70,10 @@ const toggleMenu = (event: Event) => {
 </template>
 
 <style scoped lang="scss">
+@use 'primeflex/core/_variables.scss' as pf;
+
 h2 {
-	font-size: var(--odk-group-font-size);
+	font-size: var(--odk-top-group-font-size);
 	font-weight: 400;
 	margin: 0;
 	display: flex;
@@ -116,28 +118,34 @@ h2 {
 
 .p-panel.p-panel-toggleable {
 	background: var(--odk-base-background-color);
-	border: none;
 	box-shadow: none;
+	border: 1px solid var(--odk-border-color);
+	border-radius: var(--odk-radius);
 
-	.p-panel {
-		margin-left: -10px;
+	&:not(:last-child) {
+		margin-bottom: 20px;
 	}
 
 	:deep(.p-panel-header) {
 		display: flex;
-		padding: 15px 0;
 		align-items: start;
+		background: var(--odk-light-background-color);
+		border-radius: var(--odk-radius);
+		width: 100%;
+		padding: 15px 20px;
 
 		.p-panel-header-actions {
 			display: none;
 		}
+
+		.odk-icon {
+			margin-right: 15px;
+		}
 	}
 
 	:deep(.p-panel-content) {
-		border-left: 1px solid var(--odk-border-color);
-		margin-left: 10px;
-		border-radius: 0;
-		padding: 0 0 0 1.5rem;
+		border-top: 1px solid var(--odk-border-color);
+		padding: 15px 0;
 	}
 
 	:deep(.p-panel-toggler) {
@@ -149,5 +157,15 @@ h2 {
 	display: flex;
 	flex-direction: column;
 	gap: 0.5rem;
+}
+
+@media screen and (max-width: #{pf.$sm}) {
+	.p-panel.p-panel-toggleable {
+		border: none;
+
+		:deep(.p-panel-content) {
+			border: none;
+		}
+	}
 }
 </style>
