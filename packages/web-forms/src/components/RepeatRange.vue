@@ -10,7 +10,7 @@ const props = defineProps<{ node: RepeatRangeNode }>();
 const label = computed(() => props.node.currentState.label?.asString);
 </script>
 <template>
-	<FormPanel :title="label" :no-ui="!label" class="repeat" label-icon="icon-repeat">
+	<FormPanel :title="label" :no-ui="!label" :is-repeat="true">
 		<RepeatInstance v-for="(instance, index) in node.currentState.children" :key="index" :instance="instance" :instance-index="index" />
 
 		<div
