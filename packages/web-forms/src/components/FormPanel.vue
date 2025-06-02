@@ -151,6 +151,23 @@ h2 {
 	:deep(.p-panel-toggler) {
 		display: none;
 	}
+
+	// Nested groups
+	.p-panel.p-panel-toggleable {
+		border: none;
+
+		:deep(.p-panel-header) {
+			background: none;
+
+			h2 {
+				font-size: var(--odk-sub-group-font-size);
+			}
+		}
+
+		:deep(.p-panel-content) {
+			border: none;
+		}
+	}
 }
 
 .content-wrapper {
