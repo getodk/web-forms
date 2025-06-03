@@ -73,6 +73,7 @@ h2 {
 	margin: 0;
 	display: flex;
 	align-items: center;
+	cursor: pointer;
 }
 
 .label-number {
