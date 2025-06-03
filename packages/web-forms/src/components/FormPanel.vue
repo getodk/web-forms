@@ -102,7 +102,7 @@ h2 {
 		background: var(--odk-light-background-color);
 		border-radius: var(--odk-radius) var(--odk-radius) 0 0;
 		width: 100%;
-		padding: 15px 20px;
+		padding: 12px 20px;
 
 		.p-panel-toggle-button {
 			display: none;
@@ -133,6 +133,7 @@ h2 {
 	.p-panel.p-panel-toggleable {
 		// Nested groups
 		border: none;
+		margin-bottom: 0;
 
 		:deep(.p-panel-header) {
 			background: none;
@@ -153,6 +154,10 @@ h2 {
 }
 
 .p-panel :deep(.p-panel-header-actions) {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+
 	.p-button {
 		padding: 0;
 		min-height: auto;
@@ -172,7 +177,7 @@ h2 {
 }
 
 .p-panel.is-repeat {
-	.p-panel.p-panel-toggleable :deep(.p-panel-header) {
+	.p-panel.p-panel-toggleable.is-repeat :deep(.p-panel-header) {
 		// Nested repeats
 		border-radius: var(--odk-radius);
 		width: calc(100% - 30px);
@@ -180,7 +185,7 @@ h2 {
 	}
 
 	:deep(.p-panel-header),
-	.p-panel.p-panel-toggleable :deep(.p-panel-header) {
+	.p-panel.p-panel-toggleable.is-repeat :deep(.p-panel-header) {
 		background: var(--p-surface-200);
 	}
 }
@@ -191,6 +196,10 @@ h2 {
 
 		:deep(.p-panel-content) {
 			border: none;
+		}
+
+		&.is-repeat :deep(.p-panel-header) {
+			border-radius: var(--odk-radius);
 		}
 	}
 }
