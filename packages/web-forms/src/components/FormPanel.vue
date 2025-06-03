@@ -48,7 +48,7 @@ const menu = ref<InstanceType<typeof Menu> & MenuState>();
 			</div>
 		</template>
 		<template v-if="menuItems?.length" #icons>
-			<Button variant="text" @click="(event) => menu?.toggle(event)">
+			<Button variant="text" class="button-menu" @click="(event) => menu?.toggle(event)">
 				<IconSVG name="mdiDotsVertical" />
 			</Button>
 			<Menu ref="menu" :model="menuItems" :popup="true" />
