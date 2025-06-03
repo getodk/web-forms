@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <h:html xmlns="http://www.w3.org/2002/xforms" xmlns:h="http://www.w3.org/1999/xhtml"
-        xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-        xmlns:jr="http://openrosa.org/javarosa" xmlns:orx="http://openrosa.org/xforms"
-        xmlns:odk="http://www.opendatakit.org/xforms">
+  xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:jr="http://openrosa.org/javarosa" xmlns:orx="http://openrosa.org/xforms"
+  xmlns:odk="http://www.opendatakit.org/xforms">
   <h:head>
     <h:title>NestedRepeat</h:title>
     <model odk:xforms-version="1.0.0">
@@ -12,9 +12,6 @@
             <person_name />
             <language_repeat jr:template="">
               <language />
-              <language_course_repeat jr:template="">
-                <course />
-              </language_course_repeat>
             </language_repeat>
             <country />
           </person_repeat>
@@ -22,9 +19,6 @@
             <person_name />
             <language_repeat>
               <language />
-              <language_course_repeat>
-                <course />
-              </language_course_repeat>
             </language_repeat>
             <country />
           </person_repeat>
@@ -35,7 +29,6 @@
       </instance>
       <bind nodeset="/data/person_repeat/person_name" type="string" />
       <bind nodeset="/data/person_repeat/language_repeat/language" type="string" />
-      <bind nodeset="/data/person_repeat/language_repeat/language_course_repeat/course" required="true()" type="string" />
       <bind nodeset="/data/person_repeat/country" type="string" />
       <bind nodeset="/data/meta/instanceID" type="string" readonly="true()" jr:preload="uid" />
     </model>
@@ -46,24 +39,13 @@
       <repeat nodeset="/data/person_repeat">
         <input ref="/data/person_repeat/person_name">
           <label>Person Name</label>
-          <hint>(repeat level 1)</hint>
         </input>
         <group ref="/data/person_repeat/language_repeat">
           <label>Languages</label>
           <repeat nodeset="/data/person_repeat/language_repeat">
             <input ref="/data/person_repeat/language_repeat/language">
               <label>Language</label>
-              <hint>(repeat level 2)</hint>
             </input>
-            <group ref="/data/person_repeat/language_repeat/language_course_repeat">
-              <label>Courses taken</label>
-              <repeat nodeset="/data/person_repeat/language_repeat/language_course_repeat">
-                <input ref="/data/person_repeat/language_repeat/language_course_repeat/course">
-                  <label>Course</label>
-                  <hint>(repeat level 3)</hint>
-                </input>
-              </repeat>
-            </group>
           </repeat>
         </group>
         <input ref="/data/person_repeat/country">
