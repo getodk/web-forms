@@ -205,3 +205,11 @@ h2 {
 	}
 }
 </style>
+
+<style lang="scss">
+// Overrides Central's styles
+.p-menu-list .p-menu-item-link,
+.p-menu-list .p-menu-item-link:hover {
+	color: var(--odk-text-color);
+}
+</style>
