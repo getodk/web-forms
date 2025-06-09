@@ -19,8 +19,7 @@ const readmeFile = await fs.readFile(new URL('./README.md', rootUrl), 'utf-8');
 // Modified version of https://gist.github.com/rougier/c0d31f5cbdaac27b876c?permalink_comment_id=2269298#gistcomment-2269298
 const progress = (fraction) => {
 	const totalLength = 15;
-	const v = fraction * totalLength;
-	const barLength = v < 1 ? 1 : Math.floor(v);
+	const barLength = Math.floor(fraction * totalLength);
 	const bar = Array(barLength).fill('🟩').join('');
 	const remaining = Array(totalLength - barLength)
 		.fill('⬜')
