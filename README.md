@@ -43,16 +43,12 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 
 <!-- autogen: feature-matrix -->
 
-#####  ${\mathtt{Question types (basic functionality)\hspace{5mm}\color{green}█████\color{LightGray}██████████ \color{initial} 35\\%}}$
-
 <details>
-<summary>
+  <summary>
 
-<!-- prettier-ignore -->
-#####  ${\mathtt{Question types (basic functionality)\hspace{5mm}\color{green}█████\color{LightGray}██████████ \color{initial} 35\\%}}$
+#####  $`\texttt{Question types (basic functionality)\hspace{5mm}\color{green}█████\color{LightGray}██████████ \color{initial} 35\\%`$
 
-</summary>
-
+  </summary>
   <br/>
 
 | Feature <img width=250px/> | Progress |
@@ -94,15 +90,13 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 
 </details>
 
-#####  ${\texttt{Appearances\hspace{41mm}\color{green}████\color{LightGray}███████████ \color{initial} 28\\%}}$
-
 <details>
-<summary>
+  <summary>
 
 <!-- prettier-ignore -->
-#####  ${\texttt{Appearances\hspace{41mm}\color{green}████\color{LightGray}███████████ \color{initial} 28\\%}}$
+  #####  $\texttt{Appearances\hspace{41mm}\color{green}████\color{LightGray}███████████ \color{initial} 28\\%}$
 
-</summary>
+  </summary>
   <br/>
 
 | Feature <img width=250px/> | Progress |
@@ -152,15 +146,13 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 
 </details>
 
-#####  $\texttt{Parameters\hspace{43mm}\color{green}██████████\color{LightGray}█████ \color{initial} 70\\%}$
-
 <details>
-<summary>
+  <summary>
 
 <!-- prettier-ignore -->
-#####  $\texttt{Parameters\hspace{43mm}\color{green}██████████\color{LightGray}█████ \color{initial} 70\\%}$
+  #####  $\texttt{Parameters\hspace{43mm}\color{green}██████████\color{LightGray}█████ \color{initial} 70\\%}$
 
-</summary>
+  </summary>
   <br/>
 
 | Feature <img width=250px/>                                                                                                       | Progress |
@@ -178,13 +170,11 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 
 </details>
 
-#####  Form Logic\hspace{43mm}\color{green}████████████\color{LightGray}███ \color{initial} 83\\%
-
 <details>
   <summary>
 
 <!-- prettier-ignore -->
-#####  Form Logic\hspace{43mm}\color{green}████████████\color{LightGray}███ \color{initial} 83\\%
+  #####  $\texttt{Form Logic\hspace{43mm}\color{green}████████████\color{LightGray}███ \color{initial} 83\\%}$
 
   </summary>
   <br/>
