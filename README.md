@@ -43,7 +43,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 
 <!-- autogen: feature-matrix -->
 
-$${Title here? \hspace{5mm}\color{green}█████\color{LightGray}██████████ \color{initial} 35\\%}$$
+${\textsf{hello\hspace{5mm}\color{green}█████\color{LightGray}██████████ \color{initial} 35\\%}}$
 
 <details>
   <summary>
