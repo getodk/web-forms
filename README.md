@@ -46,7 +46,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 <details>
   <summary>
 
-#####  $`\texttt{Question types (basic functionality)\hspace{5mm}\color{green}█████\color{LightGray}██████████ \color{initial} 35\\%`$
+#####  $`\texttt{Question types (basic functionality)\hspace{5mm}\color{green}█████\color{LightGray}██████████ \color{initial} 35\\%}`$
 
   </summary>
   <br/>
