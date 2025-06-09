@@ -21,18 +21,10 @@ yarn workspace @getodk/web-forms dev
 
 ### Running tests
 
-To run all the tests as quickly as possible:
-
 ```sh
 yarn
 yarn build
-CI=true yarn test
-```
-
-This will use all available cores.  To restrict tests to a single core:
-
-```sh
-CI=true npx turbo run test --concurrency=1
+TZ=America/Phoenix CI=true npx turbo run test --concurrency=1
 ```
 
 ## Packages
