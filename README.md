@@ -47,7 +47,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 <summary>
 
 <!-- prettier-ignore -->
-#####  ${\texttt{Question types (basic functionality)\hspace{5mm}\color{green}█████\color{LightGray}██████████ \color{initial} 35\\%}}$
+#####  ${\mathtt{Question types (basic functionality)\hspace{5mm}\color{green}█████\color{LightGray}██████████ \color{initial} 35\\%}}$
 
 </summary>
 
