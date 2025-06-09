@@ -176,7 +176,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  #####  $\texttt{Form Logic\hspace{43mm}\color{green}████████████\color{LightGray}███ \color{initial} 83\\%}$
+#####  Form Logic\hspace{43mm}\color{green}████████████\color{LightGray}███ \color{initial} 83\\%
 
   </summary>
   <br/>
