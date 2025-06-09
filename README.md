@@ -47,7 +47,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  ##### Question types (basic functionality)<br/>🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 35\%
+  ##### Question types (basic functionality)<br/>🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 38\%
 
   </summary>
   <br/>
@@ -67,14 +67,14 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | geotrace                   |          |
 | geoshape                   |          |
 | start-geopoint             |          |
-| range                      |    🚧    |
+| range                      |    ✅    |
 | image                      |    ✅    |
 | barcode                    |          |
 | audio                      |          |
 | background-audio           |          |
 | video                      |          |
 | file                       |          |
-| date                       |          |
+| date                       |    🚧    |
 | time                       |          |
 | datetime                   |          |
 | rank                       |    ✅    |
@@ -95,7 +95,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  ##### Appearances<br/>🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 28\%
+  ##### Appearances<br/>🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 33\%
 
   </summary>
   <br/>
@@ -103,7 +103,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | Feature <img width=250px/> | Progress |
 | -------------------------- | :------: |
 | numbers                    |    ✅    |
-| multiline                  |          |
+| multiline                  |    ✅    |
 | url                        |          |
 | ex:                        |          |
 | thousands-sep              |    ✅    |
@@ -132,7 +132,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | minimal                    |    ✅    |
 | search / autocomplete      |    ✅    |
 | quick                      |          |
-| columns-pack               |          |
+| columns-pack               |    ✅    |
 | columns                    |    ✅    |
 | columns-n                  |    ✅    |
 | no-buttons                 |    ✅    |
@@ -175,7 +175,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  ##### Form Logic<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜ 83\%
+  ##### Form Logic<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜ 76\%
 
   </summary>
   <br/>
@@ -194,6 +194,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | default                    |    ✅    |
 | query parameter            |          |
 | repeat_count               |    ✅    |
+| create or update Entities  |          |
 
 </details>
 
@@ -206,22 +207,22 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   </summary>
   <br/>
 
-| Feature <img width=250px/>             | Progress |
-| -------------------------------------- | :------: |
-| label                                  |    ✅    |
-| hint                                   |    ✅    |
-| guidance hint                          |          |
-| Translations                           |    ✅    |
-| Translations with field/question value |          |
-| Markdown                               |          |
-| Inline HTML                            |          |
-| Form attachments                       |          |
-| image                                  |          |
-| big-image                              |          |
-| audio                                  |          |
-| video                                  |          |
-| secondary instance (last saved)        |          |
-| autoplay                               |          |
+| Feature <img width=250px/>                     | Progress |
+| ---------------------------------------------- | :------: |
+| label                                          |    ✅    |
+| hint                                           |    ✅    |
+| guidance hint                                  |          |
+| form translations                              |    ✅    |
+| form translations with ref to other fiel<br/>d |          |
+| Markdown                                       |          |
+| Inline HTML                                    |          |
+| Form attachments                               |          |
+| image                                          |    🚧    |
+| big-image                                      |          |
+| audio                                          |          |
+| video                                          |          |
+| secondary instance (last saved)                |          |
+| autoplay                                       |          |
 
 </details>
 
@@ -229,7 +230,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  ##### Theme and Layouts<br/>🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 20\%
+  ##### Theme and Layouts<br/>🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 18\%
 
   </summary>
   <br/>
@@ -239,6 +240,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | grid                       |          |
 | pages                      |          |
 | logo                       |          |
+| application translations   |          |
 | theme color                |          |
 | Submissions                |          |
 | preview                    |    ✅    |
