@@ -24,7 +24,7 @@ const progress = (fraction) => {
 	const remaining = Array(totalLength - barLength)
 		.fill('⬜')
 		.join('');
-	return `${bar}${remaining} ${Math.floor(fraction * 100)}\\\\%`;
+	return `${bar}${remaining} ${Math.floor(fraction * 100)}\\%`;
 };
 
 // Transform feature-matrix.json object into array
