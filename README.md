@@ -9,6 +9,18 @@ You can try a preview [on the ODK website](https://getodk.org/web-forms-preview/
 
 https://github.com/getodk/web-forms/assets/447837/9b25e1bc-d209-462c-8e9e-3259bd8c5aa6
 
+## Contributing
+
+To run ODK Web Forms from this repository:
+
+```sh
+yarn
+yarn build
+yarn workspace @getodk/web-forms dev
+```
+
+Then open http://localhost:5173/
+
 ## Packages
 
 > [!NOTE]
