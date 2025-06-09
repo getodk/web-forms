@@ -19,6 +19,14 @@ yarn build
 yarn workspace @getodk/web-forms dev
 ```
 
+This repository uses yarn workspaces, so to run an npm script in any of the packages:
+
+```sh
+yarn workspace @getodk/<package-name> <script-name>
+```
+
+So instead of `cd packages/web-forms && yarn test`, run `yarn workspace @getodk/web-forms test`.
+
 ### Running tests
 
 ```sh
@@ -27,7 +35,7 @@ yarn build
 TZ=America/Phoenix CI=true npx turbo run test --concurrency=1
 ```
 
-## Packages
+### Packages
 
 > [!NOTE]
 > Comprehensive usage and development instructions are coming soon! For now, you can see each package's README. Please be sure to run `yarn` commands from the project root.
