@@ -43,6 +43,8 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 
 <!-- autogen: feature-matrix -->
 
+#####  ${\mathtt{Question types (basic functionality)\hspace{5mm}\color{green}█████\color{LightGray}██████████ \color{initial} 35\\%}}$
+
 <details>
 <summary>
 
@@ -91,6 +93,8 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | audit                      |          |
 
 </details>
+
+#####  ${\texttt{Appearances\hspace{41mm}\color{green}████\color{LightGray}███████████ \color{initial} 28\\%}}$
 
 <details>
 <summary>
@@ -148,13 +152,15 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 
 </details>
 
+#####  $\texttt{Parameters\hspace{43mm}\color{green}██████████\color{LightGray}█████ \color{initial} 70\\%}$
+
 <details>
-  <summary>
+<summary>
 
 <!-- prettier-ignore -->
-  #####  $\texttt{Parameters\hspace{43mm}\color{green}██████████\color{LightGray}█████ \color{initial} 70\\%}$
+#####  $\texttt{Parameters\hspace{43mm}\color{green}██████████\color{LightGray}█████ \color{initial} 70\\%}$
 
-  </summary>
+</summary>
   <br/>
 
 | Feature <img width=250px/>                                                                                                       | Progress |
@@ -171,6 +177,8 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | Audit: location-priority, location-min-i<br/>nterval, location-max-age, track-changes<br/>, track-changes-reasons, identify-user |          |
 
 </details>
+
+#####  Form Logic\hspace{43mm}\color{green}████████████\color{LightGray}███ \color{initial} 83\\%
 
 <details>
   <summary>
