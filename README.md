@@ -19,8 +19,6 @@ yarn build
 yarn workspace @getodk/web-forms dev
 ```
 
-Then open http://localhost:5173/
-
 ## Packages
 
 > [!NOTE]
