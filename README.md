@@ -43,12 +43,10 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 
 <!-- autogen: feature-matrix -->
 
-${\textsf{hello\hspace{5mm}\color{green}█████\color{LightGray}██████████ \color{initial} 35\\%}}$
-
 <details>
   <summary>
 
-#####  $`\texttt{Question types (basic functionality)\hspace{5mm}\color{green}█████\color{LightGray}██████████ \color{initial} 35\\%}`$
+#####  Question types (basic functionality) 🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 35%
 
   </summary>
   <br/>
