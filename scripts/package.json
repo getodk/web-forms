@@ -5,9 +5,5 @@
   "type": "module",
   "scripts": {
     "test": "true"
-  },
-  "devDependencies": {
-    "globby": "^14.0.2",
-    "mustache": "4.2.0"
   }
 }
