@@ -9,19 +9,44 @@ You can try a preview [on the ODK website](https://getodk.org/web-forms-preview/
 
 https://github.com/getodk/web-forms/assets/447837/9b25e1bc-d209-462c-8e9e-3259bd8c5aa6
 
-## Packages
+## Contributing
 
-> [!NOTE]
-> Comprehensive usage and development instructions are coming soon! For now, you can see each package's README. Please be sure to run `yarn` commands from the project root.
+### Requirements
+
+We use [Volta](https://volta.sh/) to ensure consistent `node` and `yarn` versions. Published packages are available [on NPM](https://www.npmjs.com/search?q=getodk).
+
+### Running locally
+
+To run ODK Web Forms from this repository:
+
+```sh
+yarn
+yarn build
+yarn workspace @getodk/web-forms dev
+```
+
+This repository uses yarn workspaces, so to run an npm script in any of the packages:
+
+```sh
+yarn workspace @getodk/<package-name> <script-name>
+```
+
+So instead of `cd packages/web-forms && yarn test`, run `yarn workspace @getodk/web-forms test`.
+
+### Running tests
+
+```sh
+yarn
+yarn build
+TZ=America/Phoenix CI=true npx turbo run test --concurrency=1
+```
+
+### Packages
 
 - [web-forms](/packages/web-forms): form-filling frontend built with Vue
 - [xforms-engine](/packages/xforms-engine): implementation of the [ODK XForms specification](https://getodk.github.io/xforms-spec/)
 - [xpath](/packages/xpath): XPath evaluator with ODK XForms extensions
 - [scenario](/packages/scenario): engine client used to express tests on forms
-
-We use [Volta](https://volta.sh/) to ensure consistent `node` and `yarn` versions. Published packages are available [on NPM](https://www.npmjs.com/search?q=getodk).
-
-Run the preview with `yarn workspace @getodk/web-forms dev`.
 
 ## Project status
 
