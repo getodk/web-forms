@@ -156,18 +156,18 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   </summary>
   <br/>
 
-| Feature <img width=250px/>                                                                                             | Progress |
-| ---------------------------------------------------------------------------------------------------------------------- | :------: |
-| randomize                                                                                                              |    ✅    |
-| seed                                                                                                                   |    ✅    |
-| value                                                                                                                  |    ✅    |
-| label                                                                                                                  |    ✅    |
-| rows                                                                                                                   |    ✅    |
-| geopoint capture-accuracy, warning-accuracy, allow-mock-accuracy                                                       |    ✅    |
-| range start, end, step                                                                                                 |    ✅    |
-| image max-pixels                                                                                                       |          |
-| audio quality                                                                                                          |          |
-| Audit: location-priority, location-min-interval, location-max-age, track-changes, track-changes-reasons, identify-user |          |
+| Feature <img width=250px/>                                                                                                       | Progress |
+| -------------------------------------------------------------------------------------------------------------------------------- | :------: |
+| randomize                                                                                                                        |    ✅    |
+| seed                                                                                                                             |    ✅    |
+| value                                                                                                                            |    ✅    |
+| label                                                                                                                            |    ✅    |
+| rows                                                                                                                             |    ✅    |
+| geopoint capture-accuracy, warning-accur<br/>acy, allow-mock-accuracy                                                            |    ✅    |
+| range start, end, step                                                                                                           |    ✅    |
+| image max-pixels                                                                                                                 |          |
+| audio quality                                                                                                                    |          |
+| Audit: location-priority, location-min-i<br/>nterval, location-max-age, track-changes<br/>, track-changes-reasons, identify-user |          |
 
 </details>
 
@@ -277,81 +277,81 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   </summary>
   <br/>
 
-| Feature <img width=250px/>                                                                            |    Progress     |
-| ----------------------------------------------------------------------------------------------------- | :-------------: | ----------- | --------- | -------------- | --- |
-| operators                                                                                             |       ✅        |
-| predicates                                                                                            |       ✅        |
-| axes                                                                                                  |       ✅        |
-| string(\* arg)                                                                                        |       ✅        |
-| concat(string arg\*                                                                                   | node-set arg\*) | ✅          |
-| join(string separator, node-set nodes\*)                                                              |       ✅        |
-| substr(string value, number start, number end?)                                                       |       ✅        |
-| substring-before(string, string)                                                                      |       ✅        |
-| substring-after(string, string)                                                                       |       ✅        |
-| translate(string, string, string)                                                                     |       ✅        |
-| string-length(string arg)                                                                             |       ✅        |
-| normalize-space(string arg?)                                                                          |       ✅        |
-| contains(string haystack, string needle)                                                              |       ✅        |
-| starts-with(string haystack, string needle)                                                           |       ✅        |
-| ends-with(string haystack, string needle)                                                             |       ✅        |
-| uuid(number?)                                                                                         |       ✅        |
-| digest(string src, string algorithm, string encoding?)                                                |       ✅        |
-| pulldata(string instance_id, string desired_element, string query_element, string query)              |                 |
-| if(boolean condition, _ then, _ else)                                                                 |       ✅        |
-| coalesce(string arg1, string arg2)                                                                    |       ✅        |
-| once(string calc)                                                                                     |       ✅        |
-| true()                                                                                                |       ✅        |
-| false()                                                                                               |       ✅        |
-| boolean(\* arg)                                                                                       |       ✅        |
-| boolean-from-string(string arg)                                                                       |       ✅        |
-| not(boolean arg)                                                                                      |       ✅        |
-| regex(string value, string expression)                                                                |       ✅        |
-| checklist(number min, number max, string v\*)                                                         |       ✅        |
-| weighted-checklist(number min, number max, [string v, string w]\*)                                    |       ✅        |
-| number(\* arg)                                                                                        |       ✅        |
-| random()                                                                                              |       ✅        |
-| int(number arg)                                                                                       |       ✅        |
-| sum(node-set arg)                                                                                     |       ✅        |
-| max(node-set arg\*)                                                                                   |       ✅        |
-| min(node-set arg\*)                                                                                   |       ✅        |
-| round(number arg, number decimals?)                                                                   |       ✅        |
-| pow(number value, number power)                                                                       |       ✅        |
-| log(number arg)                                                                                       |       ✅        |
-| log10(number arg)                                                                                     |       ✅        |
-| abs(number arg)                                                                                       |       ✅        |
-| sin(number arg)                                                                                       |       ✅        |
-| cos(number arg)                                                                                       |       ✅        |
-| tan(number arg)                                                                                       |       ✅        |
-| asin(number arg)                                                                                      |       ✅        |
-| acos(number arg)                                                                                      |       ✅        |
-| atan(number arg)                                                                                      |       ✅        |
-| atan2(number arg, number arg)                                                                         |       ✅        |
-| sqrt(number arg)                                                                                      |       ✅        |
-| exp(number arg)                                                                                       |       ✅        |
-| exp10(number arg)                                                                                     |       ✅        |
-| pi()                                                                                                  |       ✅        |
-| count(node-set arg)                                                                                   |       ✅        |
-| count-non-empty(node-set arg)                                                                         |       ✅        |
-| position(node arg?)                                                                                   |       ✅        |
-| instance(string id)                                                                                   |       ✅        |
-| current()                                                                                             |       ✅        |
-| randomize(node-set arg, number seed)                                                                  |       ✅        |
-| today()                                                                                               |       ✅        |
-| now()                                                                                                 |       ✅        |
-| format-date(date value, string format)                                                                |       ✅        |
-| format-date-time(dateTime value, string format)                                                       |       ✅        |
-| date(\* value)                                                                                        |       ✅        |
-| decimal-date-time(dateTime value)                                                                     |       ✅        |
-| decimal-time(time value)                                                                              |       ✅        |
-| selected(string list, string value)                                                                   |       ✅        |
-| selected-at(string list, number index)                                                                |       ✅        |
-| count-selected(node node)                                                                             |       ✅        |
-| jr:choice-name(node node, string value)                                                               |                 |
-| jr:itext(string id)                                                                                   |       ✅        |
-| indexed-repeat(node-set arg, node-set repeat1, number index1, [node-set repeatN, number indexN]{0,2}) |       ✅        |
-| area(node-set ns                                                                                      |  geoshape gs)   | ✅          |
-| distance(node-set ns                                                                                  |   geoshape gs   | geotrace gt | (geopoint | string) arg\*) | ✅  |
-| base64-decode(base64Binary input)                                                                     |                 |
+| Feature <img width=250px/>                                                                                      | Progress |
+| --------------------------------------------------------------------------------------------------------------- | :------: |
+| operators                                                                                                       |    ✅    |
+| predicates                                                                                                      |    ✅    |
+| axes                                                                                                            |    ✅    |
+| string(\* arg)                                                                                                  |    ✅    |
+| concat(string arg*\|node-set arg*)                                                                              |    ✅    |
+| join(string separator, node-set nodes\*)                                                                        |    ✅    |
+| substr(string value, number start, numbe<br/>r end?)                                                            |    ✅    |
+| substring-before(string, string)                                                                                |    ✅    |
+| substring-after(string, string)                                                                                 |    ✅    |
+| translate(string, string, string)                                                                               |    ✅    |
+| string-length(string arg)                                                                                       |    ✅    |
+| normalize-space(string arg?)                                                                                    |    ✅    |
+| contains(string haystack, string needle)                                                                        |    ✅    |
+| starts-with(string haystack, string need<br/>le)                                                                |    ✅    |
+| ends-with(string haystack, string needle<br/>)                                                                  |    ✅    |
+| uuid(number?)                                                                                                   |    ✅    |
+| digest(string src, string algorithm, str<br/>ing encoding?)                                                     |    ✅    |
+| pulldata(string instance_id, string desi<br/>red_element, string query_element, strin<br/>g query)              |          |
+| if(boolean condition, _ then, _ else)                                                                           |    ✅    |
+| coalesce(string arg1, string arg2)                                                                              |    ✅    |
+| once(string calc)                                                                                               |    ✅    |
+| true()                                                                                                          |    ✅    |
+| false()                                                                                                         |    ✅    |
+| boolean(\* arg)                                                                                                 |    ✅    |
+| boolean-from-string(string arg)                                                                                 |    ✅    |
+| not(boolean arg)                                                                                                |    ✅    |
+| regex(string value, string expression)                                                                          |    ✅    |
+| checklist(number min, number max, string<br/> v\*)                                                              |    ✅    |
+| weighted-checklist(number min, number ma<br/>x, [string v, string w]\*)                                         |    ✅    |
+| number(\* arg)                                                                                                  |    ✅    |
+| random()                                                                                                        |    ✅    |
+| int(number arg)                                                                                                 |    ✅    |
+| sum(node-set arg)                                                                                               |    ✅    |
+| max(node-set arg\*)                                                                                             |    ✅    |
+| min(node-set arg\*)                                                                                             |    ✅    |
+| round(number arg, number decimals?)                                                                             |    ✅    |
+| pow(number value, number power)                                                                                 |    ✅    |
+| log(number arg)                                                                                                 |    ✅    |
+| log10(number arg)                                                                                               |    ✅    |
+| abs(number arg)                                                                                                 |    ✅    |
+| sin(number arg)                                                                                                 |    ✅    |
+| cos(number arg)                                                                                                 |    ✅    |
+| tan(number arg)                                                                                                 |    ✅    |
+| asin(number arg)                                                                                                |    ✅    |
+| acos(number arg)                                                                                                |    ✅    |
+| atan(number arg)                                                                                                |    ✅    |
+| atan2(number arg, number arg)                                                                                   |    ✅    |
+| sqrt(number arg)                                                                                                |    ✅    |
+| exp(number arg)                                                                                                 |    ✅    |
+| exp10(number arg)                                                                                               |    ✅    |
+| pi()                                                                                                            |    ✅    |
+| count(node-set arg)                                                                                             |    ✅    |
+| count-non-empty(node-set arg)                                                                                   |    ✅    |
+| position(node arg?)                                                                                             |    ✅    |
+| instance(string id)                                                                                             |    ✅    |
+| current()                                                                                                       |    ✅    |
+| randomize(node-set arg, number seed)                                                                            |    ✅    |
+| today()                                                                                                         |    ✅    |
+| now()                                                                                                           |    ✅    |
+| format-date(date value, string format)                                                                          |    ✅    |
+| format-date-time(dateTime value, string <br/>format)                                                            |    ✅    |
+| date(\* value)                                                                                                  |    ✅    |
+| decimal-date-time(dateTime value)                                                                               |    ✅    |
+| decimal-time(time value)                                                                                        |    ✅    |
+| selected(string list, string value)                                                                             |    ✅    |
+| selected-at(string list, number index)                                                                          |    ✅    |
+| count-selected(node node)                                                                                       |    ✅    |
+| jr:choice-name(node node, string value)                                                                         |          |
+| jr:itext(string id)                                                                                             |    ✅    |
+| indexed-repeat(node-set arg, node-set re<br/>peat1, number index1, [node-set repeatN,<br/> number indexN]{0,2}) |    ✅    |
+| area(node-set ns\|geoshape gs)                                                                                  |    ✅    |
+| distance(node-set ns\|geoshape gs\|geotr<br/>ace gt\|(geopoint\|string) arg\*)                                  |    ✅    |
+| base64-decode(base64Binary input)                                                                               |          |
 
 </details>
 

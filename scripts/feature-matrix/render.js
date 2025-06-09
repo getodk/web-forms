@@ -27,11 +27,20 @@ const progress = (fraction) => {
 	return `${bar}${remaining} ${Math.floor(fraction * 100)}\\%`;
 };
 
+// Not so smart, blindly breaks the word. Okay for now.
+const wrapString = (str, maxLength) => {
+	let parts = [];
+	for (let i = 0; i < str.length; i += maxLength) {
+		parts.push(str.slice(i, i + maxLength));
+	}
+	return parts.join('<br/>');
+};
+
 // Transform feature-matrix.json object into array
 const featureCategories = Object.keys(featureMatrix).map((featureCategory) => {
 	const features = Object.keys(featureMatrix[featureCategory]).map((feature) => {
 		return {
-			label: feature,
+			label: wrapString(feature.replaceAll('|', '\\|'), 40),
 			status: featureMatrix[featureCategory][feature],
 		};
 	});
