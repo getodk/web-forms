@@ -19,6 +19,14 @@ yarn build
 yarn workspace @getodk/web-forms dev
 ```
 
+### Running tests
+
+```sh
+yarn
+yarn build
+yarn test
+```
+
 ## Packages
 
 > [!NOTE]
