@@ -93,12 +93,12 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 </details>
 
 <details>
-  <summary>
+<summary>
 
 <!-- prettier-ignore -->
-  #####  ${\texttt{Appearances\hspace{41mm}\color{green}████\color{LightGray}███████████ \color{initial} 28\\%}}$
+#####  ${\texttt{Appearances\hspace{41mm}\color{green}████\color{LightGray}███████████ \color{initial} 28\\%}}$
 
-  </summary>
+</summary>
   <br/>
 
 | Feature <img width=250px/> | Progress |
