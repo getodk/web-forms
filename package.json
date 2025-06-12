@@ -21,9 +21,9 @@
   ],
   "scripts": {
     "preinstall": "npx only-allow yarn",
-    "test": "turbo run test",
-    "build": "turbo run build",
-    "types": "turbo run types",
+    "test": "TURBO_TELEMETRY_DISABLED=1 turbo run test",
+    "build": "TURBO_TELEMETRY_DISABLED=1 turbo run build",
+    "types": "TURBO_TELEMETRY_DISABLED=1 turbo run types",
     "bump": "changeset add",
     "format": "npm-run-all --print-name format:vue format:prettier",
     "format:prettier": "prettier -w \"**/*\" --ignore-unknown --cache",
