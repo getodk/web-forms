@@ -67,6 +67,43 @@ Individual test environments, and their corresponding watch modes, also have sep
 
 Upload XLSForm and XForm functionality in [`demo`](./src/demo/) app and in dev mode depends on [XLSForm-online](https://github.com/getodk/xlsform-online). Run the xlsform-online locally. By default it runs on port 8000, if you are running it on another port then you should update the [`config`](./src/demo/config.json) file.
 
+### Project Structure
+
+Below is the simplified file structure for ODK XForms and testing:
+
+```
+web-forms/
+├── public/                   # Static assets (e.g., favicon.ico, odk-logo.svg)
+├── src/
+│   ├── assets/
+│   │   ├── styles/
+│   │   ├── images/
+│   ├── components/           # UI components
+│   │   ├── question-types/   # Question types (e.g., InputText.vue, SelectOne.vue)
+│   │   ├── form/             # Form rendering (e.g., FormContainer.vue)
+│   │   ├── common/           # Generic components (e.g., ControlLabel.vue)
+│   ├── demo/                 # Demo page
+│   ├── services/             # Singleton services encapsulating business logic
+│   ├── lib/                  # Utilities
+│   ├── App.vue
+│   ├── WebFormsPlugin.ts     # Vue plugin
+├── tests/
+│   ├── unit/                 # Unit tests
+│   ├── e2e/                  # E2e tests
+├── package.json
+├── vite.config.ts
+├── playwright.config.ts
+```
+
+#### Naming convention
+- Folders: use `kebab-case` and plural for collections. Example: `question-types`.
+- Files:
+  - Vue Components: use `PascalCase` with a minimum of two words. Example: `InputText.vue`.
+  - TypeScript/JavaScript: use `kebab-case` for utilities, composables, and API modules. Example: `initialize-form-state.ts`, `forms.ts`.
+  - Styles: use `kebab-case` and descriptive of purpose. Example: `reset.scss`.
+  - Tests: Match name of the component or file being tested, suffixed with `.test.ts`. Example: `InputText.test.ts`, `initialize-form-state.test.ts`.
+  - JSON and Other Files (.json, .md, etc.): use `kebab-case`.
+
 ### Styling Overview
 
 This project uses a combination of [PrimeFlex](https://primeflex.org/) and [PrimeVue](https://primevue.org/) for consistent styling, alongside specific font rules for the ODK Website's Web Forms Preview.
