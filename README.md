@@ -9,19 +9,44 @@ You can try a preview [on the ODK website](https://getodk.org/web-forms-preview/
 
 https://github.com/getodk/web-forms/assets/447837/9b25e1bc-d209-462c-8e9e-3259bd8c5aa6
 
-## Packages
+## Contributing
 
-> [!NOTE]
-> Comprehensive usage and development instructions are coming soon! For now, you can see each package's README. Please be sure to run `yarn` commands from the project root.
+### Requirements
+
+We use [Volta](https://volta.sh/) to ensure consistent `node` and `yarn` versions. Published packages are available [on NPM](https://www.npmjs.com/search?q=getodk).
+
+### Running locally
+
+To run ODK Web Forms from this repository:
+
+```sh
+yarn
+yarn build
+yarn workspace @getodk/web-forms dev
+```
+
+This repository uses yarn workspaces, so to run an npm script in any of the packages:
+
+```sh
+yarn workspace @getodk/<package-name> <script-name>
+```
+
+So instead of `cd packages/web-forms && yarn test`, run `yarn workspace @getodk/web-forms test`.
+
+### Running tests
+
+```sh
+yarn
+yarn build
+TZ=America/Phoenix CI=true npx turbo run test --concurrency=1
+```
+
+### Packages
 
 - [web-forms](/packages/web-forms): form-filling frontend built with Vue
 - [xforms-engine](/packages/xforms-engine): implementation of the [ODK XForms specification](https://getodk.github.io/xforms-spec/)
 - [xpath](/packages/xpath): XPath evaluator with ODK XForms extensions
 - [scenario](/packages/scenario): engine client used to express tests on forms
-
-We use [Volta](https://volta.sh/) to ensure consistent `node` and `yarn` versions. Published packages are available [on NPM](https://www.npmjs.com/search?q=getodk).
-
-Run the preview with `yarn workspace @getodk/web-forms dev`.
 
 ## Project status
 
@@ -47,7 +72,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  #####  $\texttt{Question types (basic functionality)\hspace{5mm}\color{green}█████\color{LightGray}██████████ \color{initial} 35\\%}$
+  ##### Question types (basic functionality)<br/>🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 38\%
 
   </summary>
   <br/>
@@ -67,14 +92,14 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | geotrace                   |          |
 | geoshape                   |          |
 | start-geopoint             |          |
-| range                      |    🚧    |
+| range                      |    ✅    |
 | image                      |    ✅    |
 | barcode                    |          |
 | audio                      |          |
 | background-audio           |          |
 | video                      |          |
 | file                       |          |
-| date                       |          |
+| date                       |    🚧    |
 | time                       |          |
 | datetime                   |          |
 | rank                       |    ✅    |
@@ -95,7 +120,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  #####  $\texttt{Appearances\hspace{41mm}\color{green}████\color{LightGray}███████████ \color{initial} 28\\%}$
+  ##### Appearances<br/>🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 33\%
 
   </summary>
   <br/>
@@ -103,7 +128,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | Feature <img width=250px/> | Progress |
 | -------------------------- | :------: |
 | numbers                    |    ✅    |
-| multiline                  |          |
+| multiline                  |    ✅    |
 | url                        |          |
 | ex:                        |          |
 | thousands-sep              |    ✅    |
@@ -132,7 +157,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | minimal                    |    ✅    |
 | search / autocomplete      |    ✅    |
 | quick                      |          |
-| columns-pack               |          |
+| columns-pack               |    ✅    |
 | columns                    |    ✅    |
 | columns-n                  |    ✅    |
 | no-buttons                 |    ✅    |
@@ -151,7 +176,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  #####  $\texttt{Parameters\hspace{43mm}\color{green}██████████\color{LightGray}█████ \color{initial} 70\\%}$
+  ##### Parameters<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜ 70\%
 
   </summary>
   <br/>
@@ -175,7 +200,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  #####  $\texttt{Form Logic\hspace{43mm}\color{green}████████████\color{LightGray}███ \color{initial} 83\\%}$
+  ##### Form Logic<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜ 76\%
 
   </summary>
   <br/>
@@ -194,6 +219,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | default                    |    ✅    |
 | query parameter            |          |
 | repeat_count               |    ✅    |
+| create or update Entities  |          |
 
 </details>
 
@@ -201,27 +227,27 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  #####  $\texttt{Descriptions and Annotations\hspace{14mm}\color{green}███\color{LightGray}████████████ \color{initial} 21\\%}$
+  ##### Descriptions and Annotations<br/>🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 21\%
 
   </summary>
   <br/>
 
-| Feature <img width=250px/>             | Progress |
-| -------------------------------------- | :------: |
-| label                                  |    ✅    |
-| hint                                   |    ✅    |
-| guidance hint                          |          |
-| Translations                           |    ✅    |
-| Translations with field/question value |          |
-| Markdown                               |          |
-| Inline HTML                            |          |
-| Form attachments                       |          |
-| image                                  |          |
-| big-image                              |          |
-| audio                                  |          |
-| video                                  |          |
-| secondary instance (last saved)        |          |
-| autoplay                               |          |
+| Feature <img width=250px/>                     | Progress |
+| ---------------------------------------------- | :------: |
+| label                                          |    ✅    |
+| hint                                           |    ✅    |
+| guidance hint                                  |          |
+| form translations                              |    ✅    |
+| form translations with ref to other fiel<br/>d |          |
+| Markdown                                       |          |
+| Inline HTML                                    |          |
+| Form attachments                               |          |
+| image                                          |    🚧    |
+| big-image                                      |          |
+| audio                                          |          |
+| video                                          |          |
+| secondary instance (last saved)                |          |
+| autoplay                                       |          |
 
 </details>
 
@@ -229,7 +255,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  #####  $\texttt{Theme and Layouts\hspace{30mm}\color{green}██\color{LightGray}█████████████ \color{initial} 18\\%}$
+  ##### Theme and Layouts<br/>🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 18\%
 
   </summary>
   <br/>
@@ -239,6 +265,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | grid                       |          |
 | pages                      |          |
 | logo                       |          |
+| application translations   |          |
 | theme color                |          |
 | Submissions                |          |
 | preview                    |    ✅    |
@@ -253,7 +280,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  #####  $\texttt{Offline capabilities\hspace{31mm}\color{green}█\color{LightGray}██████████████ \color{initial} 0\\%}$
+  ##### Offline capabilities<br/>⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 0\%
 
   </summary>
   <br/>
@@ -272,7 +299,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  #####  $\texttt{XPath\hspace{51mm}\color{green}██████████████\color{LightGray}█ \color{initial} 95\\%}$
+  ##### XPath<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜ 95\%
 
   </summary>
   <br/>

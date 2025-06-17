@@ -35,7 +35,7 @@ interface RemoteXFormResourceOptions extends BaseXFormResourceOptions {
 	 * attachments in for that use case, but we'd need to design for it. Until
 	 * then, it doesn't make a whole lot of sense to accept arbitrary IO here.
 	 */
-	readonly initializeFormAttachmentService?: never;
+	readonly initializeFormAttachmentService?: ResourceServiceFactory;
 }
 
 type XFormResourceOptions<Type extends XFormResourceType> = {
@@ -78,7 +78,7 @@ const extractURLIdentifier = (remoteUrl: URL): string => {
 	return match?.[1] ?? '';
 };
 
-type LoadXFormXML = () => Promise<string>;
+type LoadXFormXML = () => Promise<Blob | string>;
 
 const xformURLLoader = (url: URL): LoadXFormXML => {
 	return async () => {
@@ -102,7 +102,7 @@ export class XFormResource<Type extends XFormResourceType> {
 				const service = new JRResourceService();
 				const parentPath = localPath.replace(/\/[^/]+$/, '');
 
-				service.activateFixtures(parentPath, ['file', 'file-csv']);
+				service.activateFixtures(parentPath, ['file', 'file-csv', 'images']);
 
 				return service;
 			},
@@ -115,6 +115,14 @@ export class XFormResource<Type extends XFormResourceType> {
 	): XFormResource<'remote'> {
 		const resourceURL = new URL(remoteURL);
 		const loadXML = xformURLLoader(resourceURL);
+		const attachmentService = () => {
+			const service = new JRResourceService();
+			const parentPath = resourceURL.pathname.replace(/\/[^/]+$/, '');
+
+			service.activateFixtures(parentPath, ['file', 'file-csv', 'images']);
+
+			return service;
+		};
 
 		return new XFormResource('remote', resourceURL, loadXML, {
 			...options,
@@ -122,6 +130,8 @@ export class XFormResource<Type extends XFormResourceType> {
 			category: options?.category ?? 'other',
 			identifier: options?.identifier ?? extractURLIdentifier(resourceURL),
 			localPath: options?.localPath ?? null,
+			initializeFormAttachmentService:
+				options?.initializeFormAttachmentService ?? attachmentService,
 		});
 	}
 
