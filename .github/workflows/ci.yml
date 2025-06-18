@@ -158,7 +158,6 @@ jobs:
             node_modules
             **/node_modules
           key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
-          fail-on-cache-miss: true
 
       - uses: 'actions/cache@v4'
         id: cache-build
@@ -168,7 +167,6 @@ jobs:
             packages/*/dist
             packages/web-forms/dist-demo
           key: build-${{ matrix.node-version }}-${{ github.sha }}
-          fail-on-cache-miss: true
 
       - if: ${{ matrix.target == 'Node' }}
         run: 'yarn workspace @getodk/common test:types'
@@ -217,7 +215,6 @@ jobs:
             node_modules
             **/node_modules
           key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
-          fail-on-cache-miss: true
 
       - uses: 'actions/cache@v4'
         id: cache-build
@@ -227,7 +224,6 @@ jobs:
             packages/*/dist
             packages/web-forms/dist-demo
           key: build-${{ matrix.node-version }}-${{ github.sha }}
-          fail-on-cache-miss: true
 
       - if: ${{ matrix.target == 'Node' }}
         run: 'yarn workspace @getodk/xforms-engine test:types'
@@ -276,7 +272,6 @@ jobs:
             node_modules
             **/node_modules
           key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
-          fail-on-cache-miss: true
 
       - uses: 'actions/cache@v4'
         id: cache-build
@@ -286,7 +281,6 @@ jobs:
             packages/*/dist
             packages/web-forms/dist-demo
           key: build-${{ matrix.node-version }}-${{ github.sha }}
-          fail-on-cache-miss: true
 
       - if: ${{ matrix.target == 'Node' }}
         run: 'yarn workspace @getodk/scenario test:types'
@@ -335,7 +329,6 @@ jobs:
             node_modules
             **/node_modules
           key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
-          fail-on-cache-miss: true
 
       - uses: 'actions/cache@v4'
         id: cache-build
@@ -345,7 +338,6 @@ jobs:
             packages/*/dist
             packages/web-forms/dist-demo
           key: build-${{ matrix.node-version }}-${{ github.sha }}
-          fail-on-cache-miss: true
 
       - uses: szenius/set-timezone@v2.0
         with:
@@ -389,7 +381,6 @@ jobs:
             node_modules
             **/node_modules
           key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
-          fail-on-cache-miss: true
 
       - uses: 'actions/cache@v4'
         id: cache-build
@@ -399,7 +390,6 @@ jobs:
             packages/*/dist
             packages/web-forms/dist-demo
           key: build-${{ matrix.node-version }}-${{ github.sha }}
-          fail-on-cache-miss: true
 
       - run: 'yarn workspace @getodk/tree-sitter-xpath test'
 
@@ -438,7 +428,6 @@ jobs:
             node_modules
             **/node_modules
           key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
-          fail-on-cache-miss: true
 
       - uses: 'actions/cache@v4'
         id: cache-build
@@ -448,7 +437,6 @@ jobs:
             packages/*/dist
             packages/web-forms/dist-demo
           key: build-${{ matrix.node-version }}-${{ github.sha }}
-          fail-on-cache-miss: true
 
       - if: ${{ matrix.target == 'Node' }}
         run: 'yarn workspace @getodk/web-forms test:types'
