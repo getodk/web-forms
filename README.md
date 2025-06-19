@@ -9,20 +9,6 @@ You can try a preview [on the ODK website](https://getodk.org/web-forms-preview/
 
 https://github.com/getodk/web-forms/assets/447837/9b25e1bc-d209-462c-8e9e-3259bd8c5aa6
 
-## Packages
-
-> [!NOTE]
-> Comprehensive usage and development instructions are coming soon! For now, you can see each package's README. Please be sure to run `yarn` commands from the project root.
-
-- [web-forms](/packages/web-forms): form-filling frontend built with Vue
-- [xforms-engine](/packages/xforms-engine): implementation of the [ODK XForms specification](https://getodk.github.io/xforms-spec/)
-- [xpath](/packages/xpath): XPath evaluator with ODK XForms extensions
-- [scenario](/packages/scenario): engine client used to express tests on forms
-
-We use [Volta](https://volta.sh/) to ensure consistent `node` and `yarn` versions. Published packages are available [on NPM](https://www.npmjs.com/search?q=getodk).
-
-Run the preview with `yarn workspace @getodk/web-forms dev`.
-
 ## Project status
 
 ODK Web Forms is developed by the [ODK team](https://getodk.org/).
@@ -47,7 +33,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  #####  $\texttt{Question types (basic functionality)\hspace{5mm}\color{green}█████\color{LightGray}██████████ \color{initial} 35\\%}$
+  ##### Question types (basic functionality)<br/>🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 38\%
 
   </summary>
   <br/>
@@ -67,14 +53,14 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | geotrace                   |          |
 | geoshape                   |          |
 | start-geopoint             |          |
-| range                      |    🚧    |
+| range                      |    ✅    |
 | image                      |    ✅    |
 | barcode                    |          |
 | audio                      |          |
 | background-audio           |          |
 | video                      |          |
 | file                       |          |
-| date                       |          |
+| date                       |    🚧    |
 | time                       |          |
 | datetime                   |          |
 | rank                       |    ✅    |
@@ -95,7 +81,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  #####  $\texttt{Appearances\hspace{41mm}\color{green}████\color{LightGray}███████████ \color{initial} 28\\%}$
+  ##### Appearances<br/>🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 33\%
 
   </summary>
   <br/>
@@ -103,7 +89,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | Feature <img width=250px/> | Progress |
 | -------------------------- | :------: |
 | numbers                    |    ✅    |
-| multiline                  |          |
+| multiline                  |    ✅    |
 | url                        |          |
 | ex:                        |          |
 | thousands-sep              |    ✅    |
@@ -132,7 +118,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | minimal                    |    ✅    |
 | search / autocomplete      |    ✅    |
 | quick                      |          |
-| columns-pack               |          |
+| columns-pack               |    ✅    |
 | columns                    |    ✅    |
 | columns-n                  |    ✅    |
 | no-buttons                 |    ✅    |
@@ -151,7 +137,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  #####  $\texttt{Parameters\hspace{43mm}\color{green}██████████\color{LightGray}█████ \color{initial} 70\\%}$
+  ##### Parameters<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜ 70\%
 
   </summary>
   <br/>
@@ -175,7 +161,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  #####  $\texttt{Form Logic\hspace{43mm}\color{green}████████████\color{LightGray}███ \color{initial} 83\\%}$
+  ##### Form Logic<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜ 76\%
 
   </summary>
   <br/>
@@ -194,6 +180,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | default                    |    ✅    |
 | query parameter            |          |
 | repeat_count               |    ✅    |
+| create or update Entities  |          |
 
 </details>
 
@@ -201,27 +188,27 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  #####  $\texttt{Descriptions and Annotations\hspace{14mm}\color{green}███\color{LightGray}████████████ \color{initial} 21\\%}$
+  ##### Descriptions and Annotations<br/>🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 21\%
 
   </summary>
   <br/>
 
-| Feature <img width=250px/>             | Progress |
-| -------------------------------------- | :------: |
-| label                                  |    ✅    |
-| hint                                   |    ✅    |
-| guidance hint                          |          |
-| Translations                           |    ✅    |
-| Translations with field/question value |          |
-| Markdown                               |          |
-| Inline HTML                            |          |
-| Form attachments                       |          |
-| image                                  |          |
-| big-image                              |          |
-| audio                                  |          |
-| video                                  |          |
-| secondary instance (last saved)        |          |
-| autoplay                               |          |
+| Feature <img width=250px/>                     | Progress |
+| ---------------------------------------------- | :------: |
+| label                                          |    ✅    |
+| hint                                           |    ✅    |
+| guidance hint                                  |          |
+| form translations                              |    ✅    |
+| form translations with ref to other fiel<br/>d |          |
+| Markdown                                       |          |
+| Inline HTML                                    |          |
+| Form attachments                               |          |
+| image                                          |    🚧    |
+| big-image                                      |          |
+| audio                                          |          |
+| video                                          |          |
+| secondary instance (last saved)                |          |
+| autoplay                                       |          |
 
 </details>
 
@@ -229,7 +216,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  #####  $\texttt{Theme and Layouts\hspace{30mm}\color{green}██\color{LightGray}█████████████ \color{initial} 18\\%}$
+  ##### Theme and Layouts<br/>🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 18\%
 
   </summary>
   <br/>
@@ -239,6 +226,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | grid                       |          |
 | pages                      |          |
 | logo                       |          |
+| application translations   |          |
 | theme color                |          |
 | Submissions                |          |
 | preview                    |    ✅    |
@@ -253,7 +241,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  #####  $\texttt{Offline capabilities\hspace{31mm}\color{green}█\color{LightGray}██████████████ \color{initial} 0\\%}$
+  ##### Offline capabilities<br/>⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 0\%
 
   </summary>
   <br/>
@@ -265,6 +253,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | save as draft                |          |
 | offline entities             |          |
 | MBtiles / offline map layers |          |
+| Data encryption              |          |
 
 </details>
 
@@ -272,7 +261,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  #####  $\texttt{XPath\hspace{51mm}\color{green}██████████████\color{LightGray}█ \color{initial} 95\\%}$
+  ##### XPath<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜ 95\%
 
   </summary>
   <br/>
@@ -406,13 +395,96 @@ We will be adding color and more styling soon. We intend to expose a way to do b
 ### In the ODK ecosystem
 
 - [JavaRosa](https://github.com/getodk/javarosa) is the reference implementation for [ODK XForms](https://getodk.github.io/xforms-spec/). It powers the [Collect mobile application](https://github.com/getodk/collect/).
-- [Enketo](https://github.com/enketo/enketo) is an ODK XForms web form application that has been maintained by the ODK team since 2021.
+- [Enketo](https://github.com/enketo/enketo) is an ODK XForms web form application that was maintained by the ODK team from 2021 to 2024.
 - [XLSForm](https://github.com/xlsform/pyxform) is a standard for developing ODK XForms using spreadsheets.
 
 ### Outside the ODK ecosystem
 
 - [Orbeon forms](https://www.orbeon.com/) is a web form system that uses the W3C XForms standard.
 - [Fore](https://github.com/Jinntec/Fore) is an XForms-inspired framework for defining frontend applications.
+
+## Contributing to the Project
+
+Thank you for contributing! Follow these guidelines for smooth collaboration.
+
+### Requirements
+
+We use [Volta](https://volta.sh/) to ensure consistent `node` and `yarn` versions. Published packages are available [on NPM](https://www.npmjs.com/search?q=getodk).
+
+### Running locally
+
+To run ODK Web Forms from this repository:
+
+```sh
+yarn
+yarn build
+yarn workspace @getodk/web-forms dev
+```
+
+This repository uses yarn workspaces, so to run an npm script in any of the packages:
+
+```sh
+yarn workspace @getodk/<package-name> <script-name>
+```
+
+So instead of `cd packages/web-forms && yarn test`, run `yarn workspace @getodk/web-forms test`.
+
+### Running tests
+
+```sh
+yarn
+yarn build
+TZ=America/Phoenix CI=true npx turbo run test --concurrency=1
+```
+
+### Packages
+
+- [web-forms](/packages/web-forms): form-filling frontend built with Vue
+- [xforms-engine](/packages/xforms-engine): implementation of the [ODK XForms specification](https://getodk.github.io/xforms-spec/)
+- [xpath](/packages/xpath): XPath evaluator with ODK XForms extensions
+- [scenario](/packages/scenario): engine client used to express tests on forms
+
+### Commit message
+
+Consider using [Conventional Commits](https://www.conventionalcommits.org/):
+
+```
+<type>(<issue>): <description>
+
+<optional body>
+
+<optional footer>
+```
+
+- **Type**: `feat`, `fix`, `docs`, `test`, `chore`, `perf`.
+- **Issue**: Reference ticket (e.g., `#33`).
+- **Description**: ≤50 chars, lowercase, present tense (e.g., `add geopoint input`).
+- **Body**: List changes (e.g., `- add geopoint.xml`).
+- **Footer**: Use `Co-authored-by: @<username>` for credits to another contributor.
+
+**Example**:
+
+```
+feat(#33): add input components
+
+- Add geopoint input in Vue
+- Add XPath evaluator
+
+Co-authored-by: @jane_doe
+```
+
+## Pull Requests
+
+- **Squash and Merge:** After approval, and when possible "squash and merge" your PR to maintain a clean commit history.
+- **Keep PRs Focused:** Break large changes into smaller, focused PRs to simplify review and reduce merge conflicts.
+- **Code Style:** Adhere to the project's linting and formatting rules (e.g., ESLint, Prettier). Avoid skipping lint rules.
+- **Testing:** Include unit and/or integration tests for new features or bug fixes.
+- **PR Description:**
+  - Reference related issues (e.g., Fixes #123).
+  - Clearly describe the changes, their purpose, and any impact on existing functionality.
+  - If applicable, include screenshot and videos of your testing.
+
+Contact maintainers with questions. Happy contributing!
 
 ## Releases
 

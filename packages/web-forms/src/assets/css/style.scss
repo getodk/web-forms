@@ -4,6 +4,7 @@
  */
 
 @use 'primeflex/primeflex.scss' as pf;
+@use 'sass:map';
 
 /**
  * ODK CSS Variables
@@ -12,13 +13,15 @@
 :root {
 	--odk-font-family: Roboto, sans-serif;
 
-	--odk-base-font-size: #{map-get(pf.$font-size-props, 'text-base')};
-	--odk-heading-font-size: #{map-get(pf.$font-size-props, 'text-4xl')};
-	--odk-title-font-size: #{map-get(pf.$font-size-props, 'text-2xl')};
-	--odk-group-font-size: #{map-get(pf.$font-size-props, 'text-xl')};
-	--odk-question-font-size: #{map-get(pf.$font-size-props, 'text-lg')};
-	--odk-answer-font-size: #{map-get(pf.$font-size-props, 'text-base')};
-	--odk-hint-font-size: #{map-get(pf.$font-size-props, 'text-sm')};
+	--odk-base-font-size: #{map.get(pf.$font-size-props, 'text-base')};
+	--odk-heading-font-size: #{map.get(pf.$font-size-props, 'text-4xl')};
+	--odk-title-font-size: #{map.get(pf.$font-size-props, 'text-3xl')};
+	--odk-top-group-font-size: #{map.get(pf.$font-size-props, 'text-2xl')};
+	--odk-sub-group-font-size: #{map.get(pf.$font-size-props, 'text-xl')};
+	--odk-dialog-title-font-size: #{map.get(pf.$font-size-props, 'text-xl')};
+	--odk-question-font-size: #{map.get(pf.$font-size-props, 'text-lg')};
+	--odk-answer-font-size: #{map.get(pf.$font-size-props, 'text-base')};
+	--odk-hint-font-size: #{map.get(pf.$font-size-props, 'text-sm')};
 
 	--odk-primary-text-color: var(--p-primary-500);
 	--odk-primary-light-background-color: var(--p-primary-100);
@@ -36,6 +39,7 @@
 	--odk-muted-text-color: var(--p-surface-500);
 
 	--odk-base-background-color: var(--p-surface-0);
+	--odk-light-background-color: var(--p-surface-50);
 	--odk-muted-background-color: var(--p-surface-100);
 	--odk-inactive-background-color: var(--p-surface-300);
 
@@ -44,6 +48,9 @@
 	--odk-radius: 6px;
 
 	--odk-max-form-width: 900px;
+
+	--odk-max-image-height: 300px;
+	--odk-image-container-size: 300px;
 
 	/*
 	 * This project uses a centralized z-index layering system to manage the stacking order of UI
@@ -72,4 +79,28 @@
 
 	/* Critical UI elements (e.g., loading spinners, toast notifications) */
 	--odk-z-index-topmost: 1000;
+}
+
+.odk-form {
+	@keyframes shimmer {
+		0% {
+			background-position: 200% 0;
+		}
+		100% {
+			background-position: -200% 0;
+		}
+	}
+
+	.skeleton-loading {
+		height: 100%;
+		width: 100%;
+		background: linear-gradient(
+			90deg,
+			var(--p-surface-100) 25%,
+			var(--p-surface-200) 50%,
+			var(--p-surface-100) 75%
+		);
+		background-size: 200% 100%;
+		animation: shimmer 1.5s infinite;
+	}
 }
