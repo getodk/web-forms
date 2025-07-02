@@ -84,7 +84,7 @@ watchEffect(() => {
 </template>
 
 <style lang="scss" scoped>
-@use '../../../../../../node_modules/primeflex/core/variables' as pf;
+@use 'primeflex/core/_variables.scss' as pf;
 .default-appearance {
 	width: 100%;
 	display: flex;

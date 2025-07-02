@@ -133,7 +133,7 @@ describe('SelectControl', () => {
 		let isMatchMediaMocked = false;
 
 		beforeAll(() => {
-			// PrimeVue's select needs matchMedia, which isn't available
+			// PrimeVue's Select needs matchMedia, which isn't available
 			// when running in test-node:jsdom mode
 			if (window.matchMedia == null) {
 				isMatchMediaMocked = true;

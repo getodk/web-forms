@@ -49,7 +49,7 @@ const selectValue = (value: string) => {
 </template>
 
 <style scoped lang="scss">
-@use '../../../../../node_modules/primeflex/core/variables' as pf;
+@use 'primeflex/core/_variables.scss' as pf;
 
 .dropdown {
 	width: 100%;

@@ -136,12 +136,7 @@ onBeforeUnmount(cleanup);
 		<template #default>
 			<div class="geo-dialog-body">
 				<div v-if="accuracy.value != null" class="geopoint-icons">
-					<IconSVG
-						v-if="accuracy.quality === GeopointAccuracy.POOR"
-						class="warning-icon"
-						name="mdiAlert"
-						variant="error"
-					/>
+					<IconSVG v-if="accuracy.quality === GeopointAccuracy.POOR" class="warning-icon" name="mdiAlert" variant="error" />
 					<IconSVG v-else class="check-icon" name="mdiCheck" variant="primary" />
 				</div>
 
@@ -155,8 +150,7 @@ onBeforeUnmount(cleanup);
 					</p>
 					<p>Time taken to capture location: <ElapsedTime /></p>
 					<p v-if="previousAccuracy.value">
-						Previous saved location at
-						{{ truncateDecimals(previousAccuracy.value, accuracyTruncateOptions) }} m
+						Previous saved location at {{ truncateDecimals(previousAccuracy.value, accuracyTruncateOptions) }} m
 					</p>
 				</div>
 			</div>
@@ -175,7 +169,7 @@ onBeforeUnmount(cleanup);
 </template>
 
 <style lang="scss">
-@use '../../../../../../../node_modules/primeflex/core/variables' as pf;
+@use 'primeflex/core/_variables.scss' as pf;
 
 .geo-dialog {
 	--geo-spacing-s: 5px;

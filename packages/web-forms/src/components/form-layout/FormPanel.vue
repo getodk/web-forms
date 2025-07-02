@@ -65,7 +65,7 @@ const menu = ref<InstanceType<typeof Menu> & MenuState>();
 </template>
 
 <style scoped lang="scss">
-@use '../../../../../node_modules/primeflex/core/variables' as pf;
+@use 'primeflex/core/_variables.scss' as pf;
 
 h2 {
 	font-size: var(--odk-top-group-font-size);

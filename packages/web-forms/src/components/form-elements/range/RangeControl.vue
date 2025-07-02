@@ -127,7 +127,7 @@ const orientation = props.node.appearances.vertical ? 'vertical' : 'horizontal';
 		padding: 0.5lh 3rem 0.5lh;
 
 		// Vertical appearance is centered. Consistent with
-		// https://docs.getodk.org/form-form-elements/#vertical-range-widget
+		// https://docs.getodk.org/form-question-types/#vertical-range-widget
 		margin: 0 auto;
 
 		.range-bound {

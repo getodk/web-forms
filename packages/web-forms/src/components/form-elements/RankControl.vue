@@ -179,7 +179,7 @@ const onDragEnd = (oldIndex: number | undefined, newIndex: number | undefined) =
 </template>
 
 <style scoped lang="scss">
-@use '../../../../../node_modules/primeflex/core/variables' as pf;
+@use 'primeflex/core/_variables.scss' as pf;
 
 // Variable definition to root element
 .rank-control-container {

@@ -83,7 +83,6 @@ web-forms/
 │   │   ├── form-rendering/   # Form layout and rendering (e.g., form panel, groups, repeats, form error classes)
 │   │   ├── common/           # Reusable smaller components (e.g., icon, image, checkbox components)
 │   ├── demo/                 # Demo page
-│   ├── services/             # Singleton services encapsulating business logic
 │   ├── lib/                  # Utilities
 │   ├── App.vue
 │   ├── WebFormsPlugin.ts     # Vue plugin
@@ -96,6 +95,7 @@ web-forms/
 ```
 
 #### Naming convention
+
 - Folders: use `kebab-case` and plural for collections. Example: `form-elements`.
 - Files:
   - Vue Components: use `PascalCase` with a minimum of two words. Example: `InputText.vue`.
