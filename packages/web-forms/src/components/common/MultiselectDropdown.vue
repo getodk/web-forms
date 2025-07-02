@@ -61,7 +61,7 @@ if (props.question.appearances['no-buttons']) {
 </template>
 
 <style scoped lang="scss">
-@use '../../../../../node_modules/primeflex/core/variables' as pf;
+@use 'primeflex/core/_variables.scss' as pf;
 
 .multi-select-dropdown {
 	width: 100%;
