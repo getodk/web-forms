@@ -2,7 +2,7 @@
 import Dialog from 'primevue/dialog';
 import Message from 'primevue/message';
 import { computed } from 'vue';
-import type { FormInitializationError } from '../../lib/error/FormInitializationError.ts';
+import type { FormInitializationError } from '@/lib/error/FormInitializationError.ts';
 
 /**
  * @todo translations

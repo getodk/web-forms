@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import ControlText from '@/components/ControlText.vue';
+import ControlText from '@/components/form-elements/ControlText.vue';
 import IconSVG from '@/components/common/IconSVG.vue';
-import ValidationMessage from '@/components/ValidationMessage.vue';
+import ValidationMessage from '@/components/common/ValidationMessage.vue';
 import type { TimerID } from '@getodk/common/types/timers.ts';
 import type { RankNode } from '@getodk/xforms-engine';
 import type { Ref } from 'vue';

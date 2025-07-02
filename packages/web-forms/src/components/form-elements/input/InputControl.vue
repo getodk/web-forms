@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import InputDate from '@/components/question-types/Input/InputDate.vue';
+import InputDate from '@/components/form-elements/Input/InputDate.vue';
 import type { AnyInputNode } from '@getodk/xforms-engine';
 import { computed, inject, provide, ref } from 'vue';
-import ControlText from '../../ControlText.vue';
-import ValidationMessage from '../../ValidationMessage.vue';
+import ControlText from '@/components/form-elements/ControlText.vue';
+import ValidationMessage from '@/components/common/ValidationMessage.vue';
 import InputDecimal from './InputDecimal.vue';
 import InputGeopoint from './Geopoint/InputGeopoint.vue';
 import InputInt from './InputInt.vue';

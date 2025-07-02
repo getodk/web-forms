@@ -3,7 +3,7 @@ import GeopointFormattedValue from '@/components/common/GeopointFormattedValue.v
 import { UnreachableError } from '@getodk/common/lib/error/UnreachableError.ts';
 import type { AnyNoteNode, DateNoteValue, GeopointNoteValue } from '@getodk/xforms-engine';
 import { computed } from 'vue';
-import ControlText from '../ControlText.vue';
+import ControlText from './ControlText.vue';
 
 const props = defineProps<{ question: AnyNoteNode }>();
 

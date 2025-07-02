@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import ColumnarAppearance from '@/components/appearances/ColumnarAppearance.vue';
 import FieldListTable from '@/components/appearances/FieldListTable.vue';
-import UnsupportedAppearance from '@/components/controls/UnsupportedAppearance.vue';
-import ControlText from '@/components/ControlText.vue';
-import ValidationMessage from '@/components/ValidationMessage.vue';
+import UnsupportedAppearance from '@/components/appearances/UnsupportedAppearance.vue';
+import ControlText from '@/components/form-elements/ControlText.vue';
+import ValidationMessage from '@/components/common/ValidationMessage.vue';
 import LikertWidget from '@/components/common/LikertWidget.vue';
 import RadioButton from '@/components/common/RadioButton.vue';
 import SearchableDropdown from '@/components/common/SearchableDropdown.vue';

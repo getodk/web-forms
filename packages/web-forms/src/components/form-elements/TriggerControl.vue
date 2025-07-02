@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { TriggerNode } from '@getodk/xforms-engine';
 import Checkbox from 'primevue/checkbox';
-import ControlText from '../ControlText.vue';
+import ControlText from './ControlText.vue';
 
 const props = defineProps<{ question: TriggerNode; style?: string }>();
 defineEmits(['update:modelValue', 'change']);

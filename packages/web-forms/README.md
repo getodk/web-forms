@@ -79,9 +79,9 @@ web-forms/
 │   │   ├── styles/           # Web Forms and Demo page styles
 │   │   ├── images/           # Web Forms and Demo page images
 │   ├── components/           # UI components
-│   │   ├── question-types/   # Question types (e.g., InputText.vue, SelectOne.vue)
-│   │   ├── form/             # Form rendering (e.g., FormContainer.vue)
-│   │   ├── common/           # Generic components (e.g., ControlLabel.vue)
+│   │   ├── form-elements/    # Form elements or controllers (question types, hints, labels, inputs)
+│   │   ├── form-rendering/   # Form layout and rendering (e.g., form panel, groups, repeats, form error classes)
+│   │   ├── common/           # Reusable smaller components (e.g., icon, image, checkbox components)
 │   ├── demo/                 # Demo page
 │   ├── services/             # Singleton services encapsulating business logic
 │   ├── lib/                  # Utilities
@@ -96,7 +96,7 @@ web-forms/
 ```
 
 #### Naming convention
-- Folders: use `kebab-case` and plural for collections. Example: `question-types`.
+- Folders: use `kebab-case` and plural for collections. Example: `form-elements`.
 - Files:
   - Vue Components: use `PascalCase` with a minimum of two words. Example: `InputText.vue`.
   - TypeScript/JavaScript: use `kebab-case` for utilities, composables, and API modules. Example: `initialize-form-state.ts`, `forms.ts`.

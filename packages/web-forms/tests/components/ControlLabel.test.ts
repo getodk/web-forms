@@ -2,7 +2,7 @@ import type { AnyInputNode } from '@getodk/xforms-engine';
 import { mount } from '@vue/test-utils';
 import { assocPath } from 'ramda';
 import { describe, expect, it } from 'vitest';
-import ControlLabel from '../../src/components/ControlLabel.vue';
+import ControlLabel from '@/components/form-elements/ControlLabel.vue';
 
 const baseQuestion = {
 	nodeType: 'input',

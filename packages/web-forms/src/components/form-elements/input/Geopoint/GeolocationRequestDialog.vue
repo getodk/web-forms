@@ -4,8 +4,8 @@ import { computed, onBeforeUnmount, ref, watchEffect } from 'vue';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import ProgressSpinner from 'primevue/progressspinner';
-import { truncateDecimals } from '@/lib/format/truncateDecimals.ts';
-import ElapsedTime from '@/components/ElapsedTime.vue';
+import { truncateDecimals } from '@/lib/format/truncate-decimals.ts';
+import ElapsedTime from '@/components/common/ElapsedTime.vue';
 import {
 	GEOLOCATION_STATUS,
 	type GeolocationRequestFailure,

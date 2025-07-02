@@ -1,4 +1,4 @@
-import InputControl from '@/components/question-types/Input/InputControl.vue';
+import InputControl from '@/components/form-elements/Input/InputControl.vue';
 import { mount } from '@vue/test-utils';
 import { assert, describe, expect, it } from 'vitest';
 import { getReactiveForm, globalMountOptions } from '../../../helpers';

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import ControlText from '@/components/ControlText.vue';
-import ValidationMessage from '@/components/ValidationMessage.vue';
+import ControlText from '@/components/form-elements/ControlText.vue';
+import ValidationMessage from '@/components/common/ValidationMessage.vue';
 import IconSVG from '@/components/common/IconSVG.vue';
 import type { UploadNode } from '@getodk/xforms-engine';
 import Button from 'primevue/button';

@@ -1,4 +1,4 @@
-import SelectControl from '@/components/question-types/select/SelectControl.vue';
+import SelectControl from '@/components/form-elements/select/SelectControl.vue';
 import type { AnyNode, RootNode, SelectNode } from '@getodk/xforms-engine';
 import { DOMWrapper, mount } from '@vue/test-utils';
 import { afterAll, assert, beforeAll, beforeEach, describe, expect, it } from 'vitest';

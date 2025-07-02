@@ -1,4 +1,4 @@
-import FormLanguageMenu from '@/components/FormLanguageMenu.vue';
+import FormLanguageMenu from '@/components/form-layout/FormLanguageMenu.vue';
 import type { FormLanguage, SyntheticDefaultLanguage } from '@getodk/xforms-engine';
 import { mount } from '@vue/test-utils';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';

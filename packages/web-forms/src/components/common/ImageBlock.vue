@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { FormOptions } from '@/lib/init/loadFormState.ts';
+import type { FormOptions } from '@/lib/init/load-form-state.ts';
 import type {
 	JRResourceURL,
 	JRResourceURLString,

@@ -14,7 +14,7 @@ import type {
 	FormStateFailureResult,
 	FormStateSuccessResult,
 	InstantiableForm,
-} from './FormState.ts';
+} from './form-state.ts';
 import { ENGINE_FORM_INSTANCE_CONFIG } from './engine-config.ts';
 
 export interface FormOptions {

@@ -6,7 +6,7 @@ import type {
 	GeopointNoteValue,
 } from '@getodk/xforms-engine';
 import { computed } from 'vue';
-import { truncateDecimals } from '@/lib/format/truncateDecimals.ts';
+import { truncateDecimals } from '@/lib/format/truncate-decimals.ts';
 
 type GeopointNode = GeopointInputNode | GeopointNoteNode;
 
