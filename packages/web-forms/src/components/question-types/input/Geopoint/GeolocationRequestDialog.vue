@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import IconSVG from '@/components/widgets/IconSVG.vue';
+import IconSVG from '@/components/common/IconSVG.vue';
 import { computed, onBeforeUnmount, ref, watchEffect } from 'vue';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
@@ -169,7 +169,7 @@ onBeforeUnmount(cleanup);
 </template>
 
 <style lang="scss">
-@use 'primeflex/core/_variables.scss' as pf;
+@use '../../../../../../../node_modules/primeflex/core/variables' as pf;
 
 .geo-dialog {
 	--geo-spacing-s: 5px;

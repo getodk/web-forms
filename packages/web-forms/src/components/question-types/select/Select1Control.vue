@@ -4,9 +4,9 @@ import FieldListTable from '@/components/appearances/FieldListTable.vue';
 import UnsupportedAppearance from '@/components/controls/UnsupportedAppearance.vue';
 import ControlText from '@/components/ControlText.vue';
 import ValidationMessage from '@/components/ValidationMessage.vue';
-import LikertWidget from '@/components/widgets/LikertWidget.vue';
-import RadioButton from '@/components/widgets/RadioButton.vue';
-import SearchableDropdown from '@/components/widgets/SearchableDropdown.vue';
+import LikertWidget from '@/components/common/LikertWidget.vue';
+import RadioButton from '@/components/common/RadioButton.vue';
+import SearchableDropdown from '@/components/common/SearchableDropdown.vue';
 import type { SelectNode } from '@getodk/xforms-engine';
 import { computed, inject, ref, watchEffect } from 'vue';
 
@@ -84,7 +84,7 @@ watchEffect(() => {
 </template>
 
 <style lang="scss" scoped>
-@use 'primeflex/core/_variables.scss' as pf;
+@use '../../../../../../node_modules/primeflex/core/variables' as pf;
 .default-appearance {
 	width: 100%;
 	display: flex;

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import IconSVG from '@/components/widgets/IconSVG.vue';
+import IconSVG from '@/components/common/IconSVG.vue';
 import Button from 'primevue/button';
 import Menu, { type MenuState } from 'primevue/menu';
 import { type MenuItem } from 'primevue/menuitem';

@@ -7,13 +7,13 @@ import type {
 	SelectNode,
 } from '@getodk/xforms-engine';
 import { inject } from 'vue';
-import InputControl from './controls/Input/InputControl.vue';
-import NoteControl from './controls/NoteControl.vue';
-import RangeControl from './controls/Range/RangeControl.vue';
-import RankControl from './controls/RankControl.vue';
-import SelectControl from './controls/Select/SelectControl.vue';
-import TriggerControl from './controls/TriggerControl.vue';
-import UploadControl from './controls/Upload/UploadControl.vue';
+import InputControl from '@/components/question-types/Input/InputControl.vue';
+import NoteControl from './question-types/NoteControl.vue';
+import RangeControl from '@/components/question-types/range/RangeControl.vue';
+import RankControl from './question-types/RankControl.vue';
+import SelectControl from '@/components/question-types/select/SelectControl.vue';
+import TriggerControl from './question-types/TriggerControl.vue';
+import UploadControl from '@/components/question-types/upload/UploadControl.vue';
 
 defineProps<{ question: ControlNode }>();
 

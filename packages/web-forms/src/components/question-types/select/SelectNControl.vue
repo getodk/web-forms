@@ -4,8 +4,8 @@ import FieldListTable from '@/components/appearances/FieldListTable.vue';
 import UnsupportedAppearance from '@/components/controls/UnsupportedAppearance.vue';
 import ControlText from '@/components/ControlText.vue';
 import ValidationMessage from '@/components/ValidationMessage.vue';
-import CheckboxWidget from '@/components/widgets/CheckboxWidget.vue';
-import MultiselectDropdown from '@/components/widgets/MultiselectDropdown.vue';
+import CheckboxWidget from '@/components/common/CheckboxWidget.vue';
+import MultiselectDropdown from '@/components/common/MultiselectDropdown.vue';
 import type { SelectNode } from '@getodk/xforms-engine';
 import { computed, inject, ref, watchEffect } from 'vue';
 
@@ -76,7 +76,7 @@ watchEffect(() => {
 </template>
 
 <style lang="scss" scoped>
-@use 'primeflex/core/_variables.scss' as pf;
+@use '../../../../../../node_modules/primeflex/core/variables' as pf;
 .default-appearance {
 	width: 100%;
 	display: flex;

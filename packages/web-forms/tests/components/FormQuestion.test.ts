@@ -1,6 +1,6 @@
-import InputControl from '@/components/controls/Input/InputControl.vue';
-import RankControl from '@/components/controls/RankControl.vue';
-import SelectControl from '@/components/controls/Select/SelectControl.vue';
+import InputControl from '@/components/question-types/Input/InputControl.vue';
+import RankControl from '@/components/question-types/RankControl.vue';
+import SelectControl from '@/components/question-types/select/SelectControl.vue';
 import FormQuestion from '@/components/FormQuestion.vue';
 import type { SelectNode } from '@getodk/xforms-engine';
 import { mount } from '@vue/test-utils';

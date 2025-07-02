@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import IconSVG from '@/components/widgets/IconSVG.vue';
+import IconSVG from '@/components/common/IconSVG.vue';
 import { computed, inject, ref } from 'vue';
 import Button from 'primevue/button';
 import type { GeopointInputNode } from '@getodk/xforms-engine';
@@ -14,7 +14,7 @@ import {
 	type GeolocationRequestSuccess,
 } from './GeolocationRequest.ts';
 import { GeopointAccuracy } from './GeopointAccuracy.ts';
-import GeopointFormattedValue from '@/components/controls/GeopointFormattedValue.vue';
+import GeopointFormattedValue from '@/components/common/GeopointFormattedValue.vue';
 
 interface InputGeopointProps {
 	readonly question: GeopointInputNode;

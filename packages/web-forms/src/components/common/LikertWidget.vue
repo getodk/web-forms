@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { SelectNode } from '@getodk/xforms-engine';
-import RadioButton from '../widgets/RadioButton.vue';
+import RadioButton from './RadioButton.vue';
 
 interface LikertWidgetProps {
 	readonly question: SelectNode;

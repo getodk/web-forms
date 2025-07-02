@@ -1,4 +1,4 @@
-import SelectControl from '@/components/controls/Select/SelectControl.vue';
+import SelectControl from '@/components/question-types/select/SelectControl.vue';
 import type { AnyNode, RootNode, SelectNode } from '@getodk/xforms-engine';
 import { DOMWrapper, mount } from '@vue/test-utils';
 import { afterAll, assert, beforeAll, beforeEach, describe, expect, it } from 'vitest';
@@ -133,7 +133,7 @@ describe('SelectControl', () => {
 		let isMatchMediaMocked = false;
 
 		beforeAll(() => {
-			// PrimeVue's Select needs matchMedia, which isn't available
+			// PrimeVue's select needs matchMedia, which isn't available
 			// when running in test-node:jsdom mode
 			if (window.matchMedia == null) {
 				isMatchMediaMocked = true;

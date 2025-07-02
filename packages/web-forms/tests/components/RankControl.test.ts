@@ -3,8 +3,8 @@ import { DOMWrapper, mount, VueWrapper } from '@vue/test-utils';
 import { getReactiveForm, globalMountOptions } from '../helpers';
 import QuestionList from '@/components/QuestionList.vue';
 import FormQuestion from '@/components/FormQuestion.vue';
-import SelectControl from '@/components/controls/Select/SelectControl.vue';
-import RankControl from '@/components/controls/RankControl.vue';
+import SelectControl from '@/components/question-types/select/SelectControl.vue';
+import RankControl from '@/components/question-types/RankControl.vue';
 import type { RankNode } from '@getodk/xforms-engine';
 
 describe('RankControl', () => {

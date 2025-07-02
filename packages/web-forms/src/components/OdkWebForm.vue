@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import IconSVG from '@/components/widgets/IconSVG.vue';
+import IconSVG from '@/components/common/IconSVG.vue';
 import type { FormStateSuccessResult } from '@/lib/init/FormState.ts';
 import { initializeFormState } from '@/lib/init/initializeFormState.ts';
 import type { EditInstanceOptions, FormOptions } from '@/lib/init/loadFormState';

@@ -73,11 +73,11 @@ Below is the simplified file structure:
 
 ```
 web-forms/
-├── public/                   # Static assets (e.g., favicon.ico, odk-logo.svg)
+├── public/                   # Static assets (e.g., favicon.ico)
 ├── src/
 │   ├── assets/
-│   │   ├── styles/
-│   │   ├── images/
+│   │   ├── styles/           # Web Forms and Demo page styles
+│   │   ├── images/           # Web Forms and Demo page images
 │   ├── components/           # UI components
 │   │   ├── question-types/   # Question types (e.g., InputText.vue, SelectOne.vue)
 │   │   ├── form/             # Form rendering (e.g., FormContainer.vue)

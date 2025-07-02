@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import IconSVG from '@/components/widgets/IconSVG.vue';
+import IconSVG from '@/components/common/IconSVG.vue';
 import type { ActiveLanguage, FormLanguage } from '@getodk/xforms-engine';
 import Select from 'primevue/select';
 

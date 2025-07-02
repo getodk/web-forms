@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import GeopointFormattedValue from '@/components/controls/GeopointFormattedValue.vue';
+import GeopointFormattedValue from '@/components/common/GeopointFormattedValue.vue';
 import { UnreachableError } from '@getodk/common/lib/error/UnreachableError.ts';
 import type { AnyNoteNode, DateNoteValue, GeopointNoteValue } from '@getodk/xforms-engine';
 import { computed } from 'vue';

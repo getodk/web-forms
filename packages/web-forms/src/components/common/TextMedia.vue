@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ImageBlock from '@/components/widgets/ImageBlock.vue';
+import ImageBlock from '@/components/common/ImageBlock.vue';
 import type { TextRange } from '@getodk/xforms-engine';
 import { computed } from 'vue';
 

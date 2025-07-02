@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import ControlText from '@/components/ControlText.vue';
-import IconSVG from '@/components/widgets/IconSVG.vue';
+import IconSVG from '@/components/common/IconSVG.vue';
 import ValidationMessage from '@/components/ValidationMessage.vue';
 import type { TimerID } from '@getodk/common/types/timers.ts';
 import type { RankNode } from '@getodk/xforms-engine';
@@ -179,7 +179,7 @@ const onDragEnd = (oldIndex: number | undefined, newIndex: number | undefined) =
 </template>
 
 <style scoped lang="scss">
-@use 'primeflex/core/_variables.scss' as pf;
+@use '../../../../../node_modules/primeflex/core/variables' as pf;
 
 // Variable definition to root element
 .rank-control-container {
