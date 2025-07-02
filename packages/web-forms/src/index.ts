@@ -8,7 +8,7 @@ import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 // TODO/sk: Purge it - postcss-purgecss
 import 'primeflex/primeflex.css';
-import './assets/css/style.scss';
+import './assets/styles/style.scss';
 
 /**
  * @todo there are almost certainly types we should be exporting from the

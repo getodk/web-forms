@@ -42,5 +42,5 @@ const selectValue = (value: string) => {
 </template>
 
 <style lang="scss" scoped>
-@use '../../assets/css/select-options';
+@use '../../assets/styles/select-options';
 </style>

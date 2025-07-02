@@ -1,7 +1,7 @@
 import { odkThemePreset } from '@/odkThemePreset.ts';
 import { type App } from 'vue';
 import PrimeVue from 'primevue/config';
-import resetStyles from './assets/css/reset.scss?raw';
+import resetStyles from './assets/styles/reset.scss?raw';
 
 export const webFormsPlugin = {
 	install(app: App) {

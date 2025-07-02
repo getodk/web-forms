@@ -69,7 +69,7 @@ Upload XLSForm and XForm functionality in [`demo`](./src/demo/) app and in dev m
 
 ### Project Structure
 
-Below is the simplified file structure for ODK XForms and testing:
+Below is the simplified file structure:
 
 ```
 web-forms/
@@ -120,7 +120,7 @@ We use CSS variables for theming with two prefixes:
 
 #### Z-Index Layering System
 
-This package uses a centralized `z-index` layering system to manage UI stacking order, defined in `src/assets/css/style.scss`. The ODK variables (e.g., `--odk-z-index-error-banner`) ensure elements like floating error messages, form controls, and overlays stack correctly without overlap.
+This package uses a centralized `z-index` layering system to manage UI stacking order, defined in `src/assets/styles/style.scss`. The ODK variables (e.g., `--odk-z-index-error-banner`) ensure elements like floating error messages, form controls, and overlays stack correctly without overlap.
 
 - **Key layers**:
 
