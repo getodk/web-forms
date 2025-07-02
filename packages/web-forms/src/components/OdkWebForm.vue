@@ -21,7 +21,7 @@ import Button from 'primevue/button';
 import Card from 'primevue/card';
 import Message from 'primevue/message';
 import { computed, getCurrentInstance, provide, readonly, ref, watchEffect } from 'vue';
-import FormLoadFailureDialog from '@/components/form-layout/FormLoadFailureDialog.vue';
+import FormLoadFailureDialog from '@/components/FormLoadFailureDialog.vue';
 import FormHeader from '@/components/form-layout/FormHeader.vue';
 import QuestionList from '@/components/form-layout/QuestionList.vue';
 
