@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import ElapsedTime from '@/components/common/ElapsedTime.vue';
 import IconSVG from '@/components/common/IconSVG.vue';
-import { computed, onBeforeUnmount, ref, watchEffect } from 'vue';
+import { truncateDecimals } from '@/lib/format/truncate-decimals.ts';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import ProgressSpinner from 'primevue/progressspinner';
-import { truncateDecimals } from '@/lib/format/truncate-decimals.ts';
-import ElapsedTime from '@/components/common/ElapsedTime.vue';
+import { computed, onBeforeUnmount, ref, watchEffect } from 'vue';
 import {
 	GEOLOCATION_STATUS,
 	type GeolocationRequestFailure,
@@ -136,7 +136,12 @@ onBeforeUnmount(cleanup);
 		<template #default>
 			<div class="geo-dialog-body">
 				<div v-if="accuracy.value != null" class="geopoint-icons">
-					<IconSVG v-if="accuracy.quality === GeopointAccuracy.POOR" class="warning-icon" name="mdiAlert" variant="error" />
+					<IconSVG
+						v-if="accuracy.quality === GeopointAccuracy.POOR"
+						class="warning-icon"
+						name="mdiAlert"
+						variant="error"
+					/>
 					<IconSVG v-else class="check-icon" name="mdiCheck" variant="primary" />
 				</div>
 
@@ -150,7 +155,8 @@ onBeforeUnmount(cleanup);
 					</p>
 					<p>Time taken to capture location: <ElapsedTime /></p>
 					<p v-if="previousAccuracy.value">
-						Previous saved location at {{ truncateDecimals(previousAccuracy.value, accuracyTruncateOptions) }} m
+						Previous saved location at
+						{{ truncateDecimals(previousAccuracy.value, accuracyTruncateOptions) }} m
 					</p>
 				</div>
 			</div>

@@ -1,11 +1,11 @@
-import InputControl from '@/components/form-elements/Input/InputControl.vue';
+import InputControl from '@/components/form-elements/input/InputControl.vue';
 import RankControl from '@/components/form-elements/RankControl.vue';
 import SelectControl from '@/components/form-elements/select/SelectControl.vue';
 import FormQuestion from '@/components/form-layout/FormQuestion.vue';
 import type { SelectNode } from '@getodk/xforms-engine';
 import { mount } from '@vue/test-utils';
 import { describe, expect, it } from 'vitest';
-import { getReactiveForm, globalMountOptions } from '../helpers';
+import { getReactiveForm, globalMountOptions } from '../../helpers.ts';
 
 const mountComponent = async (formPath: string, questionNumber: number) => {
 	const xform = await getReactiveForm(formPath);

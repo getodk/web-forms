@@ -1,7 +1,7 @@
-import { POST_SUBMIT__NEW_INSTANCE } from '../constants/control-flow.ts';
-import type { OptionalHostSubmissionResult } from '../submission/HostSubmissionResultCallback.ts';
+import { POST_SUBMIT__NEW_INSTANCE } from '@/lib/constants/control-flow.ts';
+import type { OptionalHostSubmissionResult } from '@/lib/submission/host-submission-result-callback.ts';
 import { ENGINE_FORM_INSTANCE_CONFIG } from './engine-config.ts';
-import type { FormStateSuccessResult } from './FormState.ts';
+import type { FormStateSuccessResult } from './form-state.ts';
 
 /**
  * @todo Clean up {@link currentState}'s {@link FormStateSuccessResult.instance}

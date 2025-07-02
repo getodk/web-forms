@@ -2,7 +2,7 @@ import SelectControl from '@/components/form-elements/select/SelectControl.vue';
 import type { AnyNode, RootNode, SelectNode } from '@getodk/xforms-engine';
 import { DOMWrapper, mount } from '@vue/test-utils';
 import { afterAll, assert, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { getReactiveForm, globalMountOptions } from '../helpers.ts';
+import { getReactiveForm, globalMountOptions } from '../../../helpers.ts';
 
 // TODO: these are tied to PrimeVue's classes, we should control this!
 const MULTISELECT_CLASS = 'p-multiselect';
