@@ -76,19 +76,18 @@ web-forms/
 ├── public/                   # Static assets (e.g., favicon.ico)
 ├── src/
 │   ├── assets/
-│   │   ├── styles/           # Web Forms and Demo page styles
 │   │   ├── images/           # Web Forms and Demo page images
+│   │   ├── styles/           # Web Forms and Demo page styles
 │   ├── components/           # UI components
 │   │   ├── form-elements/    # Form elements or controllers (question types, hints, labels, inputs)
-│   │   ├── form-rendering/   # Form layout and rendering (e.g., form panel, groups, repeats, form error classes)
+│   │   ├── form-layout/      # Form layout and rendering (e.g., form panel, groups, repeats, form error classes)
 │   │   ├── common/           # Reusable smaller components (e.g., icon, image, checkbox components)
 │   ├── demo/                 # Demo page
 │   ├── lib/                  # Utilities
-│   ├── App.vue
-│   ├── WebFormsPlugin.ts     # Vue plugin
-├── tests/
-│   ├── unit/                 # Unit tests
-│   ├── e2e/                  # E2e tests
+│   ├── index.ts
+│   ├── web-forms-plugin.ts   # Vue plugin
+├── tests/                    # Unit tests
+├── e2e/                      # E2e tests
 ├── package.json
 ├── vite.config.ts
 ├── playwright.config.ts
