@@ -4,7 +4,7 @@ import RepeatRange from '@/components/form-layout/RepeatRange.vue';
 import type { RepeatRangeNode } from '@getodk/xforms-engine';
 import { mount } from '@vue/test-utils';
 import { assert, describe, expect, it } from 'vitest';
-import { getReactiveForm, globalMountOptions } from '../../helpers.ts';
+import { getReactiveForm, globalMountOptions } from '../../Helpers.ts';
 
 const mountComponent = async (fileName: string) => {
 	const xform = await getReactiveForm(fileName);

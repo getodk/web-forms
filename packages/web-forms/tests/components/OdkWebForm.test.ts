@@ -1,11 +1,11 @@
 import type { OdkWebFormsProps } from '@/components/OdkWebForm.vue';
 import OdkWebForm from '@/components/OdkWebForm.vue';
-import { POST_SUBMIT__NEW_INSTANCE } from '@/lib/constants/control-flow.ts';
+import { POST_SUBMIT__NEW_INSTANCE } from '@/lib/constants/ControlFlow.ts';
 import type {
 	HostSubmissionResult,
 	HostSubmissionResultCallback,
 	OptionalAwaitableHostSubmissionResult,
-} from '@/lib/submission/host-submission-result-callback.ts';
+} from '@/lib/submission/HostSubmissionResultCallback.ts';
 import type {
 	MonolithicInstancePayload,
 	ResolvableInstanceAttachmentsMap,
@@ -18,7 +18,7 @@ import {
 	globalMountOptions,
 	mockElementPrototypeMethod,
 	type ElementMethodName,
-} from '../helpers';
+} from '../Helpers.ts';
 
 interface MountComponentOptions {
 	readonly overrideProps?: Partial<OdkWebFormsProps>;

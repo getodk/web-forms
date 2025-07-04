@@ -1,6 +1,6 @@
 import type { Ref } from 'vue';
 import { ref } from 'vue';
-import type { FormState, FormStateLoadingResult } from './form-state.ts';
+import type { FormState, FormStateLoadingResult } from './FormState.ts';
 
 /**
  * If this seems silly: Yes. Absolutely. It is totally silly!

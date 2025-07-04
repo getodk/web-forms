@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import ElapsedTime from '@/components/common/ElapsedTime.vue';
 import IconSVG from '@/components/common/IconSVG.vue';
-import { truncateDecimals } from '@/lib/format/truncate-decimals.ts';
+import { truncateDecimals } from '@/lib/format/TruncateDecimals.ts';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import ProgressSpinner from 'primevue/progressspinner';

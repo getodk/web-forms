@@ -5,7 +5,7 @@ import FormQuestion from '@/components/form-layout/FormQuestion.vue';
 import type { SelectNode } from '@getodk/xforms-engine';
 import { mount } from '@vue/test-utils';
 import { describe, expect, it } from 'vitest';
-import { getReactiveForm, globalMountOptions } from '../../helpers.ts';
+import { getReactiveForm, globalMountOptions } from '../../Helpers.ts';
 
 const mountComponent = async (formPath: string, questionNumber: number) => {
 	const xform = await getReactiveForm(formPath);

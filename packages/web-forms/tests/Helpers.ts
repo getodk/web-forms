@@ -7,7 +7,7 @@ import PrimeVue from 'primevue/config';
 import type { MockInstance } from 'vitest';
 import { vi } from 'vitest';
 import { reactive } from 'vue';
-import { odkThemePreset } from '../src/odk-theme-preset';
+import { odkThemePreset } from '@/OdkThemePreset.ts';
 
 /**
  * @todo this does roughly the same thing as {@link getFormXml}, except it

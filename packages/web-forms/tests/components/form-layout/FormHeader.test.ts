@@ -1,7 +1,7 @@
 import FormHeader from '@/components/form-layout/FormHeader.vue';
 import { mount } from '@vue/test-utils';
 import { describe, expect, it } from 'vitest';
-import { getReactiveForm } from '../../helpers.ts';
+import { getReactiveForm } from '../../Helpers.ts';
 
 describe('FormHeader', () => {
 	it('shows form title', async () => {
