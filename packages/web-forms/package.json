@@ -70,7 +70,7 @@
     "vite": "^6.3.5",
     "vite-plugin-css-injected-by-js": "^3.5.2",
     "vite-plugin-static-copy": "^2.3.1",
-    "vitest": "^3.2.4",
+    "vitest": "3.1.4",
     "vue": "3.5.17",
     "vue-router": "^4.5.1"
   },

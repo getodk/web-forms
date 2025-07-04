@@ -53,7 +53,7 @@
     "jsdom": "^26.1.0",
     "solid-js": "^1.9.7",
     "vite": "^6.3.5",
-    "vitest": "^3.2.4"
+    "vitest": "3.1.4"
   },
   "dependencies": {
     "temporal-polyfill": "^0.3.0"
