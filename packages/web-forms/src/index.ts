@@ -1,6 +1,6 @@
-import { webFormsPlugin } from './WebFormsPlugin.ts';
+import { webFormsPlugin } from './web-forms-plugin';
 import OdkWebForm from './components/OdkWebForm.vue';
-import { POST_SUBMIT__NEW_INSTANCE } from '@/lib/constants/ControlFlow.ts';
+import { POST_SUBMIT__NEW_INSTANCE } from '@/lib/constants/control-flow.ts';
 
 // Applies styles when the Web Forms is used as a plugin outside the preview demo page.
 import '@fontsource/roboto/300.css';

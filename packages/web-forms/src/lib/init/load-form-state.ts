@@ -14,8 +14,8 @@ import type {
 	FormStateFailureResult,
 	FormStateSuccessResult,
 	InstantiableForm,
-} from './FormState.ts';
-import { ENGINE_FORM_INSTANCE_CONFIG } from './EngineConfig.ts';
+} from './form-state.ts';
+import { ENGINE_FORM_INSTANCE_CONFIG } from './engine-config.ts';
 
 export interface FormOptions {
 	readonly fetchFormAttachment: FetchFormAttachment;

@@ -16,7 +16,7 @@ e2e/
     ├── pages/        # Full page representations.
         ├── FillFormPage.ts       # Example of a full page representation for a form.
 ├── test-cases/            # Test specification files.
-        ├── Geopoint.test.ts      # Example of a test file for the geopoint question type.
+        ├── geopoint.test.ts      # Example of a test file for the geopoint question type.
 ```
 
 ## Key concepts
@@ -44,7 +44,7 @@ e2e/
    Or run specific tests:
 
    ```bash
-   yarn workspace @getodk/web-forms test:e2e <filepath, e.g. e2e/test-cases/Geopoint.test.ts>
+   yarn workspace @getodk/web-forms test:e2e <filepath, e.g. e2e/test-cases/geopoint.test.ts>
    ```
 
 ## Contributing

@@ -53,7 +53,7 @@ const webkitFlakinessMitigations =
 	BROWSER_NAME === 'webkit' && !existsSync('./node_modules/.vite/deps');
 
 if (webkitFlakinessMitigations) {
-	globalSetup.push('./tests/globalSetup/MitigateWebkitFlakiness.ts');
+	globalSetup.push('./tests/globalSetup/mitigate-webkit-flakiness.ts');
 }
 
 const copyConfigFile = viteStaticCopy({

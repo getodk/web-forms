@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import IconSVG from '@/components/common/IconSVG.vue';
-import type { FormStateSuccessResult } from '@/lib/init/FormState.ts';
-import { initializeFormState } from '@/lib/init/InitializeFormState.ts';
-import type { EditInstanceOptions, FormOptions } from '@/lib/init/LoadFormState.ts';
-import { loadFormState } from '@/lib/init/LoadFormState.ts';
-import { updateSubmittedFormState } from '@/lib/init/UpdateSubmittedFormState.ts';
+import type { FormStateSuccessResult } from '@/lib/init/form-state.ts';
+import { initializeFormState } from '@/lib/init/initialize-form-state.ts';
+import type { EditInstanceOptions, FormOptions } from '@/lib/init/load-form-state.ts';
+import { loadFormState } from '@/lib/init/load-form-state';
+import { updateSubmittedFormState } from '@/lib/init/update-submitted-form-state.ts';
 import type {
 	HostSubmissionResultCallback,
 	OptionalAwaitableHostSubmissionResult,
-} from '@/lib/submission/HostSubmissionResultCallback.ts';
+} from '@/lib/submission/host-submission-result-callback.ts';
 import type { JRResourceURLString } from '@getodk/common/jr-resources/JRResourceURL.ts';
 import type { ObjectURL } from '@getodk/common/lib/web-compat/url.ts';
 import type {

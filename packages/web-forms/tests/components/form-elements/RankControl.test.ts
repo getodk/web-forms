@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { DOMWrapper, mount, VueWrapper } from '@vue/test-utils';
-import { getReactiveForm, globalMountOptions } from '../../Helpers.ts';
+import { getReactiveForm, globalMountOptions } from '../../helpers.ts';
 import QuestionList from '@/components/form-layout/QuestionList.vue';
 import FormQuestion from '@/components/form-layout/FormQuestion.vue';
 import SelectControl from '@/components/form-elements/select/SelectControl.vue';

@@ -69,6 +69,8 @@ Upload XLSForm and XForm functionality in [`demo`](./src/demo/) app and in dev m
 
 ### Project Structure
 
+Below is the simplified file structure:
+
 ```
 web-forms/
 ├── public/                   # Static assets (e.g., favicon.ico)
@@ -83,13 +85,23 @@ web-forms/
 │   ├── demo/                 # Demo page
 │   ├── lib/                  # Utilities
 │   ├── index.ts
-│   ├── WebFormsPlugin.ts     # Vue plugin
+│   ├── web-forms-plugin.ts   # Vue plugin
 ├── tests/                    # Unit tests
 ├── e2e/                      # E2e tests
 ├── package.json
 ├── vite.config.ts
 ├── playwright.config.ts
 ```
+
+#### Naming convention
+
+- Folders: use `kebab-case` and plural for collections. Example: `form-elements`.
+- Files:
+  - Vue Components: use `PascalCase` with a minimum of two words. Example: `InputText.vue`.
+  - TypeScript/JavaScript: use `kebab-case` for utilities, composables, and API modules. Example: `initialize-form-state.ts`, `forms.ts`.
+  - Styles: use `kebab-case` and descriptive of purpose. Example: `reset.scss`.
+  - Tests: Match name of the component or file being tested, suffixed with `.test.ts`. Example: `InputText.test.ts`, `initialize-form-state.test.ts`.
+  - JSON and Other Files (.json, .md, etc.): use `kebab-case`.
 
 ### Styling Overview
 

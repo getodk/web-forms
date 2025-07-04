@@ -1,7 +1,7 @@
 import InputControl from '@/components/form-elements/input/InputControl.vue';
 import { mount } from '@vue/test-utils';
 import { assert, describe, expect, it } from 'vitest';
-import { getReactiveForm, globalMountOptions } from '../../../Helpers.ts';
+import { getReactiveForm, globalMountOptions } from '../../../helpers';
 
 const mountComponent = async (questionNumber: number, submitPressed = false) => {
 	const xform = await getReactiveForm('1-validation.xml');

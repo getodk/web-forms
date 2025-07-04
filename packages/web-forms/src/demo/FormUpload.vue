@@ -8,8 +8,8 @@ import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
 
 import { computed, ref, watch, type HTMLInputElementEvent } from 'vue';
-import { useConfiguration } from './composables/Configuration';
-import { useXlsFormOnline } from './composables/XlsFormOnline';
+import { useConfiguration } from './composables/configuration';
+import { useXlsFormOnline } from './composables/xlsform-online';
 
 const fileInput = ref();
 const highlighted = ref(false);
