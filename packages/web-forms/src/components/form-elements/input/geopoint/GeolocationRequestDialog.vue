@@ -12,7 +12,7 @@ import {
 	type GeolocationRequestPending,
 	type GeolocationRequestState,
 	type GeolocationRequestSuccess,
-} from './GeolocationRequest.ts';
+} from './geolocation-request.ts';
 import { GeopointAccuracy } from './GeopointAccuracy.ts';
 import type { GeopointAccuracyThresholdOptions } from './GeopointAccuracyThresholdOptions.ts';
 import type { GeopointValueObject } from './GeopointValueObject.ts';

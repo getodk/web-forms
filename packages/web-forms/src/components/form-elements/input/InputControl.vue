@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import ValidationMessage from '@/components/common/ValidationMessage.vue';
 import ControlText from '@/components/form-elements/ControlText.vue';
-import InputGeopoint from '@/components/form-elements/input/Geopoint/InputGeopoint.vue';
+import InputGeopoint from '@/components/form-elements/input/geopoint/InputGeopoint.vue';
 import InputDate from '@/components/form-elements/input/InputDate.vue';
 import InputDecimal from '@/components/form-elements/input/InputDecimal.vue';
 import InputInt from '@/components/form-elements/input/InputInt.vue';

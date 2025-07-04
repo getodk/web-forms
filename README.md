@@ -444,6 +444,14 @@ TZ=America/Phoenix CI=true npx turbo run test --concurrency=1
 - [xpath](/packages/xpath): XPath evaluator with ODK XForms extensions
 - [scenario](/packages/scenario): engine client used to express tests on forms
 
+### Naming convention
+
+- Use `kebab-case` for folders, stylesheets, images, and JSON files.
+- Use PascalCase for TypeScript or JavaScript files that primarily export a class or type.
+  - For files with multiple exports use `kebab-case`.
+- Use the same name as the component or file being tested for test files, with a `.test.ts` suffix.
+  - Example: `InputText.test.ts`, `InitializeFormState.test.ts`
+
 ### Commit message
 
 Consider using [Conventional Commits](https://www.conventionalcommits.org/):
