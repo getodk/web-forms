@@ -65,7 +65,7 @@
     "@getodk/xpath": "0.6.0",
     "@playwright/test": "^1.53.2",
     "@types/papaparse": "^5.3.16",
-    "@vitest/browser": "^3.2.4",
+    "@vitest/browser": "3.1.4",
     "babel-plugin-transform-jsbi-to-bigint": "^1.4.2",
     "http-server": "^14.1.1",
     "jsdom": "^26.1.0",
