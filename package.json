@@ -60,7 +60,7 @@
     "only-allow": "^1.2.1",
     "organize-imports-cli": "^0.10.0",
     "prettier": "^3.6.2",
-    "rimraf": "^6.0.1",
+    "rimraf": "^5.0.9",
     "turbo": "^2.5.4",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.36.0",
