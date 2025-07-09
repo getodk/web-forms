@@ -4,7 +4,6 @@ import type { Scenario } from '../Scenario.ts';
 import type { JRFormDef } from '../form/JRFormDef.ts';
 import type { JRFormIndex } from '../form/JRFormIndex.ts';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type AnyNodeCurrentState = AnyNode['currentState'];
 
 /**
