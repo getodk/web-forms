@@ -77,38 +77,17 @@ const formResourceMetadata = (resource: FormResource): FormResourceMetadata => {
  */
 export class LoadFormFailureError extends AggregateError {
 	constructor(resource: FormResource, errors: readonly Error[]) {
-		const { description, rawData } = formResourceMetadata(resource);
-		const messageLines: string[] = [
-			`Failed to load form resource: ${description}`,
-			'\n',
-
-			...errors.map((error) => {
-				const aggregatedMessage = error.message;
-
-				if (aggregatedMessage == null) {
-					return '- Unknown error';
-				}
-
-				return `- ${aggregatedMessage}`;
-			}),
-		];
-
-		if (rawData != null) {
-			messageLines.push('\n- - -\n', 'Raw resource data:', rawData);
-		}
-
-		const message = messageLines.join('\n');
+		const { description } = formResourceMetadata(resource);
+		const message = 'Failed to load form resource.';
 
 		super(errors, message);
 
 		const [head, ...tail] = errors;
+		const stack =
+			typeof head?.stack === 'string' && !tail.length ? head.stack : 'No error trace available.';
 
-		if (head != null && tail.length === 0) {
-			const { stack } = head;
-
-			if (typeof stack === 'string') {
-				this.stack = stack;
-			}
-		}
+		this.stack = [description, errors.map((error) => error.message ?? 'Unknown error'), stack].join(
+			'\n'
+		);
 	}
 }
