@@ -67,6 +67,7 @@ const detail = computed((): FormLoadErrorDetail | null => {
 	margin: 10px 0 30px 0;
 	color: var(--odk-error-text-color);
 	font-size: var(--odk-base-font-size);
+	white-space: pre-wrap;
 }
 
 .initialize-form-failure-details {

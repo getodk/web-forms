@@ -49,7 +49,7 @@ interface FormResourceMetadata {
 	readonly rawData: string | null;
 }
 
-const formResourceMetadata = (resource: FormResource): FormResourceMetadata => {
+const formResourceMetadata = (resource: FormResource): FormResourceMetadata | undefined => {
 	if (resource instanceof Blob) {
 		return {
 			description: blobDescription(resource),
@@ -64,10 +64,7 @@ const formResourceMetadata = (resource: FormResource): FormResourceMetadata => {
 		};
 	}
 
-	return {
-		description: 'Raw string data',
-		rawData: resource,
-	};
+	return;
 };
 
 /**
@@ -77,17 +74,15 @@ const formResourceMetadata = (resource: FormResource): FormResourceMetadata => {
  */
 export class LoadFormFailureError extends AggregateError {
 	constructor(resource: FormResource, errors: readonly Error[]) {
-		const { description } = formResourceMetadata(resource);
-		const message = 'Failed to load form resource.';
-
+		const metadata = formResourceMetadata(resource);
+		const errorMessages = errors.map((error) => error.message || 'Unknown error').join('\n');
+		const message = metadata?.description
+			? `Form source: ${metadata.description}\n${errorMessages}`
+			: errorMessages;
 		super(errors, message);
 
 		const [head, ...tail] = errors;
-		const stack =
+		this.stack =
 			typeof head?.stack === 'string' && !tail.length ? head.stack : 'No error trace available.';
-
-		this.stack = [description, errors.map((error) => error.message ?? 'Unknown error'), stack].join(
-			'\n'
-		);
 	}
 }
