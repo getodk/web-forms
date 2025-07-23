@@ -13,7 +13,7 @@ export default defineConfig({
 		outDir: './dist',
 		minify: false,
 		sourcemap: true,
-		target: 'esnext',
+		target: 'baseline-widely-available',
 	},
 	plugins: [
 		viteStaticCopy({
