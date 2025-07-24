@@ -48,8 +48,6 @@ jobs:
 
     steps:
       - uses: 'actions/checkout@v4'
-        with:
-          fetch-tags: true
 
       - uses: 'volta-cli/action@v4'
         with:
@@ -98,8 +96,6 @@ jobs:
 
     steps:
       - uses: 'actions/checkout@v4'
-        with:
-          fetch-tags: true
 
       - uses: 'volta-cli/action@v4'
         with:
@@ -151,8 +147,6 @@ jobs:
 
     steps:
       - uses: 'actions/checkout@v4'
-        with:
-          fetch-tags: true
 
       - uses: 'volta-cli/action@v4'
         with:
@@ -212,8 +206,6 @@ jobs:
 
     steps:
       - uses: 'actions/checkout@v4'
-        with:
-          fetch-tags: true
 
       - uses: 'volta-cli/action@v4'
         with:
@@ -273,8 +265,6 @@ jobs:
 
     steps:
       - uses: 'actions/checkout@v4'
-        with:
-          fetch-tags: true
 
       - uses: 'volta-cli/action@v4'
         with:
@@ -334,8 +324,6 @@ jobs:
 
     steps:
       - uses: 'actions/checkout@v4'
-        with:
-          fetch-tags: true
 
       - uses: 'volta-cli/action@v4'
         with:
@@ -390,8 +378,6 @@ jobs:
 
     steps:
       - uses: 'actions/checkout@v4'
-        with:
-          fetch-tags: true
 
       - uses: 'volta-cli/action@v4'
         with:
@@ -442,7 +428,7 @@ jobs:
     steps:
       - uses: 'actions/checkout@v4'
         with:
-          fetch-tags: true
+          fetch-depth: '0'
 
       - uses: 'volta-cli/action@v4'
         with:
