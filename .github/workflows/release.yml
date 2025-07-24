@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          fetch-tags: true
 
       - name: Set up npm registry
         uses: actions/setup-node@v4
