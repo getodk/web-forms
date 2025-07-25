@@ -429,6 +429,7 @@ jobs:
       - uses: 'actions/checkout@v4'
         with:
           fetch-depth: '0'
+          fetch-tags: true
 
       - uses: 'volta-cli/action@v4'
         with:
