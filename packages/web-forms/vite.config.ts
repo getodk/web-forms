@@ -16,7 +16,7 @@ interface PackageJson {
 const { version = 'Unknown' } = JSON.parse(
 	readFileSync(resolve('package.json'), 'utf-8')
 ) as PackageJson;
-const fullCommitHash = execSync(`git rev-list -1 @getodk/web-forms@${version} --`, {
+const fullCommitHash = execSync(`git rev-list -1 @getodk/web-forms\\@${version} --`, {
 	encoding: 'utf-8',
 });
 const buildNumber = fullCommitHash?.trim().slice(0, 9);
