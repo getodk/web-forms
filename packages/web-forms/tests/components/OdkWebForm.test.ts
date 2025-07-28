@@ -125,7 +125,7 @@ describe('OdkWebForm', () => {
 		expect(component.get('.question-container').classes().includes('highlight')).toBe(true);
 	});
 
-	it('shows Web Forms version number', async () => {
+	it('shows Web Forms version number in "Powered by" section', async () => {
 		const component = mountComponent(formXML);
 		await flushPromises();
 
