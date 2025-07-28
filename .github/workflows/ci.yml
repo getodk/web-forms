@@ -49,14 +49,7 @@ jobs:
     steps:
       - uses: 'actions/checkout@v4'
         with:
-          fetch-tags: true
-      - run: |
-          git --version
-          git tag -l
-          git rev-parse HEAD
-          git describe --tags --exact-match || echo "No tag on this commit"
-          git rev-list -1 @getodk/web-forms@0.13.1 -- || echo "Tag resolution failed"
-        name: Debug Git state
+          fetch-depth: '0'
 
       - uses: 'volta-cli/action@v4'
         with:
