@@ -125,6 +125,15 @@ describe('OdkWebForm', () => {
 		expect(component.get('.question-container').classes().includes('highlight')).toBe(true);
 	});
 
+	it('shows Web Forms version number', async () => {
+		const component = mountComponent(formXML);
+		await flushPromises();
+
+		const version = component.find('.powered-by-wrapper .version');
+
+		expect(/^v\d+\.\d+\.\d+\s*-\s*[a-zA-Z0-9]{9}$/.test(version.text())).toBeTruthy();
+	});
+
 	describe('form load failure', () => {
 		// TODO: this test uses a fixture which currently causes engine-internal
 		// reactivity (Solid) to produce a "potential infinite loop" error.
