@@ -20,7 +20,6 @@ const fullCommitHash = execSync(`git rev-list -1 @getodk/web-forms\\@${version} 
 	encoding: 'utf-8',
 });
 const buildNumber = fullCommitHash?.trim().slice(0, 9);
-const currentVersion = `v${version} - ${buildNumber}`;
 
 const supportedBrowsers = new Set(['chromium', 'firefox', 'webkit'] as const);
 
@@ -103,7 +102,7 @@ export default defineConfig(({ mode }) => {
 
 	return {
 		define: {
-			__WEB_FORMS_VERSION__: `"${currentVersion}"`,
+			__WEB_FORMS_VERSION__: `"v${version} - ${buildNumber}"`,
 		},
 		base: './',
 		plugins: [vue(), vueJsx(), cssInjectedByJsPlugin(), ...extraPlugins],
