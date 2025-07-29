@@ -12,12 +12,13 @@ import type {
 } from '@getodk/xforms-engine';
 import { flushPromises, mount } from '@vue/test-utils';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import packageJson from '../../package.json' with { type: 'json' };
 import {
+	type ElementMethodName,
 	getFormXml,
 	getWebFormsTestFixture,
 	globalMountOptions,
 	mockElementPrototypeMethod,
-	type ElementMethodName,
 } from '../helpers';
 
 interface MountComponentOptions {
@@ -129,9 +130,10 @@ describe('OdkWebForm', () => {
 		const component = mountComponent(formXML);
 		await flushPromises();
 
-		const version = component.find('.powered-by-wrapper .version');
+		const displayedVersion = component.find('.powered-by-wrapper .version');
 
-		expect(/^v\d+\.\d+\.\d+$/.test(version.text())).toBeTruthy();
+		expect(/^v\d+\.\d+\.\d+$/.test(displayedVersion.text())).toBeTruthy();
+		expect(displayedVersion.text()).toEqual(`v${packageJson.version}`);
 	});
 
 	describe('form load failure', () => {

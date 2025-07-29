@@ -49,9 +49,6 @@ jobs:
     steps:
       - uses: 'actions/checkout@v4'
 
-      - name: Debug build number
-        run: 'echo "Build number: $(git rev-parse --short HEAD)"'
-
       - uses: 'volta-cli/action@v4'
         with:
           node-version: '${{ matrix.node-version }}'
