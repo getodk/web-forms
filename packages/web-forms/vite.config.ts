@@ -102,7 +102,8 @@ export default defineConfig(({ mode }) => {
 
 	return {
 		define: {
-			__WEB_FORMS_VERSION__: `"v${version} - ${buildNumber}"`,
+			__WEB_FORMS_VERSION__:
+				isVueBundled || isDev ? `"v${version} - ${buildNumber}"` : `"v${version}"`,
 		},
 		base: './',
 		plugins: [vue(), vueJsx(), cssInjectedByJsPlugin(), ...extraPlugins],
