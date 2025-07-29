@@ -48,8 +48,10 @@ jobs:
 
     steps:
       - uses: 'actions/checkout@v4'
-        with:
-          fetch-depth: '0'
+
+      - name: Debug build number
+        run:
+          echo "Build number: $(git rev-parse --short HEAD)"
 
       - uses: 'volta-cli/action@v4'
         with:
@@ -429,8 +431,6 @@ jobs:
 
     steps:
       - uses: 'actions/checkout@v4'
-        with:
-          fetch-depth: '0'
 
       - uses: 'volta-cli/action@v4'
         with:
