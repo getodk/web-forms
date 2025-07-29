@@ -131,7 +131,7 @@ describe('OdkWebForm', () => {
 
 		const version = component.find('.powered-by-wrapper .version');
 
-		expect(/^v\d+\.\d+\.\d+\s*-\s*[a-zA-Z0-9]{9}$/.test(version.text())).toBeTruthy();
+		expect(/^v\d+\.\d+\.\d+$/.test(version.text())).toBeTruthy();
 	});
 
 	describe('form load failure', () => {
