@@ -16,10 +16,9 @@ interface PackageJson {
 const { version = 'Unknown' } = JSON.parse(
 	readFileSync(resolve('package.json'), 'utf-8')
 ) as PackageJson;
-const fullCommitHash = execSync(`git rev-list -1 @getodk/web-forms\\@${version} --`, {
+const buildNumber = execSync('git rev-parse --short HEAD', {
 	encoding: 'utf-8',
-});
-const buildNumber = fullCommitHash?.trim().slice(0, 9);
+}).trim();
 
 const supportedBrowsers = new Set(['chromium', 'firefox', 'webkit'] as const);
 
@@ -100,10 +99,11 @@ export default defineConfig(({ mode }) => {
 		};
 	}
 
+	const versionSuffix = buildNumber && (isVueBundled || isDev) ? ` - ${buildNumber}` : '';
+
 	return {
 		define: {
-			__WEB_FORMS_VERSION__:
-				isVueBundled || isDev ? `"v${version} - ${buildNumber}"` : `"v${version}"`,
+			__WEB_FORMS_VERSION__: `"v${version}${versionSuffix}"`,
 		},
 		base: './',
 		plugins: [vue(), vueJsx(), cssInjectedByJsPlugin(), ...extraPlugins],
