@@ -85,6 +85,16 @@ jobs:
       - run: 'yarn install --frozen-lockfile'
       - run: 'yarn build --force'
 
+      - name: Rebuild if cache is missing
+        if: steps.cache-build.outputs.cache-hit != 'true'
+        run: |
+          if yarn build --force; then
+            echo "Build succeeded"
+          else
+            echo "Build failed"
+            exit 1
+          fi
+
   lint:
     name: 'Lint (global)'
     needs: ['install-and-build']
@@ -119,7 +129,6 @@ jobs:
             packages/*/dist
             packages/web-forms/dist-demo
           key: build-${{ matrix.node-version }}-${{ github.sha }}
-          fail-on-cache-miss: true
 
       - run: 'yarn lint'
 
@@ -170,7 +179,6 @@ jobs:
             packages/*/dist
             packages/web-forms/dist-demo
           key: build-${{ matrix.node-version }}-${{ github.sha }}
-          fail-on-cache-miss: true
 
       - if: ${{ matrix.target == 'Node' }}
         run: 'yarn workspace @getodk/common test:types'
@@ -229,7 +237,6 @@ jobs:
             packages/*/dist
             packages/web-forms/dist-demo
           key: build-${{ matrix.node-version }}-${{ github.sha }}
-          fail-on-cache-miss: true
 
       - if: ${{ matrix.target == 'Node' }}
         run: 'yarn workspace @getodk/xforms-engine test:types'
@@ -288,7 +295,6 @@ jobs:
             packages/*/dist
             packages/web-forms/dist-demo
           key: build-${{ matrix.node-version }}-${{ github.sha }}
-          fail-on-cache-miss: true
 
       - if: ${{ matrix.target == 'Node' }}
         run: 'yarn workspace @getodk/scenario test:types'
@@ -347,7 +353,6 @@ jobs:
             packages/*/dist
             packages/web-forms/dist-demo
           key: build-${{ matrix.node-version }}-${{ github.sha }}
-          fail-on-cache-miss: true
 
       - uses: szenius/set-timezone@v2.0
         with:
@@ -401,7 +406,6 @@ jobs:
             packages/*/dist
             packages/web-forms/dist-demo
           key: build-${{ matrix.node-version }}-${{ github.sha }}
-          fail-on-cache-miss: true
 
       - run: 'yarn workspace @getodk/tree-sitter-xpath test'
 
@@ -450,7 +454,6 @@ jobs:
             packages/*/dist
             packages/web-forms/dist-demo
           key: build-${{ matrix.node-version }}-${{ github.sha }}
-          fail-on-cache-miss: true
 
       - if: ${{ matrix.target == 'Node' }}
         run: 'yarn workspace @getodk/web-forms test:types'
