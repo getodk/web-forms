@@ -85,15 +85,6 @@ jobs:
       - run: 'yarn install --frozen-lockfile'
       - run: 'yarn build --force'
 
-      - name: Rebuild if cache is missing
-        if: steps.cache-build.outputs.cache-hit != 'true'
-        run: |
-          if yarn build --force; then
-            echo "Build succeeded"
-          else
-            echo "Build failed"
-            exit 1
-          fi
 
   lint:
     name: 'Lint (global)'
