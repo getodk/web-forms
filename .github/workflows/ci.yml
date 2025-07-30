@@ -83,7 +83,19 @@ jobs:
           timezoneWindows: ${{ env.TZ }}
 
       - run: 'yarn install --frozen-lockfile'
+
       - run: 'yarn build --force'
+
+      - name: Rebuild if cache is missing
+        if: steps.cache-build.outputs.cache-hit != 'true'
+        run: |
+          echo "Starting rebuild due to missing cache"
+          if yarn build --force; then
+            echo "Rebuild succeeded"
+          else
+            echo "Rebuild failed"
+            exit 1
+          fi
 
   lint:
     name: 'Lint (global)'
