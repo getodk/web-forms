@@ -96,7 +96,7 @@ jobs:
             echo "Rebuild failed"
             exit 1
           fi
-
+# dummy change
   lint:
     name: 'Lint (global)'
     needs: ['install-and-build']
