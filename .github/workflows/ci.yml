@@ -44,7 +44,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ['18.20.5', '20.18.1', '22.12.0']
+        node-version: ['20.19.3', '22.12.0', '24.3.0']
 
     steps:
       - uses: 'actions/checkout@v4'
@@ -133,7 +133,7 @@ jobs:
     strategy:
       matrix:
         target: ['Node']
-        node-version: ['18.20.5', '20.18.1', '22.12.0']
+        node-version: ['20.19.3', '22.12.0', '24.3.0']
         include:
           - target: 'Web'
             node-version: '22.12.0'
@@ -192,7 +192,7 @@ jobs:
     strategy:
       matrix:
         target: ['Node']
-        node-version: ['18.20.5', '20.18.1', '22.12.0']
+        node-version: ['20.19.3', '22.12.0', '24.3.0']
         include:
           - target: 'Web'
             node-version: '22.12.0'
@@ -251,7 +251,7 @@ jobs:
     strategy:
       matrix:
         target: ['Node']
-        node-version: ['18.20.5', '20.18.1', '22.12.0']
+        node-version: ['20.19.3', '22.12.0', '24.3.0']
         include:
           - target: 'Web'
             node-version: '22.12.0'
@@ -310,7 +310,7 @@ jobs:
     strategy:
       matrix:
         target: ['Node']
-        node-version: ['18.20.5', '20.18.1', '22.12.0']
+        node-version: ['20.19.3', '22.12.0', '24.3.0']
         include:
           - target: 'Web'
             node-version: '22.12.0'
@@ -374,7 +374,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ['18.20.5', '20.18.1', '22.12.0']
+        node-version: ['20.19.3', '22.12.0', '24.3.0']
 
     steps:
       - uses: 'actions/checkout@v4'
@@ -413,7 +413,7 @@ jobs:
     strategy:
       matrix:
         target: ['Node']
-        node-version: ['18.20.5', '20.18.1', '22.12.0']
+        node-version: ['20.19.3', '22.12.0', '24.3.0']
         include:
           - target: 'Web'
             node-version: '22.12.0'
