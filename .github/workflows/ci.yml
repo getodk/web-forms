@@ -428,7 +428,7 @@ jobs:
           path: |
             node_modules
             **/node_modules
-          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}-test-miss
+          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
 
       - uses: 'actions/cache@v4'
         id: cache-build
@@ -437,7 +437,7 @@ jobs:
             examples/*/dist
             packages/*/dist
             packages/web-forms/dist-demo
-          key: build-${{ matrix.node-version }}-${{ github.sha }}-test-miss
+          key: build-${{ matrix.node-version }}-${{ github.sha }}
 
       - if: ${{ matrix.target == 'Node' }}
         run: 'yarn workspace @getodk/web-forms test:types'
