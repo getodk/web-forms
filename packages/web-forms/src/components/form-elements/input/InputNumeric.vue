@@ -26,7 +26,7 @@ interface InputNumericProps {
 	readonly isDecimal?: boolean;
 	readonly min?: number;
 	readonly max?: number;
-	readonly maxDigits: number;
+	readonly maxCharacters: number;
 }
 
 const props = defineProps<InputNumericProps>();
@@ -95,7 +95,7 @@ const modelValue = customRef<number | null>(() => {
 		set: (assignedValue) => {
 			const currentValue = internalValue.value;
 			const stringValue = assignedValue != null ? assignedValue.toString() : '';
-			let newValue = stringValue.length <= props.maxDigits ? assignedValue : currentValue;
+			let newValue = stringValue.length <= props.maxCharacters ? assignedValue : currentValue;
 
 			if (newValue != null) {
 				const { min = newValue, max = newValue } = props;
