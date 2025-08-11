@@ -26,6 +26,7 @@ interface InputNumericProps {
 	readonly isDecimal?: boolean;
 	readonly min?: number;
 	readonly max?: number;
+	readonly maxDigits: number;
 }
 
 const props = defineProps<InputNumericProps>();
@@ -47,7 +48,7 @@ let inputMode: NumericInputMode;
 if (props.isDecimal) {
 	fractionalDigits = {
 		min: 0,
-		max: 18,
+		max: 13,
 	};
 	inputMode = 'decimal';
 } else {
@@ -90,11 +91,11 @@ const modelValue = customRef<number | null>(() => {
 	};
 
 	return {
-		get: () => {
-			return internalValue.value;
-		},
+		get: () => internalValue.value,
 		set: (assignedValue) => {
-			let newValue = assignedValue;
+			const currentValue = internalValue.value;
+			const stringValue = assignedValue != null ? assignedValue.toString() : '';
+			let newValue = stringValue.length <= props.maxDigits ? assignedValue : currentValue;
 
 			if (newValue != null) {
 				const { min = newValue, max = newValue } = props;
@@ -108,9 +109,7 @@ const modelValue = customRef<number | null>(() => {
 				props.setNumericValue(newValue);
 				setValidValue(assignedValue, newValue);
 			} catch {
-				const previousValue = internalValue.value;
-
-				setValidValue(newValue, previousValue);
+				setValidValue(newValue, currentValue);
 			}
 		},
 	};
@@ -136,15 +135,14 @@ const onInput = (event: InputNumberInputEvent) => {
 	doneAnswering.value = false;
 
 	const { value = null } = event;
-
 	if (value == null || value === '') {
-		// props.setNumericValue(null);
 		modelValue.value = null;
-	} else if (typeof value === 'number') {
+		return;
+	}
+
+	if (typeof value === 'number') {
 		modelValue.value = value;
-	} else {
-		// TODO: the types suggest this may be a string, but it's not clear how or
-		// why that would ever happen!
+		return;
 	}
 };
 </script>
@@ -171,11 +169,7 @@ const onInput = (event: InputNumberInputEvent) => {
 </template>
 
 <style scoped lang="scss">
-// These styles are largely intended to override some of the least appealing
-// visual design of PrimeVue 3's Material theme for numeric inputs, preferring
-// styles closer to the much nicer looking Aura default. The main deviations
-// from Aura are consistent input size with the rest of the Material theme and a
-// default background color for the increment/decrement buttons.
+// Overrides PrimeVue styles to adhere to Web Forms design.
 
 .p-inputnumber {
 	position: relative;

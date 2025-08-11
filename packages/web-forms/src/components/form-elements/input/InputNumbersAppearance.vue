@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import InputText from 'primevue/inputtext';
 import type { StringInputNode } from '@getodk/xforms-engine';
-import { computed } from 'vue';
-import InputNumeric from './InputNumeric.vue';
+import { computed, inject, ref } from 'vue';
 
 interface InputNumbersAppearanceProps {
 	readonly node: StringInputNode;
@@ -9,32 +9,34 @@ interface InputNumbersAppearanceProps {
 
 const props = defineProps<InputNumbersAppearanceProps>();
 
-const numericValue = computed((): number | null => {
-	const { value } = props.node.currentState;
+const doneAnswering = inject<boolean>('doneAnswering');
+const submitPressed = inject<boolean>('submitPressed');
+const invalid = computed(() => props.node.validationState.violation?.valid === false);
+const renderKey = ref(1);
 
-	if (value == '') {
-		return null;
-	}
-
-	const result = Number(value);
-
-	if (!Number.isFinite(result)) {
-		return null;
-	}
-
-	return result;
+const inputValue = computed({
+	get() {
+		return props.node.currentState.value;
+	},
+	set(value) {
+		const filteredValue = value.replace(/[^0-9,\.\-]/g, '');
+		props.node.setValue(filteredValue);
+		// Increment renderKey to refresh UI with filtered value.
+		renderKey.value++;
+	},
 });
-
-const setNumberValue = (value: number | null): void => {
-	props.node.setValue(String(value));
-};
 </script>
 
 <template>
-	<InputNumeric
-		:node="node"
-		:numeric-value="numericValue"
-		:set-numeric-value="setNumberValue"
-		:is-decimal="true"
+	<InputText
+		:id="node.nodeId"
+		:key="renderKey"
+		v-model="inputValue"
+		:required="node.currentState.required"
+		:disabled="node.currentState.readonly"
+		:class="{'inside-highlighted': invalid && submitPressed}"
+		inputmode="numeric"
+		@input="doneAnswering = false"
+		@blur="doneAnswering = true"
 	/>
 </template>
