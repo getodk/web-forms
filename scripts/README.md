@@ -7,7 +7,6 @@ This directory contains utility scripts to support the **ODK Web Forms** project
 The folder includes scripts for:
 
 - Updating the feature matrix
-- Synchronizing dependency versions in `examples/*` folders to match workspace package versions
 
 ## Prerequisites
 
@@ -30,26 +29,6 @@ Updates the feature matrix data used by the project.
 
 ```bash
 node feature-matrix/render.js
-```
-
-### `sync-examples-dependencies`
-
-Updates the dependencies' versions in the `examples/*` folders to match the versions of the workspace packages.
-
-**Usage:**
-
-This script should be run **after** running:
-
-```bash
-yarn changeset version
-```
-
-so that the release pull request includes all the updated versions together.
-
-**Run:**
-
-```bash
-node deps/update-example-versions.js
 ```
 
 ## Contributing
