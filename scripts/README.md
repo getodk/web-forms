@@ -29,7 +29,7 @@ Updates the feature matrix data used by the project.
 **Run:**
 
 ```bash
-yarn update-feature-matrix
+node feature-matrix/render.js
 ```
 
 ### `sync-examples-dependencies`
@@ -49,7 +49,7 @@ so that the release pull request includes all the updated versions together.
 **Run:**
 
 ```bash
-yarn sync-examples-dependencies
+node deps/update-example-versions.js
 ```
 
 ## Contributing
