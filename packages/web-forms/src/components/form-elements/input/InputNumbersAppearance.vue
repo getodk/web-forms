@@ -1,7 +1,15 @@
 <script setup lang="ts">
 import InputText from 'primevue/inputtext';
 import type { StringInputNode } from '@getodk/xforms-engine';
-import { type ComponentPublicInstance, computed, inject, nextTick, ref, watch } from 'vue';
+import {
+	type ComponentPublicInstance,
+	computed,
+	inject,
+	nextTick,
+	type Ref,
+	ref,
+	watch,
+} from 'vue';
 
 interface InputNumbersAppearanceProps {
 	readonly node: StringInputNode;
@@ -10,8 +18,8 @@ interface InputNumbersAppearanceProps {
 const props = defineProps<InputNumbersAppearanceProps>();
 
 const inputRef = ref<ComponentPublicInstance | null>(null);
-const doneAnswering = inject<boolean>('doneAnswering');
-const submitPressed = inject<boolean>('submitPressed');
+const doneAnswering = inject<Ref<boolean>>('doneAnswering', ref(false));
+const submitPressed = inject<boolean>('submitPressed', false);
 const invalid = computed(() => props.node.validationState.violation?.valid === false);
 const renderKey = ref(1);
 
@@ -32,7 +40,7 @@ const inputValue = computed({
 });
 
 // After re-render, refocus input so user can continue typing seamlessly
-watch(renderKey, async () => nextTick(() => (inputRef.value?.$el as HTMLElement)?.focus()));
+watch(renderKey, () => nextTick(() => (inputRef.value?.$el as HTMLElement)?.focus()));
 </script>
 
 <template>
