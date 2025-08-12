@@ -33,7 +33,7 @@ const props = defineProps<InputNumericProps>();
 
 const doneAnswering = inject<Ref<boolean>>('doneAnswering', ref(false));
 const submitPressed = inject<boolean>('submitPressed', false);
-const isInvalid = inject<boolean>('isInvalid');
+const isInvalid = inject<boolean>('isInvalid', false);
 const inputRef = ref<ComponentPublicInstance | null>(null);
 const renderKey = ref(1);
 
