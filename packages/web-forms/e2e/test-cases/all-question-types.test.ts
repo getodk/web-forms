@@ -16,8 +16,6 @@ test.describe('All Question Types', () => {
 	 */
 	test.beforeAll(async ({ browser }) => {
 		context = await browser.newContext();
-		await context.grantPermissions(['clipboard-read', 'clipboard-write']);
-
 		const page = await context.newPage();
 		const previewPage = new PreviewPage(page);
 		await previewPage.goToDevPage();
@@ -54,7 +52,11 @@ test.describe('All Question Types', () => {
 			test('disallows invalid characters', async () => {
 				await formPage.input.fillAndExpectInputValue('String number', 'abce', '');
 				await formPage.input.fillAndExpectInputValue('String number', '$#!Sds)=;+(', '');
-				await formPage.input.fillAndExpectInputValue('String number', '233-abc-456-tgh', '233--456-');
+				await formPage.input.fillAndExpectInputValue(
+					'String number',
+					'233-abc-456-tgh',
+					'233--456-'
+				);
 				await formPage.input.fillAndExpectInputValue('String number', '765.abc', '765.');
 			});
 

@@ -21,10 +21,6 @@ export class FillFormPage {
 		this.input = new InputControl(page);
 	}
 
-	/**
-	 * Grant permissions before using this function
-	 * E.g., await context.grantPermissions(['clipboard-read', 'clipboard-write']);
-	 */
 	async copyToClipboard(valueToCopy: string) {
 		await this.page.evaluate((value) => {
 			return navigator.clipboard.writeText(value);

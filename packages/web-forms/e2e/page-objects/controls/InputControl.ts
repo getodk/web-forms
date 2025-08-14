@@ -44,10 +44,6 @@ export class InputControl {
 		);
 	}
 
-	/**
-	 * Grant permissions before using this function
-	 * E.g., await context.grantPermissions(['clipboard-read', 'clipboard-write']);
-	 */
 	async pasteAndExpectInputValue(label: string, expectedDisplayedValue: string) {
 		const input = await this.getInputByLabel(label);
 		await input.clear();
