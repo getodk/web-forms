@@ -48,7 +48,7 @@ export class InputControl {
 		const input = await this.getInputByLabel(label);
 		await input.clear();
 		await input.focus();
-		await this.page.keyboard.press(`${process.platform === 'darwin' ? 'Meta' : 'Contro'}+KeyV`);
+		await this.page.keyboard.press(`${process.platform === 'darwin' ? 'Meta' : 'Control'}+KeyV`);
 
 		await expect(input, `Input for label "${label}" does not have expected value`).toHaveValue(
 			expectedDisplayedValue
