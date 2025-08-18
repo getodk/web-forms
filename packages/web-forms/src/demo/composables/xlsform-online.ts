@@ -26,6 +26,12 @@ export const useXlsFormOnline = (baseUrl: Ref<string | undefined>) => {
 			method: 'POST',
 			body: formData,
 		})
+			.then((res) => {
+				if (!res.ok) {
+					throw `Error connecting to xlsform-online server, status: ${res.status}. If problem persists, please report it on ODK Forum.`;
+				}
+				return res;
+			})
 			.then((res) => res.json())
 			.then((json: XlsOnlineResponse) => json)
 			.catch((fetchError: string) => {
