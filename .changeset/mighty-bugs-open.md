@@ -2,6 +2,8 @@
 '@getodk/web-forms': patch
 ---
 
-Added `max-characters` property to `InputNumeric` for `InputDecimal` and `InputInteger` to set maximum values.
-Replaced PrimeVue's `InputNumeric` with `InputText` in `InputNumbersAppearance` for extra-long numbers, using regex to validate characters (digits, comma, dot, minus).
-Refactored `InputNumeric` to use render key for UI refresh, simplifying code and fixing comma issue by setting min/max fractional digits to zero for integers.
+Limit integer fields to 9 characters.
+Limit decimal fields to 15 characters.
+Remove character limit and add support for the `thousands-sep` appearance in string fields with `numbers` appearance.
+Improve handling of extra-long numbers by switching to a more reliable input field.
+Fix an issue where commas in integer fields could cause errors.
