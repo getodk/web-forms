@@ -111,7 +111,7 @@ test.describe('All Question Types', () => {
 		test.describe('Integer type', () => {
 			const questionLabel = 'Integer';
 
-			test('allows up to 9 digits', async () => {
+			test('allows up to 9 characters', async () => {
 				await formPage.input.typeAndExpectInputValue(questionLabel, '1234567891234', '123456789');
 				await formPage.input.typeAndExpectInputValue(questionLabel, '-12312312345', '-12312312');
 				await formPage.input.typeAndExpectInputValue(questionLabel, '678', '678');
@@ -134,7 +134,7 @@ test.describe('All Question Types', () => {
 		test.describe('Decimal type', () => {
 			const questionLabel = 'Decimal';
 
-			test('allows up to 15 digits and decimals', async () => {
+			test('allows up to 15 characters and decimals', async () => {
 				await formPage.input.typeAndExpectInputValue(
 					questionLabel,
 					'1234567891234567890',
