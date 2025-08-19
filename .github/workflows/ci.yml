@@ -11,7 +11,7 @@ on:
       - "**/*.md"
       - ".github/ISSUE_TEMPLATE/**"
 
-# Automatically cancel older in-progress jobs on the same branch
+# Automatically cancel older in-progress jobs on the same branch.
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name == 'pull_request_target' && github.head_ref || github.ref }}
   cancel-in-progress: true
@@ -28,7 +28,7 @@ jobs:
     name: 'CI conditions'
     runs-on: 'ubuntu-latest'
     outputs:
-      IS_FORK: ${{ github.repository_owner != 'getodk' }}
+      IS_FORK: ${{ github.event.pull_request.head.repo.fork }}
       IS_PR: ${{ github.event_name == 'pull_request' }}
 
     steps:
