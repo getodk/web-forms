@@ -28,7 +28,7 @@ jobs:
     name: 'CI conditions'
     runs-on: 'ubuntu-latest'
     outputs:
-      IS_FORK: ${{ github.repository_owner != 'getodk' }}
+      IS_FORK: ${{ github.event.pull_request.head.repo.fork }}
       IS_PR: ${{ github.event_name == 'pull_request' }}
 
     steps:
