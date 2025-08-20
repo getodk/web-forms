@@ -28,11 +28,11 @@ export const useXlsFormOnline = (baseUrl: Ref<string | undefined>) => {
 				body: formData,
 			});
 			if (res.ok) {
-				data = await res.json();
+				data = (await res.json()) as XlsOnlineResponse;
 			} else {
 				error = `Error connecting to xlsform-online server, status: ${res.status}. If problem persists, please report it on ODK Forum.`;
 			}
-		} catch(fetchError: unknown) {
+		} catch (fetchError: unknown) {
 			error = String(fetchError);
 		}
 
