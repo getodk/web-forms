@@ -15,7 +15,10 @@ defineProps<{ appearances: SelectNodeAppearances }>();
 
 <style lang="scss" scoped>
 .table-row {
-	display: table-row;
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: center;
+	justify-content: flex-start;
 	border-radius: var(--odk-radius);
 	margin-bottom: 6px;
 	padding-left: 10px;
@@ -25,14 +28,14 @@ defineProps<{ appearances: SelectNodeAppearances }>();
 	}
 
 	.first-col {
-		display: table-cell;
-		width: 100%;
+		flex-grow: 2;
 		text-align: left;
 		vertical-align: middle;
 	}
 
 	:deep(.value-option) {
-		display: table-cell;
+		display: flex;
+		flex-direction: column-reverse;
 		min-width: 50px;
 		text-align: center;
 		vertical-align: middle;
@@ -50,12 +53,11 @@ defineProps<{ appearances: SelectNodeAppearances }>();
 		}
 
 		span.text-content {
-			display: block;
-			min-width: fit-content;
-			word-break: normal;
-			margin: 0 auto;
+			display: table;
+			margin: 0;
 			color: var(--odk-text-color);
 			font-size: var(--odk-base-font-size);
+			word-break: normal;
 		}
 	}
 }
@@ -110,18 +112,13 @@ defineProps<{ appearances: SelectNodeAppearances }>();
 
 	:deep(.value-option) {
 		position: relative;
+		gap: 10px;
+		justify-content: center;
 
 		.p-checkbox,
-		.p-radiobutton {
-			position: relative;
-			top: 26px;
-		}
-
+		.p-radiobutton,
 		.text-content {
 			position: relative;
-			top: -20px;
-			margin-bottom: 10px;
-			white-space: nowrap;
 		}
 	}
 }
