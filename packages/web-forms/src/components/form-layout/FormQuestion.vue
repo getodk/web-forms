@@ -6,7 +6,7 @@ import type {
 	RankNode,
 	SelectNode,
 } from '@getodk/xforms-engine';
-import { inject } from 'vue';
+import { computed, inject, type Ref, ref, watch } from 'vue';
 import InputControl from '@/components/form-elements/input/InputControl.vue';
 import NoteControl from '../form-elements/NoteControl.vue';
 import RangeControl from '@/components/form-elements/range/RangeControl.vue';
@@ -15,7 +15,7 @@ import SelectControl from '@/components/form-elements/select/SelectControl.vue';
 import TriggerControl from '../form-elements/TriggerControl.vue';
 import UploadControl from '@/components/form-elements/upload/UploadControl.vue';
 
-defineProps<{ question: ControlNode }>();
+const props = defineProps<{ question: ControlNode }>();
 
 const isInputNode = (node: ControlNode): node is AnyInputNode => node.nodeType === 'input';
 const isSelectNode = (node: ControlNode): node is SelectNode => node.nodeType === 'select';
@@ -25,7 +25,33 @@ const isRangeNode = (node: ControlNode) => node.nodeType === 'range';
 const isTriggerNode = (node: ControlNode) => node.nodeType === 'trigger';
 const isUploadNode = (node: ControlNode) => node.nodeType === 'upload';
 
-const submitPressed = inject<boolean>('submitPressed', false);
+const submitPressed = inject<Ref<boolean>>('submitPressed', ref(false));
+const wasEverFilled = ref(false);
+const isInvalidOnSubmit = computed(
+	() => submitPressed.value && props.question.validationState.violation?.valid === false
+);
+const shouldHighlightPreSubmit = computed(
+	() => props.question.currentState.required && wasEverFilled.value && isEmpty.value
+);
+
+const isEmpty = computed(() => {
+	const { value } = props.question.currentState;
+	return (
+		value == null ||
+		(typeof value === 'string' && value.trim() === '') ||
+		(Array.isArray(value) && value.length === 0)
+	);
+});
+
+watch(
+	isEmpty,
+	(value) => {
+		if (!value) {
+			wasEverFilled.value = true;
+		}
+	},
+	{ immediate: true }
+);
 </script>
 
 <template>
@@ -33,7 +59,7 @@ const submitPressed = inject<boolean>('submitPressed', false);
 		:id="question.nodeId + '_container'"
 		:class="{
 			'question-container': true,
-			'highlight': submitPressed && question.validationState.violation?.valid === false,
+			'highlight': shouldHighlightPreSubmit || isInvalidOnSubmit,
 		}"
 	>
 		<InputControl v-if="isInputNode(question)" :node="question" />
