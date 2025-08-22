@@ -2,4 +2,4 @@
 '@getodk/web-forms': patch
 ---
 
-Fixed display of list table
+Fix display of list table's labels
