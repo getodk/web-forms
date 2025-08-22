@@ -26,31 +26,26 @@ const isTriggerNode = (node: ControlNode) => node.nodeType === 'trigger';
 const isUploadNode = (node: ControlNode) => node.nodeType === 'upload';
 
 const submitPressed = inject<Ref<boolean>>('submitPressed', ref(false));
-const wasEverFilled = ref(false);
-const isInvalidOnSubmit = computed(
-	() => submitPressed.value && props.question.validationState.violation?.valid === false
-);
-const shouldHighlightPreSubmit = computed(
-	() => props.question.currentState.required && wasEverFilled.value && isEmpty.value
-);
 
-const isEmpty = computed(() => {
-	const { value } = props.question.currentState;
-	return (
-		value == null ||
-		(typeof value === 'string' && value.trim() === '') ||
-		(Array.isArray(value) && value.length === 0)
-	);
-});
+const wasEverFilled = ref(false);
+
+const isEmpty = computed(() => props.question.currentState.instanceValue.trim() === '');
 
 watch(
 	isEmpty,
-	(value) => {
-		if (!value) {
+	(newIsEmpty) => {
+		if (!newIsEmpty) {
 			wasEverFilled.value = true;
 		}
 	},
 	{ immediate: true }
+);
+
+const isInvalidOnSubmit = computed(
+	() => submitPressed.value && props.question.validationState.violation?.valid === false
+);
+const isEmptyAndRequiredOnSubmit = computed(
+	() => props.question.currentState.required && wasEverFilled.value && isEmpty.value
 );
 </script>
 
@@ -59,7 +54,7 @@ watch(
 		:id="question.nodeId + '_container'"
 		:class="{
 			'question-container': true,
-			'highlight': shouldHighlightPreSubmit || isInvalidOnSubmit,
+			'highlight': isEmptyAndRequiredOnSubmit || isInvalidOnSubmit,
 		}"
 	>
 		<InputControl v-if="isInputNode(question)" :node="question" />
