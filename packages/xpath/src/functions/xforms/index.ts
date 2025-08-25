@@ -5,6 +5,7 @@ import * as datetime from './datetime.ts';
 import * as geo from './geo.ts';
 import * as nodeset from './node-set.ts';
 import * as number from './number.ts';
+import * as pulldata from './pulldata.ts';
 import * as select from './select.ts';
 import * as string from './string.ts';
 
@@ -16,4 +17,5 @@ export const xf = new FunctionLibrary(XFORMS_NAMESPACE_URI, [
 	...Object.values(nodeset),
 	...Object.values(select),
 	...Object.values(string),
+	...Object.values(pulldata),
 ]);
