@@ -44,7 +44,7 @@ watch(
 const isInvalidOnSubmit = computed(
 	() => submitPressed.value && props.question.validationState.violation?.valid === false
 );
-const isEmptyAndRequiredOnSubmit = computed(
+const isRequiredAndCleared = computed(
 	() => props.question.currentState.required && wasEverFilled.value && isEmpty.value
 );
 </script>
@@ -54,7 +54,7 @@ const isEmptyAndRequiredOnSubmit = computed(
 		:id="question.nodeId + '_container'"
 		:class="{
 			'question-container': true,
-			'highlight': isEmptyAndRequiredOnSubmit || isInvalidOnSubmit,
+			'highlight': isRequiredAndCleared || isInvalidOnSubmit,
 		}"
 	>
 		<InputControl v-if="isInputNode(question)" :node="question" />
