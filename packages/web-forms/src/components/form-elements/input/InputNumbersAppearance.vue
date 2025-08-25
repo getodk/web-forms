@@ -4,9 +4,9 @@ import type { StringInputNode } from '@getodk/xforms-engine';
 import {
 	type ComponentPublicInstance,
 	computed,
+	type ComputedRef,
 	inject,
 	nextTick,
-	type Ref,
 	ref,
 	watch,
 } from 'vue';
@@ -18,9 +18,10 @@ interface InputNumbersAppearanceProps {
 const props = defineProps<InputNumbersAppearanceProps>();
 
 const inputRef = ref<ComponentPublicInstance | null>(null);
-const doneAnswering = inject<Ref<boolean>>('doneAnswering', ref(false));
-const submitPressed = inject<boolean>('submitPressed', false);
-const invalid = computed(() => props.node.validationState.violation?.valid === false);
+const showErrorStyle = inject<ComputedRef<boolean>>(
+	'questionHasError',
+	computed(() => false)
+);
 const renderKey = ref(1);
 
 const inputValue = computed({
@@ -90,9 +91,7 @@ const formatThousandsSep = (numberString: string) => {
 		v-model="inputValue"
 		:required="node.currentState.required"
 		:disabled="node.currentState.readonly"
-		:class="{'inside-highlighted': invalid && submitPressed}"
+		:class="{'inside-highlighted': showErrorStyle}"
 		inputmode="numeric"
-		@input="doneAnswering = false"
-		@blur="doneAnswering = true"
 	/>
 </template>

@@ -46,13 +46,13 @@ const getSelectNodeByReference = (root: RootNode, reference: string): SelectNode
 };
 
 interface MountComponentOptions {
-	readonly submitPressed?: boolean;
+	readonly questionHasError?: boolean;
 }
 
 type MountedComponent = ReturnType<typeof mountComponent>;
 
 const mountComponent = (selectNode: SelectNode, options?: MountComponentOptions) => {
-	const { submitPressed = false } = options ?? {};
+	const { questionHasError = false } = options ?? {};
 
 	return mount(SelectControl, {
 		props: {
@@ -60,7 +60,7 @@ const mountComponent = (selectNode: SelectNode, options?: MountComponentOptions)
 		},
 		global: {
 			...globalMountOptions,
-			provide: { submitPressed },
+			provide: { questionHasError },
 		},
 		attachTo: document.body,
 	});
@@ -383,7 +383,7 @@ describe('SelectControl', () => {
 		it('shows validation message for invalid state', async () => {
 			const root = await getReactiveForm('1-validation.xml');
 			const selectNode = getSelectNodeByReference(root, '/data/citizen');
-			const component = mountComponent(selectNode);
+			const component = mountComponent(selectNode, { questionHasError: true });
 			const pakistan = component.find('input[id*=_pk]');
 
 			await pakistan.setValue();
@@ -407,7 +407,7 @@ describe('SelectControl', () => {
 		it('shows validation message on submit pressed even when no interaction is made with the component', async () => {
 			const root = await getReactiveForm('1-validation.xml');
 			const selectNode = getSelectNodeByReference(root, '/data/citizen');
-			const component = mountComponent(selectNode, { submitPressed: true });
+			const component = mountComponent(selectNode, { questionHasError: true });
 
 			expect(component.get('.validation-message').isVisible()).toBe(true);
 			expect(component.get('.validation-message').text()).toBe('Condition not satisfied: required');

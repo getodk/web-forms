@@ -6,7 +6,7 @@ import type {
 	RankNode,
 	SelectNode,
 } from '@getodk/xforms-engine';
-import { computed, inject, type Ref, ref, watch } from 'vue';
+import { computed, inject, provide, type Ref, ref, watch } from 'vue';
 import InputControl from '@/components/form-elements/input/InputControl.vue';
 import NoteControl from '../form-elements/NoteControl.vue';
 import RangeControl from '@/components/form-elements/range/RangeControl.vue';
@@ -27,26 +27,23 @@ const isUploadNode = (node: ControlNode) => node.nodeType === 'upload';
 
 const submitPressed = inject<Ref<boolean>>('submitPressed', ref(false));
 
-const wasEverFilled = ref(false);
-
-const isEmpty = computed(() => props.question.currentState.instanceValue.trim() === '');
-
-watch(
-	isEmpty,
-	(newIsEmpty) => {
-		if (!newIsEmpty) {
-			wasEverFilled.value = true;
-		}
+const touched = ref(false);
+const stopWatch = watch(
+	() => props.question.currentState.instanceValue,
+	() => {
+		touched.value = true;
+		stopWatch();
 	},
-	{ immediate: true }
+	{ deep: true }
 );
 
-const isInvalidOnSubmit = computed(
-	() => submitPressed.value && props.question.validationState.violation?.valid === false
-);
-const isRequiredAndCleared = computed(
-	() => props.question.currentState.required && wasEverFilled.value && isEmpty.value
-);
+const questionHasError = computed(() => {
+	return (
+		(touched.value || submitPressed.value) &&
+		props.question.validationState.violation?.valid === false
+	);
+});
+provide('questionHasError', questionHasError);
 </script>
 
 <template>
@@ -54,7 +51,7 @@ const isRequiredAndCleared = computed(
 		:id="question.nodeId + '_container'"
 		:class="{
 			'question-container': true,
-			'highlight': isRequiredAndCleared || isInvalidOnSubmit,
+			'highlight': questionHasError,
 		}"
 	>
 		<InputControl v-if="isInputNode(question)" :node="question" />

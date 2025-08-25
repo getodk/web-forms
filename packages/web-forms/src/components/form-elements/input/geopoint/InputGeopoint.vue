@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import IconSVG from '@/components/common/IconSVG.vue';
-import { computed, inject, ref } from 'vue';
+import { computed, type ComputedRef, inject, ref } from 'vue';
 import Button from 'primevue/button';
 import type { GeopointInputNode } from '@getodk/xforms-engine';
 import { GeopointAccuracyThresholdOptions } from './GeopointAccuracyThresholdOptions.ts';
@@ -22,9 +22,10 @@ interface InputGeopointProps {
 
 const props = defineProps<InputGeopointProps>();
 
-const submitPressed = inject<boolean>('submitPressed', false);
-
-const isInvalid = computed(() => props.question.validationState.violation?.valid === false);
+const showErrorStyle = inject<ComputedRef<boolean>>(
+	'questionHasError',
+	computed(() => false)
+);
 
 const isDisabled = computed(() => props.question.currentState.readonly === true);
 
@@ -153,7 +154,7 @@ const onSave = (saved: GeolocationRequestSuccess) => {
 		<div
 			v-if="activeRequest?.error != null"
 			class="geopoint-error"
-			:class="{ 'stack-errors': submitPressed && isInvalid }"
+			:class="{ 'stack-errors': showErrorStyle }"
 		>
 			<!-- TODO: translations -->
 			<strong>Cannot access location</strong>&nbsp;<span>Grant location permission in the browser settings and make sure location is turned on.</span>

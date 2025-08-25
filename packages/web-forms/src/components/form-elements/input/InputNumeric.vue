@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { InputNumberInputEvent } from 'primevue/inputnumber';
 import InputNumber from 'primevue/inputnumber';
-import { type ComponentPublicInstance, nextTick, type Ref, watch } from 'vue';
+import { type ComponentPublicInstance, computed, type ComputedRef, nextTick, watch } from 'vue';
 import { customRef, inject, ref } from 'vue';
 
 interface NumericNodeState {
@@ -31,9 +31,10 @@ interface InputNumericProps {
 
 const props = defineProps<InputNumericProps>();
 
-const doneAnswering = inject<Ref<boolean>>('doneAnswering', ref(false));
-const submitPressed = inject<boolean>('submitPressed', false);
-const isInvalid = inject<boolean>('isInvalid', false);
+const showErrorStyle = inject<ComputedRef<boolean>>(
+	'questionHasError',
+	computed(() => false)
+);
 const inputRef = ref<ComponentPublicInstance | null>(null);
 const renderKey = ref(1);
 
@@ -104,8 +105,6 @@ const modelValue = customRef<number | null>(() => {
 watch(renderKey, () => nextTick(() => (inputRef.value?.$el as HTMLElement)?.focus()));
 
 const onInput = (event: InputNumberInputEvent) => {
-	doneAnswering.value = false;
-
 	const { value = null } = event;
 	if (value == null || value === '') {
 		modelValue.value = null;
@@ -127,7 +126,6 @@ const onInput = (event: InputNumberInputEvent) => {
 		v-model="modelValue"
 		:required="node.currentState.required"
 		:disabled="node.currentState.readonly"
-		:class="{'inside-highlighted': isInvalid && submitPressed}"
 		:show-buttons="true"
 		:min-fraction-digits="fractionalDigits.min"
 		:max-fraction-digits="fractionalDigits.max"
@@ -137,8 +135,8 @@ const onInput = (event: InputNumberInputEvent) => {
 				root: { inputMode }
 			}
 		}"
+		:class="{'inside-highlighted': showErrorStyle}"
 		@input="onInput"
-		@blur="doneAnswering = true"
 	/>
 </template>
 
