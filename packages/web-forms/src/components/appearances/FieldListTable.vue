@@ -28,7 +28,7 @@ defineProps<{ appearances: SelectNodeAppearances }>();
 	}
 
 	.first-col {
-		flex-grow: 2;
+		flex: 0 0 35%;
 		text-align: left;
 		vertical-align: middle;
 	}
@@ -36,10 +36,11 @@ defineProps<{ appearances: SelectNodeAppearances }>();
 	:deep(.value-option) {
 		display: flex;
 		flex-direction: column-reverse;
+		flex: 1;
 		min-width: 50px;
 		text-align: center;
 		vertical-align: middle;
-		padding: 15px 5px;
+		padding: 15px 0;
 		outline: none;
 		background-color: unset;
 
