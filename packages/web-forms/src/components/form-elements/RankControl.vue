@@ -18,7 +18,7 @@ interface HighlightOption {
 }
 
 const props = defineProps<RankControlProps>();
-const showOverlay = ref(false);
+const showOverlay = computed(() => !props.question.currentState.instanceValue.length);
 const disabled = computed(() => props.question.currentState.readonly === true);
 const highlight: HighlightOption = {
 	index: ref(null),
@@ -46,7 +46,6 @@ const values = computed<string[]>({
 		return getRankItems();
 	},
 	set: (orderedValues) => {
-		showOverlay.value = true;
 		props.question.setValues(orderedValues);
 	},
 });
@@ -114,7 +113,7 @@ const onDragEnd = (oldIndex: number | undefined, newIndex: number | undefined) =
 	<ControlText :question="question" />
 
 	<div class="rank-control-container">
-		<div v-if="!showOverlay" class="rank-overlay">
+		<div v-if="showOverlay" class="rank-overlay">
 			<button :disabled="disabled" @click="selectDefaultOrder">
 				<IconSVG name="mdiUnfoldMoreHorizontal" size="sm" :variant="disabled ? 'muted' : 'base'" />
 				<!-- TODO: translations -->
