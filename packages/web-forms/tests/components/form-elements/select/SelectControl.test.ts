@@ -1,7 +1,8 @@
-import SelectControl from '@/components/form-elements/select/SelectControl.vue';
+import FormQuestion from '@/components/form-layout/FormQuestion.vue';
 import type { AnyNode, RootNode, SelectNode } from '@getodk/xforms-engine';
 import { DOMWrapper, mount } from '@vue/test-utils';
 import { afterAll, assert, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { ref } from 'vue';
 import { getReactiveForm, globalMountOptions } from '../../../helpers.ts';
 
 // TODO: these are tied to PrimeVue's classes, we should control this!
@@ -46,21 +47,21 @@ const getSelectNodeByReference = (root: RootNode, reference: string): SelectNode
 };
 
 interface MountComponentOptions {
-	readonly questionHasError?: boolean;
+	readonly submitPressed?: boolean;
 }
 
 type MountedComponent = ReturnType<typeof mountComponent>;
 
 const mountComponent = (selectNode: SelectNode, options?: MountComponentOptions) => {
-	const { questionHasError = false } = options ?? {};
+	const { submitPressed = false } = options ?? {};
 
-	return mount(SelectControl, {
+	return mount(FormQuestion, {
 		props: {
 			question: selectNode,
 		},
 		global: {
 			...globalMountOptions,
-			provide: { questionHasError },
+			provide: { submitPressed: ref(submitPressed) },
 		},
 		attachTo: document.body,
 	});
@@ -383,7 +384,7 @@ describe('SelectControl', () => {
 		it('shows validation message for invalid state', async () => {
 			const root = await getReactiveForm('1-validation.xml');
 			const selectNode = getSelectNodeByReference(root, '/data/citizen');
-			const component = mountComponent(selectNode, { questionHasError: true });
+			const component = mountComponent(selectNode);
 			const pakistan = component.find('input[id*=_pk]');
 
 			await pakistan.setValue();
@@ -404,10 +405,10 @@ describe('SelectControl', () => {
 			expect(component.get('.validation-message').text()).toBe('');
 		});
 
-		it('shows validation message on submit pressed even when no interaction is made with the component', async () => {
+		it('shows a validation message even without user interaction with the component', async () => {
 			const root = await getReactiveForm('1-validation.xml');
 			const selectNode = getSelectNodeByReference(root, '/data/citizen');
-			const component = mountComponent(selectNode, { questionHasError: true });
+			const component = mountComponent(selectNode, { submitPressed: true });
 
 			expect(component.get('.validation-message').isVisible()).toBe(true);
 			expect(component.get('.validation-message').text()).toBe('Condition not satisfied: required');
