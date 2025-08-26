@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import IconSVG from '@/components/common/IconSVG.vue';
+import { QUESTION_HAS_ERROR } from '@/lib/constants/injection-keys.ts';
 import { computed, type ComputedRef, inject, ref } from 'vue';
 import Button from 'primevue/button';
 import type { GeopointInputNode } from '@getodk/xforms-engine';
@@ -23,7 +24,7 @@ interface InputGeopointProps {
 const props = defineProps<InputGeopointProps>();
 
 const showErrorStyle = inject<ComputedRef<boolean>>(
-	'questionHasError',
+	QUESTION_HAS_ERROR,
 	computed(() => false)
 );
 

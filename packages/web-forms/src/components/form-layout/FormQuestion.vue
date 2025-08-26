@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { QUESTION_HAS_ERROR, SUBMIT_PRESSED } from '@/lib/constants/injection-keys.ts';
 import type {
 	AnyInputNode,
 	AnyNoteNode,
@@ -25,7 +26,7 @@ const isRangeNode = (node: ControlNode) => node.nodeType === 'range';
 const isTriggerNode = (node: ControlNode) => node.nodeType === 'trigger';
 const isUploadNode = (node: ControlNode) => node.nodeType === 'upload';
 
-const submitPressed = inject<Ref<boolean>>('submitPressed', ref(false));
+const submitPressed = inject<Ref<boolean>>(SUBMIT_PRESSED, ref(false));
 
 const touched = ref(false);
 const stopWatch = watch(
@@ -43,7 +44,7 @@ const questionHasError = computed(() => {
 		props.question.validationState.violation?.valid === false
 	);
 });
-provide('questionHasError', questionHasError);
+provide(QUESTION_HAS_ERROR, questionHasError);
 </script>
 
 <template>

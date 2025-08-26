@@ -8,16 +8,12 @@ import InputInt from '@/components/form-elements/input/InputInt.vue';
 import InputNumbersAppearance from '@/components/form-elements/input/InputNumbersAppearance.vue';
 import type { AnyInputNode } from '@getodk/xforms-engine';
 import InputText from '@/components/form-elements/input/InputText.vue';
-import { computed, provide } from 'vue';
 
 interface InputControlProps {
 	readonly node: AnyInputNode;
 }
 
-const props = defineProps<InputControlProps>();
-
-const isInvalid = computed(() => props.node.validationState.violation?.valid === false);
-provide('isInvalid', isInvalid);
+defineProps<InputControlProps>();
 </script>
 
 <template>

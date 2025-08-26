@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { QUESTION_HAS_ERROR } from '@/lib/constants/injection-keys.ts';
 import { type ComputedRef, inject, computed } from 'vue';
 
 withDefaults(
@@ -13,7 +14,7 @@ withDefaults(
 );
 
 const showMessage = inject<ComputedRef<boolean>>(
-	'questionHasError',
+	QUESTION_HAS_ERROR,
 	computed(() => false)
 );
 </script>

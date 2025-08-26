@@ -1,4 +1,5 @@
 import FormQuestion from '@/components/form-layout/FormQuestion.vue';
+import { SUBMIT_PRESSED } from '@/lib/constants/injection-keys.ts';
 import { mount } from '@vue/test-utils';
 import { assert, describe, expect, it } from 'vitest';
 import { ref } from 'vue';
@@ -12,7 +13,7 @@ const mountComponent = async (questionNumber: number, submitPressed = false) => 
 
 	return mount(FormQuestion, {
 		props: { question },
-		global: { ...globalMountOptions, provide: { submitPressed: ref(submitPressed) } },
+		global: { ...globalMountOptions, provide: { [SUBMIT_PRESSED]: ref(submitPressed) } },
 		attachTo: document.body,
 	});
 };
