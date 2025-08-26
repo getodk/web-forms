@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { InputNumberInputEvent } from 'primevue/inputnumber';
 import InputNumber from 'primevue/inputnumber';
-import { type ComponentPublicInstance, computed, type ComputedRef, nextTick, watch } from 'vue';
-import { customRef, inject, ref } from 'vue';
+import { type ComponentPublicInstance, nextTick, watch } from 'vue';
+import { customRef, ref } from 'vue';
 
 interface NumericNodeState {
 	get required(): boolean;
@@ -30,11 +30,6 @@ interface InputNumericProps {
 }
 
 const props = defineProps<InputNumericProps>();
-
-const showErrorStyle = inject<ComputedRef<boolean>>(
-	'questionHasError',
-	computed(() => false)
-);
 const inputRef = ref<ComponentPublicInstance | null>(null);
 const renderKey = ref(1);
 
@@ -135,7 +130,6 @@ const onInput = (event: InputNumberInputEvent) => {
 				root: { inputMode }
 			}
 		}"
-		:class="{'inside-highlighted': showErrorStyle}"
 		@input="onInput"
 	/>
 </template>

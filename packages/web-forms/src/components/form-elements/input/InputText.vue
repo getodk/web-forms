@@ -2,7 +2,7 @@
 import type { StringInputNode, TemporaryStringValueInputNode } from '@getodk/xforms-engine';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
-import { computed, type ComputedRef, inject } from 'vue';
+import { computed } from 'vue';
 
 const MULTILINE_APPEARANCE_ROW_SIZE = 4;
 
@@ -21,10 +21,6 @@ const setValue = (value = '') => {
 	props.node.setValue(value);
 };
 
-const showErrorStyle = inject<ComputedRef<boolean>>(
-	'questionHasError',
-	computed(() => false)
-);
 const rows = computed(() => {
 	const options = props.node.nodeOptions;
 	if (options && 'rows' in options && options.rows != null) {
@@ -45,7 +41,6 @@ const rows = computed(() => {
 			:id="node.nodeId"
 			:required="node.currentState.required"
 			:disabled="node.currentState.readonly"
-			:class="{'inside-highlighted': showErrorStyle}"
 			:model-value="node.currentState.value"
 			:rows="rows"
 			@update:model-value="setValue"
@@ -56,7 +51,6 @@ const rows = computed(() => {
 			:id="node.nodeId"
 			:required="node.currentState.required"
 			:disabled="node.currentState.readonly"
-			:class="{'inside-highlighted': showErrorStyle}"
 			:model-value="node.currentState.value"
 			@update:model-value="setValue"
 		/>

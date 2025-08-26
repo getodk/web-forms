@@ -1,27 +1,14 @@
 <script setup lang="ts">
 import InputText from 'primevue/inputtext';
 import type { StringInputNode } from '@getodk/xforms-engine';
-import {
-	type ComponentPublicInstance,
-	computed,
-	type ComputedRef,
-	inject,
-	nextTick,
-	ref,
-	watch,
-} from 'vue';
+import { type ComponentPublicInstance, computed, nextTick, ref, watch } from 'vue';
 
 interface InputNumbersAppearanceProps {
 	readonly node: StringInputNode;
 }
 
 const props = defineProps<InputNumbersAppearanceProps>();
-
 const inputRef = ref<ComponentPublicInstance | null>(null);
-const showErrorStyle = inject<ComputedRef<boolean>>(
-	'questionHasError',
-	computed(() => false)
-);
 const renderKey = ref(1);
 
 const inputValue = computed({
@@ -91,7 +78,6 @@ const formatThousandsSep = (numberString: string) => {
 		v-model="inputValue"
 		:required="node.currentState.required"
 		:disabled="node.currentState.readonly"
-		:class="{'inside-highlighted': showErrorStyle}"
 		inputmode="numeric"
 	/>
 </template>

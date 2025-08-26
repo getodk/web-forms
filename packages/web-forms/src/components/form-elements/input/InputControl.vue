@@ -51,13 +51,6 @@ provide('isInvalid', isInvalid);
 	--input-bgcolor: var(--odk-muted-background-color);
 	--input-bgcolor-emphasized: var(--odk-light-background-color);
 
-	// Using `:has` allows sharing the same state of these custom properties for the
-	// state of the `input` itself and associated elements (e.g. number
-	// increment/decrement buttons)
-	&:has(input.inside-highlighted) {
-		--input-bgcolor: var(--odk-base-background-color);
-	}
-
 	// TODO: these styles are probably not long for this world, but it is
 	// surprising to me that hover/focus/readonly were treated the same!
 	&:has(input.p-variant-filled:enabled:hover),
