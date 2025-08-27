@@ -41,7 +41,7 @@ describe('InputControl', () => {
 			expect(component.get('.validation-message').text()).toBe('');
 		});
 
-		it('shows a validation message even without user interaction with the component', async () => {
+		it('shows validation message on submit pressed even when no interaction is made with the component', async () => {
 			const component = await mountComponent(0, true);
 			expect(component.get('.validation-message').isVisible()).toBe(true);
 			expect(component.get('.validation-message').text()).toBe('Condition not satisfied: required');

@@ -400,7 +400,7 @@ describe('SelectControl', () => {
 			expect(component.get('.validation-message').text()).toBe('');
 		});
 
-		it('shows a validation message even without user interaction with the component', async () => {
+		it('shows validation message on submit pressed even when no interaction is made with the component', async () => {
 			const root = await getReactiveForm('1-validation.xml');
 			const selectNode = getSelectNodeByReference(root, '/data/citizen');
 			const component = mountComponent(selectNode, true);

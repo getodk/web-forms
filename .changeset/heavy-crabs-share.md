@@ -2,4 +2,5 @@
 '@getodk/web-forms': patch
 ---
 
-Fix error style for required questions
+Show error highlight on required questions
+
