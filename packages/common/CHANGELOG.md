@@ -5,8 +5,8 @@
 ### Minor Changes
 
 - 6b3e6c0: Dropped support for Node.js version 18.
-  Added support for Node.js version 24.
-  Upgraded Vite to version 7, along with Vitest and other libraries that support Node.js versions greater than 20.
+  - Added support for Node.js version 24.
+  - Upgraded Vite to version 7, along with Vitest and other libraries that support Node.js versions greater than 20.
 
 ### Patch Changes
 
