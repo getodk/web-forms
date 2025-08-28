@@ -2,6 +2,7 @@
 import ColumnarAppearance from '@/components/appearances/ColumnarAppearance.vue';
 import FieldListTable from '@/components/appearances/FieldListTable.vue';
 import UnsupportedAppearance from '@/components/appearances/UnsupportedAppearance.vue';
+import AsyncMap from '@/components/common/map/AsyncMap.vue';
 import ControlText from '@/components/form-elements/ControlText.vue';
 import ValidationMessage from '@/components/common/ValidationMessage.vue';
 import LikertWidget from '@/components/common/LikertWidget.vue';
@@ -47,6 +48,8 @@ watchEffect(() => {
 		:question="question"
 	/>
 
+	<AsyncMap v-else-if="question.appearances.map" :data="question.currentState.value" :config="{viewCoordinates: [-122.4194, 37.7749]}" />
+
 	<FieldListTable v-else-if="hasFieldListRelatedAppearance" :class="{ 'select-with-images': isSelectWithImages }" :appearances="question.appearances">
 		<template #firstColumn>
 			<ControlText :question="question" />
@@ -61,7 +64,7 @@ watchEffect(() => {
 	</ColumnarAppearance>
 
 	<template v-else>
-		<template v-if="question.appearances.map || question.appearances['image-map']">
+		<template v-if="question.appearances['image-map']">
 			<UnsupportedAppearance
 				:appearance="[...question.appearances].toString()"
 				node-type="Select1"
