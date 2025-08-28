@@ -45,6 +45,6 @@ onMounted(() => {
 <style scoped lang="scss">
 .map-block {
 	width: 100%;
-	height: 445px;
+	height: var(--odk-map-height);
 }
 </style>

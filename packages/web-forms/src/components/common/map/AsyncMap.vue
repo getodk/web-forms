@@ -10,13 +10,32 @@ import ProgressSpinner from 'primevue/progressspinner';
  */
 import { type DefineComponent, onMounted, ref, shallowRef } from 'vue';
 
+interface GeoJSON {
+	type: 'LineString' | 'Point' | 'Polygon';
+	properties?: Record<string, unknown> | null;
+	geometry?: Geometry | null;
+	features?: Feature[];
+}
+
+interface Geometry {
+	type: 'LineString' | 'Point' | 'Polygon';
+	coordinates: number[] | number[][];
+}
+
+interface Feature {
+	type: 'Feature';
+	geometry: Geometry | null;
+	properties: Record<string, unknown> | null;
+}
+
 interface MapBlockProps {
-	data: object; // GeoJSON instance/object
+	data: GeoJSON[];
 	config: {
 		viewCoordinates: [number, number];
 		zoom?: number;
 	};
 }
+
 type MapBlockComponent = DefineComponent<MapBlockProps>;
 
 defineProps<MapBlockProps>();
@@ -71,7 +90,7 @@ onMounted(loadMap);
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	height: 445px;
+	height: var(--odk-map-height);
 	width: 100%;
 	background: var(--odk-light-background-color);
 	border-radius: var(--odk-radius);
