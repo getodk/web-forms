@@ -316,72 +316,69 @@ describe('Interaction between `<repeat>` and `<output>`', () => {
 					).toBe('Position: 2');
 				});
 
-				it.fails(
-					'produces the output of an expression with a relative reference (alternate #2)',
-					async () => {
-						const scenario = await Scenario.init(
-							'<output> with relative ref in translation',
-							html(
-								head(
-									title('output with relative ref in translation'),
-									model(
+				it('produces the output of an expression with a relative reference (alternate #2)', async () => {
+					const scenario = await Scenario.init(
+						'<output> with relative ref in translation',
+						html(
+							head(
+								title('output with relative ref in translation'),
+								model(
+									t(
+										'itext',
 										t(
-											'itext',
+											'translation lang="Français"',
 											t(
-												'translation lang="Français"',
-												t(
-													'text id="/data/repeat/position_in_label:label"',
-													t('value', 'Position: <output value="../position"/>')
-												)
+												'text id="/data/repeat/position_in_label:label"',
+												t('value', 'Position: <output value="../position"/>')
 											)
-										),
-										mainInstance(
-											t(
-												'data id="relative-output"',
-												t('repeat jr:template=""', t('position'), t('position_in_label'))
-											)
-										),
-										bind('/data/repeat/position').type('int').calculate('position(..)'),
-										bind('/data/repeat/position_in_label').type('int')
-									)
-								),
-								body(
-									repeat(
-										'/data/repeat',
-										input(
-											'/data/repeat/position_in_label',
-											labelRef("jr:itext('/data/repeat/position_in_label:label')")
 										)
+									),
+									mainInstance(
+										t(
+											'data id="relative-output"',
+											t('repeat jr:template=""', t('position'), t('position_in_label'))
+										)
+									),
+									bind('/data/repeat/position').type('int').calculate('position(..)'),
+									bind('/data/repeat/position_in_label').type('int')
+								)
+							),
+							body(
+								repeat(
+									'/data/repeat',
+									input(
+										'/data/repeat/position_in_label',
+										labelRef("jr:itext('/data/repeat/position_in_label:label')")
 									)
 								)
 							)
-						);
+						)
+					);
 
-						scenario.next('/data/repeat');
-						scenario.createNewRepeat({
-							assertCurrentReference: '/data/repeat',
-						});
-						scenario.next('/data/repeat[1]/position_in_label');
+					scenario.next('/data/repeat');
+					scenario.createNewRepeat({
+						assertCurrentReference: '/data/repeat',
+					});
+					scenario.next('/data/repeat[1]/position_in_label');
 
-						expect(
-							scenario.proposed_getQuestionLabelText({
-								assertCurrentReference: '/data/repeat[1]/position_in_label',
-							})
-						).toBe('Position: 1');
+					expect(
+						scenario.proposed_getQuestionLabelText({
+							assertCurrentReference: '/data/repeat[1]/position_in_label',
+						})
+					).toBe('Position: 1');
 
-						scenario.next('/data/repeat');
-						scenario.createNewRepeat({
-							assertCurrentReference: '/data/repeat',
-						});
-						scenario.next('/data/repeat[2]/position_in_label');
+					scenario.next('/data/repeat');
+					scenario.createNewRepeat({
+						assertCurrentReference: '/data/repeat',
+					});
+					scenario.next('/data/repeat[2]/position_in_label');
 
-						expect(
-							scenario.proposed_getQuestionLabelText({
-								assertCurrentReference: '/data/repeat[2]/position_in_label',
-							})
-						).toBe('Position: 2');
-					}
-				);
+					expect(
+						scenario.proposed_getQuestionLabelText({
+							assertCurrentReference: '/data/repeat[2]/position_in_label',
+						})
+					).toBe('Position: 2');
+				});
 			});
 		});
 	});

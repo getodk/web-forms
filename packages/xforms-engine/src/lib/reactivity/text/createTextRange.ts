@@ -50,10 +50,19 @@ const createTextChunks = (
 				computed.forEach((itextForm) => {
 					if (isEngineXPathElement(itextForm) && itextForm instanceof StaticElement) {
 						const formAttribute = itextForm.getAttributeValue('form');
-
 						if (!formAttribute) {
-							const defaultFormValue = itextForm.getXPathValue();
-							chunks.push(new TextChunk(context, chunkExpression.source, defaultFormValue));
+							itextForm.children.forEach((child) => {
+								if (child.nodeType === 'static-element') {
+									const value = child.getAttributeValue('value');
+									if (value) {
+										const evaluatedValue = context.evaluator.evaluateString(value, context);
+										chunks.push(new TextChunk(context, chunkExpression.source, evaluatedValue));
+										return;
+									}
+								}
+								const defaultFormValue = child.getXPathValue();
+								chunks.push(new TextChunk(context, chunkExpression.source, defaultFormValue));
+							});
 						} else if (['image', 'video', 'audio'].includes(formAttribute)) {
 							const formValue = itextForm.getXPathValue();
 
