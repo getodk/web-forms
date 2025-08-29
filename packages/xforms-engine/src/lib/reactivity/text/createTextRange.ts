@@ -52,7 +52,7 @@ const createTextChunks = (
 						const formAttribute = itextForm.getAttributeValue('form');
 						if (!formAttribute) {
 							itextForm.children.forEach((child) => {
-								if (child.nodeType === 'static-element') {
+								if (child instanceof StaticElement) {
 									const value = child.getAttributeValue('value');
 									if (value) {
 										const evaluatedValue = context.evaluator.evaluateString(value, context);
