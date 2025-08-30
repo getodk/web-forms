@@ -1,3 +1,4 @@
+import type { BaseItem } from '../lib/reactivity/createItemCollection.ts';
 import type {
 	AnySelectControlDefinition,
 	SelectType,
@@ -6,14 +7,13 @@ import type { LeafNodeDefinition } from '../parse/model/LeafNodeDefinition.ts';
 import type { BaseValueNode, BaseValueNodeState } from './BaseValueNode.ts';
 import type { NodeAppearances } from './NodeAppearances.ts';
 import type { RootNode } from './RootNode.ts';
-import type { TextRange } from './TextRange.ts';
 import type { ValueType } from './ValueType.ts';
 import type { GeneralParentNode } from './hierarchy.ts';
 import type { LeafNodeValidationState } from './validation.ts';
 
-export interface SelectItem {
-	get label(): TextRange<'item-label'>;
-	get value(): string;
+export interface SelectItem extends BaseItem {
+	geometry?(): string;
+	metadata?: Array<{ label: string; value(): string }>;
 }
 
 export type SelectValueOptions = readonly SelectItem[];
