@@ -29,7 +29,6 @@ const evaluateChildValue = (context: EvaluationContext, child: StaticChildNode):
 	if (child instanceof StaticElement) {
 		const value = child.getAttributeValue('value');
 		if (value) {
-			const lang = context.getActiveLanguage(); // listen for changes in active language
 			return context.evaluator.evaluateString(value, context);
 		}
 	}
@@ -77,7 +76,6 @@ const createTextChunks = (
 				if (isEngineXPathElement(itextForm) && itextForm instanceof StaticElement) {
 					const formAttribute = itextForm.getAttributeValue('form');
 					if (!formAttribute) {
-						context.getActiveLanguage(); // listen for changes in active language
 						itextForm.children.forEach((child) => {
 							const value = evaluateChildValue(context, child);
 							chunks.push(createLiteralChunk(context, chunkExpression.source, value));
