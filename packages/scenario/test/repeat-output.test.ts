@@ -160,27 +160,10 @@ describe('Interaction between `<repeat>` and `<output>`', () => {
 			 *   discrepancy, an **additional alternate** test is included which fully
 			 *   exercises the test's apparent intent.
 			 *
-			 * - (Prediction) At time of writing, it is anticipated that the first
-			 *   alternate will pass, and the second alternate will fail. This is
-			 *   because we do not yet support `<output>` in itext definitions at all.
-			 *
-			 * - (Confirmation) The first alternate did pass, and second did fail, as
-			 *   expected. A minor surprise detail was also discovered: because web
-			 *   forms does not yet support `<output>` in itext translations, it was
-			 *   expected that the first label text assertion would fail with:
-			 *
-			 *     - Expected: "Position: 1"
-			 *     - Received: "Position:"
-			 *
-			 *     It initially failed with:
-			 *
-			 *     - Expected: "Position: 1"
-			 *     - Received: ""
-			 *
-			 *     This is because the form fixture (as ported) is defined without
-			 *     closing the itext item's `id` attribute. The resulting XML produced
-			 *     by the fixture DSL causes that `id` attribute to be truncated,
-			 *     losing its last character.
+			 * - The form fixture (as ported) is defined without closing the itext
+			 *   item's `id` attribute. The resulting XML produced by the fixture DSL
+			 *   causes that `id` attribute to be truncated, losing its last
+			 *   character.
 			 *
 			 * - It's recommended that JavaRosa update this test, both to fully
 			 *   exercise the apparently intended `jr:itext` functionality, and to
