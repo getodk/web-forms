@@ -1,35 +1,29 @@
 <script setup lang="ts">
-import IconSVG from '@/components/common/IconSVG.vue';
-import Button from 'primevue/button';
-import ProgressSpinner from 'primevue/progressspinner';
-
 /**
- * Note: OpenLayers and MapBlock are not statically imported here to enable bundling them into a separate chunk.
+ * IMPORTANT: OpenLayers and MapBlock are not statically imported here to enable bundling them into a separate chunk.
  * This prevents unnecessary bloat in the main application bundle, reducing initial load times and improving performance.
  * Use dynamic imports instead (e.g., `await import(importPath)`) for lazy-loading these dependencies only when required.
  */
-import { type DefineComponent, onMounted, ref, shallowRef } from 'vue';
+import IconSVG from '@/components/common/IconSVG.vue';
+import Button from 'primevue/button';
+import ProgressSpinner from 'primevue/progressspinner';
+import { type DefineComponent, onMounted, shallowRef } from 'vue';
 
-interface GeoJSON {
-	type: 'LineString' | 'Point' | 'Polygon';
-	properties?: Record<string, unknown> | null;
-	geometry?: Geometry | null;
-	features?: Feature[];
-}
-
-interface Geometry {
-	type: 'LineString' | 'Point' | 'Polygon';
-	coordinates: number[] | number[][];
-}
-
-interface Feature {
-	type: 'Feature';
-	geometry: Geometry | null;
-	properties: Record<string, unknown> | null;
+// TODO: This type will come from xforms-engine
+export interface GeoJSONInput {
+	type: string;
+	features?: Array<{
+		type: string;
+		geometry: {
+			type: string;
+			coordinates: unknown;
+		};
+		properties?: Record<string, unknown>;
+	}>;
 }
 
 interface MapBlockProps {
-	data: GeoJSON[];
+	data: GeoJSONInput;
 	config: {
 		viewCoordinates: [number, number];
 		zoom?: number;
@@ -40,15 +34,19 @@ type MapBlockComponent = DefineComponent<MapBlockProps>;
 
 defineProps<MapBlockProps>();
 
-const mapComponent = shallowRef<MapBlockComponent | null>(null);
-const loading = ref(true);
-const error = ref(false);
-const cacheBustCounter = ref(0);
 const TIMEOUT_MS = 5 * 1000;
+const STATES = {
+	READY: 'ready',
+	LOADING: 'loading',
+	ERROR: 'error',
+} as const;
+
+const mapComponent = shallowRef<MapBlockComponent | null>(null);
+const currentState = shallowRef<(typeof STATES)[keyof typeof STATES]>(STATES.LOADING);
+const cacheBustCounter = shallowRef(0);
 
 const loadMap = async () => {
-	error.value = false;
-	loading.value = true;
+	currentState.value = STATES.LOADING;
 	cacheBustCounter.value++;
 
 	const timeoutId = setTimeout(() => {
@@ -58,11 +56,11 @@ const loadMap = async () => {
 	try {
 		const importPath = `./MapBlock.vue?bust=${cacheBustCounter.value}`;
 		mapComponent.value = ((await import(importPath)) as { default: MapBlockComponent }).default;
+		currentState.value = STATES.READY;
 	} catch {
-		error.value = true;
+		currentState.value = STATES.ERROR;
 	} finally {
 		clearTimeout(timeoutId);
-		loading.value = false;
 	}
 };
 
@@ -71,16 +69,18 @@ onMounted(loadMap);
 
 <template>
 	<div class="async-map-container">
-		<div v-if="error" class="map-error">
+		<div v-if="currentState === STATES.ERROR" class="map-error">
 			<!-- TODO: translations -->
-			<p class="map-error-message">Unable to load map</p>
+			<p class="map-error-message">
+				Unable to load map
+			</p>
 			<Button outlined severity="contrast" class="retry-button" @click="loadMap">
 				<IconSVG name="mdiRefresh" />
 				<!-- TODO: translations -->
 				<span>Try again</span>
 			</Button>
 		</div>
-		<ProgressSpinner v-else-if="loading" class="map-spinner" />
+		<ProgressSpinner v-else-if="currentState === STATES.LOADING" class="map-spinner" />
 		<component :is="mapComponent" v-else v-bind="{ ...$props, ...$attrs }" />
 	</div>
 </template>
