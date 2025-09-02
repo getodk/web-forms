@@ -295,7 +295,8 @@ const xpathGrammar = grammar({
 
 		string_literal: ($) => $._literal,
 		/** *String* literal */
-		_literal: () => choice(/"[^"]*"/, /'[^']*'/),
+		// match quoted text, skipping over escaped quotes
+		_literal: () => choice(/"(?:[^"\\]|\\.)*"/, /'(?:[^'\\]|\\.)*'/),
 
 		number: () => choice(/\d+(\.\d*)?/, /\.\d+/),
 

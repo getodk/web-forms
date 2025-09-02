@@ -9,6 +9,7 @@ import type { LocationPathEvaluation } from '../../evaluations/LocationPathEvalu
 import { BooleanFunction } from '../../evaluator/functions/BooleanFunction.ts';
 import type { EvaluableArgument } from '../../evaluator/functions/FunctionImplementation.ts';
 import { StringFunction } from '../../evaluator/functions/StringFunction.ts';
+import { escapeSingleQuote } from '../../lib/string/escape.ts';
 import { evaluateInt } from '../_shared/number.ts';
 import { toStrings } from '../_shared/string.ts';
 
@@ -149,8 +150,9 @@ export const pulldata = new StringFunction(
 		const desiredElement = desiredElementExpression!.evaluate(context).toString();
 		const queryElement = queryElementExpression!.evaluate(context).toString();
 		const query = queryExpression!.evaluate(context).toString();
+		const escapedQuery = escapeSingleQuote(query);
 
-		const expr = `instance('${instanceId}')/root/item[${queryElement}='${query}']/${desiredElement}`;
+		const expr = `instance('${instanceId}')/root/item[${queryElement}='${escapedQuery}']/${desiredElement}`;
 		return context.evaluator.evaluateString(expr);
 	}
 );

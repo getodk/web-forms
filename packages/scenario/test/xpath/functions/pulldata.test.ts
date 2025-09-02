@@ -47,7 +47,21 @@ describe('ODK function support: `pulldata`', () => {
 				inputValue: '',
 				expectedOutput: '',
 			},
-		])('$testName', async ({ property, inputValue, expectedOutput }) => {
+			{
+				testName: 'returns first match when there are multiple with relative path',
+				property: '@location',
+				inputValue: 'south',
+				expectedOutput: 'Texas',
+				relative: true,
+			},
+			{
+				testName: 'returns match when punctuation input',
+				property: '@location',
+				inputValue: `punctua'tion's`,
+				expectedOutput: `Punctuation's`,
+			},
+		])('$testName', async ({ property, inputValue, expectedOutput, relative }) => {
+			const path = relative ? '../my-location' : '/data/my-location';
 			const scenario = await Scenario.init(
 				'Some form',
 				html(
@@ -60,12 +74,13 @@ describe('ODK function support: `pulldata`', () => {
 								t('item abbreviation="AK" location="north"', t('value', 'Alaska')),
 								t('item abbreviation="TX" location="south"', t('value', 'Texas')),
 								t('item abbreviation="HI" location="south"', t('value', 'Hawaii')),
+								t(`item abbreviation="PU" location="punctua'tion's"`, t('value', `Punctuation's`)),
 								t('item abbreviation="WY"', t('value', 'Wyoming'))
 							),
 							bind('/data/my-state').type('string'),
 							bind('/data/my-state')
 								.type('string')
-								.calculate(`pulldata('states', 'value', '${property}', /data/my-location)`)
+								.calculate(`pulldata('states', 'value', '${property}', ${path})`)
 						)
 					),
 					body(input('/data/my-location'))
