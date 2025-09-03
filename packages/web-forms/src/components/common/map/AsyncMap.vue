@@ -34,7 +34,6 @@ type MapBlockComponent = DefineComponent<MapBlockProps>;
 
 defineProps<MapBlockProps>();
 
-const TIMEOUT_MS = 5 * 1000;
 const STATES = {
 	READY: 'ready',
 	LOADING: 'loading',
@@ -43,24 +42,19 @@ const STATES = {
 
 const mapComponent = shallowRef<MapBlockComponent | null>(null);
 const currentState = shallowRef<(typeof STATES)[keyof typeof STATES]>(STATES.LOADING);
-const cacheBustCounter = shallowRef(0);
 
 const loadMap = async () => {
 	currentState.value = STATES.LOADING;
-	cacheBustCounter.value++;
-
-	const timeoutId = setTimeout(() => {
-		throw new Error('Download of Map bundle timeout');
-	}, TIMEOUT_MS);
 
 	try {
-		const importPath = `./MapBlock.vue?bust=${cacheBustCounter.value}`;
-		mapComponent.value = ((await import(importPath)) as { default: MapBlockComponent }).default;
+		mapComponent.value = (
+			(await import('./MapBlock.vue')) as {
+				default: MapBlockComponent;
+			}
+		).default;
 		currentState.value = STATES.READY;
 	} catch {
 		currentState.value = STATES.ERROR;
-	} finally {
-		clearTimeout(timeoutId);
 	}
 };
 
@@ -90,7 +84,7 @@ onMounted(loadMap);
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	height: var(--odk-map-height);
+	height: fit-content;
 	width: 100%;
 	background: var(--odk-light-background-color);
 	border-radius: var(--odk-radius);
