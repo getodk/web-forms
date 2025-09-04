@@ -15,6 +15,7 @@ const emit = defineEmits(['close', 'save', 'discard']);
 <template>
 	<div class="map-properties">
 		<div class="map-properties-header">
+			<IconSVG v-if="hasSavedFeature" name="mdiCheck" variant="primary"/>
 			<strong>{{ title }}</strong>
 			<button class="close-icon" @click="emit('close')">
 				<IconSVG name="mdiClose" />
@@ -54,14 +55,15 @@ const emit = defineEmits(['close', 'save', 'discard']);
 	position: absolute;
 	top: var(--odk-standard-map-spacing);
 	left: var(--odk-standard-map-spacing);
-	padding: var(--odk-standard-map-spacing);
+	padding: var(--odk-standard-map-spacing) 15px;
 	border-radius: var(--odk-radius);
 	display: flex;
 	flex-direction: column;
-	gap: var(--odk-standard-map-spacing);
+	gap: 10px;
 	min-width: 300px;
 	max-width: 360px;
 	max-height: 370px;
+	box-shadow: 1px 2px 3px 0px rgba(0, 0, 0, 0.2);
 }
 
 .map-properties-header {
@@ -70,6 +72,8 @@ const emit = defineEmits(['close', 'save', 'discard']);
 	flex-direction: row;
 	flex-wrap: nowrap;
 	justify-content: space-between;
+	align-items: flex-start;
+	gap: 10px;
 
 	strong {
 		font-size: var(--odk-dialog-title-font-size);
@@ -77,6 +81,7 @@ const emit = defineEmits(['close', 'save', 'discard']);
 
 	.close-icon {
 		cursor: pointer;
+		margin-top: -15px;
 	}
 }
 

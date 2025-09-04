@@ -10,7 +10,7 @@ const emit = defineEmits(['view-details']);
 	<div class="map-status-bar">
 		<div v-if="hasSavedFeature" class="map-status-wrap">
 			<div class="map-status">
-				<IconSVG name="mdiCheck" />
+				<IconSVG name="mdiCheckCircle" variant="success"/>
 				<!-- TODO: translations -->
 				<span>Point saved</span>
 			</div>
@@ -21,7 +21,7 @@ const emit = defineEmits(['view-details']);
 		</div>
 
 		<div v-else class="map-status">
-			<IconSVG name="mdiCrosshairsGps" />
+			<IconSVG name="mdiMapMarkerOutline" />
 			<!-- TODO: translations -->
 			<span>No point saved</span>
 		</div>

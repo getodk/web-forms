@@ -45,6 +45,7 @@ watch(
 );
 
 const mapPropertiesTitle = computed(() => {
+	// ToDo: use correct labels
 	const label = mapHandler?.selectedFeatureProperties.value?.label;
 	return typeof label === 'string' ? label : '';
 });
@@ -105,10 +106,14 @@ const saveSelection = () => {
 @use 'primeflex/core/_variables.scss' as pf;
 
 .map-block-component {
+	--odk-standard-map-spacing: 20px;
+}
+
+.map-block-component {
 	position: relative;
 	width: 100%;
 	height: fit-content;
-	background: var(--odk-light-background-color);
+	background: var(--odk-base-background-color);
 	border-radius: var(--odk-radius) var(--odk-radius) 0 0;
 	overflow: hidden;
 
@@ -138,30 +143,34 @@ const saveSelection = () => {
 	position: absolute;
 	display: flex;
 	flex-direction: column;
-	top: 20px;
-	right: 20px;
+	top: var(--odk-standard-map-spacing);
+	right: var(--odk-standard-map-spacing);
 	z-index: var(--odk-z-index-overlay);
 	gap: 10px;
 
 	button {
-		background: white;
+		background: var(--odk-base-background-color);
 		padding: 8px;
 		border-radius: var(--odk-radius);
 		border: 1px solid var(--odk-border-color);
 		cursor: pointer;
+
+		&:hover {
+			background: var(--odk-muted-background-color);
+		}
 	}
 }
 
-:deep(.ol-zoom) {
+.map-block-component :deep(.ol-zoom) {
 	position: absolute;
-	right: 20px;
-	bottom: 20px;
+	right: var(--odk-standard-map-spacing);
+	bottom: var(--odk-standard-map-spacing);
 	display: flex;
 	flex-direction: column;
 	flex-wrap: nowrap;
 	align-items: center;
 	box-shadow: none;
-	background: #fff;
+	background: var(--odk-base-background-color);
 	border-radius: var(--odk-radius);
 	overflow: hidden;
 	border: 1px solid var(--odk-border-color);
@@ -174,14 +183,14 @@ const saveSelection = () => {
 		width: 36px;
 		border: none;
 		border-bottom: 1px solid var(--odk-border-color);
-		background: #fff;
+		background: var(--odk-base-background-color);
 		font-size: 24px;
 		font-weight: 300;
 		cursor: pointer;
-	}
 
-	button:hover {
-		background: #f1f3f6;
+		&:hover {
+			background: var(--odk-muted-background-color);
+		}
 	}
 }
 
@@ -190,12 +199,8 @@ const saveSelection = () => {
 	color: var(--odk-error-text-color);
 	background-color: var(--odk-error-background-color);
 	border-radius: var(--odk-radius);
-	margin-top: 20px;
-	padding: 8px;
-
-	&.stack-errors {
-		padding: 0;
-	}
+	margin-top: var(--odk-standard-map-spacing);
+	padding: var(--odk-standard-map-spacing);
 }
 
 @media screen and (max-width: #{pf.$sm}) {

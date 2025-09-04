@@ -6,6 +6,7 @@ import {
 	mdiArrowExpandAll,
 	mdiCamera,
 	mdiCheck,
+	mdiCheckCircle,
 	mdiChevronDown,
 	mdiChevronUp,
 	mdiClose,
@@ -36,6 +37,7 @@ const iconMap: Record<string, string> = {
 	mdiArrowExpandAll,
 	mdiCamera,
 	mdiCheck,
+	mdiCheckCircle,
 	mdiChevronDown,
 	mdiChevronUp,
 	mdiClose,
@@ -60,7 +62,7 @@ const iconMap: Record<string, string> = {
 };
 
 type IconName = keyof typeof iconMap;
-type IconVariant = 'base' | 'error' | 'inverted' | 'muted' | 'primary' | 'warning';
+type IconVariant = 'base' | 'error' | 'inverted' | 'muted' | 'primary' | 'warning' | 'success';
 type IconSize = 'md' | 'sm';
 
 /**
@@ -121,6 +123,10 @@ const iconSize = computed(() => props.size ?? 'md');
 
 .odk-icon.warning path {
 	fill: var(--odk-warning-text-color);
+}
+
+.odk-icon.success path {
+	fill: var(--odk-success-text-color);
 }
 
 .odk-icon.odk-icon-sm {

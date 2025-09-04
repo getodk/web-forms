@@ -87,6 +87,7 @@ onMounted(loadMap);
 	justify-content: center;
 	height: fit-content;
 	width: 100%;
+	min-height: 445px;
 	background: var(--odk-light-background-color);
 	border-radius: var(--odk-radius);
 	color: var(--odk-text-color);
