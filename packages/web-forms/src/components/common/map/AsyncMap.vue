@@ -47,6 +47,7 @@ const loadMap = async () => {
 	currentState.value = STATES.LOADING;
 
 	try {
+		// ToDo: this is cached and retry doesn't work. Cannot add cache bust parameter.
 		mapComponent.value = (
 			(await import('./MapBlock.vue')) as {
 				default: MapBlockComponent;
