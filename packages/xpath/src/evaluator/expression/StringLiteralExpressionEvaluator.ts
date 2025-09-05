@@ -7,8 +7,9 @@ export class StringLiteralExpressionEvaluator
 	implements ExpressionEvaluator
 {
 	constructor(readonly syntaxNode: LiteralNode) {
-		const text = syntaxNode.text;
+		const { text } = syntaxNode;
 		const constValue = text.substring(1, text.length - 1);
+
 		super(constValue);
 	}
 
