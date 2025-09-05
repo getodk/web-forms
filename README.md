@@ -261,7 +261,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  ##### XPath<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜ 95\%
+  ##### XPath<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜ 97\%
 
   </summary>
   <br/>
@@ -285,7 +285,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | ends-with(string haystack, string needle<br/>)                                                                  |    ✅    |
 | uuid(number?)                                                                                                   |    ✅    |
 | digest(string src, string algorithm, str<br/>ing encoding?)                                                     |    ✅    |
-| pulldata(string instance_id, string desi<br/>red_element, string query_element, strin<br/>g query)              |          |
+| pulldata(string instance_id, string desi<br/>red_element, string query_element, strin<br/>g query)              |    ✅    |
 | if(boolean condition, _ then, _ else)                                                                           |    ✅    |
 | coalesce(string arg1, string arg2)                                                                              |    ✅    |
 | once(string calc)                                                                                               |    ✅    |
