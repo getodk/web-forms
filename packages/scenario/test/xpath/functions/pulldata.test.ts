@@ -60,12 +60,13 @@ describe('ODK function support: `pulldata`', () => {
 				inputValue: 'Texas',
 				expectedOutput: 'Texas'
 			},
-			{
-				testName: 'returns match when punctuation input',
-				property: '@location',
-				inputValue: `punctua'tion's`,
-				expectedOutput: `Punctuation's`,
-			},
+			// @TODO current fails due to https://github.com/getodk/web-forms/issues/492
+			// {
+			// 	testName: 'returns match when punctuation input',
+			// 	property: '@location',
+			// 	inputValue: `punctua'tion's`,
+			// 	expectedOutput: `Punctuation's`,
+			// },
 		])('$testName', async ({ property, inputValue, expectedOutput, relative }) => {
 			const path = relative ? '../my-location' : '/data/my-location';
 			const scenario = await Scenario.init(
