@@ -58,7 +58,7 @@ describe('ODK function support: `pulldata`', () => {
 				testName: 'returns value match',
 				property: 'value',
 				inputValue: 'Texas',
-				expectedOutput: 'Texas'
+				expectedOutput: 'Texas',
 			},
 			// @TODO current fails due to https://github.com/getodk/web-forms/issues/492
 			// {
