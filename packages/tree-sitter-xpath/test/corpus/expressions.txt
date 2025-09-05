@@ -45954,24 +45954,3 @@ uuid(0)
               (filter_path_expr
                 (filter_expr
                   (number))))))))))
-
-================================================================================
-Expression 1758 handle escaped strings
-================================================================================
-
-lang('fr\'s')
-
---------------------------------------------------------------------------------
-
-(xpath
-  (expr
-    (filter_path_expr
-      (filter_expr
-        (function_call
-          (function_name
-            (unprefixed_name))
-          (argument
-            (expr
-              (filter_path_expr
-                (filter_expr
-                  (string_literal))))))))))

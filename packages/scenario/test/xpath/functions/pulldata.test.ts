@@ -55,6 +55,12 @@ describe('ODK function support: `pulldata`', () => {
 				relative: true,
 			},
 			{
+				testName: 'returns value match',
+				property: 'value',
+				inputValue: 'Texas',
+				expectedOutput: 'Texas'
+			},
+			{
 				testName: 'returns match when punctuation input',
 				property: '@location',
 				inputValue: `punctua'tion's`,
