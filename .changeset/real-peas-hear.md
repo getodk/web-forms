@@ -4,4 +4,4 @@
 '@getodk/common': patch
 ---
 
-evaluate output elements in itext translations
+Support references to form fields in translated form text
