@@ -196,6 +196,23 @@
         </model>
     </h:head>
     <h:body>
+
+        <input ref="/jr-choice-name/literal_choice_name">
+            <label>the first parameter to jr:choice-name can be a literal string</label>
+        </input>
+
+        <input ref="/jr-choice-name/select_one_name_outside">
+            <label>the first parameter to jr:choice-name can be an XPath path</label>
+        </input>
+
+        <input ref="/jr-choice-name/cocotero_name">
+            <label>the first parameter to jr:choice-name can be any expression that returns a string</label>
+        </input>
+
+        <input ref="/jr-choice-name/my-repeat/select_one_name">
+            <label>both parameters to jr:choice-name can be relative XPath paths</label>
+        </input>
+
         <select1 ref="/jr-choice-name/select_one_outside">
             <label ref="jr:itext('/jr-choice-name/select_one_outside:label')"/>
             <item>
