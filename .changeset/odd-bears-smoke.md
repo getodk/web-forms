@@ -5,4 +5,4 @@
 '@getodk/xpath': patch
 ---
 
-added support for jr:choice-name function
+Added support for jr:choice-name function
