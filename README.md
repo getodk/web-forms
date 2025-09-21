@@ -142,18 +142,18 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   </summary>
   <br/>
 
-| Feature <img width=250px/>                                                                                                       | Progress |
-| -------------------------------------------------------------------------------------------------------------------------------- | :------: |
-| randomize                                                                                                                        |    ✅    |
-| seed                                                                                                                             |    ✅    |
-| value                                                                                                                            |    ✅    |
-| label                                                                                                                            |    ✅    |
-| rows                                                                                                                             |    ✅    |
-| geopoint capture-accuracy, warning-accur<br/>acy, allow-mock-accuracy                                                            |    ✅    |
-| range start, end, step                                                                                                           |    ✅    |
-| image max-pixels                                                                                                                 |          |
-| audio quality                                                                                                                    |          |
-| Audit: location-priority, location-min-i<br/>nterval, location-max-age, track-changes<br/>, track-changes-reasons, identify-user |          |
+| Feature <img width=250px/>                                                                                                         | Progress |
+| ---------------------------------------------------------------------------------------------------------------------------------- | :------: |
+| randomize                                                                                                                          |    ✅    |
+| seed                                                                                                                               |    ✅    |
+| value                                                                                                                              |    ✅    |
+| label                                                                                                                              |    ✅    |
+| rows                                                                                                                               |    ✅    |
+| geopoint capture-accuracy,<br/>warning-accuracy, allow-mock-accuracy                                                               |    ✅    |
+| range start, end, step                                                                                                             |    ✅    |
+| image max-pixels                                                                                                                   |          |
+| audio quality                                                                                                                      |          |
+| Audit: location-priority,<br/>location-min-interval, location-max-age,<br/>track-changes, track-changes-reasons,<br/>identify-user |          |
 
 </details>
 
