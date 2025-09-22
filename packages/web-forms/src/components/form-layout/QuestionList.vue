@@ -4,19 +4,22 @@ import type {
 	GeneralChildNode,
 	GroupNode,
 	RepeatRangeNode,
+	SubtreeNode,
 } from '@getodk/xforms-engine';
+import ExpectModelNode from '../dev-only/ExpectModelNode.vue';
 import FormGroup from './FormGroup.vue';
 import FormQuestion from './FormQuestion.vue';
 import RepeatRange from './RepeatRange.vue';
-import ExpectModelNode from '../dev-only/ExpectModelNode.vue';
 
 defineProps<{ nodes: readonly GeneralChildNode[] }>();
 
-const isGroupNode = (node: GeneralChildNode): node is GroupNode => {
-	return node.nodeType === 'group';
+type GroupOrSubtreeNode = GroupNode | SubtreeNode;
+
+const isGroupNode = (node: GeneralChildNode): node is GroupOrSubtreeNode => {
+	return node.nodeType === 'group' || node.nodeType === 'subtree';
 };
 
-type NonGroupNode = Exclude<GeneralChildNode, GroupNode>;
+type NonGroupNode = Exclude<GeneralChildNode, GroupOrSubtreeNode>;
 
 const isRepeatRangeNode = (node: NonGroupNode): node is RepeatRangeNode => {
 	return (
