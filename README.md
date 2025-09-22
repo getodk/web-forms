@@ -261,7 +261,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  ##### XPath<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜ 98\%
+  ##### XPath<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩 100\%
 
   </summary>
   <br/>
@@ -335,7 +335,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | selected(string list, string value)                                                                             |    ✅    |
 | selected-at(string list, number index)                                                                          |    ✅    |
 | count-selected(node node)                                                                                       |    ✅    |
-| jr:choice-name(node node, string value)                                                                         |          |
+| jr:choice-name(node node, string value)                                                                         |    ✅    |
 | jr:itext(string id)                                                                                             |    ✅    |
 | indexed-repeat(node-set arg, node-set re<br/>peat1, number index1, [node-set repeatN,<br/> number indexN]{0,2}) |    ✅    |
 | area(node-set ns\|geoshape gs)                                                                                  |    ✅    |
