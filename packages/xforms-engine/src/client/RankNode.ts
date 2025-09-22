@@ -1,4 +1,3 @@
-import type { BaseItem } from '../lib/reactivity/createItemCollection.ts';
 import type { RankControlDefinition } from '../parse/body/control/RankControlDefinition.ts';
 import type { LeafNodeDefinition } from '../parse/model/LeafNodeDefinition.ts';
 import type { BaseValueNode, BaseValueNodeState } from './BaseValueNode.ts';
@@ -9,7 +8,11 @@ import type { LeafNodeValidationState } from './validation.ts';
 import type { UnknownAppearanceDefinition } from '../parse/body/appearance/unknownAppearanceParser.ts';
 import type { ValueType } from './ValueType.ts';
 
-export type RankItem = BaseItem;
+export interface RankItem {
+	get label(): TextRange<'item-label'>;
+	get value(): string;
+}
+
 export type RankValueOptions = readonly RankItem[];
 
 export interface RankNodeState extends BaseValueNodeState<readonly string[]> {

@@ -1,8 +1,5 @@
-import { StaticElement } from '../../../integration/xpath/static-dom/StaticElement.ts';
 import type { ItemsetElement } from '../../../lib/dom/query.ts';
 import { getValueElement } from '../../../lib/dom/query.ts';
-import { ItemsetGeometryExpression } from '../../expression/ItemsetGeometryExpression.ts';
-import { ItemsetMetadataExpression } from '../../expression/ItemsetMetadataExpression.ts';
 import { ItemsetNodesetExpression } from '../../expression/ItemsetNodesetExpression.ts';
 import { ItemsetValueExpression } from '../../expression/ItemsetValueExpression.ts';
 import { ItemsetLabelDefinition } from '../../text/ItemsetLabelDefinition.ts';
@@ -21,8 +18,6 @@ export class ItemsetDefinition extends BodyElementDefinition<'itemset'> {
 
 	readonly nodes: ItemsetNodesetExpression;
 	readonly value: ItemsetValueExpression;
-	readonly geometry: ItemsetGeometryExpression;
-	readonly metadataExclusions: string[];
 
 	constructor(
 		form: XFormDefinition,
@@ -54,19 +49,7 @@ export class ItemsetDefinition extends BodyElementDefinition<'itemset'> {
 			throw new Error(`<itemset> has no <value>`);
 		}
 
-		this.label = ItemsetLabelDefinition.from(form, this);
 		this.value = new ItemsetValueExpression(this, valueExpression);
-		this.geometry = new ItemsetGeometryExpression(this);
-
-		this.metadataExclusions = ['itextId', this.value.expression, this.geometry.expression];
-	}
-
-	getMetadataExpressions(metadataNodes: StaticElement[]): ItemsetMetadataExpression[] {
-		return metadataNodes
-			.filter((node) => {
-				const { localName } = node.qualifiedName;
-				return localName.length && !this.metadataExclusions.includes(localName);
-			})
-			.map((node) => new ItemsetMetadataExpression(this, node.qualifiedName.localName));
+		this.label = ItemsetLabelDefinition.from(form, this);
 	}
 }
