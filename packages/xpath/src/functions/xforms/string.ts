@@ -2,6 +2,7 @@
 import { MD5, SHA1, SHA256, SHA384, SHA512 } from 'crypto-js';
 import * as base64 from 'crypto-js/enc-base64';
 import * as hex from 'crypto-js/enc-hex';
+import { base64Decode as decode } from '../../../../common/src/lib/web-compat/base64.ts';
 import type { XPathNode } from '../../adapter/interface/XPathNode.ts';
 import { IncompatibleRuntimeEnvironmentError } from '../../error/IncompatibleRuntimeEnvironmentError.ts';
 import type { Evaluation } from '../../evaluations/Evaluation.ts';
@@ -11,6 +12,19 @@ import type { EvaluableArgument } from '../../evaluator/functions/FunctionImplem
 import { StringFunction } from '../../evaluator/functions/StringFunction.ts';
 import { evaluateInt } from '../_shared/number.ts';
 import { toStrings } from '../_shared/string.ts';
+
+export const base64Decode = new StringFunction(
+	'base64-decode',
+	[{ arityType: 'required', typeHint: 'string' }],
+	(context, [base64Expression]): string => {
+		try {
+			return decode(base64Expression!.evaluate(context).toString());
+		} catch {
+			// invalid base64 string
+			return '';
+		}
+	}
+);
 
 export const coalesce = new StringFunction(
 	'coalesce',
@@ -130,6 +144,28 @@ export const join = new StringFunction(
 		const strings = toStrings(context, expressions);
 
 		return strings.join(glue);
+	}
+);
+
+export const pulldata = new StringFunction(
+	'pulldata',
+	[
+		{ arityType: 'required', typeHint: 'string' },
+		{ arityType: 'required', typeHint: 'string' },
+		{ arityType: 'required', typeHint: 'string' },
+		{ arityType: 'required', typeHint: 'string' },
+	],
+	(
+		context,
+		[instanceExpression, desiredElementExpression, queryElementExpression, queryExpression]
+	): string => {
+		const instanceId = instanceExpression!.evaluate(context).toString();
+		const desiredElement = desiredElementExpression!.evaluate(context).toString();
+		const queryElement = queryElementExpression!.evaluate(context).toString();
+		const query = queryExpression!.evaluate(context).toString();
+
+		const expr = `instance('${instanceId}')/root/item[${queryElement}='${query}']/${desiredElement}`;
+		return context.evaluator.evaluateString(expr);
 	}
 );
 

@@ -188,7 +188,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  ##### Descriptions and Annotations<br/>🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 21\%
+  ##### Descriptions and Annotations<br/>🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 28\%
 
   </summary>
   <br/>
@@ -199,7 +199,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | hint                                           |    ✅    |
 | guidance hint                                  |          |
 | form translations                              |    ✅    |
-| form translations with ref to other fiel<br/>d |          |
+| form translations with ref to other fiel<br/>d |    ✅    |
 | Markdown                                       |          |
 | Inline HTML                                    |          |
 | Form attachments                               |          |
@@ -261,7 +261,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  ##### XPath<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜ 95\%
+  ##### XPath<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩 100\%
 
   </summary>
   <br/>
@@ -285,7 +285,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | ends-with(string haystack, string needle<br/>)                                                                  |    ✅    |
 | uuid(number?)                                                                                                   |    ✅    |
 | digest(string src, string algorithm, str<br/>ing encoding?)                                                     |    ✅    |
-| pulldata(string instance_id, string desi<br/>red_element, string query_element, strin<br/>g query)              |          |
+| pulldata(string instance_id, string desi<br/>red_element, string query_element, strin<br/>g query)              |    ✅    |
 | if(boolean condition, _ then, _ else)                                                                           |    ✅    |
 | coalesce(string arg1, string arg2)                                                                              |    ✅    |
 | once(string calc)                                                                                               |    ✅    |
@@ -335,12 +335,12 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | selected(string list, string value)                                                                             |    ✅    |
 | selected-at(string list, number index)                                                                          |    ✅    |
 | count-selected(node node)                                                                                       |    ✅    |
-| jr:choice-name(node node, string value)                                                                         |          |
+| jr:choice-name(node node, string value)                                                                         |    ✅    |
 | jr:itext(string id)                                                                                             |    ✅    |
 | indexed-repeat(node-set arg, node-set re<br/>peat1, number index1, [node-set repeatN,<br/> number indexN]{0,2}) |    ✅    |
 | area(node-set ns\|geoshape gs)                                                                                  |    ✅    |
 | distance(node-set ns\|geoshape gs\|geotr<br/>ace gt\|(geopoint\|string) arg\*)                                  |    ✅    |
-| base64-decode(base64Binary input)                                                                               |          |
+| base64-decode(base64Binary input)                                                                               |    ✅    |
 
 </details>
 
