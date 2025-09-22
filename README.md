@@ -188,7 +188,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  ##### Descriptions and Annotations<br/>🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 21\%
+  ##### Descriptions and Annotations<br/>🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 28\%
 
   </summary>
   <br/>
@@ -199,7 +199,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | hint                                           |    ✅    |
 | guidance hint                                  |          |
 | form translations                              |    ✅    |
-| form translations with ref to other fiel<br/>d |          |
+| form translations with ref to other fiel<br/>d |    ✅    |
 | Markdown                                       |          |
 | Inline HTML                                    |          |
 | Form attachments                               |          |
