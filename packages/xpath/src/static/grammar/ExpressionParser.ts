@@ -90,6 +90,10 @@ export class ExpressionParser {
 		return this.cache.upsert(expression, () => {
 			const parsed = this.xpathParser.parse(expression);
 
+			if (!parsed) {
+				throw new Error(`Expression has syntax error: ${expression}`);
+			}
+
 			const { rootNode } = parsed;
 
 			// TODO: this is generally going to be what we want, but there may be some

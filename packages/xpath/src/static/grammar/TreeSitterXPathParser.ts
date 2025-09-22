@@ -1,36 +1,40 @@
 import { IS_NODE_RUNTIME } from '@getodk/common/env/detection.ts';
-import WebTreeSitter, * as WebTreeSitterNamespace from 'web-tree-sitter';
+// import WebTreeSitter, * as WebTreeSitterNamespace from 'web-tree-sitter';
 
-type ParserConstructor = typeof WebTreeSitter;
-type Parser = InstanceType<ParserConstructor>;
+import { Language, Parser, Tree } from 'web-tree-sitter';
 
-let Parser: ParserConstructor;
+// type ParserConstructor = typeof WebTreeSitter;
+// type Parser = InstanceType<ParserConstructor>;
 
-// Ah, the fun of dealing with mixed ESM/CJS and build tools which address it
-// inconsistently! Each case is commented for the current conditions which
-// necessitates it.
+// let Parser: ParserConstructor;
 
-if (
-	// Node/Vitest (jsdom) requires a namespace import, and access to a `default`
-	// property on the imported namespace object.
-	typeof WebTreeSitterNamespace.default === 'function'
-) {
-	Parser = WebTreeSitterNamespace.default;
-} else if (
-	// Vite build and Vitest (browser test environments) require a namespace
-	// import, to which the constructor is assigned.
-	typeof WebTreeSitterNamespace === 'function'
-) {
-	Parser = WebTreeSitterNamespace;
-} else if (
-	// No known cases, added out of an abundance of caution since the ESM default
-	// is already imported for its type definitions.
-	typeof WebTreeSitter === 'function'
-) {
-	Parser = WebTreeSitter;
-} else {
-	throw new Error('Failed to import web-tree-sitter (`Parser` constructor)');
-}
+// // Ah, the fun of dealing with mixed ESM/CJS and build tools which address it
+// // inconsistently! Each case is commented for the current conditions which
+// // necessitates it.
+
+// GB: JSDOM not happy...
+
+// if (
+// 	// Node/Vitest (jsdom) requires a namespace import, and access to a `default`
+// 	// property on the imported namespace object.
+// 	typeof WebTreeSitterNamespace.default === 'function'
+// ) {
+// 	Parser = WebTreeSitterNamespace.default;
+// } else if (
+// 	// Vite build and Vitest (browser test environments) require a namespace
+// 	// import, to which the constructor is assigned.
+// 	typeof WebTreeSitterNamespace === 'function'
+// ) {
+// 	Parser = WebTreeSitterNamespace;
+// } else if (
+// 	// No known cases, added out of an abundance of caution since the ESM default
+// 	// is already imported for its type definitions.
+// 	typeof WebTreeSitter === 'function'
+// ) {
+// 	Parser = WebTreeSitter;
+// } else {
+// 	throw new Error('Failed to import web-tree-sitter (`Parser` constructor)');
+// }
 
 /**
  * Vitest `?url` imports produce `/@fs/Absolute/file-system/paths`, which
@@ -143,7 +147,7 @@ export class TreeSitterXPathParser {
 
 		const xpathLanguageResource = resolveWASMResource(xpathLanguage);
 
-		const language = await Parser.Language.load(xpathLanguageResource);
+		const language = await Language.load(xpathLanguageResource);
 
 		const parser = new Parser();
 
@@ -154,7 +158,7 @@ export class TreeSitterXPathParser {
 
 	protected constructor(protected readonly parser: Parser) {}
 
-	parse(expression: string): WebTreeSitter.Tree {
+	parse(expression: string): Tree | null {
 		return this.parser.parse(expression);
 	}
 }

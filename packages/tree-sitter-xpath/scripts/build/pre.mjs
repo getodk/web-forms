@@ -14,7 +14,7 @@ import { createRequire } from 'node:module';
  * - reintroducing scripting to clean up artifacts which cannot reasonably be
  *   handled by .gitignore
  */
-const EXPECTED_TREE_SITTER_VERSION = '0.22.1';
+const EXPECTED_TREE_SITTER_VERSION = '0.25.0';
 
 const INVALID_TREE_SITTER_VERSION_MSG = `
 The version of tree-sitter has been updated. Revisit the necessity and/or

@@ -71,7 +71,7 @@
     "vite-plugin-dts": "^4.5.4",
     "vite-plugin-no-bundle": "^4.0.0",
     "vitest": "^3.2.4",
-    "web-tree-sitter": "0.24.5"
+    "web-tree-sitter": "0.25.9"
   },
   "publishConfig": {
     "access": "public"

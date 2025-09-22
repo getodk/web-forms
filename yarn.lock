@@ -21,12 +21,12 @@
     "@csstools/css-tokenizer" "^3.0.3"
     lru-cache "^10.4.3"
 
-"@asgerf/dts-tree-sitter@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@asgerf/dts-tree-sitter/-/dts-tree-sitter-0.1.0.tgz#d4b77cb5f03a0b1e5141bf4e6fab98f388fc061e"
-  integrity sha512-L1SaiDRbBXLIOxwaW/S3H/LvevCdRLrQh48gFqMX/CCtR1IMYGFqAt3/x8kK/SwEzzH0Ke8JrRHD3w3kVgubTg==
+"@asgerf/dts-tree-sitter@^0.21.0":
+  version "0.21.0"
+  resolved "https://registry.yarnpkg.com/@asgerf/dts-tree-sitter/-/dts-tree-sitter-0.21.0.tgz#d95820e2ae50408bc97e7fd94048916aaf4fe53d"
+  integrity sha512-habiFcvSC1BjO818ETw0DTrlwrTsf2rKJLm+qzUAr+NcY4HLNkJKgAveru+Gk7p8GseBrH5wcZHfFyW1jgxT0A==
   dependencies:
-    tree-sitter "^0.16.1"
+    tree-sitter "^0.21.1"
 
 "@babel/code-frame@^7.10.4", "@babel/code-frame@^7.25.9", "@babel/code-frame@^7.26.2":
   version "7.26.2"
@@ -4944,12 +4944,12 @@ tr46@~0.0.3:
   resolved "https://registry.yarnpkg.com/tr46/-/tr46-0.0.3.tgz#8184fd347dac9cdc185992f3a6622e14b9d9ab6a"
   integrity sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==
 
-tree-sitter-cli@0.24.5:
-  version "0.24.5"
-  resolved "https://registry.yarnpkg.com/tree-sitter-cli/-/tree-sitter-cli-0.24.5.tgz#787236587f4158e3b667c29efad234f26887d8f2"
-  integrity sha512-8EIgV/ERQlpvk1rPSCCjxveAb6Sba8tMiBpeeL68Mueuuqr0wNfhps/I1nFm2OTnpPCUV2PS9nbzzAMoyxSQUg==
+tree-sitter-cli@0.25.9:
+  version "0.25.9"
+  resolved "https://registry.yarnpkg.com/tree-sitter-cli/-/tree-sitter-cli-0.25.9.tgz#303094eba129c41dbd523ccf58667eb49770f3c8"
+  integrity sha512-xcS2EJlNdwG529/JcYl5jV0ew/wY+HXvyNe8nkqhDCwQqxCH7odc9oLKxIWePQqmIKgieZ0YaGyieYKQI3MTKQ==
 
-tree-sitter@0.22.1, tree-sitter@^0.16.1:
+tree-sitter@0.22.1, tree-sitter@0.25.0, tree-sitter@^0.21.1:
   version "0.22.1"
   resolved "https://registry.yarnpkg.com/tree-sitter/-/tree-sitter-0.22.1.tgz#5a5296fc0898b21443657e071b050c95c0d7afbd"
   integrity sha512-gRO+jk2ljxZlIn20QRskIvpLCMtzuLl5T0BY6L9uvPYD17uUrxlxWkvYCiVqED2q2q7CVtY52Uex4WcYo2FEXw==
@@ -5308,10 +5308,10 @@ w3c-xmlserializer@^5.0.0:
   dependencies:
     xml-name-validator "^5.0.0"
 
-web-tree-sitter@0.24.5:
-  version "0.24.5"
-  resolved "https://registry.yarnpkg.com/web-tree-sitter/-/web-tree-sitter-0.24.5.tgz#16cea449da63012f23ca7b83bd32817dd0520400"
-  integrity sha512-+J/2VSHN8J47gQUAvF8KDadrfz6uFYVjxoxbKWDoXVsH2u7yLdarCnIURnrMA6uSRkgX3SdmqM5BOoQjPdSh5w==
+web-tree-sitter@0.25.9:
+  version "0.25.9"
+  resolved "https://registry.yarnpkg.com/web-tree-sitter/-/web-tree-sitter-0.25.9.tgz#555ff176af396de71e4710d62b0ba9b2607fdfd5"
+  integrity sha512-J9L+SdqSu0SV517Ys6W/ROhT64PDE7TSDAvtjDoqlS6/1aK5b0rWNvukuuIdwGm3odA+I+r7Fyw0Vf/qdzNpnw==
 
 webidl-conversions@^3.0.0:
   version "3.0.1"

@@ -34,19 +34,19 @@
     "test:grammar": "tree-sitter test --wasm"
   },
   "devDependencies": {
-    "@asgerf/dts-tree-sitter": "^0.1.0",
-    "tree-sitter": "0.22.1",
-    "tree-sitter-cli": "0.24.5",
+    "@asgerf/dts-tree-sitter": "^0.21.0", "// I THINK THIS MIGHT COME FOR FREE NOW - published in web-tree-sitter":"",
+    "tree-sitter": "0.25.0",
+    "tree-sitter-cli": "0.25.9",
     "vite": "^7.0.3",
     "vite-plugin-static-copy": "^3.1.0",
-    "web-tree-sitter": "0.24.5"
+    "web-tree-sitter": "0.25.9"
   },
   "peerDependencies": {
-    "web-tree-sitter": "0.24.5"
+    "web-tree-sitter": "0.25.9"
   },
   "resolutions": {
-    "**/tree-sitter": "0.22.1",
-    "@asgerf/dts-tree-sitter/tree-sitter": "0.22.1"
+    "**/tree-sitter": "0.25.0",
+    "// I THINK THIS COMES FOR FREE WITH THE ABOVE @asgerf/dts-tree-sitter/tree-sitter": "0.22.1"
   },
   "publishConfig": {
     "access": "public"
