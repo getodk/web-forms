@@ -8,7 +8,7 @@ const emit = defineEmits(['view-details']);
 
 <template>
 	<div class="map-status-bar">
-		<div v-if="hasSavedFeature" class="map-status-wrap">
+		<div v-if="hasSavedFeature" class="map-status-saved">
 			<div class="map-status">
 				<IconSVG name="mdiCheckCircle" variant="success"/>
 				<!-- TODO: translations -->
@@ -33,30 +33,31 @@ const emit = defineEmits(['view-details']);
 
 .map-status-bar,
 .map-status,
-.map-status-wrap {
+.map-status-saved {
 	display: flex;
 	align-items: center;
 	flex-wrap: nowrap;
 }
 
 .map-status-bar {
-	padding: 10px 20px;
+	padding: 10px 17px;
 	min-height: 60px;
 	background: var(--odk-light-background-color);
-	border: 1px solid var(--odk-border-color);
 }
 
 .map-status {
 	gap: 10px;
 }
 
-.map-status-wrap {
+.map-status-saved {
 	justify-content: space-between;
 	width: 100%;
 }
 
 .map-status-bar :deep(.p-button).p-button-contrast.p-button-outlined {
 	background: var(--odk-base-background-color);
+	-webkit-tap-highlight-color: transparent;
+	flex-shrink: 0;
 
 	&:hover {
 		background: var(--odk-muted-background-color);

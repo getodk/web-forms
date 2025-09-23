@@ -66,13 +66,13 @@ const saveSelection = () => {
 	<div :class="{ 'map-block-component': true, 'map-full-screen': isFullScreen }">
 		<div class="control-bar">
 			<button :class="{ 'control-active': isFullScreen }" @click="isFullScreen = !isFullScreen">
-				<IconSVG name="mdiArrowExpandAll" />
+				<IconSVG name="mdiArrowExpandAll" size="sm" />
 			</button>
 			<button @click="centerFeatureLocation">
 				<IconSVG name="mdiFullscreen" />
 			</button>
 			<button @click="mapHandler?.centerCurrentLocation">
-				<IconSVG name="mdiCrosshairsGps" />
+				<IconSVG name="mdiCrosshairsGps" size="sm" />
 			</button>
 		</div>
 
@@ -106,7 +106,9 @@ const saveSelection = () => {
 @use 'primeflex/core/_variables.scss' as pf;
 
 .map-block-component {
-	--odk-standard-map-spacing: 20px;
+	--odk-map-spacing-lg: 20px;
+	--odk-map-spacing-md: 10px;
+	--odk-map-spacing-sm: 5px;
 }
 
 .map-block-component {
@@ -114,7 +116,8 @@ const saveSelection = () => {
 	width: 100%;
 	height: fit-content;
 	background: var(--odk-base-background-color);
-	border-radius: var(--odk-radius) var(--odk-radius) 0 0;
+	border: 1px solid var(--odk-border-color);
+	border-radius: var(--odk-radius);
 	overflow: hidden;
 
 	.map-block {
@@ -143,10 +146,10 @@ const saveSelection = () => {
 	position: absolute;
 	display: flex;
 	flex-direction: column;
-	top: var(--odk-standard-map-spacing);
-	right: var(--odk-standard-map-spacing);
+	top: var(--odk-map-spacing-md);
+	right: var(--odk-map-spacing-md);
 	z-index: var(--odk-z-index-overlay);
-	gap: 10px;
+	gap: 4px;
 
 	button {
 		background: var(--odk-base-background-color);
@@ -154,6 +157,7 @@ const saveSelection = () => {
 		border-radius: var(--odk-radius);
 		border: 1px solid var(--odk-border-color);
 		cursor: pointer;
+		-webkit-tap-highlight-color: transparent;
 
 		&:hover {
 			background: var(--odk-muted-background-color);
@@ -163,8 +167,8 @@ const saveSelection = () => {
 
 .map-block-component :deep(.ol-zoom) {
 	position: absolute;
-	right: var(--odk-standard-map-spacing);
-	bottom: var(--odk-standard-map-spacing);
+	right: var(--odk-map-spacing-md);
+	bottom: var(--odk-map-spacing-md);
 	display: flex;
 	flex-direction: column;
 	flex-wrap: nowrap;
@@ -182,11 +186,15 @@ const saveSelection = () => {
 		height: 37px;
 		width: 36px;
 		border: none;
-		border-bottom: 1px solid var(--odk-border-color);
 		background: var(--odk-base-background-color);
+		-webkit-tap-highlight-color: transparent;
 		font-size: 24px;
 		font-weight: 300;
 		cursor: pointer;
+
+		&:first-child {
+			border-bottom: 1px solid var(--odk-border-color);
+		}
 
 		&:hover {
 			background: var(--odk-muted-background-color);
@@ -199,14 +207,19 @@ const saveSelection = () => {
 	color: var(--odk-error-text-color);
 	background-color: var(--odk-error-background-color);
 	border-radius: var(--odk-radius);
-	margin-top: var(--odk-standard-map-spacing);
-	padding: var(--odk-standard-map-spacing);
+	margin-top: var(--odk-map-spacing-lg);
+	padding: var(--odk-map-spacing-lg);
 }
 
 @media screen and (max-width: #{pf.$sm}) {
-	.map-block-component,
+	.map-block-component {
+		height: fit-content;
+	}
+
 	.map-block-component .map-block {
-		height: 100vh;
+		--map-status-bar-min-height: 60px;
+		--map-label-min-height: 60px;
+		height: calc(100vh - var(--map-status-bar-min-height) - var(--map-label-min-height));
 
 		:deep(.ol-zoom) {
 			top: 165px;
@@ -214,8 +227,14 @@ const saveSelection = () => {
 		}
 	}
 
-	.map-status-bar-component {
-		display: none;
+	.control-bar {
+		top: var(--odk-map-spacing-sm);
+		right: var(--odk-map-spacing-sm);
+	}
+
+	.map-block-component :deep(.ol-zoom) {
+		right: var(--odk-map-spacing-sm);
+		bottom: var(--odk-map-spacing-sm);
 	}
 }
 </style>

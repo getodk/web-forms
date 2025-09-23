@@ -168,7 +168,7 @@ export function useMapBlock(config: MapConfig) {
 			source: new VectorSource({ features }),
 			style: [
 				...getUnselectedStyles(FEATURE_ID_PROPERTY, SELECTED_ID_PROPERTY, SAVED_ID_PROPERTY),
-				...getSelectedStyles(FEATURE_ID_PROPERTY, SELECTED_ID_PROPERTY),
+				...getSelectedStyles(FEATURE_ID_PROPERTY, SELECTED_ID_PROPERTY, SAVED_ID_PROPERTY),
 				...getSavedStyles(FEATURE_ID_PROPERTY, SAVED_ID_PROPERTY),
 			],
 			variables: { [SAVED_ID_PROPERTY]: '', [SELECTED_ID_PROPERTY]: '' },
