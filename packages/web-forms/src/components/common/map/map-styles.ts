@@ -14,7 +14,7 @@ const DEFAULT_LINE_STYLE = {
 
 const DEFAULT_POLYGON_STYLE = {
 	'fill-color': 'rgba(233, 248, 255, 0.8)',
-	'stroke-width': 6,
+	'stroke-width': 4,
 	'stroke-color': '#3E9FCC',
 };
 
@@ -25,12 +25,12 @@ const SCALE_POINT_STYLE = {
 };
 
 const SCALE_LINE_STYLE = {
-	'stroke-width': 10,
+	'stroke-width': 8,
 	'stroke-color': '#3E9FCC',
 };
 
 const SCALE_POLYGON_STYLE = {
-	'stroke-width': 10,
+	'stroke-width': 6,
 };
 
 const BLUE_GLOW_POINT_STYLE = {
@@ -52,18 +52,18 @@ const BLUE_GLOW_POLYGON_STYLE = {
 
 const GREEN_GLOW_POINT_STYLE = {
 	'circle-radius': 30,
-	'circle-fill-color': 'rgba(34, 197, 94, 0.7)',
+	'circle-fill-color': 'rgba(34, 197, 94, 0.6)',
 	'circle-displacement': [0, 0],
 };
 
 const GREEN_GLOW_LINE_STYLE = {
 	'stroke-width': 20,
-	'stroke-color': 'rgba(34, 197, 94, 0.7)',
+	'stroke-color': 'rgba(34, 197, 94, 0.6)',
 };
 
 const GREEN_GLOW_POLYGON_STYLE = {
 	'stroke-width': 20,
-	'stroke-color': 'rgba(34, 197, 94, 0.7)',
+	'stroke-color': 'rgba(34, 197, 94, 0.6)',
 	'fill-color': 'transparent',
 };
 
