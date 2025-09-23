@@ -34,7 +34,7 @@ const emit = defineEmits(['close', 'save', 'discard']);
 				<span>Remove selection</span>
 			</Button>
 			<Button v-else outlined severity="contrast" @click="emit('save')">
-				<IconSVG name="mdiCheck" size="sm"/>
+				<IconSVG name="mdiCheck" size="sm" />
 				<!-- TODO: translations -->
 				<span>Save selected</span>
 			</Button>

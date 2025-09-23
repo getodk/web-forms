@@ -12,7 +12,7 @@ import {
 	type MapConfig,
 	useMapBlock,
 } from '@/components/common/map/useMapBlock.ts';
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 
 // ToDo: document these props, maybe change "data" for a better name
 interface MapBlockProps {
@@ -34,6 +34,11 @@ onMounted(() => {
 
 	mapHandler.initializeMap(mapContainer.value);
 	mapHandler.loadGeometries(props.data);
+	document.addEventListener('keydown', handleEscapeKey);
+});
+
+onUnmounted(() => {
+	document.removeEventListener('keydown', handleEscapeKey);
 });
 
 watch(
@@ -49,6 +54,12 @@ const mapPropertiesTitle = computed(() => {
 	const label = mapHandler?.selectedFeatureProperties.value?.label;
 	return typeof label === 'string' ? label : '';
 });
+
+const handleEscapeKey = (event: KeyboardEvent) => {
+	if (event.key === 'Escape' && isFullScreen.value) {
+		isFullScreen.value = false;
+	}
+};
 
 const centerFeatureLocation = () => {
 	if (mapHandler.savedFeature.value != null) {

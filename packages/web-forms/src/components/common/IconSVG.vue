@@ -62,7 +62,7 @@ const iconMap: Record<string, string> = {
 };
 
 type IconName = keyof typeof iconMap;
-type IconVariant = 'base' | 'error' | 'inverted' | 'muted' | 'primary' | 'warning' | 'success';
+type IconVariant = 'base' | 'error' | 'inverted' | 'muted' | 'primary' | 'success' | 'warning';
 type IconSize = 'md' | 'sm';
 
 /**
