@@ -12,7 +12,8 @@ import {
 	type MapConfig,
 	useMapBlock,
 } from '@/components/common/map/useMapBlock.ts';
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { QUESTION_HAS_ERROR } from '@/lib/constants/injection-keys.ts';
+import { computed, type ComputedRef, inject, onMounted, onUnmounted, ref, watch } from 'vue';
 
 // ToDo: document these props, maybe change "data" for a better name
 interface MapBlockProps {
@@ -22,17 +23,21 @@ interface MapBlockProps {
 
 const props = defineProps<MapBlockProps>();
 const emit = defineEmits(['save']);
-const mapContainer = ref<HTMLElement | undefined>();
+const mapElement = ref<HTMLElement | undefined>();
 const isFullScreen = ref(false);
+const showErrorStyle = inject<ComputedRef<boolean>>(
+	QUESTION_HAS_ERROR,
+	computed(() => false)
+);
 
 const mapHandler = useMapBlock(props.config);
 
 onMounted(() => {
-	if (mapContainer.value == null || mapHandler == null) {
+	if (mapElement.value == null || mapHandler == null) {
 		return;
 	}
 
-	mapHandler.initializeMap(mapContainer.value);
+	mapHandler.initializeMap(mapElement.value);
 	mapHandler.loadGeometries(props.data);
 	document.addEventListener('keydown', handleEscapeKey);
 });
@@ -74,42 +79,47 @@ const saveSelection = () => {
 </script>
 
 <template>
-	<div :class="{ 'map-block-component': true, 'map-full-screen': isFullScreen }">
-		<div class="control-bar">
-			<button :class="{ 'control-active': isFullScreen }" @click="isFullScreen = !isFullScreen">
-				<IconSVG name="mdiArrowExpandAll" size="sm" />
-			</button>
-			<button @click="centerFeatureLocation">
-				<IconSVG name="mdiFullscreen" />
-			</button>
-			<button @click="mapHandler?.centerCurrentLocation">
-				<IconSVG name="mdiCrosshairsGps" size="sm" />
-			</button>
+	<div class="map-block-component" >
+		<div :class="{ 'map-container': true, 'map-full-screen': isFullScreen }">
+			<div class="control-bar">
+				<button :class="{ 'control-active': isFullScreen }" @click="isFullScreen = !isFullScreen">
+					<IconSVG name="mdiArrowExpandAll" size="sm" />
+				</button>
+				<button @click="centerFeatureLocation">
+					<IconSVG name="mdiFullscreen" />
+				</button>
+				<button @click="mapHandler?.centerCurrentLocation">
+					<IconSVG name="mdiCrosshairsGps" size="sm" />
+				</button>
+			</div>
+
+			<div ref="mapElement" class="map-block" />
+
+			<MapStatusBar
+				:has-saved-feature="mapHandler?.savedFeature.value != null"
+				class="map-status-bar-component"
+				@view-details="mapHandler?.selectFeature(mapHandler?.savedFeature.value)"
+			/>
+
+			<MapProperties
+				v-if="mapHandler?.selectedFeatureProperties.value != null"
+				:title="mapPropertiesTitle"
+				:properties="mapHandler?.selectedFeatureProperties.value"
+				:has-saved-feature="mapHandler?.isSelectedFeatureSaved()"
+				@close="mapHandler.unselectFeature"
+				@discard="mapHandler?.discardSavedFeature"
+				@save="saveSelection"
+			/>
 		</div>
 
-		<div ref="mapContainer" class="map-block" />
-
-		<MapStatusBar
-			:has-saved-feature="mapHandler?.savedFeature.value != null"
-			class="map-status-bar-component"
-			@view-details="mapHandler?.selectFeature(mapHandler?.savedFeature.value)"
-		/>
-
-		<div v-if="mapHandler?.errorMessage.value != null" class="map-block-error">
+		<div
+			v-if="mapHandler?.errorMessage.value != null"
+			:class="{ 'map-block-error': true, 'stack-errors': showErrorStyle }"
+		>
 			<strong>{{ mapHandler?.errorMessage.value.title }}</strong>
 			&nbsp;
 			<span>{{ mapHandler?.errorMessage.value.message }}</span>
 		</div>
-
-		<MapProperties
-			v-if="mapHandler?.selectedFeatureProperties.value != null"
-			:title="mapPropertiesTitle"
-			:properties="mapHandler?.selectedFeatureProperties.value"
-			:has-saved-feature="mapHandler?.isSelectedFeatureSaved()"
-			@close="mapHandler.unselectFeature"
-			@discard="mapHandler?.discardSavedFeature"
-			@save="saveSelection"
-		/>
 	</div>
 </template>
 
@@ -127,6 +137,11 @@ const saveSelection = () => {
 	width: 100%;
 	height: fit-content;
 	background: var(--odk-base-background-color);
+	border-radius: var(--odk-radius);
+}
+
+.map-container {
+	position: relative;
 	border: 1px solid var(--odk-border-color);
 	border-radius: var(--odk-radius);
 	overflow: hidden;
@@ -135,21 +150,21 @@ const saveSelection = () => {
 		width: 100%;
 		height: 445px;
 	}
+}
 
-	&.map-full-screen {
-		display: flex;
-		flex-direction: column;
-		justify-content: flex-start;
-		position: absolute;
-		top: 0;
-		left: 0;
-		height: 100vh;
-		width: 100vw;
-		z-index: var(--odk-z-index-topmost);
+.map-container.map-full-screen {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	position: fixed;
+	top: 0;
+	left: 0;
+	height: 100vh;
+	width: 100vw;
+	z-index: var(--odk-z-index-topmost);
 
-		.map-block {
-			flex-grow: 2;
-		}
+	.map-block {
+		flex-grow: 2;
 	}
 }
 
@@ -159,7 +174,7 @@ const saveSelection = () => {
 	flex-direction: column;
 	top: var(--odk-map-spacing-md);
 	right: var(--odk-map-spacing-md);
-	z-index: var(--odk-z-index-overlay);
+	z-index: var(--odk-z-index-form-floating);
 	gap: 4px;
 
 	button {
@@ -220,6 +235,12 @@ const saveSelection = () => {
 	border-radius: var(--odk-radius);
 	margin-top: var(--odk-map-spacing-lg);
 	padding: var(--odk-map-spacing-lg);
+
+	&.stack-errors {
+		padding: 20px 0 5px 0;
+		margin-top: 0;
+		border-radius: 0;
+	}
 }
 
 @media screen and (max-width: #{pf.$sm}) {
