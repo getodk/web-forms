@@ -147,6 +147,7 @@ const saveSelection = () => {
 	overflow: hidden;
 
 	.map-block {
+		background: var(--odk-base-background-color);
 		width: 100%;
 		height: 445px;
 	}
