@@ -79,7 +79,7 @@ const saveSelection = () => {
 </script>
 
 <template>
-	<div class="map-block-component" >
+	<div class="map-block-component">
 		<div :class="{ 'map-container': true, 'map-full-screen': isFullScreen }">
 			<div class="control-bar">
 				<button :class="{ 'control-active': isFullScreen }" @click="isFullScreen = !isFullScreen">

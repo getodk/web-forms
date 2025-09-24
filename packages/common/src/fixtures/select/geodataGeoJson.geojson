@@ -1,0 +1,141 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Madrid",
+        "id": "1"
+      },
+      "geometry": {
+        "coordinates": [
+          -3.7445467750577563,
+          40.446254412914385
+        ],
+        "type": "Point"
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Warsaw",
+        "id": "2"
+      },
+      "geometry": {
+        "coordinates": [
+          21.100614535212543,
+          52.18544754541023
+        ],
+        "type": "Point"
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Stockholm-Copenhagen-Berlin",
+        "id": "3"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            18.04203801493341,
+            59.31284185390564
+          ],
+          [
+            12.59922155107742,
+            55.72377024475574
+          ],
+          [
+            13.337427033540052,
+            52.48574101841746
+          ]
+        ],
+        "type": "LineString"
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Prague-Vienna-Budapest",
+        "id": "4"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            19.04921763281365,
+            47.485570717616696
+          ],
+          [
+            16.42105774490628,
+            48.19954394662233
+          ],
+          [
+            14.417694964430638,
+            50.139932923435055
+          ]
+        ],
+        "type": "LineString"
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "London-Leeds-Liverpool-London",
+        "id": "5"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -2.991905620523312,
+              53.40903732686215
+            ],
+            [
+              -0.1321803079139272,
+              51.505094241512666
+            ],
+            [
+              -1.5363611594108022,
+              53.8052722823615
+            ],
+            [
+              -2.991905620523312,
+              53.40903732686215
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Paris-Basel-Frankfurt-Paris",
+        "id": "6"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              2.3146557958955327,
+              48.840915452897946
+            ],
+            [
+              7.63542665300713,
+              47.54579786412256
+            ],
+            [
+              8.703168961933983,
+              50.10149750150822
+            ],
+            [
+              2.3146557958955327,
+              48.840915452897946
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      }
+    }
+  ]
+}

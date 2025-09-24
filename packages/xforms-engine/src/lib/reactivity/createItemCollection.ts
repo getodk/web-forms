@@ -54,6 +54,7 @@ const createTranslatedStaticItems = (
 			return () => ({
 				value,
 				label: label(),
+				properties: [],
 			});
 		});
 
@@ -101,6 +102,7 @@ const createItemsetItemLabel = (
 interface ItemsetItem {
 	label(): ClientTextRange<'item-label'>;
 	value(): string;
+	properties: Array<[string, () => string]>;
 }
 
 const createItemsetItems = (
@@ -122,9 +124,20 @@ const createItemsetItems = (
 					});
 					const label = createItemsetItemLabel(context, itemset, value);
 
+					const nodeElements = itemNode
+						.getXPathChildNodes()
+						.filter((node) => node.nodeType === 'static-element');
+					const properties = itemset.getPropertiesExpressions(nodeElements).map((expression) => {
+						return [expression.toString(), createComputedExpression(context, expression)] as [
+							string,
+							() => string,
+						];
+					});
+
 					return {
 						label,
 						value,
+						properties,
 					};
 				});
 			});
@@ -144,6 +157,9 @@ const createItemset = (
 				return {
 					label: item.label(),
 					value: item.value(),
+					properties: item.properties.map(
+						([propLabel, propValue]) => [propLabel, propValue()] as [string, string]
+					),
 				};
 			});
 		});

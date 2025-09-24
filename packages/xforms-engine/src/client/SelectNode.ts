@@ -14,6 +14,7 @@ import type { LeafNodeValidationState } from './validation.ts';
 export interface SelectItem {
 	get label(): TextRange<'item-label'>;
 	get value(): string;
+	properties: Array<[string, string]>;
 }
 
 export type SelectValueOptions = readonly SelectItem[];

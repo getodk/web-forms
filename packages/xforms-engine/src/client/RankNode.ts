@@ -11,6 +11,7 @@ import type { ValueType } from './ValueType.ts';
 export interface RankItem {
 	get label(): TextRange<'item-label'>;
 	get value(): string;
+	properties: Array<[string, string]>;
 }
 
 export type RankValueOptions = readonly RankItem[];
