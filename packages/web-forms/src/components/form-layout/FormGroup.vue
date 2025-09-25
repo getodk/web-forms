@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { GroupNode, SubtreeNode } from '@getodk/xforms-engine';
+import type { GroupNode } from '@getodk/xforms-engine';
 import { computed } from 'vue';
 import FormPanel from './FormPanel.vue';
 import QuestionList from './QuestionList.vue';
 
-const props = defineProps<{ node: GroupNode | SubtreeNode }>();
+const props = defineProps<{ node: GroupNode }>();
 
 const tableLayout = computed(() => {
 	return !!props.node.currentState.children.find(
