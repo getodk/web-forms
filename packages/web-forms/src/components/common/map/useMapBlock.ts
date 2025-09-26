@@ -3,6 +3,7 @@ import {
 	getSelectedStyles,
 	getUnselectedStyles,
 } from '@/components/common/map/map-styles.ts';
+import type { FeatureCollection } from 'geojson';
 import { Map, View } from 'ol';
 import { Zoom } from 'ol/control';
 import type { Coordinate } from 'ol/coordinate';
@@ -18,24 +19,11 @@ import VectorSource from 'ol/source/Vector';
 import { computed, ref, shallowRef, watch } from 'vue';
 
 export interface MapConfig {
-	viewCoordinates: Coordinate;
+	viewCoordinates: Coordinate | undefined;
 	zoom?: number; // See DEFAULT_ZOOM
 }
 
 type GeometryType = LineString | Point | Polygon;
-
-// TODO: This type will come from xforms-engine
-export interface GeoJSONInput {
-	type: string;
-	features?: Array<{
-		type: string;
-		geometry: {
-			type: string;
-			coordinates: unknown;
-		};
-		properties?: Record<string, unknown>;
-	}>;
-}
 
 const STATES = {
 	LOADING: 'loading',
@@ -59,30 +47,52 @@ export function useMapBlock(config: MapConfig) {
 	const currentState = shallowRef<(typeof STATES)[keyof typeof STATES]>(STATES.LOADING);
 	const errorMessage = shallowRef<{ title: string; message: string } | undefined>();
 	const mapInstance = ref<Map | undefined>();
-	const featuresVectorLayer = ref<WebGLVectorLayer | undefined>();
 	const savedFeature = ref<Feature<GeometryType> | undefined>();
 	const selectedFeature = ref<Feature<GeometryType> | undefined>();
 	const selectedFeatureProperties = computed<Record<string, unknown> | undefined>(() => {
-		// Removing OpenLayers properties and FEATURE_ID_PROPERTY
-		const {
-			geometry,
-			[FEATURE_ID_PROPERTY]: id,
-			...props
-		} = selectedFeature.value?.getProperties() ?? {};
-		return Object.keys(props).length ? props : undefined;
+		return selectedFeature.value?.getProperties();
 	});
 
-	const initializeMap = (mapContainer: HTMLElement): void => {
+	const featuresVectorLayer = new WebGLVectorLayer({
+		source: new VectorSource(),
+		style: [
+			...getUnselectedStyles(FEATURE_ID_PROPERTY, SELECTED_ID_PROPERTY, SAVED_ID_PROPERTY),
+			...getSelectedStyles(FEATURE_ID_PROPERTY, SELECTED_ID_PROPERTY, SAVED_ID_PROPERTY),
+			...getSavedStyles(FEATURE_ID_PROPERTY, SAVED_ID_PROPERTY),
+		],
+		variables: { [SAVED_ID_PROPERTY]: '', [SELECTED_ID_PROPERTY]: '' },
+	});
+
+	const initializeMap = (mapContainer: HTMLElement, geoJSON: FeatureCollection): void => {
+		if (mapInstance.value) {
+			return;
+		}
+
 		mapInstance.value = new Map({
 			target: mapContainer,
-			layers: [new TileLayer({ source: new OSM() })],
+			layers: [new TileLayer({ source: new OSM() }), featuresVectorLayer],
 			view: new View({
-				center: fromLonLat(config.viewCoordinates),
-				zoom: zoom,
+				center: config.viewCoordinates ? fromLonLat(config.viewCoordinates) : [0, 0],
+				zoom: config.viewCoordinates ? zoom : 2,
 			}),
 			controls: [new Zoom()],
 		});
+
+		mapInstance.value.on('singleclick', (event) => selectFeatureByPosition(event.pixel));
 		currentState.value = STATES.READY;
+		loadGeometries(geoJSON);
+	};
+
+	const fitToAllFeatures = (): void => {
+		const source = featuresVectorLayer.getSource() as VectorSource | undefined;
+		const extent = source?.getExtent();
+		if (extent) {
+			mapInstance.value?.getView().fit(extent, {
+				padding: [50, 50, 50, 50],
+				duration: ANIMATION_TIME,
+				maxZoom: 16,
+			});
+		}
 	};
 
 	const centerCurrentLocation = (): void => {
@@ -138,7 +148,7 @@ export function useMapBlock(config: MapConfig) {
 		]);
 	};
 
-	const loadGeometries = (geoJSON: GeoJSONInput): void => {
+	const loadGeometries = (geoJSON: FeatureCollection): void => {
 		if (mapInstance.value == null) {
 			return;
 		}
@@ -146,15 +156,16 @@ export function useMapBlock(config: MapConfig) {
 		currentState.value = STATES.LOADING;
 		unselectFeature();
 		discardSavedFeature();
+		const source = featuresVectorLayer.getSource();
+		source?.clear();
 
-		if (featuresVectorLayer.value != null) {
-			mapInstance.value.removeLayer(featuresVectorLayer.value);
-			featuresVectorLayer.value.dispose();
-			featuresVectorLayer.value = undefined;
+		if (!geoJSON.features.length || !source) {
+			currentState.value = STATES.READY;
+			return;
 		}
 
 		const features = new GeoJSON().readFeatures(geoJSON, {
-			dataProjection: DEFAULT_GEOJSON_PROJECTION, // ToDo: do we support different GeoJSON projections?
+			dataProjection: DEFAULT_GEOJSON_PROJECTION,
 			featureProjection: mapInstance.value.getView().getProjection(),
 		});
 
@@ -163,26 +174,19 @@ export function useMapBlock(config: MapConfig) {
 				feature.set(FEATURE_ID_PROPERTY, crypto.randomUUID());
 			}
 		});
-
-		featuresVectorLayer.value = new WebGLVectorLayer({
-			source: new VectorSource({ features }),
-			style: [
-				...getUnselectedStyles(FEATURE_ID_PROPERTY, SELECTED_ID_PROPERTY, SAVED_ID_PROPERTY),
-				...getSelectedStyles(FEATURE_ID_PROPERTY, SELECTED_ID_PROPERTY, SAVED_ID_PROPERTY),
-				...getSavedStyles(FEATURE_ID_PROPERTY, SAVED_ID_PROPERTY),
-			],
-			variables: { [SAVED_ID_PROPERTY]: '', [SELECTED_ID_PROPERTY]: '' },
-		});
-		mapInstance.value.addLayer(featuresVectorLayer.value);
-		mapInstance.value.on('singleclick', (event) => selectFeatureByPosition(event.pixel));
+		source.addFeatures(features);
 
 		currentState.value = STATES.READY;
+
+		if (!config.viewCoordinates) {
+			fitToAllFeatures();
+		}
 	};
 
 	const selectFeatureByPosition = (position: Pixel): void => {
 		const hitFeatures = mapInstance.value?.getFeaturesAtPixel(position, {
 			hitTolerance: MAP_HIT_TOLERANCE,
-			layerFilter: (layer) => layer === featuresVectorLayer.value,
+			layerFilter: (layer) => layer instanceof WebGLVectorLayer,
 		});
 
 		const featureToSelect = hitFeatures?.length
@@ -195,7 +199,7 @@ export function useMapBlock(config: MapConfig) {
 	const selectFeature = (feature: Feature<GeometryType> | undefined): void => {
 		selectedFeature.value = feature;
 
-		featuresVectorLayer.value?.updateStyleVariables({
+		featuresVectorLayer.updateStyleVariables({
 			[SELECTED_ID_PROPERTY]: (selectedFeature.value?.get(FEATURE_ID_PROPERTY) as string) ?? '',
 		});
 
@@ -206,20 +210,20 @@ export function useMapBlock(config: MapConfig) {
 
 	const unselectFeature = (): void => {
 		selectedFeature.value = undefined;
-		featuresVectorLayer.value?.updateStyleVariables({ [SELECTED_ID_PROPERTY]: '' });
+		featuresVectorLayer.updateStyleVariables({ [SELECTED_ID_PROPERTY]: '' });
 	};
 
 	const saveFeature = (): void => {
 		savedFeature.value = selectedFeature.value;
 		const savedFeatureId = (savedFeature.value?.get(FEATURE_ID_PROPERTY) as string) ?? '';
-		featuresVectorLayer.value?.updateStyleVariables({
+		featuresVectorLayer.updateStyleVariables({
 			[SAVED_ID_PROPERTY]: savedFeatureId,
 		});
 	};
 
 	const discardSavedFeature = (): void => {
 		savedFeature.value = undefined;
-		featuresVectorLayer.value?.updateStyleVariables({ [SAVED_ID_PROPERTY]: '' });
+		featuresVectorLayer.updateStyleVariables({ [SAVED_ID_PROPERTY]: '' });
 	};
 
 	const isSelectedFeatureSaved = (): boolean => {

@@ -7,17 +7,13 @@
 import IconSVG from '@/components/common/IconSVG.vue';
 import MapProperties from '@/components/common/map/MapProperties.vue';
 import MapStatusBar from '@/components/common/map/MapStatusBar.vue';
-import {
-	type GeoJSONInput,
-	type MapConfig,
-	useMapBlock,
-} from '@/components/common/map/useMapBlock.ts';
+import { type MapConfig, useMapBlock } from '@/components/common/map/useMapBlock.ts';
 import { QUESTION_HAS_ERROR } from '@/lib/constants/injection-keys.ts';
+import type { FeatureCollection } from 'geojson';
 import { computed, type ComputedRef, inject, onMounted, onUnmounted, ref, watch } from 'vue';
 
-// ToDo: document these props, maybe change "data" for a better name
 interface MapBlockProps {
-	data: GeoJSONInput;
+	featureCollection: FeatureCollection;
 	config: MapConfig;
 }
 
@@ -37,8 +33,7 @@ onMounted(() => {
 		return;
 	}
 
-	mapHandler.initializeMap(mapElement.value);
-	mapHandler.loadGeometries(props.data);
+	mapHandler.initializeMap(mapElement.value, props.featureCollection);
 	document.addEventListener('keydown', handleEscapeKey);
 });
 
@@ -47,18 +42,12 @@ onUnmounted(() => {
 });
 
 watch(
-	() => props.data,
+	() => props.featureCollection,
 	(newData) => {
 		mapHandler?.loadGeometries(newData);
 	},
 	{ deep: true, immediate: true }
 );
-
-const mapPropertiesTitle = computed(() => {
-	// ToDo: use correct labels
-	const label = mapHandler?.selectedFeatureProperties.value?.label;
-	return typeof label === 'string' ? label : '';
-});
 
 const handleEscapeKey = (event: KeyboardEvent) => {
 	if (event.key === 'Escape' && isFullScreen.value) {
@@ -103,8 +92,8 @@ const saveSelection = () => {
 
 			<MapProperties
 				v-if="mapHandler?.selectedFeatureProperties.value != null"
-				:title="mapPropertiesTitle"
-				:properties="mapHandler?.selectedFeatureProperties.value"
+				:reserved-props="mapHandler?.selectedFeatureProperties.value.reservedProps"
+				:ordered-props="mapHandler?.selectedFeatureProperties.value.orderedProps"
 				:has-saved-feature="mapHandler?.isSelectedFeatureSaved()"
 				@close="mapHandler.unselectFeature"
 				@discard="mapHandler?.discardSavedFeature"

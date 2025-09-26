@@ -9,23 +9,27 @@ import Button from 'primevue/button';
 import ProgressSpinner from 'primevue/progressspinner';
 import { type DefineComponent, onMounted, shallowRef } from 'vue';
 
-// TODO: This type will come from xforms-engine
-export interface GeoJSONInput {
-	type: string;
-	features?: Array<{
-		type: string;
-		geometry: {
-			type: string;
-			coordinates: unknown;
-		};
-		properties?: Record<string, unknown>;
-	}>;
+type Longitude = number;
+type Latitude = number;
+
+export interface Feature {
+	type: 'Feature';
+	geometry: {
+		type: 'Point' | 'LineString' | 'Polygon';
+		coordinates: Array<[Longitude, Latitude]> | [Longitude, Latitude];
+	};
+	properties: Record<string, unknown>;
+}
+
+export interface FeatureCollection {
+	type: 'FeatureCollection';
+	features: Feature[];
 }
 
 interface MapBlockProps {
-	data: GeoJSONInput;
+	featureCollection: FeatureCollection;
 	config: {
-		viewCoordinates: [number, number];
+		viewCoordinates: [Longitude, Latitude] | undefined;
 		zoom?: number;
 	};
 }

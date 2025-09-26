@@ -4,8 +4,8 @@ import Button from 'primevue/button';
 import { defineEmits, defineProps } from 'vue';
 
 defineProps<{
-	title: string;
-	properties: Record<string, unknown>;
+	reservedProps: Record<string, string>;
+	orderedProps: Array<[string, string]>;
 	hasSavedFeature: boolean;
 }>();
 
@@ -15,14 +15,14 @@ const emit = defineEmits(['close', 'save', 'discard']);
 <template>
 	<div class="map-properties">
 		<div class="map-properties-header">
-			<strong>{{ title }}</strong>
+			<strong>{{ reservedProps.label ?? reservedProps.geometry }}</strong>
 			<button class="close-icon" @click="emit('close')">
 				<IconSVG name="mdiClose" />
 			</button>
 		</div>
 
 		<div class="map-properties-content">
-			<div v-for="[key, value] in Object.entries(properties)" :key="key" class="property-line">
+			<div v-for="[key = '', value = ''] in orderedProps" :key="key" class="property-line">
 				{{ key }}: {{ value }}
 			</div>
 		</div>

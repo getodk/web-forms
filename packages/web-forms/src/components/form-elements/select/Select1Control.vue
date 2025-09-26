@@ -2,14 +2,27 @@
 import ColumnarAppearance from '@/components/appearances/ColumnarAppearance.vue';
 import FieldListTable from '@/components/appearances/FieldListTable.vue';
 import UnsupportedAppearance from '@/components/appearances/UnsupportedAppearance.vue';
-import AsyncMap from '@/components/common/map/AsyncMap.vue';
+import AsyncMap, {
+	type Feature,
+	type FeatureCollection,
+} from '@/components/common/map/AsyncMap.vue';
 import ControlText from '@/components/form-elements/ControlText.vue';
 import ValidationMessage from '@/components/common/ValidationMessage.vue';
 import LikertWidget from '@/components/common/LikertWidget.vue';
 import RadioButton from '@/components/common/RadioButton.vue';
 import SearchableDropdown from '@/components/common/SearchableDropdown.vue';
-import type { SelectNode } from '@getodk/xforms-engine';
+import type { SelectItem, SelectNode } from '@getodk/xforms-engine';
 import { computed, ref, watchEffect } from 'vue';
+
+const RESERVED_MAP_PROPERTIES = [
+	'itextId',
+	'geometry',
+	'marker-color',
+	'marker-symbol',
+	'stroke',
+	'stroke-width',
+	'fill',
+];
 
 interface Select1ControlProps {
 	readonly question: SelectNode;
@@ -19,9 +32,12 @@ const props = defineProps<Select1ControlProps>();
 const isSelectWithImages = computed(() => props.question.currentState.isSelectWithImages);
 const hasColumnsAppearance = ref(false);
 const hasFieldListRelatedAppearance = ref(false);
+const hasMapAppearance = ref(false);
 
 watchEffect(() => {
 	const appearances = [...props.question.appearances];
+	hasMapAppearance.value = appearances.includes('map');
+
 	hasFieldListRelatedAppearance.value = appearances.some((appearance) => {
 		return ['label', 'list-nolabel', 'list'].includes(appearance);
 	});
@@ -32,6 +48,87 @@ watchEffect(() => {
 		hasColumnsAppearance.value = appearances.some((appearance) => appearance.startsWith('columns'));
 	}
 });
+
+const featureCollection = computed(() => {
+	if (!hasMapAppearance.value) {
+		return;
+	}
+
+	const features: Feature[] = [];
+	props.question.currentState.valueOptions.forEach((option: SelectItem) => {
+		try {
+			const reservedProps: Record<string, string> = {
+				label: option.label?.asString,
+				value: option.value,
+			};
+			const orderedProps: Array<[string, string]> = [];
+
+			option.properties.forEach(([key, value]) => {
+				if (RESERVED_MAP_PROPERTIES.includes(key)) {
+					reservedProps[key] = value;
+				} else {
+					orderedProps.push([key, value]);
+				}
+			});
+
+			if (!reservedProps.geometry) {
+				throw new Error('Missing geometry');
+			}
+
+			const coordinates = getGeoJSONCoordinates(reservedProps.geometry);
+			if (coordinates.length === 0) {
+				throw new Error('Missing geo points');
+			}
+
+			const geometryType = getGeometryType(coordinates);
+			features.push({
+				type: 'Feature',
+				geometry: {
+					type: geometryType,
+					coordinates: geometryType === 'Point' ? coordinates[0] : coordinates,
+				},
+				properties: { reservedProps, orderedProps },
+			});
+		} catch {
+			// Skip invalid options silently to match Collect behaviour.
+		}
+	});
+
+	return { type: 'FeatureCollection', features };
+});
+
+const viewCoordinates = computed(() => {
+	if (!hasMapAppearance.value || !props.question.currentState.value?.length) {
+		return;
+	}
+
+	const coordinates = getGeoJSONCoordinates(props.question.currentState.value[0]);
+	return coordinates.length ? coordinates[0] : undefined;
+});
+
+const getGeometryType = (coords: Array<[number, number]>): 'Point' | 'LineString' | 'Polygon' => {
+	if (coords.length === 1) {
+		return 'Point';
+	}
+	const first = coords[0];
+	const last = coords[coords.length - 1];
+	return first[0] === last[0] && first[1] === last[1] ? 'Polygon' : 'LineString';
+};
+
+const getGeoJSONCoordinates = (geometry: string): Array<[number, number]> => {
+	return geometry.split(',').map((coord) => {
+		const [lat, lon] = coord.split(/\s+/).map(Number);
+
+		const isNullLocation = lat === 0 && lon === 0;
+		const isValidLatitude = lat != null && !Number.isNaN(lat) && Math.abs(lat) <= 90;
+		const isValidLongitude = lon != null && !Number.isNaN(lon) && Math.abs(lon) <= 180;
+		if (isNullLocation || !isValidLatitude || !isValidLongitude) {
+			throw new Error('Invalid geo point coordinates');
+		}
+
+		return [lon, lat];
+	});
+};
 </script>
 
 <template>
@@ -48,9 +145,18 @@ watchEffect(() => {
 		:question="question"
 	/>
 
-	<AsyncMap v-else-if="question.appearances.map" :data="question.currentState.value" :config="{viewCoordinates: [-122.4194, 37.7749]}" />
+	<AsyncMap
+		v-else-if="hasMapAppearance && featureCollection"
+		:feature-collection="featureCollection"
+		:config="{ viewCoordinates }"
+		@save
+	/>
 
-	<FieldListTable v-else-if="hasFieldListRelatedAppearance" :class="{ 'select-with-images': isSelectWithImages }" :appearances="question.appearances">
+	<FieldListTable
+		v-else-if="hasFieldListRelatedAppearance"
+		:class="{ 'select-with-images': isSelectWithImages }"
+		:appearances="question.appearances"
+	>
 		<template #firstColumn>
 			<ControlText :question="question" />
 		</template>
@@ -59,7 +165,11 @@ watchEffect(() => {
 		</template>
 	</FieldListTable>
 
-	<ColumnarAppearance v-else-if="hasColumnsAppearance" :class="{ 'select-with-images': isSelectWithImages }" :appearances="question.appearances">
+	<ColumnarAppearance
+		v-else-if="hasColumnsAppearance"
+		:class="{ 'select-with-images': isSelectWithImages }"
+		:appearances="question.appearances"
+	>
 		<RadioButton :question="question" />
 	</ColumnarAppearance>
 
