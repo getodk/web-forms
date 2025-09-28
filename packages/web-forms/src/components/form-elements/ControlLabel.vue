@@ -6,7 +6,7 @@ const props = defineProps<{ question: QuestionNode }>();
 <template>
 	<label :for="question.nodeId">
 		<span v-if="question.currentState.required" class="required">* </span>
-		<span>{{ props.question.currentState.label?.asString }}</span>
+		<span v-html="props.question.currentState.label?.formatted"></span>
 	</label>
 </template>
 

@@ -5,7 +5,6 @@ import type {
 	TextOrigin,
 	TextRole,
 } from '../../client/TextRange.ts';
-import { FormattedTextStub } from './FormattedTextStub.ts';
 
 export interface MediaSources {
 	image?: JRResourceURL;
@@ -21,7 +20,11 @@ export class TextRange<Role extends TextRole, Origin extends TextOrigin>
 	}
 
 	get formatted() {
-		return FormattedTextStub;
+		const str = this.asString;
+		return str.replace(/^\s*#\s?([^#][^\n]*)(\n|$)/gm, (hashtags: string, content: string) => {
+			console.log({hashtags, content});
+			return `<h1>${content}</h1>`;
+		});
 	}
 
 	get asString(): string {
