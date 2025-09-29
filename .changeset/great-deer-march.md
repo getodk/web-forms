@@ -3,4 +3,4 @@
 '@getodk/web-forms': minor
 ---
 
-Render groups without a ref attribute
+Refactor Group types so groups without a ref attribute are displayed
