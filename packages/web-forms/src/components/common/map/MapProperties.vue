@@ -7,6 +7,7 @@ defineProps<{
 	reservedProps: Record<string, string>;
 	orderedProps: Array<[string, string]>;
 	hasSavedFeature: boolean;
+	disabled: boolean;
 }>();
 
 const emit = defineEmits(['close', 'save', 'discard']);
@@ -28,13 +29,13 @@ const emit = defineEmits(['close', 'save', 'discard']);
 		</div>
 
 		<div class="map-properties-footer">
-			<Button v-if="hasSavedFeature" outlined severity="contrast" @click="emit('discard')">
+			<Button v-if="hasSavedFeature && !disabled" outlined severity="contrast" @click="emit('discard')">
 				<span>–</span>
 				<!-- TODO: translations -->
 				<span>Remove selection</span>
 			</Button>
-			<Button v-else outlined severity="contrast" @click="emit('save')">
-				<IconSVG name="mdiCheck" size="sm" />
+			<Button v-if="!hasSavedFeature && !disabled" @click="emit('save')">
+				<IconSVG name="mdiCheck" size="sm" variant="inverted" />
 				<!-- TODO: translations -->
 				<span>Save selected</span>
 			</Button>

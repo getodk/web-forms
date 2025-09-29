@@ -6,7 +6,6 @@ import {
 import type { FeatureCollection } from 'geojson';
 import { Map, View } from 'ol';
 import { Zoom } from 'ol/control';
-import type { Coordinate } from 'ol/coordinate';
 import Feature from 'ol/Feature';
 import GeoJSON from 'ol/format/GeoJSON';
 import { LineString, Point, Polygon } from 'ol/geom';
@@ -18,12 +17,11 @@ import { OSM } from 'ol/source';
 import VectorSource from 'ol/source/Vector';
 import { computed, ref, shallowRef, watch } from 'vue';
 
-export interface MapConfig {
-	viewCoordinates: Coordinate | undefined;
-	zoom?: number; // See DEFAULT_ZOOM
-}
-
 type GeometryType = LineString | Point | Polygon;
+interface FeatureProperties {
+	reservedProps: Record<string, string>;
+	orderedProps: Array<[string, string]>;
+}
 
 const STATES = {
 	LOADING: 'loading',
@@ -32,7 +30,9 @@ const STATES = {
 } as const;
 
 const DEFAULT_GEOJSON_PROJECTION = 'EPSG:4326';
-const DEFAULT_ZOOM = 12;
+const DEFAULT_VIEW_CENTER = [0, 0];
+const MAX_ZOOM = 16;
+const MIN_ZOOM = 2;
 const GEOLOCATION_TIMEOUT_MS = 10 * 1000;
 const ANIMATION_TIME = 1000;
 const SMALL_DEVICE_WIDTH = 576;
@@ -41,16 +41,14 @@ const FEATURE_ID_PROPERTY = 'feature_id';
 const SAVED_ID_PROPERTY = 'savedId';
 const SELECTED_ID_PROPERTY = 'selectedId';
 
-export function useMapBlock(config: MapConfig) {
-	const zoom = config.zoom ?? DEFAULT_ZOOM;
-
+export function useMapBlock() {
 	const currentState = shallowRef<(typeof STATES)[keyof typeof STATES]>(STATES.LOADING);
 	const errorMessage = shallowRef<{ title: string; message: string } | undefined>();
 	const mapInstance = ref<Map | undefined>();
 	const savedFeature = ref<Feature<GeometryType> | undefined>();
 	const selectedFeature = ref<Feature<GeometryType> | undefined>();
-	const selectedFeatureProperties = computed<Record<string, unknown> | undefined>(() => {
-		return selectedFeature.value?.getProperties();
+	const selectedFeatureProperties = computed<FeatureProperties | undefined>(() => {
+		return selectedFeature.value?.getProperties() as FeatureProperties | undefined;
 	});
 
 	const featuresVectorLayer = new WebGLVectorLayer({
@@ -71,10 +69,7 @@ export function useMapBlock(config: MapConfig) {
 		mapInstance.value = new Map({
 			target: mapContainer,
 			layers: [new TileLayer({ source: new OSM() }), featuresVectorLayer],
-			view: new View({
-				center: config.viewCoordinates ? fromLonLat(config.viewCoordinates) : [0, 0],
-				zoom: config.viewCoordinates ? zoom : 2,
-			}),
+			view: new View({ center: DEFAULT_VIEW_CENTER, zoom: MIN_ZOOM }),
 			controls: [new Zoom()],
 		});
 
@@ -90,7 +85,7 @@ export function useMapBlock(config: MapConfig) {
 			mapInstance.value?.getView().fit(extent, {
 				padding: [50, 50, 50, 50],
 				duration: ANIMATION_TIME,
-				maxZoom: 16,
+				maxZoom: MAX_ZOOM,
 			});
 		}
 	};
@@ -113,7 +108,7 @@ export function useMapBlock(config: MapConfig) {
 				const coords = fromLonLat([position.coords.longitude, position.coords.latitude]);
 				mapInstance.value
 					?.getView()
-					.animate({ center: coords, zoom: zoom, duration: ANIMATION_TIME });
+					.animate({ center: coords, zoom: MAX_ZOOM, duration: ANIMATION_TIME });
 				currentState.value = STATES.READY;
 			},
 			() => {
@@ -149,17 +144,22 @@ export function useMapBlock(config: MapConfig) {
 	};
 
 	const loadGeometries = (geoJSON: FeatureCollection): void => {
-		if (mapInstance.value == null) {
+		const source = featuresVectorLayer.getSource();
+		if (mapInstance.value == null || source == null) {
 			return;
 		}
 
 		currentState.value = STATES.LOADING;
 		unselectFeature();
 		discardSavedFeature();
-		const source = featuresVectorLayer.getSource();
-		source?.clear();
+		source.clear();
 
-		if (!geoJSON.features.length || !source) {
+		if (!geoJSON.features.length) {
+			mapInstance.value?.getView().animate({
+				center: DEFAULT_VIEW_CENTER,
+				zoom: MIN_ZOOM,
+				duration: ANIMATION_TIME,
+			});
 			currentState.value = STATES.READY;
 			return;
 		}
@@ -175,12 +175,9 @@ export function useMapBlock(config: MapConfig) {
 			}
 		});
 		source.addFeatures(features);
-
 		currentState.value = STATES.READY;
 
-		if (!config.viewCoordinates) {
-			fitToAllFeatures();
-		}
+		fitToAllFeatures();
 	};
 
 	const selectFeatureByPosition = (position: Pixel): void => {
@@ -213,8 +210,8 @@ export function useMapBlock(config: MapConfig) {
 		featuresVectorLayer.updateStyleVariables({ [SELECTED_ID_PROPERTY]: '' });
 	};
 
-	const saveFeature = (): void => {
-		savedFeature.value = selectedFeature.value;
+	const saveFeature = (feature: Feature<GeometryType> | undefined): void => {
+		savedFeature.value = feature;
 		const savedFeatureId = (savedFeature.value?.get(FEATURE_ID_PROPERTY) as string) ?? '';
 		featuresVectorLayer.updateStyleVariables({
 			[SAVED_ID_PROPERTY]: savedFeatureId,
@@ -224,6 +221,25 @@ export function useMapBlock(config: MapConfig) {
 	const discardSavedFeature = (): void => {
 		savedFeature.value = undefined;
 		featuresVectorLayer.updateStyleVariables({ [SAVED_ID_PROPERTY]: '' });
+	};
+
+	const setSavedByValueProp = (value: string | undefined): void => {
+		if (!value?.length) {
+			return;
+		}
+
+		const features = featuresVectorLayer.getSource()?.getFeatures();
+		const featureToSave = features?.find((feature) => {
+			const { reservedProps } = feature.getProperties() as FeatureProperties;
+			return reservedProps.value === value;
+		}) as Feature<GeometryType>;
+
+		if (!featureToSave) {
+			return;
+		}
+
+		saveFeature(featureToSave);
+		centerFeatureLocation(featureToSave);
 	};
 
 	const isSelectedFeatureSaved = (): boolean => {
@@ -252,7 +268,8 @@ export function useMapBlock(config: MapConfig) {
 
 		savedFeature,
 		discardSavedFeature,
-		saveFeature,
+		saveFeature: () => saveFeature(selectedFeature.value),
+		setSavedByValueProp,
 
 		selectedFeatureProperties,
 		selectFeature,

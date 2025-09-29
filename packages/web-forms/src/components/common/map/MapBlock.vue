@@ -7,14 +7,15 @@
 import IconSVG from '@/components/common/IconSVG.vue';
 import MapProperties from '@/components/common/map/MapProperties.vue';
 import MapStatusBar from '@/components/common/map/MapStatusBar.vue';
-import { type MapConfig, useMapBlock } from '@/components/common/map/useMapBlock.ts';
+import { useMapBlock } from '@/components/common/map/useMapBlock.ts';
 import { QUESTION_HAS_ERROR } from '@/lib/constants/injection-keys.ts';
 import type { FeatureCollection } from 'geojson';
 import { computed, type ComputedRef, inject, onMounted, onUnmounted, ref, watch } from 'vue';
 
 interface MapBlockProps {
 	featureCollection: FeatureCollection;
-	config: MapConfig;
+	disabled: boolean;
+	savedFeatureValue: string | undefined;
 }
 
 const props = defineProps<MapBlockProps>();
@@ -26,7 +27,7 @@ const showErrorStyle = inject<ComputedRef<boolean>>(
 	computed(() => false)
 );
 
-const mapHandler = useMapBlock(props.config);
+const mapHandler = useMapBlock();
 
 onMounted(() => {
 	if (mapElement.value == null || mapHandler == null) {
@@ -49,6 +50,12 @@ watch(
 	{ deep: true, immediate: true }
 );
 
+watch(
+	() => props.savedFeatureValue,
+	(newSaved) => mapHandler?.setSavedByValueProp(newSaved),
+	{ deep: true, immediate: true }
+);
+
 const handleEscapeKey = (event: KeyboardEvent) => {
 	if (event.key === 'Escape' && isFullScreen.value) {
 		isFullScreen.value = false;
@@ -63,7 +70,12 @@ const centerFeatureLocation = () => {
 
 const saveSelection = () => {
 	mapHandler?.saveFeature();
-	emit('save', mapHandler.savedFeature.value);
+	emit('save', mapHandler.savedFeature.value?.getProperties()?.reservedProps);
+};
+
+const discardSavedFeature = () => {
+	mapHandler?.discardSavedFeature();
+	emit('save', null);
 };
 </script>
 
@@ -95,8 +107,9 @@ const saveSelection = () => {
 				:reserved-props="mapHandler?.selectedFeatureProperties.value.reservedProps"
 				:ordered-props="mapHandler?.selectedFeatureProperties.value.orderedProps"
 				:has-saved-feature="mapHandler?.isSelectedFeatureSaved()"
+				:disabled="disabled"
 				@close="mapHandler.unselectFeature"
-				@discard="mapHandler?.discardSavedFeature"
+				@discard="discardSavedFeature"
 				@save="saveSelection"
 			/>
 		</div>
