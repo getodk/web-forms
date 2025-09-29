@@ -3,138 +3,248 @@
   "features": [
     {
       "type": "Feature",
-      "properties": {
-        "title": "Madrid",
-        "id": "1"
-      },
       "geometry": {
+        "type": "Point",
         "coordinates": [
-          -3.7445467750577563,
-          40.446254412914385
-        ],
-        "type": "Point"
+          -73.56,
+          45.52
+        ]
+      },
+      "properties": {
+        "nurses": 19,
+        "doctors": 10,
+        "patients": 390,
+        "id": "fea-07",
+        "title": "Chinatown Medical Center"
       }
     },
     {
       "type": "Feature",
-      "properties": {
-        "title": "Warsaw",
-        "id": "2"
-      },
       "geometry": {
+        "type": "Point",
         "coordinates": [
-          21.100614535212543,
-          52.18544754541023
-        ],
-        "type": "Point"
+          -73.585,
+          45.5
+        ]
+      },
+      "properties": {
+        "nurses": 23,
+        "doctors": 13,
+        "patients": 550,
+        "id": "fea-08",
+        "title": "West End Health Clinic"
       }
     },
     {
       "type": "Feature",
-      "properties": {
-        "title": "Stockholm-Copenhagen-Berlin",
-        "id": "3"
-      },
       "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.555,
+          45.485
+        ]
+      },
+      "properties": {
+        "nurses": 16,
+        "doctors": 6,
+        "patients": 300,
+        "id": "fea-09",
+        "title": "Verdun Community Clinic"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
         "coordinates": [
           [
-            18.04203801493341,
-            59.31284185390564
+            -73.59,
+            45.53
           ],
           [
-            12.59922155107742,
-            55.72377024475574
+            -73.58,
+            45.53
           ],
           [
-            13.337427033540052,
-            52.48574101841746
+            -73.57,
+            45.53
           ]
-        ],
-        "type": "LineString"
+        ]
+      },
+      "properties": {
+        "id": "fea-018",
+        "title": "Canada Goose",
+        "quantities": 4000,
+        "migration_days": 12,
+        "start_date": "2024-09-10",
+        "end_date": "2024-09-22"
       }
     },
     {
       "type": "Feature",
-      "properties": {
-        "title": "Prague-Vienna-Budapest",
-        "id": "4"
-      },
       "geometry": {
+        "type": "LineString",
         "coordinates": [
           [
-            19.04921763281365,
-            47.485570717616696
+            -73.59,
+            45.47
           ],
           [
-            16.42105774490628,
-            48.19954394662233
+            -73.58,
+            45.47
           ],
           [
-            14.417694964430638,
-            50.139932923435055
+            -73.57,
+            45.47
           ]
-        ],
-        "type": "LineString"
+        ]
+      },
+      "properties": {
+        "id": "fea-019",
+        "title": "Snowy Owl",
+        "quantities": 150,
+        "migration_days": 8,
+        "start_date": "2024-11-15",
+        "end_date": "2024-11-23"
       }
     },
     {
       "type": "Feature",
-      "properties": {
-        "title": "London-Leeds-Liverpool-London",
-        "id": "5"
-      },
       "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -73.6,
+            45.5
+          ],
+          [
+            -73.6,
+            45.51
+          ],
+          [
+            -73.6,
+            45.52
+          ]
+        ]
+      },
+      "properties": {
+        "id": "fea-020",
+        "title": "Peregrine Falcon",
+        "quantities": 300,
+        "migration_days": 5,
+        "start_date": "2024-10-01",
+        "end_date": "2024-10-06"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
         "coordinates": [
           [
             [
-              -2.991905620523312,
-              53.40903732686215
+              -73.59,
+              45.54
             ],
             [
-              -0.1321803079139272,
-              51.505094241512666
+              -73.58,
+              45.54
             ],
             [
-              -1.5363611594108022,
-              53.8052722823615
+              -73.58,
+              45.55
             ],
             [
-              -2.991905620523312,
-              53.40903732686215
+              -73.59,
+              45.55
+            ],
+            [
+              -73.59,
+              45.54
             ]
           ]
-        ],
-        "type": "Polygon"
+        ]
+      },
+      "properties": {
+        "id": "fea-021",
+        "title": "Montreal Urban Farm 1",
+        "size": "200 hectares",
+        "harvest_quantity": "400 tons",
+        "harvest_date": "2024-09-05"
       }
     },
     {
       "type": "Feature",
-      "properties": {
-        "title": "Paris-Basel-Frankfurt-Paris",
-        "id": "6"
-      },
       "geometry": {
+        "type": "Polygon",
         "coordinates": [
           [
             [
-              2.3146557958955327,
-              48.840915452897946
+              -73.61,
+              45.46
             ],
             [
-              7.63542665300713,
-              47.54579786412256
+              -73.6,
+              45.46
             ],
             [
-              8.703168961933983,
-              50.10149750150822
+              -73.6,
+              45.47
             ],
             [
-              2.3146557958955327,
-              48.840915452897946
+              -73.61,
+              45.47
+            ],
+            [
+              -73.61,
+              45.46
             ]
           ]
-        ],
-        "type": "Polygon"
+        ]
+      },
+      "properties": {
+        "id": "fea-022",
+        "title": "Montreal Urban Farm 2",
+        "size": "150 hectares",
+        "harvest_quantity": "300 tons",
+        "harvest_date": "2024-10-10"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -73.54,
+              45.53
+            ],
+            [
+              -73.53,
+              45.53
+            ],
+            [
+              -73.53,
+              45.54
+            ],
+            [
+              -73.54,
+              45.54
+            ],
+            [
+              -73.54,
+              45.53
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "fea-023",
+        "title": "Montreal Urban Farm 3",
+        "size": "250 hectares",
+        "harvest_quantity": "500 tons",
+        "harvest_date": "2024-08-15"
       }
     }
   ]

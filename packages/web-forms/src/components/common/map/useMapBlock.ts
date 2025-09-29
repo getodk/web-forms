@@ -18,10 +18,6 @@ import VectorSource from 'ol/source/Vector';
 import { computed, ref, shallowRef, watch } from 'vue';
 
 type GeometryType = LineString | Point | Polygon;
-interface FeatureProperties {
-	reservedProps: Record<string, string>;
-	orderedProps: Array<[string, string]>;
-}
 
 const STATES = {
 	LOADING: 'loading',
@@ -37,7 +33,7 @@ const GEOLOCATION_TIMEOUT_MS = 10 * 1000;
 const ANIMATION_TIME = 1000;
 const SMALL_DEVICE_WIDTH = 576;
 const MAP_HIT_TOLERANCE = 5;
-const FEATURE_ID_PROPERTY = 'feature_id';
+const FEATURE_ID_PROPERTY = 'odk_feature_id';
 const SAVED_ID_PROPERTY = 'savedId';
 const SELECTED_ID_PROPERTY = 'selectedId';
 
@@ -47,8 +43,8 @@ export function useMapBlock() {
 	let mapInstance: Map | undefined;
 	const savedFeature = ref<Feature<GeometryType> | undefined>();
 	const selectedFeature = ref<Feature<GeometryType> | undefined>();
-	const selectedFeatureProperties = computed<FeatureProperties | undefined>(() => {
-		return selectedFeature.value?.getProperties() as FeatureProperties | undefined;
+	const selectedFeatureProperties = computed(() => {
+		return selectedFeature.value?.getProperties();
 	});
 
 	const featuresSource = new VectorSource();
@@ -228,8 +224,7 @@ export function useMapBlock() {
 		}
 
 		const featureToSave = featuresSource.getFeatures()?.find((feature) => {
-			const { reservedProps } = feature.getProperties() as FeatureProperties;
-			return reservedProps.value === value;
+			return feature.getProperties()?.odk_value === value;
 		}) as Feature<GeometryType>;
 
 		if (!featureToSave) {

@@ -15,6 +15,7 @@ import { computed, type ComputedRef, inject, onMounted, onUnmounted, ref, watch 
 interface MapBlockProps {
 	featureCollection: FeatureCollection;
 	disabled: boolean;
+	orderedExtraProps: Map<string, Array<[string, string]>>;
 	savedFeatureValue: string | undefined;
 }
 
@@ -70,7 +71,7 @@ const centerFeatureLocation = () => {
 
 const saveSelection = () => {
 	mapHandler?.saveFeature();
-	emit('save', mapHandler.savedFeature.value?.getProperties()?.reservedProps);
+	emit('save', mapHandler.savedFeature.value?.getProperties());
 };
 
 const discardSavedFeature = () => {
@@ -104,8 +105,8 @@ const discardSavedFeature = () => {
 
 			<MapProperties
 				v-if="mapHandler?.selectedFeatureProperties.value != null"
-				:reserved-props="mapHandler?.selectedFeatureProperties.value.reservedProps"
-				:ordered-props="mapHandler?.selectedFeatureProperties.value.orderedProps"
+				:reserved-props="mapHandler?.selectedFeatureProperties.value"
+				:ordered-extra-props="orderedExtraProps"
 				:has-saved-feature="mapHandler?.isSelectedFeatureSaved()"
 				:disabled="disabled"
 				@close="mapHandler.unselectFeature"

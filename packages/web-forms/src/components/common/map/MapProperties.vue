@@ -1,21 +1,25 @@
 <script setup lang="ts">
 import IconSVG from '@/components/common/IconSVG.vue';
 import Button from 'primevue/button';
+import { computed } from 'vue';
 
-defineProps<{
+const props = defineProps<{
 	reservedProps: Record<string, string>;
-	orderedProps: Array<[string, string]>;
+	orderedExtraProps: Map<string, Array<[string, string]>>;
 	hasSavedFeature: boolean;
 	disabled: boolean;
 }>();
 
 const emit = defineEmits(['close', 'save', 'discard']);
+const orderedProps = computed(() => {
+	return props.orderedExtraProps.get(props.reservedProps.odk_value) ?? [];
+});
 </script>
 
 <template>
 	<div class="map-properties">
 		<div class="map-properties-header">
-			<strong>{{ reservedProps.label ?? reservedProps.geometry }}</strong>
+			<strong>{{ reservedProps.odk_label ?? reservedProps.odk_geometry }}</strong>
 			<button class="close-icon" @click="emit('close')">
 				<IconSVG name="mdiClose" />
 			</button>
