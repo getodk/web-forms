@@ -4,7 +4,7 @@ import {
 	getUnselectedStyles,
 } from '@/components/common/map/map-styles.ts';
 import type { FeatureCollection } from 'geojson';
-import { Map, View } from 'ol';
+import { Map, MapBrowserEvent, View } from 'ol';
 import { Zoom } from 'ol/control';
 import Feature from 'ol/Feature';
 import GeoJSON from 'ol/format/GeoJSON';
@@ -70,9 +70,18 @@ export function useMapBlock() {
 			controls: [new Zoom()],
 		});
 
-		mapInstance.on('singleclick', (event) => selectFeatureByPosition(event.pixel));
 		currentState.value = STATES.READY;
 		loadGeometries(geoJSON);
+	};
+
+	const handleClick = (event: MapBrowserEvent) => selectFeatureByPosition(event.pixel);
+
+	const toggleClickBinding = (bindClick: boolean) => {
+		mapInstance?.un('singleclick', handleClick);
+
+		if (bindClick) {
+			mapInstance?.on('singleclick', handleClick);
+		}
 	};
 
 	const fitToAllFeatures = (): void => {
@@ -255,6 +264,7 @@ export function useMapBlock() {
 		initializeMap,
 		loadGeometries,
 		errorMessage,
+		toggleClickBinding,
 
 		centerCurrentLocation,
 		centerFeatureLocation,

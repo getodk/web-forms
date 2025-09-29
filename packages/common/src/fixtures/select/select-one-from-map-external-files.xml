@@ -8,7 +8,9 @@
     <model odk:xforms-version="1.0.0">
       <instance>
         <data id="select-one-from-map-external-files">
+          <show_q1/>
           <q1/>
+          <disable_q2/>
           <q2/>
           <q3/>
           <meta>
@@ -60,13 +62,28 @@
           </item>
         </root>
       </instance>
-      <bind nodeset="/data/q1" type="string"/>
-      <bind nodeset="/data/q2" type="string"/>
+      <bind nodeset="/data/show_q1" type="string"/>
+      <bind nodeset="/data/q1" type="string" relevant="selected(/data/show_q1, 'yes')"/>
+      <bind nodeset="/data/disable_q2" type="string"/>
+      <bind nodeset="/data/q2" type="string" readonly="selected(/data/disable_q2, 'yes')"/>
       <bind nodeset="/data/q3" type="string"/>
       <bind nodeset="/data/meta/instanceID" type="string" readonly="true()" jr:preload="uid"/>
     </model>
   </h:head>
+
   <h:body>
+    <select1 ref="/data/show_q1">
+      <label>Do you want to show the select with geojson file?</label>
+      <item>
+        <value>yes</value>
+        <label>Yes</label>
+      </item>
+      <item>
+        <value>no</value>
+        <label>No</label>
+      </item>
+    </select1>
+
     <select1 ref="/data/q1" appearance="map">
       <label>Select one from geojson file</label>
       <itemset nodeset="instance('geodataGeoJson')/root/item">
@@ -74,6 +91,20 @@
         <label ref="title"/>
       </itemset>
     </select1>
+
+
+    <select1 ref="/data/disable_q2">
+      <label>Do you want to disable the select with csv file?</label>
+      <item>
+        <value>yes</value>
+        <label>Yes</label>
+      </item>
+      <item>
+        <value>no</value>
+        <label>No</label>
+      </item>
+    </select1>
+
     <select1 ref="/data/q2" appearance="map">
       <label>Select one from csv file</label>
       <itemset nodeset="instance('geodataCsv')/root/item">
@@ -81,6 +112,7 @@
         <label ref="label"/>
       </itemset>
     </select1>
+
     <select1 ref="/data/q3" appearance="map">
       <label>Select one from xml file</label>
       <itemset nodeset="instance('geodataXml')/root/item[true()]">

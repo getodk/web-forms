@@ -36,6 +36,7 @@ onMounted(() => {
 	}
 
 	mapHandler.initializeMap(mapElement.value, props.featureCollection);
+	mapHandler.toggleClickBinding(!props.disabled);
 	document.addEventListener('keydown', handleEscapeKey);
 });
 
@@ -54,6 +55,12 @@ watch(
 watch(
 	() => props.savedFeatureValue,
 	(newSaved) => mapHandler?.setSavedByValueProp(newSaved),
+	{ deep: true, immediate: true }
+);
+
+watch(
+	() => props.disabled,
+	(newValue) => mapHandler?.toggleClickBinding(!newValue),
 	{ deep: true, immediate: true }
 );
 
