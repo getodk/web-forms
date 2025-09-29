@@ -30,7 +30,7 @@ const showErrorStyle = inject<ComputedRef<boolean>>(
 const mapHandler = useMapBlock();
 
 onMounted(() => {
-	if (mapElement.value == null || mapHandler == null) {
+	if (!mapElement.value || !mapHandler) {
 		return;
 	}
 

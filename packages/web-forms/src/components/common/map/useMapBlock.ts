@@ -44,15 +44,16 @@ const SELECTED_ID_PROPERTY = 'selectedId';
 export function useMapBlock() {
 	const currentState = shallowRef<(typeof STATES)[keyof typeof STATES]>(STATES.LOADING);
 	const errorMessage = shallowRef<{ title: string; message: string } | undefined>();
-	const mapInstance = ref<Map | undefined>();
+	let mapInstance: Map | undefined;
 	const savedFeature = ref<Feature<GeometryType> | undefined>();
 	const selectedFeature = ref<Feature<GeometryType> | undefined>();
 	const selectedFeatureProperties = computed<FeatureProperties | undefined>(() => {
 		return selectedFeature.value?.getProperties() as FeatureProperties | undefined;
 	});
 
+	const featuresSource = new VectorSource();
 	const featuresVectorLayer = new WebGLVectorLayer({
-		source: new VectorSource(),
+		source: featuresSource,
 		style: [
 			...getUnselectedStyles(FEATURE_ID_PROPERTY, SELECTED_ID_PROPERTY, SAVED_ID_PROPERTY),
 			...getSelectedStyles(FEATURE_ID_PROPERTY, SELECTED_ID_PROPERTY, SAVED_ID_PROPERTY),
@@ -62,27 +63,26 @@ export function useMapBlock() {
 	});
 
 	const initializeMap = (mapContainer: HTMLElement, geoJSON: FeatureCollection): void => {
-		if (mapInstance.value) {
+		if (mapInstance) {
 			return;
 		}
 
-		mapInstance.value = new Map({
+		mapInstance = new Map({
 			target: mapContainer,
 			layers: [new TileLayer({ source: new OSM() }), featuresVectorLayer],
 			view: new View({ center: DEFAULT_VIEW_CENTER, zoom: MIN_ZOOM }),
 			controls: [new Zoom()],
 		});
 
-		mapInstance.value.on('singleclick', (event) => selectFeatureByPosition(event.pixel));
+		mapInstance.on('singleclick', (event) => selectFeatureByPosition(event.pixel));
 		currentState.value = STATES.READY;
 		loadGeometries(geoJSON);
 	};
 
 	const fitToAllFeatures = (): void => {
-		const source = featuresVectorLayer.getSource() as VectorSource | undefined;
-		const extent = source?.getExtent();
+		const extent = featuresSource.getExtent();
 		if (extent) {
-			mapInstance.value?.getView().fit(extent, {
+			mapInstance?.getView().fit(extent, {
 				padding: [50, 50, 50, 50],
 				duration: ANIMATION_TIME,
 				maxZoom: MAX_ZOOM,
@@ -106,7 +106,7 @@ export function useMapBlock() {
 		navigator.geolocation.getCurrentPosition(
 			(position) => {
 				const coords = fromLonLat([position.coords.longitude, position.coords.latitude]);
-				mapInstance.value
+				mapInstance
 					?.getView()
 					.animate({ center: coords, zoom: MAX_ZOOM, duration: ANIMATION_TIME });
 				currentState.value = STATES.READY;
@@ -121,10 +121,10 @@ export function useMapBlock() {
 
 	const centerFeatureLocation = (feature: Feature<GeometryType>): void => {
 		const geometry = feature.getGeometry();
-		const size = mapInstance.value?.getSize();
-		const view = mapInstance.value?.getView();
+		const size = mapInstance?.getSize();
+		const view = mapInstance?.getView();
 
-		if (geometry == null || !size?.length || view == null) {
+		if (!geometry || !size?.length || !view) {
 			return;
 		}
 
@@ -144,18 +144,17 @@ export function useMapBlock() {
 	};
 
 	const loadGeometries = (geoJSON: FeatureCollection): void => {
-		const source = featuresVectorLayer.getSource();
-		if (mapInstance.value == null || source == null) {
+		if (!mapInstance) {
 			return;
 		}
 
 		currentState.value = STATES.LOADING;
 		unselectFeature();
 		discardSavedFeature();
-		source.clear();
+		featuresSource.clear();
 
 		if (!geoJSON.features.length) {
-			mapInstance.value?.getView().animate({
+			mapInstance?.getView().animate({
 				center: DEFAULT_VIEW_CENTER,
 				zoom: MIN_ZOOM,
 				duration: ANIMATION_TIME,
@@ -166,22 +165,22 @@ export function useMapBlock() {
 
 		const features = new GeoJSON().readFeatures(geoJSON, {
 			dataProjection: DEFAULT_GEOJSON_PROJECTION,
-			featureProjection: mapInstance.value.getView().getProjection(),
+			featureProjection: mapInstance.getView().getProjection(),
 		});
 
 		features.forEach((feature) => {
-			if (feature.get(FEATURE_ID_PROPERTY) == null) {
+			if (!feature.get(FEATURE_ID_PROPERTY)) {
 				feature.set(FEATURE_ID_PROPERTY, crypto.randomUUID());
 			}
 		});
-		source.addFeatures(features);
+		featuresSource.addFeatures(features);
 		currentState.value = STATES.READY;
 
 		fitToAllFeatures();
 	};
 
 	const selectFeatureByPosition = (position: Pixel): void => {
-		const hitFeatures = mapInstance.value?.getFeaturesAtPixel(position, {
+		const hitFeatures = mapInstance?.getFeaturesAtPixel(position, {
 			hitTolerance: MAP_HIT_TOLERANCE,
 			layerFilter: (layer) => layer instanceof WebGLVectorLayer,
 		});
@@ -228,8 +227,7 @@ export function useMapBlock() {
 			return;
 		}
 
-		const features = featuresVectorLayer.getSource()?.getFeatures();
-		const featureToSave = features?.find((feature) => {
+		const featureToSave = featuresSource.getFeatures()?.find((feature) => {
 			const { reservedProps } = feature.getProperties() as FeatureProperties;
 			return reservedProps.value === value;
 		}) as Feature<GeometryType>;
