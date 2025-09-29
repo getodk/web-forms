@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import MarkdownBlock from '@/components/common/MarkdownBlock.vue';
 import type { AnyControlNode as QuestionNode } from '@getodk/xforms-engine';
 const props = defineProps<{ question: QuestionNode }>();
 </script>
@@ -6,7 +7,7 @@ const props = defineProps<{ question: QuestionNode }>();
 <template>
 	<label :for="question.nodeId">
 		<span v-if="question.currentState.required" class="required">* </span>
-		<span v-html="props.question.currentState.label?.formatted"></span>
+		<MarkdownBlock :elem="props.question.currentState.label?.formatted"/>
 	</label>
 </template>
 

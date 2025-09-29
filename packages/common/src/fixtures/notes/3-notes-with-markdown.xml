@@ -26,16 +26,13 @@
   <h:body>
     <group appearance="field-list" ref="/data/group">
       <input ref="/data/group/headings">
-        <label>
-          # Heading 1
-          ## Heading 2
-        </label>
+        <label>**Going** _going_ &lt;br&gt;&lt;br&gt;You can try this with other colours; most primary colours should work.</label>
       </input>
       <input ref="/data/group/name">
         <label>What's your name?</label>
       </input>
       <input ref="/data/group/userentered">
-        <label>You said: *<output value="/data/group/name" />* but should it be markeddown?</label>
+        <label>*You said:<output value="/data/group/name" />* but should it be markeddown?</label>
       </input>
     </group>
   </h:body>

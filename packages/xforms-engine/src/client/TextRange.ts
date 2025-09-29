@@ -64,6 +64,7 @@ export type TextChunkSource =
  *
  * @see {@link TextRange}
  */
+// TODO why do we expose this? I think the client should only care about TextRange
 export interface TextChunk {
 	readonly source: TextChunkSource;
 
@@ -73,7 +74,7 @@ export interface TextChunk {
 	get language(): ActiveLanguage;
 
 	get asString(): string;
-	get formatted(): unknown;
+	get formatted(): unknown; // TODO remove this - it doesn't make sense to format a chunk in isolation
 }
 
 // eslint-disable-next-line @typescript-eslint/sort-type-constituents
