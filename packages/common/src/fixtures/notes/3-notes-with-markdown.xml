@@ -40,6 +40,7 @@
     </model>
   </h:head>
   <h:body>
+  <!-- need to test in other places, like validation, select item labels, etc -->
     <group appearance="field-list" ref="/data/group">
       <input ref="/data/group/headings">
         <label>**Going** _going_ &lt;br&gt;&lt;br&gt;You can try this with other &lt;span style="color:red;font-family:cursive"&gt;colours&lt;/span&gt;; most primary colours should work.</label>
@@ -68,13 +69,26 @@ Escaping: \*hello\*
 &lt;br/&gt;&lt;br/&gt;
 &lt;span style="color:red;font-family:cursive"&gt;hello&lt;/span&gt;
 &lt;br/&gt;&lt;br/&gt;
+
 &lt;p style="text-align:center"&gt;
   centered paragraph
 &lt;/p&gt;
+
 &lt;br/&gt;&lt;br/&gt;
 
 
 &lt;div style="text-align:center"&gt;centered div&lt;/div&gt;
+
+- unordered list 1
+- unordered list 5
+- unordered list 3
+
+
+1. ordered list 1
+2. ordered list 2
+3. ordered list 3
+
+![my image](/image.jpg "my image")
         </label>
       </input>
     </group>
