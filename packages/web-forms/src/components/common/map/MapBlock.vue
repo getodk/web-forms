@@ -107,16 +107,16 @@ const discardSavedFeature = () => {
 			<MapStatusBar
 				:has-saved-feature="mapHandler?.savedFeature.value != null"
 				class="map-status-bar-component"
-				@view-details="mapHandler?.selectFeature(mapHandler?.savedFeature.value)"
+				@view-details="mapHandler?.selectSavedFeature()"
 			/>
 
 			<MapProperties
 				v-if="mapHandler?.selectedFeatureProperties.value != null"
-				:reserved-props="mapHandler?.selectedFeatureProperties.value"
+				:reserved-props="mapHandler.selectedFeatureProperties.value"
 				:ordered-extra-props="orderedExtraProps"
-				:has-saved-feature="mapHandler?.isSelectedFeatureSaved()"
+				:has-saved-feature="mapHandler.isSelectedFeatureSaved()"
 				:disabled="disabled"
-				@close="mapHandler.unselectFeature"
+				@close="mapHandler.unselectFeature()"
 				@discard="discardSavedFeature"
 				@save="saveSelection"
 			/>

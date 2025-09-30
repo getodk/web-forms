@@ -70,17 +70,33 @@ export function useMapBlock() {
 			controls: [new Zoom()],
 		});
 
+		setCursorPointer();
 		currentState.value = STATES.READY;
 		loadGeometries(geoJSON);
+	};
+
+	const setCursorPointer = () => {
+		mapInstance?.on('pointermove', (event: MapBrowserEvent) => {
+			if (event.dragging || !mapInstance) {
+				return;
+			}
+
+			const hit = mapInstance.hasFeatureAtPixel(event.pixel, {
+				hitTolerance: MAP_HIT_TOLERANCE,
+				layerFilter: (layer) => layer instanceof WebGLVectorLayer,
+			});
+
+			mapInstance.getTargetElement().style.cursor = hit ? 'pointer' : '';
+		});
 	};
 
 	const handleClick = (event: MapBrowserEvent) => selectFeatureByPosition(event.pixel);
 
 	const toggleClickBinding = (bindClick: boolean) => {
-		mapInstance?.un('singleclick', handleClick);
+		mapInstance?.un('click', handleClick);
 
 		if (bindClick) {
-			mapInstance?.on('singleclick', handleClick);
+			mapInstance?.on('click', handleClick);
 		}
 	};
 
@@ -154,8 +170,8 @@ export function useMapBlock() {
 		}
 
 		currentState.value = STATES.LOADING;
-		unselectFeature();
-		discardSavedFeature();
+		selectFeature(undefined);
+		saveFeature(undefined);
 		featuresSource.clear();
 
 		if (!geoJSON.features.length) {
@@ -197,35 +213,9 @@ export function useMapBlock() {
 		selectFeature(featureToSelect);
 	};
 
-	const selectFeature = (feature: Feature<GeometryType> | undefined): void => {
-		selectedFeature.value = feature;
+	const selectFeature = (feature?: Feature<GeometryType>) => (selectedFeature.value = feature);
 
-		featuresVectorLayer.updateStyleVariables({
-			[SELECTED_ID_PROPERTY]: (selectedFeature.value?.get(FEATURE_ID_PROPERTY) as string) ?? '',
-		});
-
-		if (selectedFeature.value != null) {
-			centerFeatureLocation(selectedFeature.value);
-		}
-	};
-
-	const unselectFeature = (): void => {
-		selectedFeature.value = undefined;
-		featuresVectorLayer.updateStyleVariables({ [SELECTED_ID_PROPERTY]: '' });
-	};
-
-	const saveFeature = (feature: Feature<GeometryType> | undefined): void => {
-		savedFeature.value = feature;
-		const savedFeatureId = (savedFeature.value?.get(FEATURE_ID_PROPERTY) as string) ?? '';
-		featuresVectorLayer.updateStyleVariables({
-			[SAVED_ID_PROPERTY]: savedFeatureId,
-		});
-	};
-
-	const discardSavedFeature = (): void => {
-		savedFeature.value = undefined;
-		featuresVectorLayer.updateStyleVariables({ [SAVED_ID_PROPERTY]: '' });
-	};
+	const saveFeature = (feature?: Feature<GeometryType>) => (savedFeature.value = feature);
 
 	const setSavedByValueProp = (value: string | undefined): void => {
 		if (!value?.length) {
@@ -252,10 +242,34 @@ export function useMapBlock() {
 
 	watch(
 		() => currentState.value,
-		() => {
-			if (currentState.value !== STATES.ERROR) {
+		(newState) => {
+			if (newState !== STATES.ERROR) {
 				errorMessage.value = undefined;
 			}
+		},
+		{ immediate: true }
+	);
+
+	watch(
+		() => selectedFeature.value,
+		(newSelectedFeature) => {
+			featuresVectorLayer.updateStyleVariables({
+				[SELECTED_ID_PROPERTY]: (newSelectedFeature?.get(FEATURE_ID_PROPERTY) as string) ?? '',
+			});
+
+			if (newSelectedFeature != null) {
+				centerFeatureLocation(newSelectedFeature);
+			}
+		},
+		{ immediate: true }
+	);
+
+	watch(
+		() => savedFeature.value,
+		(newSavedFeature) => {
+			featuresVectorLayer.updateStyleVariables({
+				[SAVED_ID_PROPERTY]: (newSavedFeature?.get(FEATURE_ID_PROPERTY) as string) ?? '',
+			});
 		},
 		{ immediate: true }
 	);
@@ -270,13 +284,13 @@ export function useMapBlock() {
 		centerFeatureLocation,
 
 		savedFeature,
-		discardSavedFeature,
+		discardSavedFeature: () => saveFeature(undefined),
 		saveFeature: () => saveFeature(selectedFeature.value),
 		setSavedByValueProp,
 
 		selectedFeatureProperties,
-		selectFeature,
+		selectSavedFeature: () => selectFeature(savedFeature.value),
+		unselectFeature: () => selectFeature(undefined),
 		isSelectedFeatureSaved,
-		unselectFeature,
 	};
 }
