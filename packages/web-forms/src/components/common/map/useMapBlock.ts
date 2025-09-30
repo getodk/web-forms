@@ -32,7 +32,6 @@ const MIN_ZOOM = 2;
 const GEOLOCATION_TIMEOUT_MS = 10 * 1000;
 const ANIMATION_TIME = 1000;
 const SMALL_DEVICE_WIDTH = 576;
-const MAP_HIT_TOLERANCE = 5;
 const FEATURE_ID_PROPERTY = 'odk_feature_id';
 const SAVED_ID_PROPERTY = 'savedId';
 const SELECTED_ID_PROPERTY = 'selectedId';
@@ -82,7 +81,6 @@ export function useMapBlock() {
 			}
 
 			const hit = mapInstance.hasFeatureAtPixel(event.pixel, {
-				hitTolerance: MAP_HIT_TOLERANCE,
 				layerFilter: (layer) => layer instanceof WebGLVectorLayer,
 			});
 
@@ -202,7 +200,6 @@ export function useMapBlock() {
 
 	const selectFeatureByPosition = (position: Pixel): void => {
 		const hitFeatures = mapInstance?.getFeaturesAtPixel(position, {
-			hitTolerance: MAP_HIT_TOLERANCE,
 			layerFilter: (layer) => layer instanceof WebGLVectorLayer,
 		});
 
