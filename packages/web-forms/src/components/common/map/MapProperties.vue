@@ -5,7 +5,7 @@ import { computed } from 'vue';
 
 const props = defineProps<{
 	reservedProps: Record<string, string>;
-	orderedExtraProps: Map<string, Array<[string, string]>>;
+	orderedExtraProps: Map<string, Array<[key: string, value: string]>>;
 	hasSavedFeature: boolean;
 	disabled: boolean;
 }>();
@@ -26,9 +26,9 @@ const orderedProps = computed(() => {
 		</div>
 
 		<div class="map-properties-content">
-			<div v-for="[key = '', value = ''] in orderedProps" :key="key" class="property-line">
-				{{ key }}: {{ value }}
-			</div>
+			<dl v-for="[key = '', value = ''] in orderedProps" :key="key" class="property-line">
+				<dt>{{ key }}</dt><dd>{{ value }}</dd>
+			</dl>
 		</div>
 
 		<div class="map-properties-footer">
@@ -59,7 +59,7 @@ const orderedProps = computed(() => {
 	position: absolute;
 	top: var(--odk-map-properties-spacing-md);
 	left: var(--odk-map-properties-spacing-md);
-	padding: var(--odk-map-properties-spacing-lg) var(--odk-map-properties-spacing-md);
+	padding: var(--odk-map-properties-spacing-lg);
 	border: 1px solid var(--odk-border-color);
 	border-radius: var(--odk-radius);
 	display: flex;
@@ -86,7 +86,7 @@ const orderedProps = computed(() => {
 
 	.close-icon {
 		cursor: pointer;
-		margin-top: -15px;
+		margin-top: -12px;
 		padding: 5px 0;
 		margin-right: -3px;
 	}
@@ -96,7 +96,20 @@ const orderedProps = computed(() => {
 	overflow: auto;
 
 	.property-line {
+		display: flex;
+		justify-content: flex-start;
+		flex-wrap: wrap;
+		gap: 5px;
 		padding: 15px 0;
+
+		dt,
+		dd {
+			margin: 0;
+		}
+
+		dt:after {
+			content: ':';
+		}
 
 		&:not(:last-child) {
 			border-bottom: 1px solid var(--odk-border-color);

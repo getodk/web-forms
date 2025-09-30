@@ -9,18 +9,22 @@ import ProgressSpinner from 'primevue/progressspinner';
 import { computed, type DefineComponent, onMounted, shallowRef, ref } from 'vue';
 
 type Coordinates = [longitude: number, latitude: number];
-type GeometryType = 'LineString' | 'Point' | 'Polygon';
+
+interface Geometry {
+	type: 'LineString' | 'Point' | 'Polygon';
+	coordinates: Coordinates | Coordinates[] | Coordinates[][];
+}
 
 interface Feature {
 	type: 'Feature';
-	geometry: { type: GeometryType; coordinates: Coordinates | Coordinates[] | Coordinates[][] };
-	properties: Record<string, unknown>;
+	geometry: Geometry;
+	properties: Record<string, string>;
 }
 
 type MapBlockComponent = DefineComponent<{
 	featureCollection: { type: string; features: Feature[] };
 	disabled: boolean;
-	orderedExtraProps: Map<string, Array<[string, string]>>;
+	orderedExtraProps: Map<string, Array<[key: string, value: string]>>;
 	savedFeatureValue: string | undefined;
 }>;
 
@@ -40,7 +44,7 @@ const STATES = {
 	ERROR: 'error',
 } as const;
 
-const ODK_PROPERTY_PREFIX = 'odk_'; // Avoids conflicts with OpenLayers (for example, geometry).
+const PROPERTY_PREFIX = 'odk_'; // Avoids conflicts with OpenLayers (for example, geometry).
 const RESERVED_MAP_PROPERTIES = [
 	'itextId',
 	'geometry',
@@ -53,65 +57,56 @@ const RESERVED_MAP_PROPERTIES = [
 
 const mapComponent = shallowRef<MapBlockComponent | null>(null);
 const currentState = shallowRef<(typeof STATES)[keyof typeof STATES]>(STATES.LOADING);
+const orderedExtraPropsMap = ref<Map<string, Array<[key: string, value: string]>>>(new Map());
 
-const orderedExtraPropsMap = ref<Map<string, Array<[string, string]>>>(new Map());
 const featureCollection = computed(() => {
 	orderedExtraPropsMap.value.clear();
 	const features: Feature[] = [];
 
 	props.features?.forEach((option) => {
-		try {
-			const reservedProps: Record<string, string> = {
-				[ODK_PROPERTY_PREFIX + 'label']: option.label?.asString,
-				[ODK_PROPERTY_PREFIX + 'value']: option.value,
-			};
-			const orderedProps: Array<[string, string]> = [];
+		const orderedProps: Array<[string, string]> = [];
+		const reservedProps: Record<string, string> = {
+			[PROPERTY_PREFIX + 'label']: option.label?.asString,
+			[PROPERTY_PREFIX + 'value']: option.value,
+		};
 
-			option.properties.forEach(([key, value]) => {
-				if (RESERVED_MAP_PROPERTIES.includes(key)) {
-					reservedProps[ODK_PROPERTY_PREFIX + key] = value;
-				} else {
-					orderedProps.push([key, value]);
-				}
-			});
-
-			orderedExtraPropsMap.value.set(option.value, orderedProps);
-			const geometry = reservedProps[ODK_PROPERTY_PREFIX + 'geometry'];
-			if (!geometry) {
-				throw new Error('Missing geometry');
+		option.properties.forEach(([key, value]) => {
+			if (RESERVED_MAP_PROPERTIES.includes(key)) {
+				reservedProps[PROPERTY_PREFIX + key] = value.trim();
+			} else {
+				orderedProps.push([key, value.trim()]);
 			}
+		});
 
-			const coordinates = getGeoJSONCoordinates(geometry);
-			if (coordinates.length === 0) {
-				throw new Error('Missing geo points');
-			}
+		orderedExtraPropsMap.value.set(option.value, orderedProps);
 
-			const type = getGeometryType(coordinates);
-			features.push({
-				type: 'Feature',
-				geometry: { type, coordinates: formatCoordsPerType(type, coordinates) },
-				properties: reservedProps,
-			});
-		} catch {
-			// Skip invalid options silently to match Collect behaviour.
+		const geometry = reservedProps[PROPERTY_PREFIX + 'geometry'];
+		if (!geometry?.length) {
+			// eslint-disable-next-line no-console -- Skip silently to match Collect behaviour.
+			console.warn(`Missing or empty geometry for option: ${option.value}`);
+			return;
 		}
+
+		const geoJSONCoords = getGeoJSONCoordinates(geometry);
+		if (!geoJSONCoords.length) {
+			// eslint-disable-next-line no-console -- Skip silently to match Collect behaviour.
+			console.warn(`Missing geo points for option: ${option.value}`);
+			return;
+		}
+
+		features.push({
+			type: 'Feature',
+			geometry: getGeoJSONGeometry(geoJSONCoords),
+			properties: reservedProps,
+		});
 	});
 
 	return { type: 'FeatureCollection', features };
 });
 
-const getGeometryType = (coords: Array<[number, number]>): GeometryType => {
-	if (coords.length === 1) {
-		return 'Point';
-	}
-
-	const first = coords[0];
-	const last = coords[coords.length - 1];
-	return first[0] === last[0] && first[1] === last[1] ? 'Polygon' : 'LineString';
-};
-
-const getGeoJSONCoordinates = (geometry: string): Array<[number, number]> => {
-	return geometry.split(';').map((coord) => {
+const getGeoJSONCoordinates = (geometry: string) => {
+	const coordinates: Coordinates[] = [];
+	geometry.split(';').forEach((coord) => {
 		const [lat, lon] = coord.trim().split(/\s+/).map(Number);
 
 		const isNullLocation = lat === 0 && lon === 0;
@@ -119,23 +114,30 @@ const getGeoJSONCoordinates = (geometry: string): Array<[number, number]> => {
 		const isValidLongitude = lon != null && !Number.isNaN(lon) && Math.abs(lon) <= 180;
 
 		if (isNullLocation || !isValidLatitude || !isValidLongitude) {
-			throw new Error('Invalid geo point coordinates');
+			// eslint-disable-next-line no-console -- Skip silently to match Collect behaviour.
+			console.warn(`Invalid geo point coordinates: ${geometry}`);
+			return;
 		}
 
-		return [lon, lat];
+		coordinates.push([lon, lat]);
 	});
+
+	return coordinates;
 };
 
-const formatCoordsPerType = (type: GeometryType, coords: Array<[number, number]>) => {
-	if (type === 'Point') {
-		return coords[0];
+const getGeoJSONGeometry = (coords: Coordinates[]): Geometry => {
+	if (coords.length === 1) {
+		return { type: 'Point', coordinates: coords[0] };
 	}
 
-	if (type === 'Polygon') {
-		return [coords];
+	const [firstLongitude, firstLatitude] = coords[0];
+	const [lastLongitude, lastLatitude] = coords[coords.length - 1];
+
+	if (firstLongitude === lastLongitude && firstLatitude === lastLatitude) {
+		return { type: 'Polygon', coordinates: [coords] };
 	}
 
-	return coords;
+	return { type: 'LineString', coordinates: coords };
 };
 
 const loadMap = async () => {
@@ -166,9 +168,7 @@ onMounted(loadMap);
 	<div class="async-map-container">
 		<div v-if="currentState === STATES.ERROR" class="map-error">
 			<!-- TODO: translations -->
-			<p class="map-error-message">
-				Unable to load map
-			</p>
+			<p class="map-error-message">Unable to load map</p>
 
 			<!-- TODO: Uncomment once retry mechanism is implemented.
 				<Button outlined severity="contrast" class="retry-button" @click="loadMap">
