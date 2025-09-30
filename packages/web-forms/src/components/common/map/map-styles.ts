@@ -61,8 +61,8 @@ const LINE_HIT_TOLERANCE = {
 	'stroke-color': 'rgba( 255, 255, 255, 0.1)',
 };
 
-const matchGeometryType = (...types: string[]) => {
-	return ['all', ['in', ['geometry-type'], ['literal', types]]];
+const makeFilter = (types: string[], additionalFilters: unknown[]) => {
+	return ['all', ['in', ['geometry-type'], ['literal', types]], ...additionalFilters];
 };
 
 export function getUnselectedStyles(
@@ -77,15 +77,15 @@ export function getUnselectedStyles(
 
 	return [
 		{
-			filter: [...matchGeometryType('Point'), ...filters],
+			filter: makeFilter(['Point'], filters),
 			style: DEFAULT_POINT_STYLE,
 		},
 		{
-			filter: [...matchGeometryType('LineString', 'Polygon'), ...filters],
+			filter: makeFilter(['LineString', 'Polygon'], filters),
 			style: DEFAULT_FEATURE_STYLE,
 		},
 		{
-			filter: [...matchGeometryType('LineString'), ...filters],
+			filter: makeFilter(['LineString'], filters),
 			style: LINE_HIT_TOLERANCE,
 		},
 	];
@@ -103,11 +103,11 @@ export function getSelectedStyles(
 
 	return [
 		{
-			filter: [...matchGeometryType('Point'), ...filters],
+			filter: makeFilter(['Point'], filters),
 			style: [BLUE_GLOW_POINT_STYLE, DEFAULT_POINT_STYLE, SCALE_POINT_STYLE],
 		},
 		{
-			filter: [...matchGeometryType('LineString', 'Polygon'), ...filters],
+			filter: makeFilter(['LineString', 'Polygon'], filters),
 			style: [BLUE_GLOW_FEATURE_STYLE, DEFAULT_FEATURE_STYLE, SCALE_FEATURE_STYLE],
 		},
 	];
@@ -118,11 +118,11 @@ export function getSavedStyles(featureIdProp: string, savedPropName: string): Ru
 
 	return [
 		{
-			filter: [...matchGeometryType('Point'), filter],
+			filter: makeFilter(['Point'], [filter]),
 			style: [GREEN_GLOW_POINT_STYLE, DEFAULT_POINT_STYLE, SCALE_POINT_STYLE],
 		},
 		{
-			filter: [...matchGeometryType('LineString', 'Polygon'), filter],
+			filter: makeFilter(['LineString', 'Polygon'], [filter]),
 			style: [GREEN_GLOW_FEATURE_STYLE, DEFAULT_FEATURE_STYLE, SCALE_FEATURE_STYLE],
 		},
 	];
