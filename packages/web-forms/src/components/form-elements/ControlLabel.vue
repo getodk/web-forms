@@ -7,7 +7,7 @@ const props = defineProps<{ question: QuestionNode }>();
 <template>
 	<label :for="question.nodeId">
 		<span v-if="question.currentState.required" class="required">* </span>
-		<MarkdownBlock :elem="props.question.currentState.label?.formatted"/>
+		<MarkdownBlock v-for="elem in props.question.currentState.label?.formatted" :elem="elem"/>
 	</label>
 </template>
 

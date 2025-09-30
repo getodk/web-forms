@@ -6,12 +6,26 @@
   <h:head>
     <h:title>Notes</h:title>
     <model odk:xforms-version="1.0.0">
+      <itext>
+        <translation lang="English">
+          <text id="q1:label">
+            <value>_Translated_</value>
+          </text>
+        </translation>
+        <translation lang="Español">
+          <text id="q1:label">
+            <value>_Traducida_</value>
+          </text>
+        </translation>
+      </itext>
       <instance>
         <data id="notes" version="20240802121047">
           <group>
             <headings />
             <name/>
             <userentered/>
+            <translated/>
+            <note/>
           </group>
           <meta>
             <instanceID />
@@ -21,18 +35,47 @@
       <bind nodeset="/data/group/headings" readonly="true()" type="string" />
       <bind nodeset="/data/group/name" type="string" />
       <bind nodeset="/data/group/userentered" readonly="true()" type="string" />
+      <bind nodeset="/data/group/translated" readonly="true()" type="string" />
+      <bind nodeset="/data/group/note" readonly="true()" type="note" />
     </model>
   </h:head>
   <h:body>
     <group appearance="field-list" ref="/data/group">
       <input ref="/data/group/headings">
-        <label>**Going** _going_ &lt;br&gt;&lt;br&gt;You can try this with other colours; most primary colours should work.</label>
+        <label>**Going** _going_ &lt;br&gt;&lt;br&gt;You can try this with other &lt;span style="color:red;font-family:cursive"&gt;colours&lt;/span&gt;; most primary colours should work.</label>
       </input>
       <input ref="/data/group/name">
         <label>What's your name?</label>
       </input>
       <input ref="/data/group/userentered">
-        <label>*You said:<output value="/data/group/name" />* but should it be markeddown?</label>
+        <label>*You said:&lt;span style="color:red;font-family:cursive"&gt;<output value="/data/group/name" />&lt;/span&gt;* but should it be markeddown?</label>
+      </input>
+      <input ref="/data/group/translated">
+        <label ref="jr:itext('q1:label')" />
+      </input>
+      <input ref="/data/group/note">
+        <label>
+# heading 1
+## heading 2
+### heading 3
+#### heading 4
+##### heading 5
+###### heading 6
+
+[get odk](http://www.getodk.org)
+&lt;br/&gt;&lt;br/&gt;
+Escaping: \*hello\*
+&lt;br/&gt;&lt;br/&gt;
+&lt;span style="color:red;font-family:cursive"&gt;hello&lt;/span&gt;
+&lt;br/&gt;&lt;br/&gt;
+&lt;p style="text-align:center"&gt;
+  centered paragraph
+&lt;/p&gt;
+&lt;br/&gt;&lt;br/&gt;
+
+
+&lt;div style="text-align:center"&gt;centered div&lt;/div&gt;
+        </label>
       </input>
     </group>
   </h:body>
