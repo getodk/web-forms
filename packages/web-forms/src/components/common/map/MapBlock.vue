@@ -71,7 +71,7 @@ const handleEscapeKey = (event: KeyboardEvent) => {
 };
 
 const centerFeatureLocation = () => {
-	if (mapHandler.savedFeature.value != null) {
+	if (mapHandler.savedFeature.value) {
 		mapHandler.centerFeatureLocation(mapHandler.savedFeature.value);
 	}
 };
@@ -91,13 +91,16 @@ const discardSavedFeature = () => {
 	<div class="map-block-component">
 		<div :class="{ 'map-container': true, 'map-full-screen': isFullScreen }">
 			<div class="control-bar">
-				<button :class="{ 'control-active': isFullScreen }" @click="isFullScreen = !isFullScreen">
+				<!-- TODO: translations -->
+				<button :class="{ 'control-active': isFullScreen }" title="Full Screen" @click="isFullScreen = !isFullScreen">
 					<IconSVG name="mdiArrowExpandAll" size="sm" />
 				</button>
-				<button @click="centerFeatureLocation">
+				<!-- TODO: translations -->
+				<button :disabled="!mapHandler?.savedFeature.value" title="Center view on saved selection" @click="centerFeatureLocation">
 					<IconSVG name="mdiFullscreen" />
 				</button>
-				<button @click="mapHandler?.centerCurrentLocation">
+				<!-- TODO: translations -->
+				<button title="Center view on current location" @click="mapHandler?.centerCurrentLocation">
 					<IconSVG name="mdiCrosshairsGps" size="sm" />
 				</button>
 			</div>
@@ -105,13 +108,13 @@ const discardSavedFeature = () => {
 			<div ref="mapElement" class="map-block" />
 
 			<MapStatusBar
-				:has-saved-feature="mapHandler?.savedFeature.value != null"
+				:has-saved-feature="!!mapHandler?.savedFeature.value"
 				class="map-status-bar-component"
 				@view-details="mapHandler?.selectSavedFeature()"
 			/>
 
 			<MapProperties
-				v-if="mapHandler?.selectedFeatureProperties.value != null"
+				v-if="mapHandler?.selectedFeatureProperties.value"
 				:reserved-props="mapHandler.selectedFeatureProperties.value"
 				:ordered-extra-props="orderedExtraProps"
 				:has-saved-feature="mapHandler.isSelectedFeatureSaved()"
@@ -123,7 +126,7 @@ const discardSavedFeature = () => {
 		</div>
 
 		<div
-			v-if="mapHandler?.errorMessage.value != null"
+			v-if="mapHandler?.errorMessage.value"
 			:class="{ 'map-block-error': true, 'stack-errors': showErrorStyle }"
 		>
 			<strong>{{ mapHandler?.errorMessage.value.title }}</strong>
@@ -198,6 +201,11 @@ const discardSavedFeature = () => {
 
 		&:hover {
 			background: var(--odk-muted-background-color);
+		}
+
+		&:disabled {
+			background: var(--odk-muted-background-color);
+			cursor: not-allowed;
 		}
 	}
 }
