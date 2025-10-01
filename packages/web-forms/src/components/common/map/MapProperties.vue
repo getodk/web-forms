@@ -101,7 +101,7 @@ const orderedProps = computed(() => {
 		justify-content: flex-start;
 		flex-wrap: wrap;
 		gap: 5px;
-		padding: 22px 0 15px 0;
+		padding: 15px 0;
 
 		dt,
 		dd {

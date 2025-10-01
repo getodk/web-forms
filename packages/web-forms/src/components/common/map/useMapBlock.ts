@@ -283,7 +283,7 @@ export function useMapBlock() {
 		toggleClickBinding,
 
 		centerCurrentLocation,
-		centerFeatureLocation,
+		fitToAllFeatures,
 
 		savedFeature,
 		discardSavedFeature: () => saveFeature(undefined),

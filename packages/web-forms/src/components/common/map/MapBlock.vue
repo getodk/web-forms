@@ -70,12 +70,6 @@ const handleEscapeKey = (event: KeyboardEvent) => {
 	}
 };
 
-const centerFeatureLocation = () => {
-	if (mapHandler.savedFeature.value) {
-		mapHandler.centerFeatureLocation(mapHandler.savedFeature.value);
-	}
-};
-
 const saveSelection = () => {
 	mapHandler.saveFeature();
 	emit('save', mapHandler.savedFeature.value?.getProperties()?.odk_value);
@@ -96,11 +90,11 @@ const discardSavedFeature = () => {
 					<IconSVG name="mdiArrowExpandAll" size="sm" />
 				</button>
 				<!-- TODO: translations -->
-				<button :disabled="!mapHandler.savedFeature.value" title="Center view on saved selection" @click="centerFeatureLocation">
+				<button title="Zoom to fit all options" @click="mapHandler.fitToAllFeatures">
 					<IconSVG name="mdiFullscreen" />
 				</button>
 				<!-- TODO: translations -->
-				<button title="Center view on current location" @click="mapHandler.centerCurrentLocation">
+				<button title="Zoom to current location" @click="mapHandler.centerCurrentLocation">
 					<IconSVG name="mdiCrosshairsGps" size="sm" />
 				</button>
 			</div>
@@ -201,11 +195,6 @@ const discardSavedFeature = () => {
 
 		&:hover {
 			background: var(--odk-muted-background-color);
-		}
-
-		&:disabled {
-			background: var(--odk-muted-background-color);
-			cursor: not-allowed;
 		}
 	}
 }
