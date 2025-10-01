@@ -92,6 +92,7 @@ const orderedProps = computed(() => {
 }
 
 .map-properties-content {
+	flex-grow: 2;
 	overflow: auto;
 	margin: 0;
 

@@ -69,32 +69,31 @@ export function useMapBlock() {
 			controls: [new Zoom()],
 		});
 
-		setCursorPointer();
 		currentState.value = STATES.READY;
 		loadGeometries(geoJSON);
 	};
 
-	const setCursorPointer = () => {
-		mapInstance?.on('pointermove', (event: MapBrowserEvent) => {
-			if (event.dragging || !mapInstance) {
-				return;
-			}
+	const setCursorPointer = (event: MapBrowserEvent) => {
+		if (event.dragging || !mapInstance) {
+			return;
+		}
 
-			const hit = mapInstance.hasFeatureAtPixel(event.pixel, {
-				layerFilter: (layer) => layer instanceof WebGLVectorLayer,
-			});
-
-			mapInstance.getTargetElement().style.cursor = hit ? 'pointer' : '';
+		const hit = mapInstance.hasFeatureAtPixel(event.pixel, {
+			layerFilter: (layer) => layer instanceof WebGLVectorLayer,
 		});
+
+		mapInstance.getTargetElement().style.cursor = hit ? 'pointer' : '';
 	};
 
 	const handleClick = (event: MapBrowserEvent) => selectFeatureByPosition(event.pixel);
 
 	const toggleClickBinding = (bindClick: boolean) => {
 		mapInstance?.un('click', handleClick);
+		mapInstance?.un('pointermove', setCursorPointer);
 
 		if (bindClick) {
 			mapInstance?.on('click', handleClick);
+			mapInstance?.on('pointermove', setCursorPointer);
 		}
 	};
 
@@ -149,8 +148,8 @@ export function useMapBlock() {
 
 		const width = size[0];
 		const height = size[1];
-		let pixelOffsetY = 0;
-		let pixelOffsetX = -50;
+		let pixelOffsetY = -10;
+		let pixelOffsetX = -90;
 		if (width < SMALL_DEVICE_WIDTH) {
 			pixelOffsetY = 130;
 			pixelOffsetX = 0;

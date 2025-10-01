@@ -47,20 +47,20 @@ onUnmounted(() => {
 watch(
 	() => props.featureCollection,
 	(newData) => {
-		mapHandler?.loadGeometries(newData);
+		mapHandler.loadGeometries(newData);
 	},
 	{ deep: true, immediate: true }
 );
 
 watch(
 	() => props.savedFeatureValue,
-	(newSaved) => mapHandler?.setSavedByValueProp(newSaved),
+	(newSaved) => mapHandler.setSavedByValueProp(newSaved),
 	{ deep: true, immediate: true }
 );
 
 watch(
 	() => props.disabled,
-	(newValue) => mapHandler?.toggleClickBinding(!newValue),
+	(newValue) => mapHandler.toggleClickBinding(!newValue),
 	{ deep: true, immediate: true }
 );
 
@@ -77,12 +77,12 @@ const centerFeatureLocation = () => {
 };
 
 const saveSelection = () => {
-	mapHandler?.saveFeature();
+	mapHandler.saveFeature();
 	emit('save', mapHandler.savedFeature.value?.getProperties());
 };
 
 const discardSavedFeature = () => {
-	mapHandler?.discardSavedFeature();
+	mapHandler.discardSavedFeature();
 	emit('save', null);
 };
 </script>
@@ -96,11 +96,11 @@ const discardSavedFeature = () => {
 					<IconSVG name="mdiArrowExpandAll" size="sm" />
 				</button>
 				<!-- TODO: translations -->
-				<button :disabled="!mapHandler?.savedFeature.value" title="Center view on saved selection" @click="centerFeatureLocation">
+				<button :disabled="!mapHandler.savedFeature.value" title="Center view on saved selection" @click="centerFeatureLocation">
 					<IconSVG name="mdiFullscreen" />
 				</button>
 				<!-- TODO: translations -->
-				<button title="Center view on current location" @click="mapHandler?.centerCurrentLocation">
+				<button title="Center view on current location" @click="mapHandler.centerCurrentLocation">
 					<IconSVG name="mdiCrosshairsGps" size="sm" />
 				</button>
 			</div>
@@ -108,13 +108,13 @@ const discardSavedFeature = () => {
 			<div ref="mapElement" class="map-block" />
 
 			<MapStatusBar
-				:has-saved-feature="!!mapHandler?.savedFeature.value"
+				:has-saved-feature="!!mapHandler.savedFeature.value"
 				class="map-status-bar-component"
-				@view-details="mapHandler?.selectSavedFeature()"
+				@view-details="mapHandler.selectSavedFeature()"
 			/>
 
 			<MapProperties
-				v-if="mapHandler?.selectedFeatureProperties.value"
+				v-if="mapHandler.selectedFeatureProperties.value"
 				:reserved-props="mapHandler.selectedFeatureProperties.value"
 				:ordered-extra-props="orderedExtraProps"
 				:has-saved-feature="mapHandler.isSelectedFeatureSaved()"
@@ -126,12 +126,12 @@ const discardSavedFeature = () => {
 		</div>
 
 		<div
-			v-if="mapHandler?.errorMessage.value"
+			v-if="mapHandler.errorMessage.value"
 			:class="{ 'map-block-error': true, 'stack-errors': showErrorStyle }"
 		>
-			<strong>{{ mapHandler?.errorMessage.value.title }}</strong>
+			<strong>{{ mapHandler.errorMessage.value.title }}</strong>
 			&nbsp;
-			<span>{{ mapHandler?.errorMessage.value.message }}</span>
+			<span>{{ mapHandler.errorMessage.value.message }}</span>
 		</div>
 	</div>
 </template>
