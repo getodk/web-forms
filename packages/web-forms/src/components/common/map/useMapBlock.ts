@@ -6,6 +6,7 @@ import {
 import type { FeatureCollection } from 'geojson';
 import { Map, MapBrowserEvent, View } from 'ol';
 import { Zoom } from 'ol/control';
+import { getCenter } from 'ol/extent';
 import Feature from 'ol/Feature';
 import GeoJSON from 'ol/format/GeoJSON';
 import { LineString, Point, Polygon } from 'ol/geom';
@@ -139,26 +140,34 @@ export function useMapBlock() {
 
 	const centerFeatureLocation = (feature: Feature<GeometryType>): void => {
 		const geometry = feature.getGeometry();
-		const size = mapInstance?.getSize();
 		const view = mapInstance?.getView();
-
-		if (!geometry || !size?.length || !view) {
+		const mapWidth = mapInstance?.getSize()?.[0];
+		if (!geometry || !view || mapWidth == null) {
 			return;
 		}
 
-		const width = size[0];
-		const height = size[1];
-		let pixelOffsetY = -10;
-		let pixelOffsetX = -90;
-		if (width < SMALL_DEVICE_WIDTH) {
-			pixelOffsetY = 130;
-			pixelOffsetX = 0;
-		}
+		const pixelOffsetY = mapWidth < SMALL_DEVICE_WIDTH ? -130 : 0;
+		const pixelOffsetX = mapWidth < SMALL_DEVICE_WIDTH ? 0 : -70;
 
-		view.centerOn(geometry.getExtent(), size, [
-			width / 2 - pixelOffsetX,
-			height / 2 - pixelOffsetY,
-		]);
+		const zoomResolution = view.getResolution() ?? 1;
+		const xOffsetInMapUnits = -pixelOffsetX * zoomResolution;
+		const yOffsetInMapUnits = -pixelOffsetY * zoomResolution;
+
+		// Turning angles into usable numbers
+		const rotation = view.getRotation();
+		const cosRotation = Math.cos(rotation);
+		const sinRotation = Math.sin(rotation);
+
+		const [featureCenterLong, featureCenterLat] = getCenter(geometry.getExtent());
+		const targetCoordinates = [
+			featureCenterLong - xOffsetInMapUnits * cosRotation + yOffsetInMapUnits * sinRotation,
+			featureCenterLat - xOffsetInMapUnits * sinRotation - yOffsetInMapUnits * cosRotation,
+		];
+
+		view.animate({
+			center: targetCoordinates,
+			duration: ANIMATION_TIME,
+		});
 	};
 
 	const loadGeometries = (geoJSON: FeatureCollection): void => {
