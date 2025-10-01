@@ -29,12 +29,6 @@ const orderedProps = computed(() => {
 			<div v-for="[key = '', value = ''] in orderedProps" :key="key" class="property-line">
 				<dt>{{ key }}</dt><dd>{{ value }}</dd>
 			</div>
-			<div v-for="[key = '', value = ''] in orderedProps" :key="key" class="property-line">
-				<dt>{{ key }}</dt><dd>{{ value }}</dd>
-			</div>
-			<div v-for="[key = '', value = ''] in orderedProps" :key="key" class="property-line">
-				<dt>{{ key }}</dt><dd>{{ value }}</dd>
-			</div>
 		</dl>
 
 		<div class="map-properties-footer">
