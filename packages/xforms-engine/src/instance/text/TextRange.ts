@@ -27,7 +27,6 @@ export class TextRange<Role extends TextRole, Origin extends TextOrigin>
 	}
 
 	get asString(): string {
-		console.log('getting string');
 		return this.chunks.map((chunk) => chunk.asString).join('');
 	}
 
@@ -49,6 +48,5 @@ export class TextRange<Role extends TextRole, Origin extends TextOrigin>
 		protected readonly chunks: readonly TextChunk[],
 		protected readonly mediaSources?: MediaSources
 	) {
-		console.log('construcing');
 	}
 }

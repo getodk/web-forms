@@ -25,6 +25,7 @@
             <name/>
             <userentered/>
             <translated/>
+            <selected/>
             <note/>
           </group>
           <meta>
@@ -32,10 +33,23 @@
           </meta>
         </data>
       </instance>
+      <instance id="selectoptions">
+        <root>
+          <item>
+            <value>strong</value>
+            <label>**strong style**</label>
+          </item>
+          <item>
+            <value>emphasis</value>
+            <label>_italics_</label>
+          </item>
+        </root>
+      </instance>
       <bind nodeset="/data/group/headings" readonly="true()" type="string" />
       <bind nodeset="/data/group/name" type="string" />
       <bind nodeset="/data/group/userentered" readonly="true()" type="string" />
       <bind nodeset="/data/group/translated" readonly="true()" type="string" />
+      <bind nodeset="/data/group/selected" type="string" />
       <bind nodeset="/data/group/note" readonly="true()" type="note" />
     </model>
   </h:head>
@@ -43,10 +57,11 @@
   <!-- need to test in other places, like validation, select item labels, etc -->
     <group appearance="field-list" ref="/data/group">
       <input ref="/data/group/headings">
-        <label>**Going** _going_ &lt;br&gt;&lt;br&gt;You can try this with other &lt;span style="color:red;font-family:cursive"&gt;colours&lt;/span&gt;; most primary colours should work.</label>
+        <label>You _can_ try this with other &lt;span style="color:red;font-family:cursive"&gt;colours&lt;/span&gt;; **most** primary colours should work.</label>
       </input>
       <input ref="/data/group/name">
         <label>What's your name?</label>
+        <hint>Type your name below</hint>
       </input>
       <input ref="/data/group/userentered">
         <label>*You said:&lt;span style="color:red;font-family:cursive"&gt;<output value="/data/group/name" />&lt;/span&gt;* but should it be markeddown?</label>
@@ -54,6 +69,13 @@
       <input ref="/data/group/translated">
         <label ref="jr:itext('q1:label')" />
       </input>
+      <select1 ref="/data/group/selected">
+        <label>Select options</label>
+        <itemset nodeset="instance('selectoptions')/root/item">
+          <value ref="value" />
+          <label ref="label" />
+        </itemset>
+      </select1>
       <input ref="/data/group/note">
         <label>
 # heading 1
@@ -67,7 +89,7 @@
 &lt;br/&gt;&lt;br/&gt;
 Escaping: \*hello\*
 &lt;br/&gt;&lt;br/&gt;
-&lt;span style="color:red;font-family:cursive"&gt;hello&lt;/span&gt;
+&lt;span style="color:red;font-family:cursive"&gt;signature&lt;/span&gt;
 &lt;br/&gt;&lt;br/&gt;
 
 &lt;p style="text-align:center"&gt;
@@ -88,7 +110,6 @@ Escaping: \*hello\*
 2. ordered list 2
 3. ordered list 3
 
-![my image](/image.jpg "my image")
         </label>
       </input>
     </group>

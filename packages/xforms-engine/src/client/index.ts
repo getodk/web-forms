@@ -20,7 +20,7 @@ export type {
 	AnyParentNode,
 	GeneralChildNode,
 	GeneralParentNode,
-	RepeatRangeNode
+	RepeatRangeNode,
 } from './hierarchy.ts';
 export type * from './identity.ts';
 export type * from './InputNode.ts';
@@ -47,4 +47,3 @@ export type * from './TriggerNode.ts';
 export type * from './UploadNode.ts';
 export type * from './validation.ts';
 export type * from './ValueType.ts';
-
