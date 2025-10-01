@@ -168,7 +168,9 @@ onMounted(loadMap);
 	<div class="async-map-container">
 		<div v-if="currentState === STATES.ERROR" class="map-error">
 			<!-- TODO: translations -->
-			<p class="map-error-message">Unable to load map</p>
+			<p class="map-error-message">
+				Unable to load map
+			</p>
 
 			<!-- TODO: Uncomment once retry mechanism is implemented.
 				<Button outlined severity="contrast" class="retry-button" @click="loadMap">

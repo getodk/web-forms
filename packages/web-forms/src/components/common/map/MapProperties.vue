@@ -25,11 +25,17 @@ const orderedProps = computed(() => {
 			</button>
 		</div>
 
-		<div class="map-properties-content">
-			<dl v-for="[key = '', value = ''] in orderedProps" :key="key" class="property-line">
+		<dl class="map-properties-content">
+			<div v-for="[key = '', value = ''] in orderedProps" :key="key" class="property-line">
 				<dt>{{ key }}</dt><dd>{{ value }}</dd>
-			</dl>
-		</div>
+			</div>
+			<div v-for="[key = '', value = ''] in orderedProps" :key="key" class="property-line">
+				<dt>{{ key }}</dt><dd>{{ value }}</dd>
+			</div>
+			<div v-for="[key = '', value = ''] in orderedProps" :key="key" class="property-line">
+				<dt>{{ key }}</dt><dd>{{ value }}</dd>
+			</div>
+		</dl>
 
 		<div class="map-properties-footer">
 			<Button v-if="hasSavedFeature && !disabled" outlined severity="contrast" @click="emit('discard')">
@@ -65,9 +71,8 @@ const orderedProps = computed(() => {
 	display: flex;
 	flex-direction: column;
 	gap: var(--odk-map-properties-spacing-md);
-	min-width: 300px;
-	max-width: 360px;
-	max-height: 370px;
+	width: 360px;
+	height: 370px;
 	box-shadow: 1px 2px 3px 0px rgba(0, 0, 0, 0.2);
 }
 
@@ -94,13 +99,14 @@ const orderedProps = computed(() => {
 
 .map-properties-content {
 	overflow: auto;
+	margin: 0;
 
 	.property-line {
 		display: flex;
 		justify-content: flex-start;
 		flex-wrap: wrap;
 		gap: 5px;
-		padding: 15px 0;
+		padding: 22px 0 15px 0;
 
 		dt,
 		dd {
@@ -133,8 +139,8 @@ const orderedProps = computed(() => {
 		left: 0;
 		right: 0;
 		margin: 0 auto;
-		max-width: calc(100% - var(--odk-map-properties-spacing-md));
-		max-height: 50%;
+		width: calc(100% - var(--odk-map-properties-spacing-md));
+		height: 50%;
 	}
 }
 </style>
