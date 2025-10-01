@@ -159,7 +159,7 @@ const loadMap = async () => {
 	}
 };
 
-const save = (feature: Feature) => emit('save', feature);
+const save = (value: string | undefined) => emit('save', value);
 
 onMounted(loadMap);
 </script>

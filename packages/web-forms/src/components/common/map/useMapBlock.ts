@@ -218,16 +218,16 @@ export function useMapBlock() {
 			return;
 		}
 
-		const featureToSave = featuresSource.getFeatures()?.find((feature) => {
-			return feature.getProperties()?.odk_value === value;
-		}) as Feature<GeometryType>;
+		const featureToSave = featuresSource.forEachFeature((feature) => {
+			return feature.getProperties()?.odk_value === value ? feature : undefined;
+		});
 
 		if (!featureToSave) {
 			return;
 		}
 
-		saveFeature(featureToSave);
-		centerFeatureLocation(featureToSave);
+		saveFeature(featureToSave as Feature<GeometryType>);
+		centerFeatureLocation(featureToSave as Feature<GeometryType>);
 	};
 
 	const isSelectedFeatureSaved = (): boolean => {
@@ -242,8 +242,7 @@ export function useMapBlock() {
 			if (newState !== STATES.ERROR) {
 				errorMessage.value = undefined;
 			}
-		},
-		{ immediate: true }
+		}
 	);
 
 	watch(
@@ -256,8 +255,7 @@ export function useMapBlock() {
 			if (newSelectedFeature != null) {
 				centerFeatureLocation(newSelectedFeature);
 			}
-		},
-		{ immediate: true }
+		}
 	);
 
 	watch(
@@ -266,8 +264,7 @@ export function useMapBlock() {
 			featuresVectorLayer.updateStyleVariables({
 				[SAVED_ID_PROPERTY]: (newSavedFeature?.get(FEATURE_ID_PROPERTY) as string) ?? '',
 			});
-		},
-		{ immediate: true }
+		}
 	);
 
 	return {

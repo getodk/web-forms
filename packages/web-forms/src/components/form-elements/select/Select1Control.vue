@@ -19,6 +19,12 @@ const props = defineProps<Select1ControlProps>();
 const isSelectWithImages = computed(() => props.question.currentState.isSelectWithImages);
 const hasColumnsAppearance = ref(false);
 const hasFieldListRelatedAppearance = ref(false);
+const savedFeatureValue = computed(() => {
+	if (!props.question.appearances.map) {
+		return;
+	}
+	return props.question.currentState.value?.[0];
+});
 
 watchEffect(() => {
 	const appearances = [...props.question.appearances];
@@ -51,9 +57,9 @@ watchEffect(() => {
 	<AsyncMap
 		v-else-if="question.appearances.map"
 		:features="question.currentState.valueOptions"
-		:saved-feature-value="question.currentState.value?.[0]"
+		:saved-feature-value="savedFeatureValue"
 		:disabled="question.currentState.readonly"
-		@save="(properties) => question.selectValue(properties?.value ?? '')"
+		@save="(value) => question.selectValue(value ?? '')"
 	/>
 
 	<FieldListTable

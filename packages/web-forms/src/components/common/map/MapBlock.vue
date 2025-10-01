@@ -37,6 +37,7 @@ onMounted(() => {
 
 	mapHandler.initializeMap(mapElement.value, props.featureCollection);
 	mapHandler.toggleClickBinding(!props.disabled);
+	mapHandler.setSavedByValueProp(props.savedFeatureValue);
 	document.addEventListener('keydown', handleEscapeKey);
 });
 
@@ -48,20 +49,19 @@ watch(
 	() => props.featureCollection,
 	(newData) => {
 		mapHandler.loadGeometries(newData);
+		mapHandler.setSavedByValueProp(props.savedFeatureValue);
 	},
-	{ deep: true, immediate: true }
+	{ deep: true }
 );
 
 watch(
 	() => props.savedFeatureValue,
-	(newSaved) => mapHandler.setSavedByValueProp(newSaved),
-	{ deep: true, immediate: true }
+	(newSaved) => mapHandler.setSavedByValueProp(newSaved)
 );
 
 watch(
 	() => props.disabled,
-	(newValue) => mapHandler.toggleClickBinding(!newValue),
-	{ deep: true, immediate: true }
+	(newValue) => mapHandler.toggleClickBinding(!newValue)
 );
 
 const handleEscapeKey = (event: KeyboardEvent) => {
@@ -78,7 +78,7 @@ const centerFeatureLocation = () => {
 
 const saveSelection = () => {
 	mapHandler.saveFeature();
-	emit('save', mapHandler.savedFeature.value?.getProperties());
+	emit('save', mapHandler.savedFeature.value?.getProperties()?.odk_value);
 };
 
 const discardSavedFeature = () => {
