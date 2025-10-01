@@ -10,34 +10,35 @@ const { elem } = defineProps<MarkdownProps>();
 </script>
 
 <template>
-	<span v-if="elem.elementName === 'span'" :style="{
-		color: elem.properties?.style.color,
-		'font-family': elem.properties?.style['font-family']
-	}">
-		<MarkdownBlock
-			v-for="child in elem.children"
-			:elem="child"
-		/>
+	<span
+		v-if="elem.elementName === 'span'" :style="{
+			color: elem.properties?.style.color,
+			'font-family': elem.properties?.style['font-family']
+		}"
+	>
+		<MarkdownBlock v-for="(child, index) in elem.children" :key="index" :elem="child" />
 	</span>
 	<a v-else-if="elem.elementName === 'a'" :href="elem.url" target="_blank">
 		<MarkdownBlock
-			v-for="child in elem.children"
+			v-for="(child, index) in elem.children"
+			:key="index"
 			:elem="child"
 		/>
 	</a>
 	<component :is="elem.elementName" v-else-if="elem.elementName">
 		<MarkdownBlock
-			v-for="child in elem.children"
+			v-for="(child, index) in elem.children"
+			:key="index"
 			:elem="child"
 		/>
 	</component>
 	<template v-else-if="elem.value">
-		{{elem.value}}
+		{{ elem.value }}
 	</template>
 	<MarkdownBlock
+		v-for="(child, index) in elem.children"
 		v-else
-		v-for="child in elem.children"
+		:key="index"
 		:elem="child"
-	/> 
-
+	/>
 </template>

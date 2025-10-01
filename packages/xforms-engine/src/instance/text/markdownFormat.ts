@@ -1,19 +1,19 @@
 import type { RootContent } from 'mdast';
 import { fromMarkdown } from 'mdast-util-from-markdown';
-import type { Heading, MarkdownNode, StyleProperty } from "../../client";
-import type {
-  TextChunk
-} from '../../client/TextRange.ts';
+import type { Heading, MarkdownNode, StyleProperty } from '../../client';
+import type { TextChunk } from '../../client/TextRange.ts';
+
+const STYLE_PROPERTY_REGEX = /style\s*=\s*("([^"]*)"|'([^']*)')/i;
 
 function parseStyle(tag: string): StyleProperty {
-	const styleProperty = tag.match(/style\s*=\s*("([^"]*)"|'([^']*)')/i);
+	const styleProperty = STYLE_PROPERTY_REGEX.exec(tag);
 	if (!styleProperty || styleProperty.length < 2) {
 		return {};
 	}
 	const styleValue = styleProperty[2] ?? '';
 	const properties = styleValue.split(';');
 	const result: StyleProperty = {};
-	properties.forEach(property => {
+	properties.forEach((property) => {
 		const [name, value] = property.split(':');
 		if (!name || !value) {
 			return;
@@ -33,26 +33,38 @@ function mdastToOdkMarkdown(elements: RootContent[]): MarkdownNode[] {
 		const tree = elements[i]!;
 		if (tree.type === 'paragraph') {
 			result.push({
-				children: mdastToOdkMarkdown(tree.children)
+				children: mdastToOdkMarkdown(tree.children),
 			});
 		}
 		if (tree.type === 'strong') {
 			result.push({
 				elementName: 'strong',
-				children: mdastToOdkMarkdown(tree.children)
+				children: mdastToOdkMarkdown(tree.children),
 			});
 		}
 		if (tree.type === 'emphasis') {
 			result.push({
 				elementName: 'em',
-				children: mdastToOdkMarkdown(tree.children)
+				children: mdastToOdkMarkdown(tree.children),
 			});
 		}
 		if (tree.type === 'link') {
 			result.push({
 				elementName: 'a',
 				url: tree.url,
-				children: mdastToOdkMarkdown(tree.children)
+				children: mdastToOdkMarkdown(tree.children),
+			});
+		}
+		if (tree.type === 'list') {
+			result.push({
+				elementName: tree.ordered ? 'ol' : 'ul',
+				children: mdastToOdkMarkdown(tree.children),
+			});
+		}
+		if (tree.type === 'listItem') {
+			result.push({
+				elementName: 'li',
+				children: mdastToOdkMarkdown(tree.children),
 			});
 		}
 		if (tree.type === 'heading') {
@@ -65,12 +77,12 @@ function mdastToOdkMarkdown(elements: RootContent[]): MarkdownNode[] {
 			else elementName = 'h6';
 			result.push({
 				elementName,
-				children: mdastToOdkMarkdown(tree.children)
+				children: mdastToOdkMarkdown(tree.children),
 			});
 		}
 		if (tree.type === 'text' || tree.type === 'inlineCode') {
 			result.push({ value: tree.value });
-		} 
+		}
 		if (tree.type === 'html' && tree.value.startsWith('<span ')) {
 			const children = [];
 			let next = elements[++i];
@@ -82,27 +94,28 @@ function mdastToOdkMarkdown(elements: RootContent[]): MarkdownNode[] {
 			result.push({
 				elementName: 'span',
 				properties: { style: parseStyle(tree.value) },
-				children: mdastToOdkMarkdown(children)
+				children: mdastToOdkMarkdown(children),
 			});
 		}
 	}
 	return result;
-};
+}
 
 function escapeEditableChunks(chunks: readonly TextChunk[]) {
-  return chunks.map((chunk) => {
-    if (chunk.source === 'output') {
-      return chunk.asString ? '`' + ( chunk.asString) + '`' : ''; // backticks so it doesn't get markeddown
-    } else {
-      return chunk.asString
-    }
-  }).join('');
+	return chunks
+		.map((chunk) => {
+			if (chunk.source === 'output') {
+				return chunk.asString ? '`' + chunk.asString + '`' : ''; // backticks so it doesn't get markeddown
+			} else {
+				return chunk.asString;
+			}
+		})
+		.join('');
 }
 
 export function format(chunks: readonly TextChunk[]): MarkdownNode[] {
-  const str = escapeEditableChunks(chunks);
-  const tree = fromMarkdown(str);
-  // consider unrolling the first child - always seems to be a <p>
-  const odkMarkdownTree = mdastToOdkMarkdown(tree.children);
-  return odkMarkdownTree;
+	const str = escapeEditableChunks(chunks);
+	const tree = fromMarkdown(str);
+	const odkMarkdownTree = mdastToOdkMarkdown(tree.children);
+	return odkMarkdownTree;
 }
