@@ -15,7 +15,7 @@ import type { Pixel } from 'ol/pixel';
 import { fromLonLat } from 'ol/proj';
 import { OSM } from 'ol/source';
 import VectorSource from 'ol/source/Vector';
-import { computed, ref, shallowRef, watch } from 'vue';
+import { computed, shallowRef, watch } from 'vue';
 
 type GeometryType = LineString | Point | Polygon;
 
@@ -40,8 +40,8 @@ export function useMapBlock() {
 	const currentState = shallowRef<(typeof STATES)[keyof typeof STATES]>(STATES.LOADING);
 	const errorMessage = shallowRef<{ title: string; message: string } | undefined>();
 	let mapInstance: Map | undefined;
-	const savedFeature = ref<Feature<GeometryType> | undefined>();
-	const selectedFeature = ref<Feature<GeometryType> | undefined>();
+	const savedFeature = shallowRef<Feature<GeometryType> | undefined>();
+	const selectedFeature = shallowRef<Feature<GeometryType> | undefined>();
 	const selectedFeatureProperties = computed(() => {
 		return selectedFeature.value?.getProperties();
 	});
@@ -169,7 +169,7 @@ export function useMapBlock() {
 		currentState.value = STATES.LOADING;
 		selectFeature(undefined);
 		saveFeature(undefined);
-		featuresSource.clear();
+		featuresSource.clear(true);
 
 		if (!geoJSON.features.length) {
 			mapInstance?.getView().animate({
