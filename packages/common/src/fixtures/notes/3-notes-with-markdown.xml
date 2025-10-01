@@ -61,7 +61,7 @@
       </input>
       <input ref="/data/group/name">
         <label>What's your name?</label>
-        <hint>Type your name below</hint>
+        <hint>Type **your name** below</hint>
       </input>
       <input ref="/data/group/userentered">
         <label>*You said:&lt;span style="color:red;font-family:cursive"&gt;<output value="/data/group/name" />&lt;/span&gt;* but should it be markeddown?</label>
