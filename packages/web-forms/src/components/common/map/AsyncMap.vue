@@ -88,7 +88,7 @@ const featureCollection = computed(() => {
 		}
 
 		const geoJSONCoords = getGeoJSONCoordinates(geometry);
-		if (!geoJSONCoords.length) {
+		if (!geoJSONCoords?.length) {
 			// eslint-disable-next-line no-console -- Skip silently to match Collect behaviour.
 			console.warn(`Missing geo points for option: ${option.value}`);
 			return;
@@ -106,7 +106,7 @@ const featureCollection = computed(() => {
 
 const getGeoJSONCoordinates = (geometry: string) => {
 	const coordinates: Coordinates[] = [];
-	geometry.split(';').forEach((coord) => {
+	for (const coord of geometry.split(';')) {
 		const [lat, lon] = coord.trim().split(/\s+/).map(Number);
 
 		const isNullLocation = lat === 0 && lon === 0;
@@ -120,7 +120,7 @@ const getGeoJSONCoordinates = (geometry: string) => {
 		}
 
 		coordinates.push([lon, lat]);
-	});
+	}
 
 	return coordinates;
 };
