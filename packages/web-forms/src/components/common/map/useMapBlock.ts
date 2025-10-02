@@ -17,6 +17,7 @@ import { fromLonLat } from 'ol/proj';
 import { OSM } from 'ol/source';
 import VectorSource from 'ol/source/Vector';
 import { computed, shallowRef, watch } from 'vue';
+import { get as getProjection } from 'ol/proj';
 
 type GeometryType = LineString | Point | Polygon;
 
@@ -27,6 +28,7 @@ const STATES = {
 } as const;
 
 const DEFAULT_GEOJSON_PROJECTION = 'EPSG:4326';
+const DEFAULT_VIEW_PROJECTION = 'EPSG:3857';
 const DEFAULT_VIEW_CENTER = [0, 0];
 const MAX_ZOOM = 16;
 const MIN_ZOOM = 2;
@@ -66,7 +68,14 @@ export function useMapBlock() {
 		mapInstance = new Map({
 			target: mapContainer,
 			layers: [new TileLayer({ source: new OSM() }), featuresVectorLayer],
-			view: new View({ center: DEFAULT_VIEW_CENTER, zoom: MIN_ZOOM }),
+			view: new View({
+				center: DEFAULT_VIEW_CENTER,
+				zoom: MIN_ZOOM,
+				// Prevent map cloning at low zoom during panning, which disrupts feature selection.
+				multiWorld: false,
+				projection: DEFAULT_VIEW_PROJECTION,
+				extent: getProjection(DEFAULT_VIEW_PROJECTION)?.getExtent(),
+			}),
 			controls: [new Zoom()],
 		});
 
