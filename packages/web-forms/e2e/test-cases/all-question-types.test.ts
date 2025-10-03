@@ -1,4 +1,4 @@
-import { test } from '@playwright/test';
+import { Locator, test } from '@playwright/test';
 import { BrowserContext } from 'playwright-core';
 import { FillFormPage } from '../page-objects/pages/FillFormPage.ts';
 import { PreviewPage } from '../page-objects/pages/PreviewPage.ts';
@@ -161,49 +161,57 @@ test.describe('All Question Types', () => {
 	});
 
 	test.describe('Select one from map', () => {
-		test('renders map, selects feature, and saves selection', async () => {
-			await formPage.map.expectMapVisible('Map');
+		let mapComponent: Locator;
 
+		test.beforeAll(async () => {
+			await formPage.waitForNetworkIdle();
 			await formPage.text.expectHint(
 				'select_one type with map appearance. Choices are loaded from a GeoJSON attachment'
 			);
-			await formPage.waitForNetworkIdle();
-			await formPage.map.expectMapScreenshot('select-map-initial-state.png');
+			mapComponent = formPage.map.getMapComponentLocator('Map');
+		});
 
-			await formPage.map.selectFeatureByClick(564, 296);
-			await formPage.waitForNetworkIdle();
-			await formPage.map.expectPropertiesVisible('Berlin');
-			await formPage.map.expectStatusBarNotFeatureSaved();
-			await formPage.map.expectMapScreenshot('select-map-point-selected.png');
+		test('renders map, selects feature, and saves selection', async () => {
+			await formPage.map.expectMapVisible(mapComponent);
+			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-initial-state.png');
 
-			await formPage.map.saveSelection();
-			await formPage.map.expectStatusBarFeatureSaved();
-			await formPage.map.expectMapScreenshot('select-map-point-saved.png');
-			await formPage.map.closeProperties();
+			await formPage.map.selectFeatureByClick(mapComponent, 564, 296);
+			await formPage.map.expectPropertiesVisible(mapComponent, 'Berlin');
+			await formPage.map.expectStatusBarNotFeatureSaved(mapComponent);
+			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-point-selected.png');
+
+			await formPage.map.saveSelection(mapComponent);
+			await formPage.map.expectStatusBarFeatureSaved(mapComponent);
+			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-point-saved.png');
+			await formPage.map.closeProperties(mapComponent);
 		});
 
 		test('toggles full screen and verifies more surface map is visible', async () => {
-			await formPage.map.toggleFullScreen();
-			await formPage.map.expectFullScreenActive();
-			await formPage.map.expectMapScreenshot('select-map-full-screen.png');
-			await formPage.map.exitFullScreenSuccessfully();
+			await formPage.map.toggleFullScreen(mapComponent);
+			await formPage.map.expectFullScreenActive(mapComponent);
+			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-full-screen.png');
+			await formPage.map.exitFullScreenSuccessfully(mapComponent);
 		});
 
 		test('zooms in and out, pans the map and zooms to fit all features', async () => {
-			await formPage.map.zoomIn(3);
-			await formPage.map.expectMapScreenshot('select-map-zoom-in.png');
-			await formPage.map.zoomOut(2);
-			await formPage.map.expectMapScreenshot('select-map-zoom-out.png');
-			await formPage.map.panMap(2);
-			await formPage.map.expectMapScreenshot('select-map-panning.png');
-			await formPage.map.zoomToFitAll();
-			await formPage.map.expectMapScreenshot('select-map-zoom-to-fit-all-features.png');
+			await formPage.map.zoomIn(mapComponent, 3);
+			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-zoom-in.png');
+			await formPage.map.zoomOut(mapComponent, 2);
+			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-zoom-out.png');
+			await formPage.map.panMap(mapComponent, 2);
+			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-panning.png');
+			await formPage.map.zoomToFitAll(mapComponent);
+			await formPage.map.expectMapScreenshot(
+				mapComponent,
+				'select-map-zoom-to-fit-all-features.png'
+			);
 		});
 
 		test('displays error when zooming to current location and permission is denied', async () => {
 			await context.grantPermissions([]);
-			await formPage.map.centerCurrentLocation();
+			await formPage.map.centerCurrentLocation(mapComponent);
 			await formPage.map.expectErrorMessage(
+				mapComponent,
 				'Cannot access location',
 				'Grant location permission in the browser settings and make sure location is turned on.'
 			);
@@ -212,15 +220,16 @@ test.describe('All Question Types', () => {
 		test('zooms to current location and verifies visual', async () => {
 			await context.grantPermissions(['geolocation']);
 			await context.setGeolocation({ latitude: 41.0082, longitude: 28.9784 });
-			await formPage.map.centerCurrentLocation();
-			await formPage.map.expectMapScreenshot('select-map-zoom-current-location.png');
+			await formPage.map.centerCurrentLocation(mapComponent);
+			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-zoom-current-location.png');
 		});
 
 		test('opens details of saved feature and remove saved feature', async () => {
-			await formPage.map.viewDetailsOfSavedFeature();
-			await formPage.map.expectMapScreenshot('select-map-view-details.png');
-			await formPage.map.removeSavedFeature();
-			await formPage.map.expectMapScreenshot('select-map-removed-saved-feature.png');
+			await formPage.map.viewDetailsOfSavedFeature(mapComponent);
+			await formPage.map.expectPropertiesVisible(mapComponent, 'Berlin');
+			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-view-details.png');
+			await formPage.map.removeSavedFeature(mapComponent);
+			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-removed-saved-feature.png');
 		});
 	});
 });
