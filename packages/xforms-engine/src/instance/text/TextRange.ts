@@ -47,6 +47,5 @@ export class TextRange<Role extends TextRole, Origin extends TextOrigin>
 		readonly role: Role,
 		protected readonly chunks: readonly TextChunk[],
 		protected readonly mediaSources?: MediaSources
-	) {
-	}
+	) {}
 }
