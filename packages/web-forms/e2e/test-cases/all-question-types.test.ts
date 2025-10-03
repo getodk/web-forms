@@ -159,4 +159,68 @@ test.describe('All Question Types', () => {
 			});
 		});
 	});
+
+	test.describe('Select one from map', () => {
+		test('renders map, selects feature, and saves selection', async () => {
+			await formPage.map.expectMapVisible('Map');
+
+			await formPage.text.expectHint(
+				'select_one type with map appearance. Choices are loaded from a GeoJSON attachment'
+			);
+			await formPage.waitForNetworkIdle();
+			await formPage.map.expectMapScreenshot('select-map-initial-state.png');
+
+			await formPage.map.selectFeatureByClick(564, 296);
+			await formPage.waitForNetworkIdle();
+			await formPage.map.expectPropertiesVisible('Berlin');
+			await formPage.map.expectStatusBarNotFeatureSaved();
+			await formPage.map.expectMapScreenshot('select-map-point-selected.png');
+
+			await formPage.map.saveSelection();
+			await formPage.map.expectStatusBarFeatureSaved();
+			await formPage.map.expectMapScreenshot('select-map-point-saved.png');
+			await formPage.map.closeProperties();
+		});
+
+		test('toggles full screen and verifies more surface map is visible', async () => {
+			await formPage.map.toggleFullScreen();
+			await formPage.map.expectFullScreenActive();
+			await formPage.map.expectMapScreenshot('select-map-full-screen.png');
+			await formPage.map.exitFullScreenSuccessfully();
+		});
+
+		test('zooms in and out, pans the map and zooms to fit all features', async () => {
+			await formPage.map.zoomIn(3);
+			await formPage.map.expectMapScreenshot('select-map-zoom-in.png');
+			await formPage.map.zoomOut(2);
+			await formPage.map.expectMapScreenshot('select-map-zoom-out.png');
+			await formPage.map.panMap(2);
+			await formPage.map.expectMapScreenshot('select-map-panning.png');
+			await formPage.map.zoomToFitAll();
+			await formPage.map.expectMapScreenshot('select-map-zoom-to-fit-all-features.png');
+		});
+
+		test('displays error when zooming to current location and permission is denied', async () => {
+			await context.grantPermissions([]);
+			await formPage.map.centerCurrentLocation();
+			await formPage.map.expectErrorMessage(
+				'Cannot access location',
+				'Grant location permission in the browser settings and make sure location is turned on.'
+			);
+		});
+
+		test('zooms to current location and verifies visual', async () => {
+			await context.grantPermissions(['geolocation']);
+			await context.setGeolocation({ latitude: 41.0082, longitude: 28.9784 });
+			await formPage.map.centerCurrentLocation();
+			await formPage.map.expectMapScreenshot('select-map-zoom-current-location.png');
+		});
+
+		test('opens details of saved feature and remove saved feature', async () => {
+			await formPage.map.viewDetailsOfSavedFeature();
+			await formPage.map.expectMapScreenshot('select-map-view-details.png');
+			await formPage.map.removeSavedFeature();
+			await formPage.map.expectMapScreenshot('select-map-removed-saved-feature.png');
+		});
+	});
 });
