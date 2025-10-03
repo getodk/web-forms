@@ -1,15 +1,15 @@
+import ControlLabel from '@/components/form-elements/ControlLabel.vue';
 import type { AnyInputNode } from '@getodk/xforms-engine';
 import { mount } from '@vue/test-utils';
 import { assocPath } from 'ramda';
 import { describe, expect, it } from 'vitest';
-import ControlLabel from '@/components/form-elements/ControlLabel.vue';
 
 const baseQuestion = {
 	nodeType: 'input',
 	currentState: {
 		required: true,
 		label: {
-			asString: 'First Name',
+			formatted: [{ role: 'child', value: 'First Name' }],
 		},
 	},
 } as AnyInputNode;
