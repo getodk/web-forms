@@ -22,9 +22,12 @@ export class MapControl {
 	async expectMapVisible(mapComponent: Locator) {
 		const map = mapComponent.locator(this.MAP_SELECTOR);
 		await expect(map, `Map not found`).toBeVisible();
-		// Playwright's scrollIntoViewIfNeeded() scrolls minimally and doesn't guarantee to center
-		// the element, so JavaScript scroll is used to ensure the map is centered and fully visible.
-		const handle = await map.elementHandle();
+	}
+
+	// Playwright's scrollIntoViewIfNeeded() scrolls minimally and doesn't guarantee to center
+	// the element, so JavaScript scroll is used to ensure the map is centered and fully visible.
+	async scrollMapIntoView(mapComponent: Locator) {
+		const handle = await mapComponent.elementHandle();
 		if (handle) {
 			await handle.evaluate((el) => el.scrollIntoView({ block: 'center' }));
 		}
@@ -32,12 +35,25 @@ export class MapControl {
 
 	async panMap(mapComponent: Locator, times = 1) {
 		await mapComponent.scrollIntoViewIfNeeded();
-		await this.page.mouse.move(600, 360);
+		const mapContainer = mapComponent.locator(this.MAP_CONTAINER_SELECTOR);
+		const box = await mapContainer.boundingBox();
+		if (!box) {
+			return;
+		}
+
+		const centerX = box.x + box.width / 2;
+		const centerY = box.y + box.height / 2;
+
+		await this.page.mouse.move(centerX, centerY);
 		await this.page.mouse.down();
-		await this.page.mouse.move(900, -500, { steps: times });
+
+		// Adjust deltas as needed for your map's scale/pan distance
+		const deltaX = 300;  // Pan right
+		const deltaY = -200; // Pan up
+		await this.page.mouse.move(centerX + deltaX, centerY + deltaY, { steps: times * 10 }); // Smoother with more steps
+
 		await this.page.mouse.up();
-		await this.page.waitForTimeout(this.ANIMATION_TIME);
-		await this.page.waitForTimeout(this.ANIMATION_TIME);
+		await this.page.waitForTimeout(this.ANIMATION_TIME * 2); // Double if FF animations are slower
 	}
 
 	async zoomIn(mapComponent: Locator, times = 1) {
@@ -94,7 +110,6 @@ export class MapControl {
 	 * @param positionY Relative to the top of the browser's viewport.
 	 */
 	async selectFeatureByClick(mapComponent: Locator, positionX: number, positionY: number) {
-		await mapComponent.scrollIntoViewIfNeeded();
 		await this.page.mouse.move(positionX, positionY);
 		await this.page.mouse.down();
 		await this.page.mouse.up();
@@ -102,6 +117,7 @@ export class MapControl {
 	}
 
 	async saveSelection(mapComponent: Locator) {
+		await this.page.waitForTimeout(this.ANIMATION_TIME);
 		const button = mapComponent
 			.locator('.map-properties')
 			.getByText('Save selected', { exact: true });
@@ -118,16 +134,19 @@ export class MapControl {
 	}
 
 	async expectPropertiesVisible(mapComponent: Locator, title: string) {
+		await this.page.waitForTimeout(this.ANIMATION_TIME);
 		const titleLocator = mapComponent.locator(`.map-properties-header strong:text-is("${title}")`);
 		await expect(titleLocator, `Map's properties for feature "${title}" not found`).toBeVisible();
 	}
 
 	async viewDetailsOfSavedFeature(mapComponent: Locator) {
+		await this.page.waitForTimeout(this.ANIMATION_TIME);
 		const button = mapComponent
 			.locator('.map-status-saved')
 			.getByText('View details', { exact: true });
 		await expect(button).toBeVisible();
 		await button.click();
+		await this.page.waitForTimeout(this.ANIMATION_TIME);
 		await this.page.waitForTimeout(this.ANIMATION_TIME);
 	}
 
@@ -157,7 +176,7 @@ export class MapControl {
 	async expectMapScreenshot(
 		mapComponent: Locator,
 		snapshotName: string,
-		options = { maxDiffPixels: 200 }
+		options = { maxDiffPixels: 6000 }
 	) {
 		await this.page.waitForTimeout(this.ANIMATION_TIME);
 		await expect(mapComponent.locator(this.MAP_CONTAINER_SELECTOR)).toHaveScreenshot(

@@ -171,11 +171,16 @@ test.describe('All Question Types', () => {
 			mapComponent = formPage.map.getMapComponentLocator('Map');
 		});
 
+		test.beforeEach(async () => {
+			await formPage.waitForNetworkIdle();
+			await formPage.map.scrollMapIntoView(mapComponent);
+		});
+
 		test('renders map, selects feature, and saves selection', async () => {
 			await formPage.map.expectMapVisible(mapComponent);
 			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-initial-state.png');
 
-			await formPage.map.selectFeatureByClick(mapComponent, 564, 296);
+			await formPage.map.selectFeatureByClick(mapComponent, 562, 255);
 			await formPage.map.expectPropertiesVisible(mapComponent, 'Berlin');
 			await formPage.map.expectStatusBarNotFeatureSaved(mapComponent);
 			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-point-selected.png');
@@ -207,29 +212,74 @@ test.describe('All Question Types', () => {
 			);
 		});
 
-		test('displays error when zooming to current location and permission is denied', async () => {
-			await context.grantPermissions([]);
-			await formPage.map.centerCurrentLocation(mapComponent);
-			await formPage.map.expectErrorMessage(
-				mapComponent,
-				'Cannot access location',
-				'Grant location permission in the browser settings and make sure location is turned on.'
-			);
-		});
-
-		test('zooms to current location and verifies visual', async () => {
-			await context.grantPermissions(['geolocation']);
-			await context.setGeolocation({ latitude: 41.0082, longitude: 28.9784 });
-			await formPage.map.centerCurrentLocation(mapComponent);
-			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-zoom-current-location.png');
-		});
-
 		test('opens details of saved feature and remove saved feature', async () => {
 			await formPage.map.viewDetailsOfSavedFeature(mapComponent);
 			await formPage.map.expectPropertiesVisible(mapComponent, 'Berlin');
 			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-view-details.png');
 			await formPage.map.removeSavedFeature(mapComponent);
 			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-removed-saved-feature.png');
+		});
+	});
+
+	test.describe('Geolocation permission granted', () => {
+		let formPageWithPermissions: FillFormPage;
+
+		test.beforeAll(async () => {
+			await context.grantPermissions(['geolocation']);
+			await context.setGeolocation({ latitude: 41.0082, longitude: 28.9784 });
+
+			const page = await context.newPage();
+			const previewPage = new PreviewPage(page);
+			await previewPage.goToDevPage();
+
+			const newPage = await previewPage.openPublicDemoForm(
+				'All question types',
+				'All question types'
+			);
+			formPageWithPermissions = new FillFormPage(newPage);
+			await formPageWithPermissions.waitForNetworkIdle();
+		});
+
+		test('select from map zooms to current location', async () => {
+			const mapComponent = formPageWithPermissions.map.getMapComponentLocator('Map');
+			await formPage.map.scrollMapIntoView(mapComponent);
+			await formPageWithPermissions.map.centerCurrentLocation(mapComponent);
+			await formPageWithPermissions.map.expectMapScreenshot(
+				mapComponent,
+				'select-map-zoom-current-location.png'
+			);
+		});
+	});
+
+	test.describe('Geolocation permission denied', () => {
+		let formPageNoPermissions: FillFormPage;
+
+		test.beforeAll(async ({ browser }) => {
+			const contextNoPermissions = await browser.newContext({
+				permissions: [],
+			});
+
+			const page = await contextNoPermissions.newPage();
+			const previewPage = new PreviewPage(page);
+			await previewPage.goToDevPage();
+
+			const newPage = await previewPage.openPublicDemoForm(
+				'All question types',
+				'All question types'
+			);
+			formPageNoPermissions = new FillFormPage(newPage);
+			await formPageNoPermissions.waitForNetworkIdle();
+		});
+
+		test('select from map displays error when zooming to current location', async () => {
+			const mapComponent = formPageNoPermissions.map.getMapComponentLocator('Map');
+			await formPage.map.scrollMapIntoView(mapComponent);
+			await formPage.map.centerCurrentLocation(mapComponent);
+			await formPage.map.expectErrorMessage(
+				mapComponent,
+				'Cannot access location',
+				'Grant location permission in the browser settings and make sure location is turned on.'
+			);
 		});
 	});
 });
