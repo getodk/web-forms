@@ -21,6 +21,13 @@
     "@csstools/css-tokenizer" "^3.0.3"
     lru-cache "^10.4.3"
 
+"@asgerf/dts-tree-sitter@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@asgerf/dts-tree-sitter/-/dts-tree-sitter-0.1.0.tgz#d4b77cb5f03a0b1e5141bf4e6fab98f388fc061e"
+  integrity sha512-L1SaiDRbBXLIOxwaW/S3H/LvevCdRLrQh48gFqMX/CCtR1IMYGFqAt3/x8kK/SwEzzH0Ke8JrRHD3w3kVgubTg==
+  dependencies:
+    tree-sitter "^0.16.1"
+
 "@babel/code-frame@^7.10.4", "@babel/code-frame@^7.25.9", "@babel/code-frame@^7.26.2":
   version "7.26.2"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.26.2.tgz#4b5fab97d33338eff916235055f0ebc21e573a85"
@@ -5309,7 +5316,7 @@ tree-sitter-cli@0.24.5:
   resolved "https://registry.yarnpkg.com/tree-sitter-cli/-/tree-sitter-cli-0.24.5.tgz#787236587f4158e3b667c29efad234f26887d8f2"
   integrity sha512-8EIgV/ERQlpvk1rPSCCjxveAb6Sba8tMiBpeeL68Mueuuqr0wNfhps/I1nFm2OTnpPCUV2PS9nbzzAMoyxSQUg==
 
-tree-sitter@0.22.1:
+tree-sitter@0.22.1, tree-sitter@^0.16.1:
   version "0.22.1"
   resolved "https://registry.yarnpkg.com/tree-sitter/-/tree-sitter-0.22.1.tgz#5a5296fc0898b21443657e071b050c95c0d7afbd"
   integrity sha512-gRO+jk2ljxZlIn20QRskIvpLCMtzuLl5T0BY6L9uvPYD17uUrxlxWkvYCiVqED2q2q7CVtY52Uex4WcYo2FEXw==
