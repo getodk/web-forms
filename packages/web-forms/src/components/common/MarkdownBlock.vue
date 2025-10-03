@@ -1,44 +1,63 @@
 <script lang="ts" setup>
-import MarkdownBlock from '@/components/common/MarkdownBlock.vue';
-import type { MarkdownNode } from '@getodk/xforms-engine';
+import type {
+	AnchorMarkdownNode,
+	HtmlMarkdownNode,
+	MarkdownNode,
+	ParentMarkdownNode,
+	StyledMarkdownNode,
+} from '@getodk/xforms-engine';
+import DOMPurify from 'dompurify';
+import type { StyleValue } from 'vue';
 
 interface MarkdownProps {
 	readonly elem: MarkdownNode;
 }
 
 const { elem } = defineProps<MarkdownProps>();
+
+const getStylePropertyMap = (node: ParentMarkdownNode): StyleValue | undefined => {
+	if (node.elementName === 'span') {
+		const properties = (node as StyledMarkdownNode).properties;
+		return properties.style as StyleValue;
+	}
+};
+
+const getUrl = (node: ParentMarkdownNode): string | undefined => {
+	if (node.elementName === 'a') {
+		return (node as AnchorMarkdownNode).url;
+	}
+};
+
+const purify = (node: HtmlMarkdownNode): string => {
+	return DOMPurify.sanitize(node.unsafeHtml, {
+		ALLOWED_TAGS: ['span', 'p', 'div', 'br'],
+		ALLOWED_ATTR: ['style'],
+	});
+};
 </script>
 
 <template>
-	<span
-		v-if="elem.elementName === 'span'" :style="{
-			color: elem.properties?.style.color,
-			'font-family': elem.properties?.style['font-family']
-		}"
-	>
-		<MarkdownBlock v-for="(child, index) in elem.children" :key="index" :elem="child" />
-	</span>
-	<a v-else-if="elem.elementName === 'a'" :href="elem.url" target="_blank">
-		<MarkdownBlock
-			v-for="(child, index) in elem.children"
-			:key="index"
-			:elem="child"
-		/>
-	</a>
-	<component :is="elem.elementName" v-else-if="elem.elementName">
-		<MarkdownBlock
-			v-for="(child, index) in elem.children"
-			:key="index"
-			:elem="child"
-		/>
-	</component>
-	<template v-else-if="elem.value">
+	<!-- child node -->
+	<template v-if="elem.role === 'child'">
 		{{ elem.value }}
 	</template>
-	<MarkdownBlock
-		v-for="(child, index) in elem.children"
-		v-else
-		:key="index"
-		:elem="child"
-	/>
+
+	<!-- unsafe html -->
+	<!-- eslint-disable-next-line vue/no-v-html -->
+	<div v-else-if="elem.role === 'html'" v-html="purify(elem)" />
+
+	<!-- link -->
+	<a v-else-if="elem.role === 'parent' && elem.elementName === 'a'" :href="getUrl(elem)" target="_blank">
+		<MarkdownBlock v-for="(child, index) in elem.children" :key="index" :elem="child" />
+	</a>
+
+	<!-- paragraph - remove <p> tags -->
+	<template v-else-if="elem.role === 'parent' && elem.elementName === 'p'">
+		<MarkdownBlock v-for="(child, index) in elem.children" :key="index" :elem="child" />
+	</template>
+
+	<!-- any other parent element -->
+	<component :is="elem.elementName" v-else-if="elem.elementName" :style="getStylePropertyMap(elem)">
+		<MarkdownBlock v-for="(child, index) in elem.children" :key="index" :elem="child"	/>
+	</component>
 </template>

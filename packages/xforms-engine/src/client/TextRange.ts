@@ -1,5 +1,6 @@
 import { JRResourceURL } from '@getodk/common/jr-resources/JRResourceURL.ts';
 import type { ActiveLanguage } from './FormLanguage.ts';
+import type { MarkdownNode } from './MarkdownNode.ts';
 
 /**
  * **COMMENTARY**
@@ -147,7 +148,7 @@ export interface TextRange<Role extends TextRole, Origin extends TextOrigin = Te
 	[Symbol.iterator](): Iterable<TextChunk>;
 
 	get asString(): string;
-	get formatted(): unknown;
+	get formatted(): MarkdownNode[];
 
 	get imageSource(): JRResourceURL | undefined;
 	get audioSource(): JRResourceURL | undefined;

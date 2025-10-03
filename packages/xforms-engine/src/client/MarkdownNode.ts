@@ -1,18 +1,49 @@
 export type Heading = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
-export type ElementName = Heading | 'a' | 'em' | 'img' | 'li' | 'ol' | 'span' | 'strong' | 'ul';
+export type ElementName =
+	| Heading
+	| 'a'
+	| 'em'
+	| 'img'
+	| 'li'
+	| 'ol'
+	| 'p'
+	| 'span'
+	| 'strong'
+	| 'ul';
 
-export interface MarkdownNode {
-	// TODO more type discrimintation ( as per https://github.com/getodk/web-forms/issues/198 )
-	elementName?: ElementName;
-	value?: string;
-	properties?: {
-		style: StyleProperty;
-	};
-	children?: MarkdownNode[];
-	url?: string;
+export type MarkdownNode = ChildMarkdownNode | HtmlMarkdownNode | ParentMarkdownNode;
+
+export interface ParentMarkdownNode {
+	readonly role: 'parent';
+	readonly elementName: string;
+	readonly children: MarkdownNode[];
+}
+
+export interface ChildMarkdownNode {
+	readonly role: 'child';
+	readonly value: string;
+}
+
+export interface HtmlMarkdownNode {
+	readonly role: 'html';
+	readonly unsafeHtml: string;
+}
+
+export interface AnchorMarkdownNode extends ParentMarkdownNode {
+	readonly elementName: 'a';
+	readonly url: string;
+}
+
+export interface StyledMarkdownNode extends ParentMarkdownNode {
+	readonly elementName: 'span';
+	readonly properties: MarkdownProperty;
+}
+
+export interface MarkdownProperty {
+	readonly style: StyleProperty;
 }
 
 export interface StyleProperty {
-	color?: string;
-	'font-family'?: string;
+	readonly color: string | undefined;
+	readonly 'font-family': string | undefined;
 }

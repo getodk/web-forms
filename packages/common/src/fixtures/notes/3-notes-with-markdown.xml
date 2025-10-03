@@ -36,6 +36,10 @@
       <instance id="selectoptions">
         <root>
           <item>
+            <value>plain</value>
+            <label>plain text</label>
+          </item>
+          <item>
             <value>strong</value>
             <label>**strong style**</label>
           </item>
@@ -101,6 +105,17 @@ Escaping: \*hello\*
 
 &lt;div style="text-align:center"&gt;centered div&lt;/div&gt;
 
+&lt;table border="1"&gt;
+  &lt;tr&gt;
+    &lt;td&gt;name&lt;/td&gt;
+    &lt;td&gt;value&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;once&lt;/td&gt;
+    &lt;td&gt;twice&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+
 - unordered list 1
 - unordered list 5
 - unordered list 3
@@ -109,6 +124,8 @@ Escaping: \*hello\*
 1. ordered list 1
 2. ordered list 2
 3. ordered list 3
+
+_styles **can &lt;span style="color:red;"&gt;be&lt;/span&gt; nested** inside_
 
         </label>
       </input>
