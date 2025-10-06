@@ -4,7 +4,7 @@ export class MapControl {
 	private readonly MAP_COMPONENT_SELECTOR = '.map-block-component';
 	private readonly MAP_CONTAINER_SELECTOR = '.map-container';
 	private readonly MAP_SELECTOR = '.map-block';
-	private readonly ANIMATION_TIME = 1000;
+	private readonly ANIMATION_TIME = 1000; // Map has a default of 1s rendering and animation time
 
 	private readonly page: Page;
 
@@ -49,7 +49,6 @@ export class MapControl {
 		await this.page.mouse.move(centerX + moveX, centerY + moveY, { steps: 40 });
 
 		await this.page.mouse.up();
-		await this.page.waitForTimeout(this.ANIMATION_TIME * 2);
 	}
 
 	async zoomIn(mapComponent: Locator, times = 1) {
@@ -57,6 +56,7 @@ export class MapControl {
 		await expect(button).toBeVisible();
 		for (let i = 0; i < times; i++) {
 			await button.click();
+			// Allows reaching expected zoom level before zooming again
 			await this.page.waitForTimeout(this.ANIMATION_TIME);
 		}
 	}
@@ -66,6 +66,7 @@ export class MapControl {
 		await expect(button).toBeVisible();
 		for (let i = 0; i < times; i++) {
 			await button.click();
+			// Allows reaching expected zoom level before zooming again
 			await this.page.waitForTimeout(this.ANIMATION_TIME);
 		}
 	}
@@ -74,21 +75,18 @@ export class MapControl {
 		const button = mapComponent.locator('button[title="Zoom to fit all options"]');
 		await expect(button).toBeVisible();
 		await button.click();
-		await this.page.waitForTimeout(this.ANIMATION_TIME);
 	}
 
 	async centerCurrentLocation(mapComponent: Locator) {
 		const button = mapComponent.locator('button[title="Zoom to current location"]');
 		await expect(button).toBeVisible();
 		await button.click();
-		await this.page.waitForTimeout(this.ANIMATION_TIME);
 	}
 
 	async toggleFullScreen(mapComponent: Locator) {
 		const button = mapComponent.locator('button[title="Full Screen"]');
 		await expect(button).toBeVisible();
 		await button.click();
-		await this.page.waitForTimeout(this.ANIMATION_TIME);
 	}
 
 	async expectFullScreenActive(mapComponent: Locator) {
@@ -105,15 +103,13 @@ export class MapControl {
 	 * @param positionX Relative to the left of the browser's viewport.
 	 * @param positionY Relative to the top of the browser's viewport.
 	 */
-	async selectFeatureByClick(mapComponent: Locator, positionX: number, positionY: number) {
+	async selectFeature(positionX: number, positionY: number) {
 		await this.page.mouse.move(positionX, positionY);
 		await this.page.mouse.down();
 		await this.page.mouse.up();
-		await this.page.waitForTimeout(this.ANIMATION_TIME);
 	}
 
 	async saveSelection(mapComponent: Locator) {
-		await this.page.waitForTimeout(this.ANIMATION_TIME);
 		const button = mapComponent
 			.locator('.map-properties')
 			.getByText('Save selected', { exact: true });
@@ -130,20 +126,16 @@ export class MapControl {
 	}
 
 	async expectPropertiesVisible(mapComponent: Locator, title: string) {
-		await this.page.waitForTimeout(this.ANIMATION_TIME);
 		const titleLocator = mapComponent.locator(`.map-properties-header strong:text-is("${title}")`);
 		await expect(titleLocator, `Map's properties for feature "${title}" not found`).toBeVisible();
 	}
 
 	async viewDetailsOfSavedFeature(mapComponent: Locator) {
-		await this.page.waitForTimeout(this.ANIMATION_TIME);
 		const button = mapComponent
 			.locator('.map-status-saved')
 			.getByText('View details', { exact: true });
-		await expect(button).toBeVisible();
+		await expect(button).toBeVisible({ timeout: 500 });
 		await button.click();
-		await this.page.waitForTimeout(this.ANIMATION_TIME);
-		await this.page.waitForTimeout(this.ANIMATION_TIME);
 	}
 
 	async closeProperties(mapComponent: Locator) {
@@ -169,15 +161,12 @@ export class MapControl {
 		await expect(error.locator('span')).toHaveText(expectedMessage);
 	}
 
-	async expectMapScreenshot(
-		mapComponent: Locator,
-		snapshotName: string,
-		options = { maxDiffPixels: 6000 }
-	) {
+	async expectMapScreenshot(mapComponent: Locator, snapshotName: string) {
+		// It cannot disable map's JS animations. So setting timeout.
 		await this.page.waitForTimeout(this.ANIMATION_TIME);
-		await expect(mapComponent.locator(this.MAP_CONTAINER_SELECTOR)).toHaveScreenshot(
-			snapshotName,
-			options
-		);
+		await expect(mapComponent.locator(this.MAP_CONTAINER_SELECTOR)).toHaveScreenshot(snapshotName, {
+			maxDiffPixels: 6000,
+			timeout: this.ANIMATION_TIME,
+		});
 	}
 }

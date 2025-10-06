@@ -159,7 +159,10 @@ test.describe('All Question Types', () => {
 			});
 		});
 	});
-
+	/**
+	 * This is a slow suite; it waits for map animations and rendering to finish.
+	 * If more tests are added, we can consider running them only on merge or when requested.
+	 */
 	test.describe('Select one from map', () => {
 		let mapComponent: Locator;
 
@@ -173,14 +176,14 @@ test.describe('All Question Types', () => {
 
 		test.beforeEach(async () => {
 			await formPage.waitForNetworkIdle();
+			await formPage.map.expectMapVisible(mapComponent);
 			await formPage.map.scrollMapIntoView(mapComponent);
 		});
 
 		test('renders map, selects feature, and saves selection', async () => {
-			await formPage.map.expectMapVisible(mapComponent);
 			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-initial-state.png');
 
-			await formPage.map.selectFeatureByClick(mapComponent, 700, 222);
+			await formPage.map.selectFeature(700, 222);
 			await formPage.map.expectPropertiesVisible(mapComponent, 'Red kangaroo resting area');
 			await formPage.map.expectStatusBarNotFeatureSaved(mapComponent);
 			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-point-selected.png');
@@ -218,36 +221,22 @@ test.describe('All Question Types', () => {
 			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-view-details.png');
 			await formPage.map.removeSavedFeature(mapComponent);
 			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-removed-saved-feature.png');
+			await formPage.map.closeProperties(mapComponent);
 		});
 	});
 
 	test.describe('Geolocation permission granted', () => {
-		let formPageWithPermissions: FillFormPage;
-
 		test.beforeAll(async () => {
 			await context.grantPermissions(['geolocation']);
-			await context.setGeolocation({ latitude: -28.996, longitude: 134.762 });
-
-			const page = await context.newPage();
-			const previewPage = new PreviewPage(page);
-			await previewPage.goToDevPage();
-
-			const newPage = await previewPage.openPublicDemoForm(
-				'All question types',
-				'All question types'
-			);
-			formPageWithPermissions = new FillFormPage(newPage);
-			await formPageWithPermissions.waitForNetworkIdle();
+			await context.setGeolocation({ latitude: -28.996, longitude: 134.762 }); // South Australia
+			await formPage.waitForNetworkIdle();
 		});
 
 		test('select from map zooms to current location', async () => {
-			const mapComponent = formPageWithPermissions.map.getMapComponentLocator('Map');
+			const mapComponent = formPage.map.getMapComponentLocator('Map');
 			await formPage.map.scrollMapIntoView(mapComponent);
-			await formPageWithPermissions.map.centerCurrentLocation(mapComponent);
-			await formPageWithPermissions.map.expectMapScreenshot(
-				mapComponent,
-				'select-map-zoom-current-location.png'
-			);
+			await formPage.map.centerCurrentLocation(mapComponent);
+			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-zoom-current-location.png');
 		});
 	});
 
@@ -273,9 +262,9 @@ test.describe('All Question Types', () => {
 
 		test('select from map displays error when zooming to current location', async () => {
 			const mapComponent = formPageNoPermissions.map.getMapComponentLocator('Map');
-			await formPage.map.scrollMapIntoView(mapComponent);
-			await formPage.map.centerCurrentLocation(mapComponent);
-			await formPage.map.expectErrorMessage(
+			await formPageNoPermissions.map.scrollMapIntoView(mapComponent);
+			await formPageNoPermissions.map.centerCurrentLocation(mapComponent);
+			await formPageNoPermissions.map.expectErrorMessage(
 				mapComponent,
 				'Cannot access location',
 				'Grant location permission in the browser settings and make sure location is turned on.'
