@@ -33,7 +33,7 @@ export class MapControl {
 		}
 	}
 
-	async panMap(mapComponent: Locator, times = 1) {
+	async panMap(mapComponent: Locator, moveX: number, moveY: number) {
 		await mapComponent.scrollIntoViewIfNeeded();
 		const mapContainer = mapComponent.locator(this.MAP_CONTAINER_SELECTOR);
 		const box = await mapContainer.boundingBox();
@@ -46,14 +46,10 @@ export class MapControl {
 
 		await this.page.mouse.move(centerX, centerY);
 		await this.page.mouse.down();
-
-		// Adjust deltas as needed for your map's scale/pan distance
-		const deltaX = 300;  // Pan right
-		const deltaY = -200; // Pan up
-		await this.page.mouse.move(centerX + deltaX, centerY + deltaY, { steps: times * 10 }); // Smoother with more steps
+		await this.page.mouse.move(centerX + moveX, centerY + moveY, { steps: 40 });
 
 		await this.page.mouse.up();
-		await this.page.waitForTimeout(this.ANIMATION_TIME * 2); // Double if FF animations are slower
+		await this.page.waitForTimeout(this.ANIMATION_TIME * 2);
 	}
 
 	async zoomIn(mapComponent: Locator, times = 1) {

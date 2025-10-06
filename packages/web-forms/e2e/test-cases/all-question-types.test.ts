@@ -180,8 +180,8 @@ test.describe('All Question Types', () => {
 			await formPage.map.expectMapVisible(mapComponent);
 			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-initial-state.png');
 
-			await formPage.map.selectFeatureByClick(mapComponent, 562, 255);
-			await formPage.map.expectPropertiesVisible(mapComponent, 'Berlin');
+			await formPage.map.selectFeatureByClick(mapComponent, 700, 222);
+			await formPage.map.expectPropertiesVisible(mapComponent, 'Red kangaroo resting area');
 			await formPage.map.expectStatusBarNotFeatureSaved(mapComponent);
 			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-point-selected.png');
 
@@ -199,11 +199,11 @@ test.describe('All Question Types', () => {
 		});
 
 		test('zooms in and out, pans the map and zooms to fit all features', async () => {
-			await formPage.map.zoomIn(mapComponent, 3);
-			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-zoom-in.png');
 			await formPage.map.zoomOut(mapComponent, 2);
 			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-zoom-out.png');
-			await formPage.map.panMap(mapComponent, 2);
+			await formPage.map.zoomIn(mapComponent, 3);
+			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-zoom-in.png');
+			await formPage.map.panMap(mapComponent, 300, -200);
 			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-panning.png');
 			await formPage.map.zoomToFitAll(mapComponent);
 			await formPage.map.expectMapScreenshot(
@@ -214,7 +214,7 @@ test.describe('All Question Types', () => {
 
 		test('opens details of saved feature and remove saved feature', async () => {
 			await formPage.map.viewDetailsOfSavedFeature(mapComponent);
-			await formPage.map.expectPropertiesVisible(mapComponent, 'Berlin');
+			await formPage.map.expectPropertiesVisible(mapComponent, 'Red kangaroo resting area');
 			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-view-details.png');
 			await formPage.map.removeSavedFeature(mapComponent);
 			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-removed-saved-feature.png');
@@ -226,7 +226,7 @@ test.describe('All Question Types', () => {
 
 		test.beforeAll(async () => {
 			await context.grantPermissions(['geolocation']);
-			await context.setGeolocation({ latitude: 41.0082, longitude: 28.9784 });
+			await context.setGeolocation({ latitude: -28.996, longitude: 134.762 });
 
 			const page = await context.newPage();
 			const previewPage = new PreviewPage(page);
