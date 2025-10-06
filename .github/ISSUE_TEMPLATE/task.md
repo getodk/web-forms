@@ -1,8 +1,8 @@
 ---
 name: Task
-about: Template for a individual task or a task under an Epic
+about: Template for an individual task or a task under an Epic
 title: '<Short actionable title>'
-labels: needs discussion
+labels:
 assignees: ''
 ---
 

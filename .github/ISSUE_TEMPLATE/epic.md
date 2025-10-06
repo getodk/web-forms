@@ -1,7 +1,7 @@
 ---
 name: Epic
 about: Template for defining a new Epic or large work stream
-title: '[EPIC] <High-level descriptive title>'
+title: '<High-level descriptive title>'
 labels: epic
 assignees: ''
 ---
