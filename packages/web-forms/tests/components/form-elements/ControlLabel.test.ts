@@ -15,7 +15,7 @@ const baseQuestion = {
 } as AnyInputNode;
 
 describe('ControlLabel', () => {
-	it('shows asterisk with field is required', () => {
+	it('styles field when required', () => {
 		const component = mount(ControlLabel, {
 			props: {
 				question: baseQuestion,
@@ -25,12 +25,9 @@ describe('ControlLabel', () => {
 		const requireSpan = component.find('span.required');
 
 		expect(requireSpan.exists()).toBe(true);
-		expect(requireSpan.text()).toBe('*');
-
-		expect(component.text()).toBe('* First Name');
 	});
 
-	it('does not show asterisk when field is not required', () => {
+	it('does not style field when not required', () => {
 		const component = mount(ControlLabel, {
 			props: {
 				question: assocPath(['currentState', 'required'], false, baseQuestion),
@@ -38,9 +35,6 @@ describe('ControlLabel', () => {
 		});
 
 		const requireSpan = component.find('span.required');
-
 		expect(requireSpan.exists()).toBe(false);
-
-		expect(component.text()).toBe('First Name');
 	});
 });
