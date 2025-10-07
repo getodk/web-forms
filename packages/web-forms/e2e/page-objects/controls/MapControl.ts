@@ -144,7 +144,7 @@ export class MapControl {
 		// It cannot disable map's JS animations. So setting timeout.
 		await this.page.waitForTimeout(this.ANIMATION_TIME);
 		await expect(mapComponent.locator(this.MAP_CONTAINER_SELECTOR)).toHaveScreenshot(snapshotName, {
-			maxDiffPixelRatio: 0.05,
+			maxDiffPixelRatio: 0.01,
 		});
 	}
 }
