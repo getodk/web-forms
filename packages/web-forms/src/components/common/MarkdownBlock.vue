@@ -44,7 +44,7 @@ const purify = (node: HtmlMarkdownNode): string => {
 
 	<!-- unsafe html -->
 	<!-- eslint-disable-next-line vue/no-v-html -->
-	<div v-else-if="elem.role === 'html'" v-html="purify(elem)" />
+	<span v-else-if="elem.role === 'html'" v-html="purify(elem)" />
 
 	<!-- link -->
 	<a v-else-if="elem.role === 'parent' && elem.elementName === 'a'" :href="getUrl(elem)" target="_blank">
