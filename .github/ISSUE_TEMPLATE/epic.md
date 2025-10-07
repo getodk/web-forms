@@ -3,6 +3,7 @@ name: Epic
 about: Template for defining a new Epic or large work stream
 title: '<High-level descriptive title>'
 labels: epic
+type: 'feature'
 assignees: ''
 ---
 
