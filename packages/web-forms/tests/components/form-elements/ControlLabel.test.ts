@@ -22,9 +22,7 @@ describe('ControlLabel', () => {
 			},
 		});
 
-		const requireSpan = component.find('span.required');
-
-		expect(requireSpan.exists()).toBe(true);
+		expect(component.classes().includes('required')).toBe(true);
 	});
 
 	it('does not style field when not required', () => {
@@ -34,7 +32,6 @@ describe('ControlLabel', () => {
 			},
 		});
 
-		const requireSpan = component.find('span.required');
-		expect(requireSpan.exists()).toBe(false);
+		expect(component.classes().includes('required')).toBe(false);
 	});
 });
