@@ -1,14 +1,9 @@
-export type Heading =
-	| 'h1'
-	| 'h2'
-	| 'h3'
-	| 'h4'
-	| 'h5'
-	| 'h6';
+export type Heading = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
 
 export type ElementName =
 	| Heading
 	| 'a'
+	| 'div'
 	| 'em'
 	| 'img'
 	| 'li'
@@ -42,8 +37,8 @@ export interface AnchorMarkdownNode extends ParentMarkdownNode {
 }
 
 export interface StyledMarkdownNode extends ParentMarkdownNode {
-	readonly elementName: 'span';
-	readonly properties: MarkdownProperty;
+	readonly elementName: 'div' | 'p' | 'span';
+	readonly properties: MarkdownProperty | undefined;
 }
 
 export interface MarkdownProperty {
@@ -53,4 +48,5 @@ export interface MarkdownProperty {
 export interface StyleProperty {
 	readonly color: string | undefined;
 	readonly 'font-family': string | undefined;
+	readonly 'text-align': 'center' | 'left' | 'right' | undefined;
 }
