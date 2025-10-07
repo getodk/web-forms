@@ -134,7 +134,7 @@ export class MapControl {
 		const button = mapComponent
 			.locator('.map-status-saved')
 			.getByText('View details', { exact: true });
-		await expect(button).toBeVisible({ timeout: 500 });
+		await expect(button).toBeVisible({ timeout: this.ANIMATION_TIME });
 		await button.click();
 	}
 
