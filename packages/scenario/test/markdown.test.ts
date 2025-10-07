@@ -474,4 +474,32 @@ double line break`;
 			],
 		});
 	});
+
+	it('should work with jr:choice-name', async () => {
+		const scenario = await Scenario.init(
+			'markdown',
+			html(
+				head(
+					title('markdown'),
+					model(
+						mainInstance(t('data id="markdown"', t('name'), t('select'))),
+						bind('/data/name')
+							.type('string')
+							.calculate("jr:choice-name('choice2', ' /data/select ')")
+					)
+				),
+				body(
+					input('/data/name', t('label', 'choice bro')),
+					select1(
+						'/data/select',
+						item('choice1', '__strong__'),
+						item('choice2', '_emphasis_'),
+						item('choice3', 'normal')
+					)
+				)
+			)
+		);
+		const result = scenario.answerOf('/data/name');
+		expect(result.getValue()).toEqual('_emphasis_');
+	});
 });
