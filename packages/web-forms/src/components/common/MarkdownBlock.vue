@@ -16,8 +16,8 @@ interface MarkdownProps {
 const { elem } = defineProps<MarkdownProps>();
 
 const getStylePropertyMap = (node: ParentMarkdownNode): StyleValue | undefined => {
-	if (node.elementName === 'span') {
-		const properties = (node as StyledMarkdownNode).properties;
+	const properties = (node as StyledMarkdownNode).properties;
+	if (properties) {
 		return properties.style as StyleValue;
 	}
 };
