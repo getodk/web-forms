@@ -110,25 +110,19 @@ export class MapControl {
 	}
 
 	async saveSelection(mapComponent: Locator) {
-		const button = mapComponent
-			.locator('.map-properties')
-			.getByText('Save selected', { exact: true });
+		const button = mapComponent.locator('.map-properties').getByText('Save selected');
 		await expect(button).toBeVisible();
 		await button.click();
 	}
 
 	async removeSavedFeature(mapComponent: Locator) {
-		const button = mapComponent
-			.locator('.map-properties')
-			.getByText('Remove selection', { exact: true });
+		const button = mapComponent.locator('.map-properties').getByText('Remove selection');
 		await expect(button).toBeVisible();
 		await button.click();
 	}
 
 	async viewDetailsOfSavedFeature(mapComponent: Locator) {
-		const button = mapComponent
-			.locator('.map-status-saved')
-			.getByText('View details', { exact: true });
+		const button = mapComponent.locator('.map-status-saved').getByText('View details');
 		await expect(button).toBeVisible();
 		await button.click();
 	}
