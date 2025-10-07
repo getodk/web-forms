@@ -2,7 +2,6 @@
 name: Task
 about: Template for an individual task or a task under an Epic
 title: '<Short actionable title>'
-labels:
 type: 'task'
 assignees: ''
 ---
