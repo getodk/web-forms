@@ -3,10 +3,10 @@ import {
 	type ChildMarkdownNode as ClientChildMarkdownNode,
 	type HtmlMarkdownNode as ClientHtmlMarkdownNode,
 	type ParentMarkdownNode as ClientParentMarkdownNode,
+	type StyledMarkdownNode as ClientStyledMarkdownNode,
 	type ElementName,
 	type MarkdownNode,
 	type MarkdownProperty,
-	type StyledMarkdownNode,
 } from '../../client';
 
 abstract class ParentMarkdownNode implements ClientParentMarkdownNode {
@@ -50,10 +50,6 @@ export class Emphasis extends ParentMarkdownNode {
 	readonly elementName = 'em';
 }
 
-export class Paragraph extends ParentMarkdownNode {
-	readonly elementName = 'p';
-}
-
 export class OrderedList extends ParentMarkdownNode {
 	readonly elementName = 'ol';
 }
@@ -75,13 +71,27 @@ export class Anchor extends ParentMarkdownNode implements AnchorMarkdownNode {
 	}
 }
 
-export class Span extends ParentMarkdownNode implements StyledMarkdownNode {
-	readonly elementName = 'span';
-	readonly properties: MarkdownProperty;
-	constructor(children: MarkdownNode[], properties: MarkdownProperty) {
-		super(children);
+abstract class StyledMarkdownNode implements ClientParentMarkdownNode {
+	readonly children;
+	readonly role = 'parent';
+	abstract elementName: ElementName;
+	readonly properties: MarkdownProperty | undefined;
+	constructor(children: MarkdownNode[], properties: MarkdownProperty | undefined) {
+		this.children = children;
 		this.properties = properties;
 	}
+}
+
+export class Paragraph extends StyledMarkdownNode implements ClientStyledMarkdownNode {
+	readonly elementName = 'p';
+}
+
+export class Span extends StyledMarkdownNode implements ClientStyledMarkdownNode {
+	readonly elementName = 'span';
+}
+
+export class Div extends StyledMarkdownNode implements ClientStyledMarkdownNode {
+	readonly elementName = 'div';
 }
 
 export class ChildMarkdownNode implements ClientChildMarkdownNode {
