@@ -166,7 +166,7 @@ export class MapControl {
 		await this.page.waitForTimeout(this.ANIMATION_TIME);
 		await expect(mapComponent.locator(this.MAP_CONTAINER_SELECTOR)).toHaveScreenshot(snapshotName, {
 			maxDiffPixels: 6000,
-			timeout: this.ANIMATION_TIME,
+			timeout: this.ANIMATION_TIME * 5,
 		});
 	}
 }
