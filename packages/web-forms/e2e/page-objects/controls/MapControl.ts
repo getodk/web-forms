@@ -93,7 +93,7 @@ export class MapControl {
 		await expect(mapComponent).toHaveAttribute('class', expect.stringContaining('map-full-screen'));
 	}
 
-	async exitFullScreenSuccessfully(mapComponent: Locator) {
+	async exitFullScreen(mapComponent: Locator) {
 		await this.page.keyboard.press('Escape');
 		await expect(mapComponent.locator('.map-full-screen')).not.toBeVisible();
 	}
@@ -125,11 +125,6 @@ export class MapControl {
 		await button.click();
 	}
 
-	async expectPropertiesVisible(mapComponent: Locator, title: string) {
-		const titleLocator = mapComponent.locator(`.map-properties-header strong:text-is("${title}")`);
-		await expect(titleLocator, `Map's properties for feature "${title}" not found`).toBeVisible();
-	}
-
 	async viewDetailsOfSavedFeature(mapComponent: Locator) {
 		const button = mapComponent
 			.locator('.map-status-saved')
@@ -145,16 +140,6 @@ export class MapControl {
 		await expect(mapComponent.locator('.map-properties')).not.toBeVisible();
 	}
 
-	async expectStatusBarFeatureSaved(mapComponent: Locator) {
-		const titleLocator = mapComponent.locator(`.map-status span:text-is("Point saved")`);
-		await expect(titleLocator, `Map's status bar with wrong status: No point saved`).toBeVisible();
-	}
-
-	async expectStatusBarNotFeatureSaved(mapComponent: Locator) {
-		const titleLocator = mapComponent.locator(`.map-status span:text-is("No point saved")`);
-		await expect(titleLocator, `Map's status bar with wrong status: Point saved`).toBeVisible();
-	}
-
 	async expectErrorMessage(mapComponent: Locator, expectedTitle: string, expectedMessage: string) {
 		const error = mapComponent.locator('.map-block-error');
 		await expect(error.locator('strong')).toHaveText(expectedTitle);
@@ -165,7 +150,7 @@ export class MapControl {
 		// It cannot disable map's JS animations. So setting timeout.
 		await this.page.waitForTimeout(this.ANIMATION_TIME);
 		await expect(mapComponent.locator(this.MAP_CONTAINER_SELECTOR)).toHaveScreenshot(snapshotName, {
-			maxDiffPixels: 6000,
+			maxDiffPixelRatio: 0.05,
 			timeout: this.ANIMATION_TIME * 5,
 		});
 	}

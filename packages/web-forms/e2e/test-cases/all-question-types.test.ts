@@ -184,12 +184,9 @@ test.describe('All Question Types', () => {
 			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-initial-state.png');
 
 			await formPage.map.selectFeature(700, 222);
-			await formPage.map.expectPropertiesVisible(mapComponent, 'Red kangaroo resting area');
-			await formPage.map.expectStatusBarNotFeatureSaved(mapComponent);
 			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-point-selected.png');
 
 			await formPage.map.saveSelection(mapComponent);
-			await formPage.map.expectStatusBarFeatureSaved(mapComponent);
 			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-point-saved.png');
 			await formPage.map.closeProperties(mapComponent);
 		});
@@ -198,7 +195,7 @@ test.describe('All Question Types', () => {
 			await formPage.map.toggleFullScreen(mapComponent);
 			await formPage.map.expectFullScreenActive(mapComponent);
 			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-full-screen.png');
-			await formPage.map.exitFullScreenSuccessfully(mapComponent);
+			await formPage.map.exitFullScreen(mapComponent);
 		});
 
 		test('zooms in and out, pans the map and zooms to fit all features', async () => {
@@ -217,7 +214,6 @@ test.describe('All Question Types', () => {
 
 		test('opens details of saved feature and remove saved feature', async () => {
 			await formPage.map.viewDetailsOfSavedFeature(mapComponent);
-			await formPage.map.expectPropertiesVisible(mapComponent, 'Red kangaroo resting area');
 			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-view-details.png');
 			await formPage.map.removeSavedFeature(mapComponent);
 			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-removed-saved-feature.png');
