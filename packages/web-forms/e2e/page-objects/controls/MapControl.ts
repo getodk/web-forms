@@ -129,7 +129,7 @@ export class MapControl {
 		const button = mapComponent
 			.locator('.map-status-saved')
 			.getByText('View details', { exact: true });
-		await expect(button).toBeVisible({ timeout: this.ANIMATION_TIME });
+		await expect(button).toBeVisible();
 		await button.click();
 	}
 
@@ -151,7 +151,6 @@ export class MapControl {
 		await this.page.waitForTimeout(this.ANIMATION_TIME);
 		await expect(mapComponent.locator(this.MAP_CONTAINER_SELECTOR)).toHaveScreenshot(snapshotName, {
 			maxDiffPixelRatio: 0.05,
-			timeout: this.ANIMATION_TIME * 5,
 		});
 	}
 }
