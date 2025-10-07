@@ -473,6 +473,14 @@ jobs:
       - if: ${{ matrix.target == 'Web' }}
         run: 'yarn workspace @getodk/web-forms test:e2e:${{ matrix.browser }}'
 
+      - name: Upload Playwright artifacts
+        if: always() && matrix.target == 'Web'
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-results-${{ matrix.browser }}
+          path: packages/web-forms/test-results
+          retention-days: 10
+
       - if: ${{ matrix.node-version == '22.12.0' && matrix.target == 'Node' }}
         uses: actions/upload-artifact@v4
         with:
