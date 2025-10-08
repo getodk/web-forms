@@ -58,6 +58,6 @@ const purify = (node: HtmlMarkdownNode): string => {
 
 	<!-- any other parent element -->
 	<component :is="elem.elementName" v-else-if="elem.elementName" :style="getStylePropertyMap(elem)">
-		<MarkdownBlock v-for="(child, index) in elem.children" :key="index" :elem="child"	/>
+		<MarkdownBlock v-for="(child, index) in elem.children" :key="index" :elem="child" />
 	</component>
 </template>
