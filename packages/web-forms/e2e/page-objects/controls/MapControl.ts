@@ -154,16 +154,18 @@ export class MapControl {
 				content: `
         .map-container {
           width: 802px !important;
-          height: 508px !important;
+          height: 507px !important;
+          max-height: 508px !important;
           overflow: hidden !important;
           box-sizing: border-box !important;
-          transform: translateZ(0) !important;  // Forces GPU snap for crisp pixels
+          transform: translateZ(0) !important;
         }
         body, html {
-          overflow: hidden !important;  // Global scrollbar hide if needed
+          overflow: hidden !important;
         }
       `,
 			});
+
 			await this.page.waitForTimeout(this.ANIMATION_TIME);
 		}
 
