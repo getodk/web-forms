@@ -15,8 +15,10 @@ assignees: ''
 
 ### Reproduction Steps
 
-<!-- Provide a clear, step-by-step guide to reproduce the bug. -->
+<!-- Provide the form and a clear, step-by-step guide to reproduce the bug. -->
+Form (XML or XLSX file):
 
+Steps:
 1.
 2.
 3.
