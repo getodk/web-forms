@@ -197,7 +197,7 @@ test.describe('All Question Types', () => {
 		test('toggles full screen and verifies more surface map is visible', async () => {
 			await formPage.map.toggleFullScreen(mapComponent);
 			await formPage.map.expectFullScreenActive(mapComponent);
-			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-full-screen.png');
+			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-full-screen.png', true);
 			await formPage.map.exitFullScreen(mapComponent);
 		});
 

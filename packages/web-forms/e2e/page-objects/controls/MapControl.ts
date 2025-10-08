@@ -140,7 +140,7 @@ export class MapControl {
 		await expect(error.locator('span')).toHaveText(expectedMessage);
 	}
 
-	async expectMapScreenshot(mapComponent: Locator, snapshotName: string) {
+	async expectMapScreenshot(mapComponent: Locator, snapshotName: string, isFullScreen = false) {
 		// It cannot disable map's JS animations. So setting timeout.
 		await this.page.waitForTimeout(this.ANIMATION_TIME);
 
@@ -149,13 +149,15 @@ export class MapControl {
 		const isChromiumLinux = process.platform === 'linux' && browserName === 'chromium';
 
 		if (isChromiumLinux) {
+			const width = isFullScreen ? 1280 : 802;
+			const heigth = isFullScreen ? 720 : 507;
 			await this.page.addStyleTag({
 				content: `
         .map-container {
-          width: 802px !important;
-          height: 507px !important;
-          max-width: 802px !important;
-          max-height: 508px !important;
+          width: ${width}px !important;
+          height: ${heigth}px !important;
+          max-width: ${width}px !important;
+          max-height: ${heigth + 1}px !important;
           overflow: hidden !important;
           box-sizing: border-box !important;
           transform: translateZ(0) !important;
