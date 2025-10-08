@@ -41,7 +41,7 @@ export default defineConfig({
 		/* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
 		trace: 'on-first-retry',
 
-		/* Only on CI systems run the tests headless */
+		// Turning off headless for visual tests (to compare snapshots) in CI
 		headless: false,
 	},
 

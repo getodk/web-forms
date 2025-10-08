@@ -471,7 +471,7 @@ jobs:
         run: 'yarn workspace @getodk/web-forms test-browser:${{ matrix.browser }}'
 
       - if: ${{ matrix.target == 'Web' }}
-        run: 'xvfb-run --auto-servernum --server-args="-screen 0 1280x1024x24 -dpi 96 -ac" yarn workspace @getodk/web-forms test:e2e:${{ matrix.browser }}'
+        run: 'xvfb-run --auto-servernum yarn workspace @getodk/web-forms test:e2e:${{ matrix.browser }}'
 
       - name: Upload Playwright artifacts
         if: always() && matrix.target == 'Web'

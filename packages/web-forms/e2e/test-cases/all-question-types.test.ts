@@ -15,7 +15,10 @@ test.describe('All Question Types', () => {
 	 * Opens the form once and runs all test cases to optimize suite execution speed.
 	 */
 	test.beforeAll(async ({ browser }) => {
-		context = await browser.newContext();
+		context = await browser.newContext({
+			geolocation: { latitude: -28.996, longitude: 134.762 }, // South Australia,
+			permissions: ['geolocation'],
+		});
 		const page = await context.newPage();
 		const previewPage = new PreviewPage(page);
 		await previewPage.goToDevPage();
@@ -219,17 +222,9 @@ test.describe('All Question Types', () => {
 			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-removed-saved-feature.png');
 			await formPage.map.closeProperties(mapComponent);
 		});
-	});
 
-	test.describe('Geolocation permission granted', () => {
-		test.beforeAll(async () => {
-			await context.grantPermissions(['geolocation']);
-			await context.setGeolocation({ latitude: -28.996, longitude: 134.762 }); // South Australia
+		test('zooms to current location', async () => {
 			await formPage.waitForNetworkIdle();
-		});
-
-		test('select from map zooms to current location', async () => {
-			const mapComponent = formPage.map.getMapComponentLocator('Map');
 			await formPage.map.scrollMapIntoView(mapComponent);
 			await formPage.map.centerCurrentLocation(mapComponent);
 			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-zoom-current-location.png');
