@@ -152,12 +152,16 @@ export class MapControl {
 			await this.page.addStyleTag({
 				content: `
         .map-container {
-          max-width: 802px !important;
-          max-height: 508px !important;
           width: 802px !important;
           height: 508px !important;
+          max-width: 802px !important;
+          max-height: 508px !important;
           overflow: hidden !important;
           box-sizing: border-box !important;
+          transform: translateZ(0) !important;
+        }
+        body, html {
+          overflow: hidden !important;
         }
       `,
 			});
