@@ -166,6 +166,8 @@ export class MapControl {
           height: ${heigth}px !important;
           max-width: ${width}px !important;
           max-height: ${heigth + 1}px !important;
+        }
+        body, html {
           overflow: hidden !important;
         }
       `,
