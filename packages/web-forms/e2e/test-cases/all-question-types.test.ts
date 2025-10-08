@@ -17,7 +17,7 @@ test.describe('All Question Types', () => {
 	test.beforeAll(async ({ browser }) => {
 		const permissions = ['geolocation'];
 		if (browser.browserType().name() === 'chromium') {
-			permissions.push('clipboard-write', 'geolocation');
+			permissions.push('clipboard-write');
 		}
 
 		context = await browser.newContext({
@@ -167,9 +167,10 @@ test.describe('All Question Types', () => {
 			});
 		});
 	});
+
 	/**
 	 * This is a slow suite; it waits for map animations and rendering to finish.
-	 * If more tests are added, we can consider running them only on merge or when requested.
+	 * If additional tests are included, we might run them only on one browser, on merge, or on request.
 	 */
 	test.describe('Select one from map', () => {
 		let mapComponent: Locator;
@@ -235,36 +236,41 @@ test.describe('All Question Types', () => {
 			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-zoom-current-location.png');
 		});
 	});
+});
 
-	test.describe('Geolocation permission denied', () => {
-		let formPageNoPermissions: FillFormPage;
+test.describe('All Question Types - Geolocation permission denied', () => {
+	let formPage: FillFormPage;
+	let context: BrowserContext;
 
-		test.beforeAll(async ({ browser }) => {
-			const contextNoPermissions = await browser.newContext({
-				permissions: [],
-			});
-
-			const page = await contextNoPermissions.newPage();
-			const previewPage = new PreviewPage(page);
-			await previewPage.goToDevPage();
-
-			const newPage = await previewPage.openPublicDemoForm(
-				'All question types',
-				'All question types'
-			);
-			formPageNoPermissions = new FillFormPage(newPage);
-			await formPageNoPermissions.waitForNetworkIdle();
+	test.beforeAll(async ({ browser }) => {
+		context = await browser.newContext({
+			permissions: [],
 		});
 
-		test('select from map displays error when zooming to current location', async () => {
-			const mapComponent = formPageNoPermissions.map.getMapComponentLocator('Map');
-			await formPageNoPermissions.map.scrollMapIntoView(mapComponent);
-			await formPageNoPermissions.map.centerCurrentLocation(mapComponent);
-			await formPageNoPermissions.map.expectErrorMessage(
-				mapComponent,
-				'Cannot access location',
-				'Grant location permission in the browser settings and make sure location is turned on.'
-			);
-		});
+		const page = await context.newPage();
+		const previewPage = new PreviewPage(page);
+		await previewPage.goToDevPage();
+
+		const newPage = await previewPage.openPublicDemoForm(
+			'All question types',
+			'All question types'
+		);
+		formPage = new FillFormPage(newPage);
+		await formPage.waitForNetworkIdle();
+	});
+
+	test.afterAll(async () => {
+		await context?.close();
+	});
+
+	test('select from map displays error when zooming to current location', async () => {
+		const mapComponent = formPage.map.getMapComponentLocator('Map');
+		await formPage.map.scrollMapIntoView(mapComponent);
+		await formPage.map.centerCurrentLocation(mapComponent);
+		await formPage.map.expectErrorMessage(
+			mapComponent,
+			'Cannot access location',
+			'Grant location permission in the browser settings and make sure location is turned on.'
+		);
 	});
 });

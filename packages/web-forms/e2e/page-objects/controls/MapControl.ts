@@ -24,8 +24,10 @@ export class MapControl {
 		await expect(map, `Map not found`).toBeVisible();
 	}
 
-	// Playwright's scrollIntoViewIfNeeded() scrolls minimally and doesn't guarantee to center
-	// the element, so JavaScript scroll is used to ensure the map is centered and fully visible.
+	/**
+	 * Playwright's scrollIntoViewIfNeeded() scrolls minimally and doesn't guarantee to center
+	 * the element, so JavaScript scroll is used to ensure the map is centered and fully visible.
+	 */
 	async scrollMapIntoView(mapComponent: Locator) {
 		const handle = await mapComponent.elementHandle();
 		if (handle) {
@@ -33,6 +35,11 @@ export class MapControl {
 		}
 	}
 
+	/**
+	 * Pans the map starting from the center of the component.
+	 * @param moveX Pixels. Relative to the map component center.
+	 * @param moveY Pixels. Relative to the map component center.
+	 */
 	async panMap(mapComponent: Locator, moveX: number, moveY: number) {
 		await mapComponent.scrollIntoViewIfNeeded();
 		const mapContainer = mapComponent.locator(this.MAP_CONTAINER_SELECTOR);
@@ -56,7 +63,7 @@ export class MapControl {
 		await expect(button).toBeVisible();
 		for (let i = 0; i < times; i++) {
 			await button.click();
-			// Allows reaching expected zoom level before zooming again
+			// Allows reaching the expected zoom level before zooming again for consistent results.
 			await this.page.waitForTimeout(this.ANIMATION_TIME);
 		}
 	}
@@ -66,7 +73,7 @@ export class MapControl {
 		await expect(button).toBeVisible();
 		for (let i = 0; i < times; i++) {
 			await button.click();
-			// Allows reaching expected zoom level before zooming again
+			// Allows reaching the expected zoom level before zooming again for consistent results.
 			await this.page.waitForTimeout(this.ANIMATION_TIME);
 		}
 	}
@@ -99,9 +106,9 @@ export class MapControl {
 	}
 
 	/**
-	 *	Selects feature on map
-	 * @param positionX Relative to the left of the browser's viewport.
-	 * @param positionY Relative to the top of the browser's viewport.
+	 * Selects feature on map
+	 * @param positionX Pixels. Relative to the left of the browser's viewport.
+	 * @param positionY Pixels. Relative to the top of the browser's viewport.
 	 */
 	async selectFeature(positionX: number, positionY: number) {
 		await this.page.mouse.move(positionX, positionY);
