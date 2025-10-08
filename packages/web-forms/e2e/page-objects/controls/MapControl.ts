@@ -154,6 +154,8 @@ export class MapControl {
         .map-container {
           max-width: 802px !important;
           max-height: 508px !important;
+          width: 802px !important;
+          height: 508px !important;
         }
       `,
 			});
