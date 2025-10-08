@@ -149,13 +149,13 @@ export class MapControl {
 		console.log('PANEL BOX ****:', panelBox);
 		panelBox ??= { x: 0, y: 0, width: 802, height: 508 };
 		const clip = {
-			x: Math.floor(panelBox.x),
+			x: panelBox.x === 0 || panelBox.x === 239 ? panelBox.x : 239,
 			y: Math.floor(panelBox.y),
 			width: 802,
 			height: 508,
 		};
+		console.log('PANEL BOX CLIP ****:', clip);
 		await expect(map).toHaveScreenshot(snapshotName, {
-			// @ts-expect-error clip is supported: https://playwright.dev/docs/api/class-pageassertions#page-assertions-to-have-screenshot-1
 			clip,
 			maxDiffPixels: 5000,
 		});

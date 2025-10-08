@@ -41,6 +41,9 @@ export default defineConfig({
 		/* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
 		trace: 'on-first-retry',
 
+		deviceScaleFactor: 1,
+		viewport: { width: 1280, height: 800 },
+
 		// Turning off headless for visual tests (to compare snapshots) in CI
 		headless: false,
 	},
