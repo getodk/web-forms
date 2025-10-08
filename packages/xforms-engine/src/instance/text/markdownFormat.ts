@@ -1,6 +1,6 @@
 import type { Heading, RootContent } from 'mdast';
 import { fromMarkdown } from 'mdast-util-from-markdown';
-import { type MarkdownNode, type MarkdownProperty, type StyleProperty } from '../../client';
+import { type MarkdownNode, type StyleProperty } from '../../client';
 import type { TextChunk } from '../../client/TextRange.ts';
 import {
 	Anchor,
@@ -22,65 +22,62 @@ import {
 	UnorderedList,
 } from '../markdown/MarkdownNode.ts';
 
-const STYLE_PROPERTY_REGEX = /style\s*=\s*("([^"]*)"|'([^']*)')/i;
+const STYLE_PROPERTY_REGEX = /style\s*=\s*(?:'|")(.*)(?:'|")/i;
 const END_TAG_REGEX = /(<\s*\/span\s*>)|(<\s*\/div\s*>)|(<\s*\/p\s*>)/i;
 
 const supportedHtmlTags = [
+	// span
 	{
 		openRegex: /^s*<s*span/i,
 		closeRegex: /<\s*\/span\s*>/i,
-		create: (children: MarkdownNode[], properties: MarkdownProperty): MarkdownNode => {
-			return new Span(children, properties);
-		},
+		create: Span,
 	},
+
+	// div
 	{
 		openRegex: /^s*<s*div/i,
 		closeRegex: /<\s*\/div\s*>/i,
-		create: (children: MarkdownNode[], properties: MarkdownProperty): MarkdownNode => {
-			return new Div(children, properties);
-		},
+		create: Div,
 	},
+
+	// paragraph
 	{
 		openRegex: /^s*<s*p/i,
 		closeRegex: /<\s*\/p\s*>/i,
-		create: (children: MarkdownNode[], properties: MarkdownProperty): MarkdownNode => {
-			return new Paragraph(children, properties);
-		},
+		create: Paragraph,
 	},
 ];
 
 let outputStrings: Map<string, string>;
 
-function parseStyle(tag: string): StyleProperty {
-	const styleProperty = STYLE_PROPERTY_REGEX.exec(tag);
-	let color;
-	let font;
-	let align;
-	if (styleProperty && styleProperty.length > 1) {
-		const styleValue = styleProperty[2] ?? '';
-		const properties = styleValue.split(';');
-		properties.forEach((property) => {
-			const [name, value] = property.split(':');
-			if (!name || !value) {
-				return;
-			}
-			if (name === 'color') {
-				color = value;
-			} else if (name === 'font-family') {
-				font = value;
-			} else if (
-				name === 'text-align' &&
-				(value === 'center' || value === 'left' || value === 'right')
-			) {
-				align = value;
-			}
-		});
+function validateStyleProperty(name: string | undefined, value: string | undefined): boolean {
+	if (!name || !value) {
+		return false;
 	}
-	return {
-		color,
-		'font-family': font,
-		'text-align': align,
-	};
+	if (!['color', 'font-family', 'text-align'].includes(name)) {
+		return false;
+	}
+	if (name === 'text-align' && !['left', 'right', 'center'].includes(value)) {
+		return false;
+	}
+	return true;
+}
+
+function parseStyle(tag: string): StyleProperty | undefined {
+	const styleProperty = STYLE_PROPERTY_REGEX.exec(tag);
+	if (!styleProperty || styleProperty.length < 1) {
+		return;
+	}
+	const styleValue = styleProperty[1] ?? '';
+	const properties = styleValue.split(';');
+	const entries = properties
+		.map((property) => property.split(':'))
+		.map(([name, value]) => [name?.trim(), value?.trim()])
+		.filter(([name, value]) => validateStyleProperty(name, value));
+	if (!entries.length) {
+		return;
+	}
+	return Object.fromEntries(entries) as StyleProperty;
 }
 
 function mdastHeading(tree: Heading, children: MarkdownNode[]): MarkdownNode {
@@ -159,8 +156,9 @@ function mdastToOdkMarkdown(elements: RootContent[]): MarkdownNode[] {
 					next = elements[++i];
 				}
 				const odkChildren = mdastToOdkMarkdown(children);
-				const properties = { style: parseStyle(tree.value) };
-				result.push(tag.create(odkChildren, properties));
+				const style = parseStyle(tree.value);
+				const properties = style && { style };
+				result.push(new tag.create(odkChildren, properties));
 			} else {
 				result.push(new Html(tree.value));
 			}
