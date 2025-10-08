@@ -143,20 +143,31 @@ export class MapControl {
 	async expectMapScreenshot(mapComponent: Locator, snapshotName: string) {
 		// It cannot disable map's JS animations. So setting timeout.
 		await this.page.waitForTimeout(this.ANIMATION_TIME);
-		await this.page.waitForTimeout(this.ANIMATION_TIME);
+
 		const map = mapComponent.locator(this.MAP_CONTAINER_SELECTOR);
-		let panelBox = await map.boundingBox();
-		console.log('PANEL BOX ****:', panelBox);
-		panelBox ??= { x: 0, y: 0, width: 802, height: 508 };
-		const clip = {
-			x: panelBox.x === 0 || panelBox.x === 239 ? panelBox.x : 239,
-			y: Math.floor(panelBox.y),
-			width: 802,
-			height: 508,
-		};
-		console.log('PANEL BOX CLIP ****:', clip);
+		const browserName = this.page.context().browser()?.browserType().name();
+		const isChromiumLinux = process.platform === 'linux' && browserName === 'chromium';
+
+		if (isChromiumLinux) {
+			console.log('Chromium Linux ------ style setting');
+			await this.page.addStyleTag({
+				content: `
+        .map-container {
+          width: 802px !important;
+          height: 508px !important;
+          overflow: hidden !important;
+          box-sizing: border-box !important;
+          transform: translateZ(0) !important;  // Forces GPU snap for crisp pixels
+        }
+        body, html {
+          overflow: hidden !important;  // Global scrollbar hide if needed
+        }
+      `,
+			});
+			await this.page.waitForTimeout(this.ANIMATION_TIME);
+		}
+
 		await expect(map).toHaveScreenshot(snapshotName, {
-			clip,
 			maxDiffPixels: 5000,
 		});
 	}
