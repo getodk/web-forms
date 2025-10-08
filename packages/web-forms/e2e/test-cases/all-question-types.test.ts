@@ -17,7 +17,7 @@ test.describe('All Question Types', () => {
 	test.beforeAll(async ({ browser }) => {
 		context = await browser.newContext({
 			geolocation: { latitude: -28.996, longitude: 134.762 }, // South Australia,
-			permissions: ['geolocation'],
+			permissions: ['geolocation', 'clipboard-write', 'geolocation'],
 		});
 		const page = await context.newPage();
 		const previewPage = new PreviewPage(page);
