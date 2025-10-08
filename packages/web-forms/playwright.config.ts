@@ -55,6 +55,15 @@ export default defineConfig({
 					//Chrome-specific permissions for test cases requiring copy/paste actions
 					permissions: ['clipboard-read', 'clipboard-write'],
 				},
+				launchOptions: {
+					args: [
+						'--ignore-gpu-blocklist', // Overrides blocklists to enable GPU features
+						'--enable-gpu-rasterization', // Forces GPU-style rasterization if possible
+						'--gpu-rasterization-msaa-sample-count=4', // Enables multisample anti-aliasing during rasterization to smooth subpixel lines/borders
+						'--num-raster-threads=4', // Increases threads for potentially better performance
+						'--no-sandbox', // For CI stability
+					],
+				},
 			},
 		},
 		{

@@ -149,19 +149,11 @@ export class MapControl {
 		const isChromiumLinux = process.platform === 'linux' && browserName === 'chromium';
 
 		if (isChromiumLinux) {
-			console.log('Chromium Linux ------ style setting');
 			await this.page.addStyleTag({
 				content: `
         .map-container {
-          width: 802px !important;
-          height: 507px !important;
+          max-width: 802px !important;
           max-height: 508px !important;
-          overflow: hidden !important;
-          box-sizing: border-box !important;
-          transform: translateZ(0) !important;
-        }
-        body, html {
-          overflow: hidden !important;
         }
       `,
 			});
