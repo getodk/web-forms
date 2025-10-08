@@ -446,7 +446,7 @@ describe('createFeatureCollectionAndProps', () => {
 						odk_label: 'Point 1',
 						odk_value: 'point1',
 						odk_geometry: '40.7128 -74.0060 100 5',
-						odk_marker_color: '#ff0000',
+						'odk_marker-color': '#ff0000',
 					},
 				},
 				{
