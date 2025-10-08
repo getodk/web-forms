@@ -156,6 +156,8 @@ export class MapControl {
           max-height: 508px !important;
           width: 802px !important;
           height: 508px !important;
+          overflow: hidden !important;
+          box-sizing: border-box !important;
         }
       `,
 			});
