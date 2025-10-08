@@ -15,9 +15,14 @@ test.describe('All Question Types', () => {
 	 * Opens the form once and runs all test cases to optimize suite execution speed.
 	 */
 	test.beforeAll(async ({ browser }) => {
+		const permissions = ['geolocation'];
+		if (browser.browserType().name() === 'chromium') {
+			permissions.push('clipboard-write', 'geolocation');
+		}
+
 		context = await browser.newContext({
 			geolocation: { latitude: -28.996, longitude: 134.762 }, // South Australia,
-			permissions: ['geolocation', 'clipboard-write', 'geolocation'],
+			permissions: permissions,
 		});
 		const page = await context.newPage();
 		const previewPage = new PreviewPage(page);
