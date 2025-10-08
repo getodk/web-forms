@@ -149,6 +149,7 @@ export class MapControl {
 		const isChromiumLinux = process.platform === 'linux' && browserName === 'chromium';
 
 		if (isChromiumLinux) {
+			// Chrome for Linux has an issue when taking the snapshot (ref. https://github.com/microsoft/playwright/issues/18827)
 			const width = isFullScreen ? 1280 : 802;
 			const heigth = isFullScreen ? 720 : 507;
 			await this.page.addStyleTag({

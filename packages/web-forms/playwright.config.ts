@@ -56,14 +56,7 @@ export default defineConfig({
 					permissions: ['clipboard-read', 'clipboard-write'],
 				},
 				launchOptions: {
-					// These args are needed for visual tests on CI's Linux Chrome.
-					args: [
-						'--ignore-gpu-blocklist', // Overrides blocklists to enable GPU features
-						//'--enable-gpu-rasterization', // Forces GPU-style rasterization if possible
-						//'--gpu-rasterization-msaa-sample-count=4', // Enables multisample anti-aliasing during rasterization to smooth subpixel lines/borders
-						//'--num-raster-threads=4', // Increases threads for potentially better performance
-						//'--no-sandbox', // For CI stability
-					],
+					args: ['--ignore-gpu-blocklist'], // This argument is needed for visual tests on CI's Linux Chrome.
 				},
 			},
 		},
