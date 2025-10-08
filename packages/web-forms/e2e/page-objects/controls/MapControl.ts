@@ -144,7 +144,8 @@ export class MapControl {
 		// It cannot disable map's JS animations. So setting timeout.
 		await this.page.waitForTimeout(this.ANIMATION_TIME);
 		await expect(mapComponent.locator(this.MAP_CONTAINER_SELECTOR)).toHaveScreenshot(snapshotName, {
-			scale: 'css',
+			// @ts-expect-error clip is supported: https://playwright.dev/docs/api/class-pageassertions#page-assertions-to-have-screenshot-1
+			clip: { x: 0, y: 0, width: 802, height: 508 },
 			maxDiffPixels: 5000,
 		});
 	}
