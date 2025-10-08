@@ -143,9 +143,11 @@ export class MapControl {
 	async expectMapScreenshot(mapComponent: Locator, snapshotName: string) {
 		// It cannot disable map's JS animations. So setting timeout.
 		await this.page.waitForTimeout(this.ANIMATION_TIME);
-		await expect(mapComponent.locator(this.MAP_CONTAINER_SELECTOR)).toHaveScreenshot(snapshotName, {
-			// @ts-expect-error clip is supported: https://playwright.dev/docs/api/class-pageassertions#page-assertions-to-have-screenshot-1
+		const screenshotBuffer = await mapComponent.locator(this.MAP_CONTAINER_SELECTOR).screenshot({
+			// @ts-expect-error clip is supported
 			clip: { x: 0, y: 0, width: 802, height: 508 },
+		});
+		expect(screenshotBuffer).toMatchSnapshot(snapshotName, {
 			maxDiffPixels: 5000,
 		});
 	}
