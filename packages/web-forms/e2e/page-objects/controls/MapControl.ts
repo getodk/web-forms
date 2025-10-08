@@ -153,7 +153,7 @@ export class MapControl {
 				content: `
         .map-container {
           width: 802px !important;
-          height: 508px !important;
+          height: 507px !important;
           max-width: 802px !important;
           max-height: 508px !important;
           overflow: hidden !important;
