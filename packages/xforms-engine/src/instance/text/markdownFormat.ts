@@ -1,4 +1,4 @@
-import type { Heading, RootContent } from 'mdast';
+import type { Heading, Literal, RootContent } from 'mdast';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { type MarkdownNode, type StyleProperty } from '../../client';
 import type { TextChunk } from '../../client/TextRange.ts';
@@ -22,7 +22,7 @@ import {
 	UnorderedList,
 } from '../markdown/MarkdownNode.ts';
 
-const STYLE_PROPERTY_REGEX = /style\s*=\s*(?:'|")(.*)(?:'|")/i;
+const STYLE_PROPERTY_REGEX = /style\s*=\s*(?:'|")(.+)(?:'|")/i;
 const END_TAG_REGEX = /(<\s*\/span\s*>)|(<\s*\/div\s*>)|(<\s*\/p\s*>)/i;
 
 const supportedHtmlTags = [
@@ -65,15 +65,18 @@ function validateStyleProperty(name: string | undefined, value: string | undefin
 
 function parseStyle(tag: string): StyleProperty | undefined {
 	const styleProperty = STYLE_PROPERTY_REGEX.exec(tag);
-	if (!styleProperty || styleProperty.length < 1) {
+	if (!styleProperty || styleProperty.length < 2) {
 		return;
 	}
 	const styleValue = styleProperty[1] ?? '';
 	const properties = styleValue.split(';');
-	const entries = properties
-		.map((property) => property.split(':'))
-		.map(([name, value]) => [name?.trim(), value?.trim()])
-		.filter(([name, value]) => validateStyleProperty(name, value));
+	const entries: string[][] = [];
+	properties.forEach((property) => {
+		const [name, value] = property.split(':').map((val) => val.trim());
+		if (validateStyleProperty(name, value)) {
+			entries.push([name!, value!]);
+		}
+	});
 	if (!entries.length) {
 		return;
 	}
@@ -100,6 +103,9 @@ function mdastHeading(tree: Heading, children: MarkdownNode[]): MarkdownNode {
 }
 
 function mdastNodeToOdkMarkdown(tree: RootContent): MarkdownNode | undefined {
+	if (tree.type === 'html') {
+		return new Html(tree.value);
+	}
 	if (tree.type === 'text' || tree.type === 'inlineCode') {
 		const outputString = outputStrings.get(tree.value);
 		if (outputString) {
@@ -139,35 +145,43 @@ function mdastNodeToOdkMarkdown(tree: RootContent): MarkdownNode | undefined {
 	return;
 }
 
+function getUnclosedHtmlTag(tree: RootContent) {
+	if (tree.type !== 'html') {
+		return;
+	}
+	const tag = supportedHtmlTags.find((supportedTag) => supportedTag.openRegex.test(tree.value));
+	if (!tag || tag.closeRegex.test(tree.value)) {
+		return;
+	}
+	return tag;
+}
+
 function mdastToOdkMarkdown(elements: RootContent[]): MarkdownNode[] {
 	const result: MarkdownNode[] = [];
 	for (let i = 0; i < elements.length; i++) {
 		const tree = elements[i]!;
-		if (tree.type === 'html') {
-			const tag = supportedHtmlTags.find((supportedTag) => supportedTag.openRegex.test(tree.value));
-			if (tag && !tag.closeRegex.test(tree.value)) {
-				// SPECIAL CASE in mdast processing
-				// span children are parsed into siblings in the mdast for some reason
-				// so we need to advance `i` as we consume siblings
-				const children: RootContent[] = [];
-				let next = elements[++i];
-				while (next && !(next.type === 'html' && END_TAG_REGEX.test(next.value))) {
-					children.push(next);
-					next = elements[++i];
-				}
-				const odkChildren = mdastToOdkMarkdown(children);
-				const style = parseStyle(tree.value);
-				const properties = style && { style };
-				result.push(new tag.create(odkChildren, properties));
-			} else {
-				result.push(new Html(tree.value));
-			}
-		} else {
+		const tag = getUnclosedHtmlTag(tree);
+		if (!tag) {
 			const odkMarkdown = mdastNodeToOdkMarkdown(tree);
 			if (odkMarkdown) {
 				result.push(odkMarkdown);
 			}
+			continue;
 		}
+
+		// SPECIAL CASE in mdast processing
+		// span children are parsed into siblings in the mdast for some reason
+		// so we need to advance `i` as we consume siblings
+		const children: RootContent[] = [];
+		let next = elements[++i];
+		while (next && !(next.type === 'html' && END_TAG_REGEX.test(next.value))) {
+			children.push(next);
+			next = elements[++i];
+		}
+		const odkChildren = mdastToOdkMarkdown(children);
+		const style = parseStyle((tree as Literal).value);
+		const properties = style && { style };
+		result.push(new tag.create(odkChildren, properties));
 	}
 	return result;
 }

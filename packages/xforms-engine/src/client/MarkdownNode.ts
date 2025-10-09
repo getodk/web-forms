@@ -5,7 +5,6 @@ export type ElementName =
 	| 'a'
 	| 'div'
 	| 'em'
-	| 'img'
 	| 'li'
 	| 'ol'
 	| 'p'
