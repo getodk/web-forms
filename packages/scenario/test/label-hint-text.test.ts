@@ -127,7 +127,6 @@ describe('`<label>` and/or `<hint>` text', () => {
 
 						scenario.next('/data/question');
 
-						// String innerText = scenario.getQuestionAtIndex().getLabelInnerText();
 						const text = scenario.getQuestionLabelText({
 							assertCurrentReference: '/data/question',
 						});
