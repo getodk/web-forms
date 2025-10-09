@@ -433,7 +433,7 @@ double line break`;
 		});
 	});
 
-	it('should work in select options', async () => {
+	it('should work in hints', async () => {
 		const scenario = await Scenario.init(
 			'markdown',
 			html(
