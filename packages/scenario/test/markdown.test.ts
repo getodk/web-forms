@@ -75,7 +75,6 @@ describe('Markdown', () => {
 	});
 
 	describe('should handle emphasis', () => {
-		// TODO can we drop the 'p' element??
 		const expected = {
 			elementName: 'p',
 			children: [
@@ -119,7 +118,6 @@ describe('Markdown', () => {
 
 	describe('should handle lists', () => {
 		it('ordered', async () => {
-			// TODO this is deeper than it probably needs to be?
 			const given = `1. first
 2. second
 3. third`;
@@ -193,6 +191,34 @@ describe('Markdown', () => {
 						elementName: 'div',
 						children: [{ value: 'style' }],
 						properties: { style: { 'text-align': 'center' } },
+					},
+					{ value: ' things' },
+				],
+			});
+		});
+
+		it('empty style tags', async () => {
+			await run('can handle &lt;div style=""&gt;empty&lt;/div&gt; things', {
+				elementName: 'p',
+				children: [
+					{ value: 'can handle ' },
+					{
+						elementName: 'div',
+						children: [{ value: 'empty' }],
+					},
+					{ value: ' things' },
+				],
+			});
+		});
+
+		it('invalid style tags', async () => {
+			await run('can handle &lt;div style=";;;a:b"&gt;invalid&lt;/div&gt; things', {
+				elementName: 'p',
+				children: [
+					{ value: 'can handle ' },
+					{
+						elementName: 'div',
+						children: [{ value: 'invalid' }],
 					},
 					{ value: ' things' },
 				],
