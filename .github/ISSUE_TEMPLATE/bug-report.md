@@ -1,6 +1,7 @@
 ---
 name: Verified Bug
-description: Report a confirmed bug in ODK Web Forms
+about: Report a confirmed bug in ODK Web Forms
+title: '<High-level descriptive title>'
 type: 'bug'
 assignees: ''
 ---
