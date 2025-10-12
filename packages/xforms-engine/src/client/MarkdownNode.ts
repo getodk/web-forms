@@ -48,4 +48,5 @@ export interface StyleProperty {
 	readonly color: string | undefined;
 	readonly 'font-family': string | undefined;
 	readonly 'text-align': 'center' | 'left' | 'right' | undefined;
+	readonly 'font-size': string | undefined;
 }

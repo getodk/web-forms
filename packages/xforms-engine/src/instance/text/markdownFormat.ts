@@ -54,7 +54,7 @@ function validateStyleProperty(name: string | undefined, value: string | undefin
 	if (!name || !value) {
 		return false;
 	}
-	if (!['color', 'font-family', 'text-align'].includes(name)) {
+	if (!['color', 'font-family', 'text-align', 'font-size'].includes(name)) {
 		return false;
 	}
 	if (name === 'text-align' && !['left', 'right', 'center'].includes(value)) {

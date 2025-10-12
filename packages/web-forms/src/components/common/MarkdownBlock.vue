@@ -29,10 +29,7 @@ const getUrl = (node: ParentMarkdownNode): string | undefined => {
 };
 
 const purify = (node: HtmlMarkdownNode): string => {
-	return DOMPurify.sanitize(node.unsafeHtml, {
-		ALLOWED_TAGS: ['span', 'p', 'div', 'br'],
-		ALLOWED_ATTR: ['style'],
-	});
+	return DOMPurify.sanitize(node.unsafeHtml);
 };
 </script>
 
@@ -50,11 +47,6 @@ const purify = (node: HtmlMarkdownNode): string => {
 	<a v-else-if="elem.role === 'parent' && elem.elementName === 'a'" :href="getUrl(elem)" target="_blank">
 		<MarkdownBlock v-for="(child, index) in elem.children" :key="index" :elem="child" />
 	</a>
-
-	<!-- paragraph - remove <p> tags -->
-	<template v-else-if="elem.role === 'parent' && elem.elementName === 'p'">
-		<MarkdownBlock v-for="(child, index) in elem.children" :key="index" :elem="child" />
-	</template>
 
 	<!-- any other parent element -->
 	<component :is="elem.elementName" v-else-if="elem.elementName" :style="getStylePropertyMap(elem)">
