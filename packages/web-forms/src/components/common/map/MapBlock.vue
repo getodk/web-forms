@@ -134,9 +134,7 @@ const discardSavedFeature = () => {
 @use 'primeflex/core/_variables.scss' as pf;
 
 .map-block-component {
-	--odk-map-spacing-lg: 20px;
-	--odk-map-spacing-md: 10px;
-	--odk-map-spacing-sm: 5px;
+	--odk-map-spacing: 10px;
 }
 
 .map-block-component {
@@ -180,8 +178,8 @@ const discardSavedFeature = () => {
 	position: absolute;
 	display: flex;
 	flex-direction: column;
-	top: var(--odk-map-spacing-md);
-	right: var(--odk-map-spacing-md);
+	top: var(--odk-map-spacing);
+	right: var(--odk-map-spacing);
 	z-index: var(--odk-z-index-form-floating);
 	gap: 4px;
 
@@ -201,8 +199,8 @@ const discardSavedFeature = () => {
 
 .map-block-component :deep(.ol-zoom) {
 	position: absolute;
-	right: var(--odk-map-spacing-md);
-	bottom: var(--odk-map-spacing-md);
+	right: var(--odk-map-spacing);
+	bottom: var(--odk-map-spacing);
 	display: flex;
 	flex-direction: column;
 	flex-wrap: nowrap;
@@ -241,8 +239,8 @@ const discardSavedFeature = () => {
 	color: var(--odk-error-text-color);
 	background-color: var(--odk-error-background-color);
 	border-radius: var(--odk-radius);
-	margin-top: var(--odk-map-spacing-lg);
-	padding: var(--odk-map-spacing-lg);
+	margin-top: 20px;
+	padding: 20px;
 
 	&.stack-errors {
 		padding: 20px 0 5px 0;
@@ -252,6 +250,10 @@ const discardSavedFeature = () => {
 }
 
 @media screen and (max-width: #{pf.$sm}) {
+	.map-block-component {
+		--odk-map-spacing: 5px;
+	}
+
 	.map-block-component {
 		height: fit-content;
 	}
@@ -268,13 +270,13 @@ const discardSavedFeature = () => {
 	}
 
 	.control-bar {
-		top: var(--odk-map-spacing-sm);
-		right: var(--odk-map-spacing-sm);
+		top: var(--odk-map-spacing);
+		right: var(--odk-map-spacing);
 	}
 
 	.map-block-component :deep(.ol-zoom) {
-		right: var(--odk-map-spacing-sm);
-		bottom: var(--odk-map-spacing-sm);
+		right: var(--odk-map-spacing);
+		bottom: var(--odk-map-spacing);
 	}
 }
 </style>
