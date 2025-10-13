@@ -43,10 +43,6 @@ const loadMap = async () => {
 	currentState.value = STATES.LOADING;
 
 	try {
-		/**
-		 * TODO: Implement retry mechanism for when the bundle fails to download.
-		 *       Adding a cache bust parameter doesn't work in Central.
-		 */
 		mapComponent.value = (
 			(await import('./MapBlock.vue')) as {
 				default: MapBlockComponent;
@@ -70,14 +66,6 @@ onMounted(loadMap);
 			<p class="map-error-message">
 				Unable to load map
 			</p>
-
-			<!-- TODO: Uncomment once retry mechanism is implemented.
-				<Button outlined severity="contrast" class="retry-button" @click="loadMap">
-				<IconSVG name="mdiRefresh" />
-				// TODO: translations
-				<span>Try again</span>
-				</Button>
-			-->
 		</div>
 
 		<ProgressSpinner v-else-if="currentState === STATES.LOADING" class="map-spinner" />
