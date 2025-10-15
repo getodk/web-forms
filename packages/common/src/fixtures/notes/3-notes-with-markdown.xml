@@ -26,8 +26,17 @@
             <userentered/>
             <translated/>
             <selected/>
+            <selectedminimal/>
+            <dropdown/>
+            <rank/>
             <note/>
           </group>
+          <group2>
+            <input/>
+          </group2>
+          <rep>
+            <a>default value</a>
+          </rep>
           <meta>
             <instanceID />
           </meta>
@@ -54,6 +63,11 @@
       <bind nodeset="/data/group/userentered" readonly="true()" type="string" />
       <bind nodeset="/data/group/translated" readonly="true()" type="string" />
       <bind nodeset="/data/group/selected" type="string" />
+      <bind nodeset="/data/group/selectedminimal" type="string" />
+      <bind nodeset="/data/group/dropdown" type="string"/>
+      <bind nodeset="/data/group/rank" type="rank"/>
+      <bind nodeset="/data/group2/input" type="string"/>
+      <bind nodeset="/data/rep/a" type="string" />
       <bind nodeset="/data/group/note" readonly="true()" type="note" />
     </model>
   </h:head>
@@ -68,11 +82,25 @@
         <hint>Type **your name** below</hint>
       </input>
       <input ref="/data/group/userentered">
-        <label>*You said:&lt;span style="color:red;font-family:cursive"&gt;<output value="/data/group/name" />&lt;/span&gt;* but should it be markeddown?</label>
+        <label>*You said:&lt;span style="color:red;font-family:cursive"&gt;<output value="/data/group/dropdown" />&lt;/span&gt;* but should it be markeddown?</label>
       </input>
       <input ref="/data/group/translated">
         <label ref="jr:itext('q1:label')" />
       </input>
+      <group ref="/data/group2">
+        <label>*Groups*</label>
+        <input ref="/data/group2/input">
+          <label>label</label>
+        </input>
+      </group>
+      <group ref="/data/rep">
+        <label>&lt;span style="color:green"&gt;Repeat group&lt;/span&gt;</label>
+        <repeat nodeset="/data/rep">
+            <input ref="/data/rep/a">
+              <label>Repeat input a</label>
+            </input>
+        </repeat>
+      </group>
       <select1 ref="/data/group/selected">
         <label>Select options</label>
         <itemset nodeset="instance('selectoptions')/root/item">
@@ -80,6 +108,47 @@
           <label ref="label" />
         </itemset>
       </select1>
+      <select1 appearance="minimal" ref="/data/group/selectedminimal">
+        <label>Select options minimal</label>
+        <item>
+          <label>&lt;span style="color:green"&gt;Yes&lt;/span&gt;</label>
+          <value>yes</value>
+        </item>
+        <item>
+          <label>&lt;span style="color:red"&gt;No&lt;/span&gt;</label>
+          <value>no</value>
+        </item>
+      </select1>
+      <select appearance="minimal" ref="/data/group/dropdown">
+        <label>Select multiple minimal</label>
+        <item>
+          <label>&lt;span style="color:green"&gt;Yes&lt;/span&gt;</label>
+          <value>yes</value>
+        </item>
+        <item>
+          <label>&lt;span style="color:red"&gt;No&lt;/span&gt;</label>
+          <value>no</value>
+        </item>
+      </select>
+      <odk:rank ref="/data/group/rank">
+        <label>Rank this <em>stuff</em></label>
+        <item>
+          <label>&lt;span style="color:green"&gt;Green&lt;/span&gt;</label>
+          <value>A</value>
+        </item>
+        <item>
+          <label>&lt;span style="color:red"&gt;Red&lt;/span&gt;</label>
+          <value>B</value>
+        </item>
+        <item>
+          <label>&lt;span style="color:blue"&gt;Blue&lt;/span&gt;</label>
+          <value>C</value>
+        </item>
+        <item>
+          <label>&lt;span style="color:yellow"&gt;Yellow&lt;/span&gt;</label>
+          <value>D</value>
+        </item>
+      </odk:rank>
       <input ref="/data/group/note">
         <label>
 # heading 1

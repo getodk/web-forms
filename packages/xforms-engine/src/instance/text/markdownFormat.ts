@@ -204,7 +204,13 @@ function escapeEditableChunks(chunks: readonly TextChunk[]) {
 
 function toOdkMarkdown(str: string): MarkdownNode[] {
 	const tree = fromMarkdown(str);
-	return mdastToOdkMarkdown(tree.children);
+	const odk = mdastToOdkMarkdown(tree.children);
+	if (odk.length === 1 && odk[0]?.role === 'parent' && odk[0]?.elementName === 'p') {
+		// mdast tends to add too many paragraphs which if left in place, puts a block level
+		// element where it's not needed
+		return odk[0].children;
+	}
+	return odk;
 }
 
 export function format(chunks: readonly TextChunk[]): MarkdownNode[] {

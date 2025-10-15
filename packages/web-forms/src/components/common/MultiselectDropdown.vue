@@ -2,6 +2,7 @@
 import type { SelectNode } from '@getodk/xforms-engine';
 import MultiSelect from 'primevue/multiselect';
 import { computed } from 'vue';
+import MarkdownBlock from './MarkdownBlock.vue';
 
 interface MultiselectDropdownProps {
 	readonly question: SelectNode;
@@ -21,7 +22,7 @@ const options = computed(() => {
 
 		return {
 			value: option.value,
-			label: option.label.asString,
+			label: option.label,
 		};
 	});
 });
@@ -34,6 +35,14 @@ let panelClass = 'multi-select-dropdown-panel';
 if (props.question.appearances['no-buttons']) {
 	panelClass += ' no-buttons';
 }
+
+const getSelectedLabels = () => {
+	const state = props.question.currentState;
+	return state.value.map((val) => {
+		const found = state.valueOptions.find((opt) => opt.value === val);
+		return found?.label.formatted;
+	});
+};
 </script>
 
 <template>
@@ -51,13 +60,21 @@ if (props.question.appearances['no-buttons']) {
 		:show-toggle-all="false"
 		:disabled="props.question.currentState.readonly"
 		:options="options"
-		option-label="label"
 		option-value="value"
 		:panel-class="panelClass"
 		:model-value="question.currentState.value"
 		@update:model-value="selectValues"
 		@change="$emit('change')"
-	/>
+	>
+		<template #option="slotProps">
+			<MarkdownBlock v-for="(elem, index) in slotProps.option.label.formatted" :key="index" :elem="elem" />
+		</template>
+		<template #value>
+			<template v-for="(markdown, index) in getSelectedLabels()" :key="index">
+				<MarkdownBlock v-for="(elem, j) in markdown" :key="j" :elem="elem" />
+			</template>
+		</template>
+	</MultiSelect>
 </template>
 
 <style scoped lang="scss">
