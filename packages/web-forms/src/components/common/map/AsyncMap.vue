@@ -20,8 +20,7 @@ type MapBlockComponent = DefineComponent<{
 }>;
 
 interface AsyncMapProps {
-	// ToDo: Expand typing when implementing Geo Point/Shape/Trace question types.
-	features: readonly SelectItem[];
+	features: readonly SelectItem[] | readonly string[];
 	disabled: boolean;
 	savedFeatureValue: string | undefined;
 }
