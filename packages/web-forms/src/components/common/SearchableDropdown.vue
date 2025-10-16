@@ -22,19 +22,21 @@ const options = computed(() => {
 
 		return {
 			value: option.value,
-			label: option.label,
+			label: option.label.formatted,
+			search: option.label.asString,
 		};
 	});
 });
 
-const getSelectedLabel = () => {
+const selectedLabel = computed(() => {
 	const value = props.question.currentState?.value?.[0];
-	if (value) {
-		const valueOptions = props.question.currentState.valueOptions;
-		const found = valueOptions.find((opt) => opt.value === value);
-		return found?.label.formatted;
+	if (!value) {
+		return [];
 	}
-};
+	const valueOptions = props.question.currentState.valueOptions;
+	const found = valueOptions.find((opt) => opt.value === value);
+	return found?.label.formatted;
+});
 
 const selectValue = (value: string) => {
 	props.question.selectValue(value);
@@ -51,15 +53,16 @@ const selectValue = (value: string) => {
 		:model-value="question.currentState.value[0]"
 		:disabled="props.question.currentState.readonly"
 		:options="options"
+		option-label="search"
 		option-value="value"
 		@update:model-value="selectValue"
 		@change="$emit('change')"
 	>
 		<template #option="slotProps">
-			<MarkdownBlock v-for="(elem, index) in slotProps.option.label.formatted" :key="index" :elem="elem" />
+			<MarkdownBlock v-for="(elem, index) in slotProps.option.label" :key="index" :elem="elem" />
 		</template>
 		<template #value>
-			<MarkdownBlock v-for="(elem, index) in getSelectedLabel()" :key="index" :elem="elem" />
+			<MarkdownBlock v-for="(elem, index) in selectedLabel" :key="index" :elem="elem" />
 		</template>
 	</Select>
 </template>
