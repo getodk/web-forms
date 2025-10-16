@@ -171,7 +171,7 @@ const onDragEnd = (oldIndex: number | undefined, newIndex: number | undefined) =
 		</VueDraggable>
 	</div>
 
-	<ValidationMessage :message="question.validationState.violation?.message.asString" />
+	<ValidationMessage :message="question.validationState.violation?.message.formatted" />
 </template>
 
 <style scoped lang="scss">
