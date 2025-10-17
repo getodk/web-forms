@@ -2,18 +2,22 @@ import { expect, Locator, Page, test } from '@playwright/test';
 import { FillFormPage } from '../page-objects/pages/FillFormPage.ts';
 import { PreviewPage } from '../page-objects/pages/PreviewPage.ts';
 
+const ANIMATION_TIME = 50;
+
 async function selectMultiDropdownOption(page: Page, container: Locator, ...labels: string[]) {
 	const dropdown = container.locator('.multi-select-dropdown');
 	await dropdown.click();
 	for (const label of labels) {
 		await page.locator(`.p-multiselect-option:has-text("${label}")`).click();
 	}
+	await page.waitForTimeout(ANIMATION_TIME);
 }
 
 async function selectDropdownOption(page: Page, container: Locator, label: string) {
 	const dropdown = container.locator('.dropdown');
 	await dropdown.click();
 	await page.locator(`.p-select-option:has-text("${label}")`).click();
+	await page.waitForTimeout(ANIMATION_TIME);
 }
 
 /**
@@ -53,6 +57,7 @@ test.describe('Markdown formatting', () => {
 			'.question-container:has-text("Select multiple minimal")'
 		);
 		await selectMultiDropdownOption(page, dropdownNContainer, 'yes', 'no');
+
 		await expect(dropdownNContainer).toHaveScreenshot('dropdown-multiple-select.png');
 
 		const note = page.locator('.question-container:has-text("heading 1") .note-control');
