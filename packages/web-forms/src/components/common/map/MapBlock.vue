@@ -43,6 +43,7 @@ onMounted(() => {
 
 onUnmounted(() => {
 	document.removeEventListener('keydown', handleEscapeKey);
+	mapHandler.stopWatchingCurrentLocation();
 });
 
 watch(

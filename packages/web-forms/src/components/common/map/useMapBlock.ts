@@ -11,15 +11,21 @@ import Feature from 'ol/Feature';
 import GeoJSON from 'ol/format/GeoJSON';
 import { LineString, Point, Polygon } from 'ol/geom';
 import TileLayer from 'ol/layer/Tile';
+import VectorLayer from 'ol/layer/Vector';
 import WebGLVectorLayer from 'ol/layer/WebGLVector';
 import type { Pixel } from 'ol/pixel';
 import { fromLonLat } from 'ol/proj';
 import { OSM } from 'ol/source';
 import VectorSource from 'ol/source/Vector';
+import { Icon, Style } from 'ol/style';
 import { computed, shallowRef, watch } from 'vue';
 import { get as getProjection } from 'ol/proj';
+import locationIcon from '@/assets/images/location-icon.svg';
 
 type GeometryType = LineString | Point | Polygon;
+type LocationWatchID = ReturnType<typeof navigator.geolocation.watchPosition>;
+interface BrowserLocation
+	extends Pick<GeolocationCoordinates, 'accuracy' | 'altitude' | 'latitude' | 'longitude'> {}
 
 const STATES = {
 	LOADING: 'loading',
@@ -40,9 +46,13 @@ const SAVED_ID_PROPERTY = 'savedId';
 const SELECTED_ID_PROPERTY = 'selectedId';
 
 export function useMapBlock() {
+	let mapInstance: Map | undefined;
+
 	const currentState = shallowRef<(typeof STATES)[keyof typeof STATES]>(STATES.LOADING);
 	const errorMessage = shallowRef<{ title: string; message: string } | undefined>();
-	let mapInstance: Map | undefined;
+	const watchLocation = shallowRef<LocationWatchID | undefined>();
+
+	const lastUserLocation = shallowRef<BrowserLocation | undefined>();
 	const savedFeature = shallowRef<Feature<GeometryType> | undefined>();
 	const selectedFeature = shallowRef<Feature<GeometryType> | undefined>();
 	const selectedFeatureProperties = computed(() => {
@@ -60,6 +70,12 @@ export function useMapBlock() {
 		variables: { [SAVED_ID_PROPERTY]: '', [SELECTED_ID_PROPERTY]: '' },
 	});
 
+	const currentLocationSource = new VectorSource();
+	const currentLocationLayer = new VectorLayer({
+		source: currentLocationSource,
+		style: new Style({ image: new Icon({ src: locationIcon }) }),
+	});
+
 	const initializeMap = (mapContainer: HTMLElement, geoJSON: FeatureCollection): void => {
 		if (mapInstance) {
 			return;
@@ -67,7 +83,7 @@ export function useMapBlock() {
 
 		mapInstance = new Map({
 			target: mapContainer,
-			layers: [new TileLayer({ source: new OSM() }), featuresVectorLayer],
+			layers: [new TileLayer({ source: new OSM() }), currentLocationLayer, featuresVectorLayer],
 			view: new View({
 				center: DEFAULT_VIEW_CENTER,
 				zoom: MIN_ZOOM,
@@ -118,33 +134,41 @@ export function useMapBlock() {
 		}
 	};
 
-	const centerCurrentLocation = (): void => {
-		// TODO: translations
-		const friendlyError = {
-			title: 'Cannot access location',
-			message:
-				'Grant location permission in the browser settings and make sure location is turned on.',
+	const stopWatchingCurrentLocation = () => {
+		if (watchLocation.value) {
+			navigator.geolocation.clearWatch(watchLocation.value);
+			watchLocation.value = undefined;
+		}
+	};
+
+	const centerCurrentLocation = (startWatch?: boolean): void => {
+		const options = { enableHighAccuracy: true, timeout: GEOLOCATION_TIMEOUT_MS };
+
+		const handleSucess = (position: GeolocationPosition) => {
+			const { latitude, longitude, altitude, accuracy } = position.coords;
+			lastUserLocation.value = { latitude, longitude, altitude, accuracy };
+		};
+
+		const handleError = () => {
+			currentState.value = STATES.ERROR;
+			// TODO: translations
+			errorMessage.value = {
+				title: 'Cannot access location',
+				message:
+					'Grant location permission in the browser settings and make sure location is turned on.',
+			};
 		};
 
 		if (!navigator.geolocation) {
-			currentState.value = STATES.ERROR;
-			errorMessage.value = friendlyError;
+			handleError();
 		}
 
-		navigator.geolocation.getCurrentPosition(
-			(position) => {
-				const coords = fromLonLat([position.coords.longitude, position.coords.latitude]);
-				mapInstance
-					?.getView()
-					.animate({ center: coords, zoom: MAX_ZOOM, duration: ANIMATION_TIME });
-				currentState.value = STATES.READY;
-			},
-			() => {
-				currentState.value = STATES.ERROR;
-				errorMessage.value = friendlyError;
-			},
-			{ enableHighAccuracy: true, timeout: GEOLOCATION_TIMEOUT_MS }
-		);
+		if (startWatch) {
+			watchLocation.value = navigator.geolocation.watchPosition(handleSucess, handleError, options);
+			return;
+		}
+
+		navigator.geolocation.getCurrentPosition(handleSucess, handleError, options);
 	};
 
 	const centerFeatureLocation = (feature: Feature<GeometryType>): void => {
@@ -285,6 +309,23 @@ export function useMapBlock() {
 		}
 	);
 
+	watch(
+		() => lastUserLocation.value,
+		(newLocation) => {
+			currentLocationSource.clear(true);
+			if (!newLocation) {
+				return;
+			}
+
+			const parsedCoords = fromLonLat([newLocation.longitude, newLocation.latitude]);
+			currentLocationSource.addFeature(new Feature({ geometry: new Point(parsedCoords) }));
+			mapInstance
+				?.getView()
+				.animate({ center: parsedCoords, zoom: MAX_ZOOM, duration: ANIMATION_TIME });
+			currentState.value = STATES.READY;
+		}
+	);
+
 	return {
 		initializeMap,
 		loadGeometries,
@@ -292,6 +333,7 @@ export function useMapBlock() {
 		toggleClickBinding,
 
 		centerCurrentLocation,
+		stopWatchingCurrentLocation,
 		fitToAllFeatures,
 
 		savedFeature,
