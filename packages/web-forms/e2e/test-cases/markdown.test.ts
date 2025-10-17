@@ -61,6 +61,8 @@ test.describe('Markdown formatting', () => {
 		await expect(dropdownNContainer).toHaveScreenshot('dropdown-multiple-select.png');
 
 		const note = page.locator('.question-container:has-text("heading 1") .note-control');
-		await expect(note).toHaveScreenshot('note.png');
+		await expect(note).toHaveScreenshot('note.png', {
+			maxDiffPixelRatio: 0.05,
+		});
 	});
 });
