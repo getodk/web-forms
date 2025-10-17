@@ -55,7 +55,7 @@ test.describe('Markdown formatting', () => {
 		await selectMultiDropdownOption(page, dropdownNContainer, 'yes', 'no');
 		await expect(dropdownNContainer).toHaveScreenshot('dropdown-multiple-select.png');
 
-		const note = page.locator('.question-container:has-text("heading 1")');
+		const note = page.locator('.question-container:has-text("heading 1") .note-control');
 		await expect(note).toHaveScreenshot('note.png');
 	});
 });
