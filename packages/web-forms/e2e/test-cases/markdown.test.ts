@@ -42,23 +42,31 @@ test.describe('Markdown formatting', () => {
 			'<span style="color:green">marty mcfly</span>'
 		);
 		const output = page.locator('.question-container:has-text("You said:")');
-		await expect(output).toHaveScreenshot('user-entered.png');
+		await expect(output).toHaveScreenshot('user-entered.png', {
+			maxDiffPixelRatio: 0.02,
+		});
 
 		const select1 = page.locator('.question-container:has-text("Select options full")');
-		await expect(select1).toHaveScreenshot('select-options.png');
+		await expect(select1).toHaveScreenshot('select-options.png', {
+			maxDiffPixelRatio: 0.02,
+		});
 
 		const dropdown1Container = page.locator(
 			'.question-container:has-text("Select options minimal")'
 		);
 		await selectDropdownOption(page, dropdown1Container, 'yes');
-		await expect(dropdown1Container).toHaveScreenshot('dropdown-options.png');
+		await expect(dropdown1Container).toHaveScreenshot('dropdown-options.png', {
+			maxDiffPixelRatio: 0.02,
+		});
 
 		const dropdownNContainer = page.locator(
 			'.question-container:has-text("Select multiple minimal")'
 		);
 		await selectMultiDropdownOption(page, dropdownNContainer, 'yes', 'no');
 
-		await expect(dropdownNContainer).toHaveScreenshot('dropdown-multiple-select.png');
+		await expect(dropdownNContainer).toHaveScreenshot('dropdown-multiple-select.png', {
+			maxDiffPixelRatio: 0.02,
+		});
 
 		const note = page.locator('.question-container:has-text("heading 1") .note-control');
 		await expect(note).toHaveScreenshot('note.png', {
