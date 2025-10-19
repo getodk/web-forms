@@ -54,4 +54,9 @@ export class TextControl {
 	async expectHint(expectedHintText: string) {
 		await this.expectText('.control-text .hint', expectedHintText);
 	}
+
+	async expectScreenshot(locator: string, screenshotFilename: string, options: object = {}) {
+		const select1 = this.page.locator(locator);
+		await expect(select1).toHaveScreenshot(screenshotFilename, options);
+	}
 }
