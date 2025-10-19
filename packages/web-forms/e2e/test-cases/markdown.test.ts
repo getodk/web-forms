@@ -20,10 +20,6 @@ async function selectDropdownOption(page: Page, container: Locator, label: strin
 	await page.waitForTimeout(ANIMATION_TIME);
 }
 
-/**
- * Tests the UI functionality of all question types in the "All Question Types" form,
- * including rendering, user input, and validation.
- */
 test.describe('Markdown formatting', () => {
 	let formPage: FillFormPage;
 
