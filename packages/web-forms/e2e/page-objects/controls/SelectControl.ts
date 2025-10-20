@@ -1,4 +1,4 @@
-import { Locator, Page } from '@playwright/test';
+import { Page } from '@playwright/test';
 
 const ANIMATION_TIME = 50;
 
@@ -9,7 +9,8 @@ export class SelectControl {
 		this.page = page;
 	}
 
-	async selectMultiDropdownOption(container: Locator, ...labels: string[]) {
+	async selectMultiDropdownOption(locator: string, ...labels: string[]) {
+		const container = this.page.locator(locator);
 		const dropdown = container.locator('.multi-select-dropdown');
 		await dropdown.click();
 		for (const label of labels) {
@@ -18,7 +19,8 @@ export class SelectControl {
 		await this.page.waitForTimeout(ANIMATION_TIME);
 	}
 
-	async selectDropdownOption(container: Locator, label: string) {
+	async selectDropdownOption(locator: string, label: string) {
+		const container = this.page.locator(locator);
 		const dropdown = container.locator('.dropdown');
 		await dropdown.click();
 		await this.page.locator(`.p-select-option:has-text("${label}")`).click();

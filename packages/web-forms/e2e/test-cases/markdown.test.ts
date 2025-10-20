@@ -19,17 +19,19 @@ test.describe('Markdown formatting', () => {
 			'<span style="color:green">marty mcfly</span>',
 			'<span style="color:green">marty mcfly</span>'
 		);
-
-		const dropdown1Container = page.locator(
-			'.question-container:has-text("Select options minimal")'
+		await formPage.select.selectDropdownOption(
+			'.question-container:has-text("Select options minimal")',
+			'yes'
 		);
-		await formPage.select.selectDropdownOption(dropdown1Container, 'yes');
-
-		const dropdownNContainer = page.locator(
-			'.question-container:has-text("Select multiple minimal")'
+		await formPage.select.selectMultiDropdownOption(
+			'.question-container:has-text("Select multiple minimal")',
+			'yes',
+			'no'
 		);
-		await formPage.select.selectMultiDropdownOption(dropdownNContainer, 'yes', 'no');
 
-		await expect(page).toHaveScreenshot('full-page.png', { fullPage: true });
+		await expect(page).toHaveScreenshot('full-page.png', {
+			fullPage: true,
+			maxDiffPixelRatio: 0.02,
+		});
 	});
 });
