@@ -46,6 +46,10 @@ export class Strong extends ParentMarkdownNode {
 	readonly elementName = 'strong';
 }
 
+export class Underline extends ParentMarkdownNode {
+	readonly elementName = 'u';
+}
+
 export class Emphasis extends ParentMarkdownNode {
 	readonly elementName = 'em';
 }

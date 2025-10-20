@@ -19,34 +19,28 @@ import {
 	Paragraph,
 	Span,
 	Strong,
+	Underline,
 	UnorderedList,
 } from '../markdown/MarkdownNode.ts';
 
 const STYLE_PROPERTY_REGEX = /style\s*=\s*(?:'|")(.+)(?:'|")/i;
-const END_TAG_REGEX = /(<\s*\/span\s*>)|(<\s*\/div\s*>)|(<\s*\/p\s*>)/i;
-
-const supportedHtmlTags = [
-	// span
-	{
-		openRegex: /^s*<s*span/i,
-		closeRegex: /<\s*\/span\s*>/i,
-		create: Span,
-	},
-
-	// div
-	{
-		openRegex: /^s*<s*div/i,
-		closeRegex: /<\s*\/div\s*>/i,
-		create: Div,
-	},
-
-	// paragraph
-	{
-		openRegex: /^s*<s*p/i,
-		closeRegex: /<\s*\/p\s*>/i,
-		create: Paragraph,
-	},
-];
+const HTML_TAG_MAP = {
+	span: Span,
+	div: Div,
+	p: Paragraph,
+	u: Underline,
+	i: Emphasis,
+	em: Emphasis,
+	b: Strong,
+	strong: Strong,
+};
+const SUPPORTED_HTML_TAGS = Object.entries(HTML_TAG_MAP).map(([tag, type]) => {
+	return {
+		openRegex: RegExp(`^\\s*<\\s*${tag}[\\s+>]`, 'i'),
+		closeRegex: RegExp(`<\\s*/${tag}\\s*>`, 'i'),
+		type,
+	};
+});
 
 let outputStrings: Map<string, string>;
 
@@ -149,7 +143,7 @@ function getUnclosedHtmlTag(tree: RootContent) {
 	if (tree.type !== 'html') {
 		return;
 	}
-	const tag = supportedHtmlTags.find((supportedTag) => supportedTag.openRegex.test(tree.value));
+	const tag = SUPPORTED_HTML_TAGS.find((supported) => supported.openRegex.test(tree.value));
 	if (!tag || tag.closeRegex.test(tree.value)) {
 		return;
 	}
@@ -174,14 +168,14 @@ function mdastToOdkMarkdown(elements: RootContent[]): MarkdownNode[] {
 		// so we need to advance `i` as we consume siblings
 		const children: RootContent[] = [];
 		let next = elements[++i];
-		while (next && !(next.type === 'html' && END_TAG_REGEX.test(next.value))) {
+		while (next && !(next.type === 'html' && tag.closeRegex.test(next.value))) {
 			children.push(next);
 			next = elements[++i];
 		}
 		const odkChildren = mdastToOdkMarkdown(children);
 		const style = parseStyle((tree as Literal).value);
 		const properties = style && { style };
-		result.push(new tag.create(odkChildren, properties));
+		result.push(new tag.type(odkChildren, properties));
 	}
 	return result;
 }

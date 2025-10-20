@@ -28,8 +28,8 @@ describe('Markdown', () => {
 		);
 		scenario.next('/data/name');
 		const label = scenario.getQuestionLabel({ assertCurrentReference: '/data/name' }).formatted;
-		expect(label.length).toEqual(expected.length);
 		expect(label).toMatchObject(expected);
+		expect(label.length).toEqual(expected.length);
 	};
 
 	it('should do nothing with plaintext', async () => {
@@ -83,6 +83,14 @@ describe('Markdown', () => {
 		it('underscore style', async () => {
 			await run('_emphasize_ me', expected);
 		});
+
+		it('html style - i', async () => {
+			await run('&lt;i&gt;emphasize&lt;/i&gt; me', expected);
+		});
+
+		it('html style - em', async () => {
+			await run('&lt;em&gt;emphasize&lt;/em&gt; me', expected);
+		});
 	});
 
 	describe('should handle strong', () => {
@@ -100,6 +108,32 @@ describe('Markdown', () => {
 
 		it('underscore style', async () => {
 			await run('__strengthen__ me', expected);
+		});
+
+		it('html style - b', async () => {
+			await run('&lt;b&gt;strengthen&lt;/b&gt; me', expected);
+		});
+
+		it('html style - strong', async () => {
+			await run('&lt;strong&gt;strengthen&lt;/strong&gt; me', expected);
+		});
+
+		it('html style - strong with whitespace inside tags', async () => {
+			await run('&lt;strong &gt;strengthen&lt;/strong	&gt; me', expected);
+		});
+	});
+
+	describe('should handle underline', () => {
+		const expected = [
+			{
+				elementName: 'u',
+				children: [{ value: 'underline' }],
+			},
+			{ value: ' me' },
+		];
+
+		it('html style', async () => {
+			await run('&lt;u&gt;underline&lt;/u&gt; me', expected);
 		});
 	});
 

@@ -10,6 +10,7 @@ export type ElementName =
 	| 'p'
 	| 'span'
 	| 'strong'
+	| 'u'
 	| 'ul';
 
 export type MarkdownNode = ChildMarkdownNode | HtmlMarkdownNode | ParentMarkdownNode;

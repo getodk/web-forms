@@ -50,7 +50,7 @@
 	}
 
 	:deep(.text-content) {
-		max-width: calc(100% - 40px);
+		width: calc(100% - 40px);
 		word-break: break-word;
 	}
 
