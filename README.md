@@ -81,7 +81,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  ##### Appearances<br/>🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 32\%
+  ##### Appearances<br/>🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 34\%
 
   </summary>
   <br/>
@@ -129,8 +129,8 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | label                      |    ✅    |
 | list-nolabel               |    ✅    |
 | list                       |    ✅    |
+| table-list                 |    ✅    |
 | counter                    |          |
-| table-list                 |          |
 | hidden-answer              |          |
 | printer                    |          |
 | masked                     |          |
