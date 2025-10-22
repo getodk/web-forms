@@ -13,6 +13,7 @@
 - c7ed41b: Fix validation for the map's "zoom to features" action.
 - 45a3d16: Adds map tile attribution
 - daef669: Throw an error when jr:choice_name is called with a reference that does not exist
+- 9a51706: Display an error on the map if graphics are disabled
 
 ## 0.15.0
 
