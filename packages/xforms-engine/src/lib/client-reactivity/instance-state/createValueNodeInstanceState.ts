@@ -12,9 +12,14 @@ export const createValueNodeInstanceState = (
 			if (!node.currentState.relevant) {
 				return '';
 			}
+			const xmlValue = escapeXMLText(node.currentState.instanceValue); // TODO push this down into serializeLeafElementXML ?
+			const attributes = node.currentState.attributes;
 
-			const xmlValue = escapeXMLText(node.currentState.instanceValue);
+			console.log('creating value node',xmlValue, attributes);
 
+			if (attributes) {
+				return serializeLeafElementXML(qualifiedName, xmlValue, { attributes });
+			}
 			return serializeLeafElementXML(qualifiedName, xmlValue);
 		},
 	};

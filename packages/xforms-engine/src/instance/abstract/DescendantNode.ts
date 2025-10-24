@@ -149,6 +149,8 @@ export abstract class DescendantNode<
 			this.root = parent.root;
 		}
 
+		// TODO This may be the parent of all nodes that can have attributes??
+
 		const { evaluator } = parent;
 
 		// See notes on property declaration

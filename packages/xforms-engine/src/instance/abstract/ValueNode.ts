@@ -21,6 +21,7 @@ import type { SimpleAtomicState } from '../../lib/reactivity/types.ts';
 import type { SharedValidationState } from '../../lib/reactivity/validation/createValidation.ts';
 import { createValidationState } from '../../lib/reactivity/validation/createValidation.ts';
 import { LeafNodeDefinition } from '../../parse/model/LeafNodeDefinition.ts';
+import { RootAttributeDefinition } from '../../parse/model/RootAttributeDefinition.ts';
 import type { GeneralParentNode } from '../hierarchy.ts';
 import type { EvaluationContext } from '../internal-api/EvaluationContext.ts';
 import type {
@@ -38,6 +39,7 @@ export interface ValueNodeStateSpec<RuntimeValue> extends DescendantNodeStateSpe
 	readonly children: null;
 	readonly value: SimpleAtomicState<RuntimeValue>;
 	readonly instanceValue: Accessor<string>;
+	readonly attributes: Accessor<[]>; // TODO
 }
 
 export abstract class ValueNode<
@@ -81,6 +83,16 @@ export abstract class ValueNode<
 		return this.validation.currentState;
 	}
 
+	readonly getAttributes: Accessor<RootAttributeDefinition[]>;
+
+	// readonly getAttributes: Accessor<[]> = () => { // TODO should be at a higher level again - attributes can be on non-value nodes too
+	// 	const attr = new RootAttributeDefinition(null, {
+	// 		qualifiedName: { localName: 'hello', getPrefixedName: ()=> 'helo' },
+	// 		value: 'abc'
+	// 	});
+	// 	return [attr];
+	// };
+
 	readonly instanceState: InstanceState;
 
 	constructor(
@@ -92,6 +104,7 @@ export abstract class ValueNode<
 		super(parent, instanceNode, definition);
 
 		this.valueType = definition.valueType;
+		
 		this.decodeInstanceValue = codec.decodeInstanceValue;
 
 		const instanceValueState = createInstanceValueState(this);
@@ -100,7 +113,10 @@ export abstract class ValueNode<
 		const [getInstanceValue] = instanceValueState;
 		const [, setValueState] = valueState;
 
-		this.getInstanceValue = getInstanceValue;
+		this.getInstanceValue = () => {
+			console.log('getting instance value');
+			return getInstanceValue();
+		};
 		this.setValueState = setValueState;
 		this.getXPathValue = () => {
 			return this.getInstanceValue();
@@ -108,6 +124,10 @@ export abstract class ValueNode<
 		this.valueState = valueState;
 		this.validation = createValidationState(this, this.instanceConfig);
 		this.instanceState = createValueNodeInstanceState(this);
+
+		this.getAttributes = () => { // TODO should be at a higher level again - attributes can be on non-value nodes too
+			return Array.from(definition.attributes.values());
+		};
 	}
 
 	// ValidationContext

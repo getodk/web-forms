@@ -41,6 +41,7 @@ export class ModelBindMap extends Map<BindNodeset, BindDefinition> {
 			form.xformDOM.binds.map((bindElement) => {
 				const nodeset = bindElement.getAttribute('nodeset');
 				const bind = new BindDefinition(form, model, nodeset, bindElement);
+				console.log('binding', nodeset);
 
 				return [nodeset, bind];
 			})

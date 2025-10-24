@@ -1,7 +1,9 @@
 import { XMLNS_NAMESPACE_URI } from '@getodk/common/constants/xmlns.ts';
 import type { NamedNodeDefinition } from '../../lib/names/NamespaceDeclarationMap.ts';
 import { QualifiedName } from '../../lib/names/QualifiedName.ts';
+import { createInstanceValueState } from '../../lib/reactivity/createInstanceValueState.ts';
 import { escapeXMLText } from '../../lib/xml-serialization.ts';
+import type { BindDefinition } from './BindDefinition.ts';
 import type { RootDefinition } from './RootDefinition.ts';
 
 interface RootAttributeSource {
@@ -20,13 +22,16 @@ export class RootAttributeDefinition implements NamedNodeDefinition {
 	readonly parent: RootDefinition;
 	readonly qualifiedName: QualifiedName;
 	readonly value: string;
+	readonly bind: BindDefinition;
 
-	constructor(root: RootDefinition, source: RootAttributeSource) {
+	constructor(root: RootDefinition, source: RootAttributeSource, bind: BindDefinition) {
 		const { qualifiedName, value } = source;
 
 		this.parent = root;
 		this.qualifiedName = qualifiedName;
+		const instanceValueState = createInstanceValueState(this); // Should be in the Node not the definition
 		this.value = value;
+		this.bind = bind;
 
 		// We serialize namespace declarations separately
 		if (qualifiedName.namespaceURI?.href === XMLNS_NAMESPACE_URI) {

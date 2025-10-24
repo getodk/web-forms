@@ -13,7 +13,8 @@ export type LeafNodeType =
 	| 'trigger'
 	| 'range'
 	| 'rank'
-	| 'upload';
+	| 'upload'
+	| 'attribute';
 
 // prettier-ignore
 export type InstanceNodeType =

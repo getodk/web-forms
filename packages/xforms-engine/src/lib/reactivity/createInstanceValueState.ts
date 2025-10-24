@@ -168,7 +168,32 @@ export type InstanceValueState = SimpleAtomicState<string>;
  *   nodes defined with one
  * - prevents downstream writes to nodes in a readonly state
  */
+// TODO this is it
 export const createInstanceValueState = (context: InstanceValueContext): InstanceValueState => {
+	return context.scope.runTask(() => {
+		const initialValue = getInitialValue(context);
+		const baseValueState = createSignal(initialValue);
+		const relevantValueState = createRelevantValueState(context, baseValueState);
+
+		/**
+		 * @see {@link setPreloadUIDValue} for important details about spec ordering of events and computations.
+		 */
+		setPreloadUIDValue(context, relevantValueState);
+
+		const { calculate } = context.definition.bind;
+
+		if (calculate != null) {
+			const [, setValue] = relevantValueState;
+
+			createCalculation(context, setValue, calculate);
+		}
+
+		return guardDownstreamReadonlyWrites(context, relevantValueState);
+	});
+};
+
+// TODO is this the same as above???
+export const createInstanceAttributeValueState = (context: InstanceValueContext): InstanceValueState => {
 	return context.scope.runTask(() => {
 		const initialValue = getInitialValue(context);
 		const baseValueState = createSignal(initialValue);

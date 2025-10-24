@@ -1,6 +1,7 @@
 import type { RuntimeInputValue, RuntimeValue } from '../lib/codecs/getSharedValueCodec.ts';
 import type { InputControlDefinition } from '../parse/body/control/InputControlDefinition.ts';
 import type { LeafNodeDefinition } from '../parse/model/LeafNodeDefinition.ts';
+import type { AttributeNode } from './AttributeNode.ts';
 import type { BaseValueNode, BaseValueNodeState } from './BaseValueNode.ts';
 import type { NodeAppearances } from './NodeAppearances.ts';
 import type { RootNode } from './RootNode.ts';
@@ -14,6 +15,7 @@ export type InputNodeInputValue<V extends ValueType> = RuntimeInputValue<V>;
 
 export interface InputNodeState<V extends ValueType> extends BaseValueNodeState<InputValue<V>> {
 	get children(): null;
+	get attributes(): AttributeNode[];
 	get valueOptions(): null;
 
 	/**

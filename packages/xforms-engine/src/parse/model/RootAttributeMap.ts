@@ -2,6 +2,7 @@ import { XMLNS_NAMESPACE_URI } from '@getodk/common/constants/xmlns.ts';
 import type { StaticAttribute } from '../../integration/xpath/static-dom/StaticAttribute.ts';
 import type { StaticElement } from '../../integration/xpath/static-dom/StaticElement.ts';
 import type { QualifiedName } from '../../lib/names/QualifiedName.ts';
+import type { ModelBindMap } from './ModelBindMap.ts';
 import { RootAttributeDefinition } from './RootAttributeDefinition.ts';
 import type { RootDefinition } from './RootDefinition.ts';
 
@@ -29,11 +30,13 @@ const isNonNamespaceAttribute = (attribute: StaticAttribute) => {
  *
  * @see {@link QualifiedName} for more detail.
  */
+// TODO rename this - it's not just for roots anymore
 export class RootAttributeMap extends Map<QualifiedName, RootAttributeDefinition> {
-	static from(root: RootDefinition, instanceNode: StaticElement) {
+	static from(root: RootDefinition, instanceNode: StaticElement, binds: ModelBindMap) {
 		const nonNamespaceAttributes = instanceNode.attributes.filter(isNonNamespaceAttribute);
 		const definitions = nonNamespaceAttributes.map((attribute) => {
-			return new RootAttributeDefinition(root, attribute);
+			const attrbind = binds?.getOrCreateBindDefinition(attribute.nodeset);
+			return new RootAttributeDefinition(root, attribute, attrbind);
 		});
 
 		return new this(definitions);

@@ -79,6 +79,8 @@ export class ModelValue<V extends ValueType = ValueType>
 				valueOptions: null,
 				value: this.valueState,
 				instanceValue: this.getInstanceValue,
+				// TODO make a new `AttributeValue extends NodeValue`
+				// create an array of them here as `attributes`
 			},
 			this.instanceConfig
 		);
