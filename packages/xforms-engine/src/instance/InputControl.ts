@@ -133,7 +133,7 @@ export class InputControl<V extends ValueType = ValueType>
 				valueOptions: null,
 				value: this.valueState,
 				instanceValue: this.getInstanceValue,
-				attributes: this.getAttributes
+				attributes: [this.getAttributes]
 			},
 			this.instanceConfig
 		);
@@ -148,6 +148,8 @@ export class InputControl<V extends ValueType = ValueType>
 
 		return this.root;
 	}
+
+	setAttributes() {}
 }
 
 export type AnyInputControl =

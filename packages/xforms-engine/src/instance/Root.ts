@@ -41,6 +41,7 @@ interface RootStateSpec {
 	readonly children: Accessor<readonly FormNodeID[]>;
 	readonly valueOptions: null;
 	readonly value: null;
+	readonly attributes: unknown;
 
 	// Root-specific
 	readonly activeLanguage: Accessor<ActiveLanguage>;
@@ -112,6 +113,7 @@ export class Root
 				valueOptions: null,
 				value: null,
 				children: childrenState.childIds,
+				attributes: null
 			},
 			this.instanceConfig
 		);

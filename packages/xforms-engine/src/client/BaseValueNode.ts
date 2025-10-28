@@ -10,6 +10,7 @@ export interface BaseValueNodeState<Value> extends BaseNodeState {
 	get children(): null;
 	get valueOptions(): unknown;
 	get value(): Value;
+	get attributes(): unknown;
 
 	/**
 	 * Reflects the serialized string representation of a {@link BaseValueNode}'s

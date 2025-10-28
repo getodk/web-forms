@@ -158,6 +158,7 @@ const createCalculation = (
 };
 
 export type InstanceValueState = SimpleAtomicState<string>;
+export type InstanceAttributeState = SimpleAtomicState<[]>;
 
 /**
  * Provides a consistent interface for value nodes of any type which:

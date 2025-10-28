@@ -15,10 +15,8 @@ export const createValueNodeInstanceState = (
 			const xmlValue = escapeXMLText(node.currentState.instanceValue); // TODO push this down into serializeLeafElementXML ?
 			const attributes = node.currentState.attributes;
 
-			console.log('creating value node',xmlValue, attributes);
-
 			if (attributes) {
-				return serializeLeafElementXML(qualifiedName, xmlValue, { attributes });
+				return serializeLeafElementXML(qualifiedName, xmlValue, { attributes: attributes });
 			}
 			return serializeLeafElementXML(qualifiedName, xmlValue);
 		},

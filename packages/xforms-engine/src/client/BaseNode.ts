@@ -1,6 +1,5 @@
 import type { TokenListParser } from '../lib/TokenListParser.ts';
 import type { AnyNodeDefinition } from '../parse/model/NodeDefinition.ts';
-import type { AttributeNode } from './AttributeNode.ts';
 import type { NodeAppearances } from './NodeAppearances.ts';
 import type { OpaqueReactiveObjectFactory } from './OpaqueReactiveObjectFactory.ts';
 import type { TextRange } from './TextRange.ts';
@@ -103,7 +102,7 @@ export interface BaseNodeState {
 	get children(): readonly BaseNode[] | null;
 
 	// TODO docs
-	get attributes(): readonly AttributeNode[] | null;
+	get attributes(): unknown;
 
 	/**
 	 * Certain kinds of nodes restrict their {@link value} to a specific set of

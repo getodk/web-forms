@@ -26,6 +26,7 @@ export interface RootNodeState extends BaseNodeState {
 	get children(): readonly GeneralChildNode[];
 	get valueOptions(): null;
 	get value(): null;
+	get attributes(): any;
 }
 
 export interface RootNode extends BaseNode {

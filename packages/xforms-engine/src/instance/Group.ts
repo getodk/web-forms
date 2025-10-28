@@ -32,6 +32,7 @@ interface GroupStateSpec extends DescendantNodeSharedStateSpec {
 	readonly children: Accessor<readonly FormNodeID[]>;
 	readonly valueOptions: null;
 	readonly value: null;
+	readonly attributes: null;
 }
 
 export class Group
@@ -84,6 +85,7 @@ export class Group
 				children: childrenState.childIds,
 				valueOptions: null,
 				value: null,
+				attributes: null
 			},
 			this.instanceConfig
 		);

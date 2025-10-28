@@ -38,7 +38,7 @@ export interface ValueNodeStateSpec<RuntimeValue> extends DescendantNodeStateSpe
 	readonly children: null;
 	readonly value: SimpleAtomicState<RuntimeValue>;
 	readonly instanceValue: Accessor<string>;
-	readonly attributes: Accessor<[]>; // TODO
+	readonly attributes: any; // TODO
 }
 
 export abstract class ValueNode<
@@ -115,8 +115,9 @@ export abstract class ValueNode<
 		const [, setValueState] = valueState;
 
 		this.getInstanceValue = () => {
-			console.log('getting instance value');
-			return getInstanceValue();
+			const val = getInstanceValue();
+			console.log('getting instance value', val);
+			return val;
 		};
 		this.setValueState = setValueState;
 		this.getXPathValue = () => {
@@ -126,8 +127,10 @@ export abstract class ValueNode<
 		this.validation = createValidationState(this, this.instanceConfig);
 		this.attributeAccessors = Array.from(definition.attributes.values()).map(attrDefinition => {
 			const instanceAttributeState = createInstanceAttributeValueState(this, attrDefinition);
-			const [getAttr] = instanceAttributeState;
-			return { name: attrDefinition.qualifiedName.localName, value: getAttr };
+			const attributeState = codec.createRuntimeValueState(instanceAttributeState);
+			const [getInstanceAttribute] = instanceAttributeState;
+			const [, setAttributeState] = attributeState;
+			return { name: attrDefinition.qualifiedName.localName, get: getInstanceAttribute, set: setAttributeState };
 		});
 		console.log('accrsors', this.definition.qualifiedName.localName, this.attributeAccessors);
 		this.instanceState = createValueNodeInstanceState(this);
@@ -161,7 +164,7 @@ export abstract class ValueNode<
 		return this.attributeAccessors?.map(acc => {
 			console.log('serializing');
 			return {
-				serializeAttributeXML: () => ` ${acc.name}="${acc.value()}"`
+				serializeAttributeXML: () => ` ${acc.name}="${acc.get()}"`
 			};
 		});
 	}

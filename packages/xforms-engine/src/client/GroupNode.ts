@@ -11,6 +11,7 @@ export interface GroupNodeState extends BaseNodeState {
 	get children(): readonly GeneralChildNode[];
 	get valueOptions(): null;
 	get value(): null;
+	get attributes(): null;
 }
 
 export interface GroupDefinition extends GroupNodeDefinition {
