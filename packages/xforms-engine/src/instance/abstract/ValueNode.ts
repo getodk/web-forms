@@ -13,7 +13,7 @@ import type {
 	RuntimeValueState,
 	ValueCodec,
 } from '../../lib/codecs/ValueCodec.ts';
-import { createInstanceValueState } from '../../lib/reactivity/createInstanceValueState.ts';
+import { createInstanceAttributeValueState, createInstanceValueState } from '../../lib/reactivity/createInstanceValueState.ts';
 import type { CurrentState } from '../../lib/reactivity/node-state/createCurrentState.ts';
 import type { EngineState } from '../../lib/reactivity/node-state/createEngineState.ts';
 import type { SharedNodeState } from '../../lib/reactivity/node-state/createSharedNodeState.ts';
@@ -21,7 +21,6 @@ import type { SimpleAtomicState } from '../../lib/reactivity/types.ts';
 import type { SharedValidationState } from '../../lib/reactivity/validation/createValidation.ts';
 import { createValidationState } from '../../lib/reactivity/validation/createValidation.ts';
 import { LeafNodeDefinition } from '../../parse/model/LeafNodeDefinition.ts';
-import { RootAttributeDefinition } from '../../parse/model/RootAttributeDefinition.ts';
 import type { GeneralParentNode } from '../hierarchy.ts';
 import type { EvaluationContext } from '../internal-api/EvaluationContext.ts';
 import type {
@@ -83,7 +82,9 @@ export abstract class ValueNode<
 		return this.validation.currentState;
 	}
 
-	readonly getAttributes: Accessor<RootAttributeDefinition[]>;
+	readonly attributeAccessors;
+
+	// readonly getAttributes: Accessor<RootAttributeDefinition[]>;
 
 	// readonly getAttributes: Accessor<[]> = () => { // TODO should be at a higher level again - attributes can be on non-value nodes too
 	// 	const attr = new RootAttributeDefinition(null, {
@@ -123,11 +124,22 @@ export abstract class ValueNode<
 		};
 		this.valueState = valueState;
 		this.validation = createValidationState(this, this.instanceConfig);
+		this.attributeAccessors = Array.from(definition.attributes.values()).map(attrDefinition => {
+			const instanceAttributeState = createInstanceAttributeValueState(this, attrDefinition);
+			const [getAttr] = instanceAttributeState;
+			return { name: attrDefinition.qualifiedName.localName, value: getAttr };
+		});
+		console.log('accrsors', this.definition.qualifiedName.localName, this.attributeAccessors);
 		this.instanceState = createValueNodeInstanceState(this);
 
-		this.getAttributes = () => { // TODO should be at a higher level again - attributes can be on non-value nodes too
-			return Array.from(definition.attributes.values());
-		};
+
+		// const attrs: AttributeNode[] = Array.from(definition.attributes.values()).map(defn => {
+		// 	defn.
+		// });
+
+		// this.getAttributes = () => { // TODO should be at a higher level again - attributes can be on non-value nodes too
+		// 	return Array.from(definition.attributes.values());
+		// };
 	}
 
 	// ValidationContext
@@ -142,5 +154,15 @@ export abstract class ValueNode<
 	// InstanceNode
 	getChildren(): readonly [] {
 		return [];
+	}
+
+	getAttributes() {
+		console.log('getting attrs', this.attributeAccessors);
+		return this.attributeAccessors?.map(acc => {
+			console.log('serializing');
+			return {
+				serializeAttributeXML: () => ` ${acc.name}="${acc.value()}"`
+			};
+		});
 	}
 }

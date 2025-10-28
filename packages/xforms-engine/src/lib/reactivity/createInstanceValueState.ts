@@ -2,6 +2,7 @@ import type { Signal } from 'solid-js';
 import { createComputed, createMemo, createSignal, untrack } from 'solid-js';
 import type { InstanceValueContext } from '../../instance/internal-api/InstanceValueContext.ts';
 import type { BindComputationExpression } from '../../parse/expression/BindComputationExpression.ts';
+import type { RootAttributeDefinition } from '../../parse/model/RootAttributeDefinition.ts';
 import { createComputedExpression } from './createComputedExpression.ts';
 import type { SimpleAtomicState, SimpleAtomicStateSetter } from './types.ts';
 
@@ -140,6 +141,7 @@ const createCalculation = (
 	calculateDefinition: BindComputationExpression<'calculate'>
 ): void => {
 	context.scope.runTask(() => {
+		console.log('computing', calculateDefinition);
 		const calculate = createComputedExpression(context, calculateDefinition, {
 			defaultValue: '',
 		});
@@ -148,7 +150,7 @@ const createCalculation = (
 			if (context.isAttached() && context.isRelevant()) {
 				const calculated = calculate();
 				const value = context.decodeInstanceValue(calculated);
-
+				console.log('setting', value);
 				setRelevantValue(value);
 			}
 		});
@@ -193,7 +195,7 @@ export const createInstanceValueState = (context: InstanceValueContext): Instanc
 };
 
 // TODO is this the same as above???
-export const createInstanceAttributeValueState = (context: InstanceValueContext): InstanceValueState => {
+export const createInstanceAttributeValueState = (context: InstanceValueContext, definition: RootAttributeDefinition): InstanceValueState => {
 	return context.scope.runTask(() => {
 		const initialValue = getInitialValue(context);
 		const baseValueState = createSignal(initialValue);
@@ -204,12 +206,12 @@ export const createInstanceAttributeValueState = (context: InstanceValueContext)
 		 */
 		setPreloadUIDValue(context, relevantValueState);
 
-		const { calculate } = context.definition.bind;
+		const { calculate } = definition.bind;
 
 		if (calculate != null) {
 			const [, setValue] = relevantValueState;
 
-			createCalculation(context, setValue, calculate);
+			createCalculation(context, setValue, calculate); // TODO this probably doesn't work because it checks for relevant and we don't want to
 		}
 
 		return guardDownstreamReadonlyWrites(context, relevantValueState);

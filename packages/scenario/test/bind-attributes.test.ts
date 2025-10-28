@@ -44,7 +44,7 @@ describe('Bind to element attributes', () => {
 	describe('version is bound', () => {
 		it('has a string runtime value', async () => {
 			console.log('before answering');
-			scenario.answer('/root/version', '5684');
+			scenario.answer('/root/version', 'some version');
 			scenario.answer('/root/string-value', 'val');
 			// const payload = await scenario.prepareWebFormsInstancePayload();
 			// console.log(payload.data[0]);

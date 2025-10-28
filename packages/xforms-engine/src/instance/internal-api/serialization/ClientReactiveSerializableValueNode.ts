@@ -1,4 +1,3 @@
-import type { AttributeNode } from '../../../client/AttributeNode.ts';
 import type { InstanceState } from '../../../client/serialization/InstanceState.ts';
 import type { QualifiedName } from '../../../lib/names/QualifiedName.ts';
 import type {
@@ -15,7 +14,10 @@ interface ClientReactiveSerializableValueNodeCurrentState {
 	 * @todo Consider moving into {@link InstanceState}
 	 */
 	get instanceValue(): SerializedInstanceValue;
-	get attributes(): AttributeNode[]; // TODO specify type, either RootAttributeDefinition, or SerializableElementAttribute, or similar
+
+	// TODO specify type, either RootAttributeDefinition, or SerializableElementAttribute, or similar
+	// TODO probably should be in different interface - we're going to need it elsewhere
+	get attributes(): [];
 }
 
 interface ClientReactiveSerializableValueNodeDefinition {

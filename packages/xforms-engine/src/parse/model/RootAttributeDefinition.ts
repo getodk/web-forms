@@ -1,7 +1,6 @@
 import { XMLNS_NAMESPACE_URI } from '@getodk/common/constants/xmlns.ts';
 import type { NamedNodeDefinition } from '../../lib/names/NamespaceDeclarationMap.ts';
 import { QualifiedName } from '../../lib/names/QualifiedName.ts';
-import { createInstanceValueState } from '../../lib/reactivity/createInstanceValueState.ts';
 import { escapeXMLText } from '../../lib/xml-serialization.ts';
 import type { BindDefinition } from './BindDefinition.ts';
 import type { RootDefinition } from './RootDefinition.ts';
@@ -29,7 +28,6 @@ export class RootAttributeDefinition implements NamedNodeDefinition {
 
 		this.parent = root;
 		this.qualifiedName = qualifiedName;
-		const instanceValueState = createInstanceValueState(this); // Should be in the Node not the definition
 		this.value = value;
 		this.bind = bind;
 

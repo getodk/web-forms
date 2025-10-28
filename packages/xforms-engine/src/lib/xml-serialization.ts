@@ -112,7 +112,10 @@ const serializeElementAttributeXML = (
 
 	return attributes
 		.map((attribute) => {
-			return attribute.serializeAttributeXML();
+			if (attribute.serializeAttributeXML) { // TODO remove this when it's implemented everywhere
+
+				return attribute.serializeAttributeXML();
+			}
 		})
 		.join('');
 };
