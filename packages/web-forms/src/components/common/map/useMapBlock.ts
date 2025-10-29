@@ -108,7 +108,7 @@ export function useMapBlock(mode: Mode, onFeaturePlacement: () => void) {
 
 		mapInteractions = useMapInteractions(mapInstance);
 		mapViewControls = useMapViewControls(mapInstance);
-		setupMode(geoJSON, savedFeatureValue);
+		initLayer(geoJSON, savedFeatureValue);
 		mapInteractions.setupMapVisibilityObserver(
 			mapContainer,
 			mapViewControls.stopWatchingCurrentLocation
@@ -125,7 +125,7 @@ export function useMapBlock(mode: Mode, onFeaturePlacement: () => void) {
 		}
 	};
 
-	const setupMode = (geoJSON: FeatureCollection, savedFeatureValue: GeoJsonFeature | undefined) => {
+	const initLayer = (geoJSON: FeatureCollection, savedFeatureValue: GeoJsonFeature | undefined) => {
 		if (!mapInstance) {
 			return;
 		}
