@@ -24,7 +24,7 @@ describe('Bind to element attributes', () => {
 						'root id="bind-attributes"',
 						t('grp version="" uuid=""',
 							t('version'),
-							t('test', 'def id value'),
+							t('test', 'default id value'),
 						),
 						t('orx:meta', t('orx:instanceID', IGNORED_INSTANCE_ID)),
 					)
@@ -44,7 +44,7 @@ describe('Bind to element attributes', () => {
 
 	async function expectVersion(id: string, version: string) {
 		const actual = await scenario.prepareWebFormsInstancePayload();
-		const expected = t('root xmlns:orx="http://openrosa.org/xforms"',
+		const expected = t(`root xmlns:orx="http://openrosa.org/xforms"`,
 			t(`grp uuid="${id}" version="${version}"`,
 				t('version', version),
 				t('test', id),
@@ -60,9 +60,9 @@ describe('Bind to element attributes', () => {
 
 	describe('version is bound', () => {
 		it('has a string runtime value', async () => {
-			await expectVersion('def id value', '');
+			await expectVersion('default id value', '');
 			scenario.answer('/root/grp/version', 'someversion');
-			await expectVersion('def id value', 'someversion');
+			await expectVersion('default id value', 'someversion');
 		});
 	});
 });
