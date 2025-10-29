@@ -7,7 +7,7 @@ export type Mode = (typeof MODES)[keyof typeof MODES];
 
 interface ModeConfig {
 	interactions: {
-		clickBinding: boolean;
+		select: boolean;
 		longPress: boolean;
 		drag: boolean;
 	};
@@ -24,7 +24,7 @@ export const getModeConfig = (mode: Mode): ModeConfig => {
 	if (mode === MODES.SELECT) {
 		return {
 			interactions: {
-				clickBinding: true,
+				select: true,
 				longPress: false,
 				drag: false,
 			},
@@ -41,7 +41,7 @@ export const getModeConfig = (mode: Mode): ModeConfig => {
 	if (mode === MODES.LOCATION) {
 		return {
 			interactions: {
-				clickBinding: false,
+				select: false,
 				longPress: false,
 				drag: false,
 			},
@@ -58,7 +58,7 @@ export const getModeConfig = (mode: Mode): ModeConfig => {
 	if (mode === MODES.PLACEMENT) {
 		return {
 			interactions: {
-				clickBinding: false,
+				select: false,
 				longPress: true,
 				drag: true,
 			},
@@ -75,7 +75,7 @@ export const getModeConfig = (mode: Mode): ModeConfig => {
 	// Default, everything turned off.
 	return {
 		interactions: {
-			clickBinding: false,
+			select: false,
 			longPress: false,
 			drag: false,
 		},
