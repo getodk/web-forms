@@ -5,18 +5,21 @@
  * load on demand. Avoids main bundle bloat.
  */
 import IconSVG from '@/components/common/IconSVG.vue';
+import type { Mode } from '@/components/common/map/getModeConfig.ts';
 import MapProperties from '@/components/common/map/MapProperties.vue';
 import MapStatusBar from '@/components/common/map/MapStatusBar.vue';
-import { useMapBlock } from '@/components/common/map/useMapBlock.ts';
+import { STATES, useMapBlock } from '@/components/common/map/useMapBlock.ts';
 import { QUESTION_HAS_ERROR } from '@/lib/constants/injection-keys.ts';
-import type { FeatureCollection } from 'geojson';
+import type { FeatureCollection, Feature } from 'geojson';
+import Button from 'primevue/button';
 import { computed, type ComputedRef, inject, onMounted, onUnmounted, ref, watch } from 'vue';
 
 interface MapBlockProps {
 	featureCollection: FeatureCollection;
 	disabled: boolean;
+	mode: Mode;
 	orderedExtraProps: Map<string, Array<[string, string]>>;
-	savedFeatureValue: string | undefined;
+	savedFeatureValue: Feature | undefined;
 }
 
 const props = defineProps<MapBlockProps>();
@@ -28,42 +31,36 @@ const showErrorStyle = inject<ComputedRef<boolean>>(
 	computed(() => false)
 );
 
-const mapHandler = useMapBlock();
+const mapHandler = useMapBlock(props.mode, () => emitSavedFeature());
 
 onMounted(() => {
 	if (!mapElement.value || !mapHandler) {
 		return;
 	}
 
-	mapHandler.initializeMap(mapElement.value, props.featureCollection);
-	mapHandler.toggleClickBinding(!props.disabled);
-	mapHandler.setSavedByValueProp(props.savedFeatureValue);
+	mapHandler.initMap(mapElement.value, props.featureCollection, props.savedFeatureValue);
+	mapHandler.setupMapInteractions(props.disabled);
 	document.addEventListener('keydown', handleEscapeKey);
 });
 
 onUnmounted(() => {
 	document.removeEventListener('keydown', handleEscapeKey);
-	mapHandler.stopWatchingCurrentLocation();
+	mapHandler.teardownMap();
 });
 
 watch(
 	() => props.featureCollection,
-	(newData) => {
-		mapHandler.loadGeometries(newData);
-		mapHandler.setSavedByValueProp(props.savedFeatureValue);
-	},
+	(newData) => mapHandler.updateFeatureCollection(newData, props.savedFeatureValue),
 	{ deep: true }
 );
 
-watch(
-	() => props.savedFeatureValue,
-	(newSaved) => mapHandler.setSavedByValueProp(newSaved)
-);
+watch(() => props.savedFeatureValue, mapHandler.setSavedByValueProp);
 
-watch(
-	() => props.disabled,
-	(newValue) => mapHandler.toggleClickBinding(!newValue)
-);
+watch(() => props.disabled, mapHandler.setupMapInteractions);
+
+const emitSavedFeature = () => {
+	emit('save', mapHandler.savedFeature.value?.getProperties()?.odk_value);
+};
 
 const handleEscapeKey = (event: KeyboardEvent) => {
 	if (event.key === 'Escape' && isFullScreen.value) {
@@ -73,7 +70,7 @@ const handleEscapeKey = (event: KeyboardEvent) => {
 
 const saveSelection = () => {
 	mapHandler.saveFeature();
-	emit('save', mapHandler.savedFeature.value?.getProperties()?.odk_value);
+	emitSavedFeature();
 };
 
 const discardSavedFeature = () => {
@@ -87,33 +84,58 @@ const discardSavedFeature = () => {
 		<div :class="{ 'map-container': true, 'map-full-screen': isFullScreen }">
 			<div class="control-bar">
 				<!-- TODO: translations -->
-				<button :class="{ 'control-active': isFullScreen }" title="Full Screen" @click="isFullScreen = !isFullScreen">
+				<button
+					:class="{ 'control-active': isFullScreen }"
+					title="Full Screen"
+					@click="isFullScreen = !isFullScreen"
+				>
 					<IconSVG name="mdiArrowExpandAll" size="sm" />
 				</button>
 				<!-- TODO: translations -->
-				<button title="Zoom to fit all options" :disabled="!props.featureCollection?.features?.length" @click="mapHandler.fitToAllFeatures">
+				<button
+					title="Zoom to fit all options"
+					:disabled="!mapHandler.canFitToAllFeatures()"
+					@click="mapHandler.fitToAllFeatures"
+				>
 					<IconSVG name="mdiFullscreen" />
 				</button>
 				<!-- TODO: translations -->
-				<button title="Zoom to current location" @click="mapHandler.centerCurrentLocation">
+				<button title="Zoom to current location" @click="mapHandler.watchCurrentLocation">
 					<IconSVG name="mdiCrosshairsGps" size="sm" />
 				</button>
 			</div>
 
-			<div ref="mapElement" class="map-block" />
+			<div ref="mapElement" class="map-block">
+				<div ref="mapElement" />
+
+				<div v-if="mapHandler.shouldShowMapOverlay()" class="map-overlay">
+					<Button outlined severity="contrast" @click="mapHandler.watchCurrentLocation">
+						<IconSVG name="mdiCrosshairsGps" />
+						<!-- TODO: translations -->
+						<span>Get location</span>
+					</Button>
+				</div>
+			</div>
 
 			<MapStatusBar
-				:has-saved-feature="!!mapHandler.savedFeature.value"
+				:is-feature-saved="!!mapHandler.savedFeature.value"
+				:is-capturing="mapHandler.currentState.value === STATES.CAPTURING"
 				class="map-status-bar-component"
+				:can-remove="!disabled && mapHandler.canRemoveCurrentLocation()"
+				:can-save="!disabled && mapHandler.canSaveCurrentLocation()"
+				:can-view-details="mapHandler.canViewProperties()"
+				@discard="discardSavedFeature"
+				@save="saveSelection"
 				@view-details="mapHandler.selectSavedFeature()"
 			/>
 
 			<MapProperties
-				v-if="mapHandler.selectedFeatureProperties.value"
-				:reserved-props="mapHandler.selectedFeatureProperties.value"
+				v-if="mapHandler.canViewProperties() && mapHandler.selectedFeatureProperties.value"
+				:can-remove="!disabled"
+				:can-save="!disabled"
+				:is-feature-saved="mapHandler.isSelectedFeatureSaved()"
 				:ordered-extra-props="orderedExtraProps"
-				:has-saved-feature="mapHandler.isSelectedFeatureSaved()"
-				:disabled="disabled"
+				:reserved-props="mapHandler.selectedFeatureProperties.value"
 				@close="mapHandler.unselectFeature()"
 				@discard="discardSavedFeature"
 				@save="saveSelection"
@@ -153,9 +175,21 @@ const discardSavedFeature = () => {
 	overflow: hidden;
 
 	.map-block {
+		position: relative;
 		background: var(--odk-base-background-color);
 		width: 100%;
 		height: 445px;
+	}
+
+	.map-overlay {
+		position: absolute;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width: 100%;
+		height: 100%;
+		background-color: rgba(from var(--odk-muted-background-color) r g b / 0.9);
+		z-index: var(--odk-z-index-overlay);
 	}
 }
 

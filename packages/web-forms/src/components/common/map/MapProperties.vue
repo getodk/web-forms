@@ -6,8 +6,9 @@ import { computed } from 'vue';
 const props = defineProps<{
 	reservedProps: Record<string, string>;
 	orderedExtraProps: Map<string, Array<[key: string, value: string]>>;
-	hasSavedFeature: boolean;
-	disabled: boolean;
+	isFeatureSaved: boolean;
+	canRemove: boolean;
+	canSave: boolean;
 }>();
 
 const emit = defineEmits(['close', 'save', 'discard']);
@@ -32,12 +33,12 @@ const orderedProps = computed(() => {
 		</dl>
 
 		<div class="map-properties-footer">
-			<Button v-if="hasSavedFeature && !disabled" outlined severity="contrast" @click="emit('discard')">
+			<Button v-if="isFeatureSaved && canRemove" outlined severity="contrast" @click="emit('discard')">
 				<span>–</span>
 				<!-- TODO: translations -->
 				<span>Remove selection</span>
 			</Button>
-			<Button v-if="!hasSavedFeature && !disabled" @click="emit('save')">
+			<Button v-if="!isFeatureSaved && canSave" @click="emit('save')">
 				<IconSVG name="mdiCheck" size="sm" variant="inverted" />
 				<!-- TODO: translations -->
 				<span>Save selected</span>

@@ -31,7 +31,7 @@ defineProps<InputControlProps>();
 			<InputNumbersAppearance :node="node" />
 		</template>
 		<template v-else-if="node.valueType === 'geopoint'">
-			<InputGeopointWithMap v-if="node.appearances.maps" :question="node" />
+			<InputGeopointWithMap v-if="node.appearances['placement-map'] || node.appearances.maps" :question="node" />
 			<InputGeopoint v-else :question="node" />
 		</template>
 		<template v-else-if="node.valueType === 'date'">
