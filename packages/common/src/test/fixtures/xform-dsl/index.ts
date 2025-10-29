@@ -18,13 +18,13 @@ type AttributeTuples = readonly AttributeTuple[];
 type Int = number;
 
 const parseAttributes = (name: string): Map<string, string> => {
-	if (!name.includes(' ')) {
+	const words = name.match(/(?:[^\s"]+|"[^"]*")+/g) ?? [];
+
+	if (words.length < 2) { // the first match is the name of the tag - we want everything else
 		return new Map();
 	}
 
 	const attributes = new Map<string, string>();
-	const words = name.split(' ');
-
 	for (const word of words.slice(1)) {
 		const parts = /^(.*)(?<!\\)=(["'].*)/.exec(word);
 

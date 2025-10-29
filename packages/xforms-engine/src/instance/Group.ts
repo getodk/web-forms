@@ -8,6 +8,7 @@ import type { AncestorNodeValidationState } from '../client/validation.ts';
 import type { XFormsXPathElement } from '../integration/xpath/adapter/XFormsXPathNode.ts';
 import type { StaticElement } from '../integration/xpath/static-dom/StaticElement.ts';
 import { createParentNodeInstanceState } from '../lib/client-reactivity/instance-state/createParentNodeInstanceState.ts';
+import { createAttributeState, type AttributeState } from '../lib/reactivity/createAttributeState.ts';
 import type { ChildrenState } from '../lib/reactivity/createChildrenState.ts';
 import { createChildrenState } from '../lib/reactivity/createChildrenState.ts';
 import type { MaterializedChildren } from '../lib/reactivity/materializeCurrentStateChildren.ts';
@@ -20,6 +21,7 @@ import { createNodeLabel } from '../lib/reactivity/text/createNodeLabel.ts';
 import { createAggregatedViolations } from '../lib/reactivity/validation/createAggregatedViolations.ts';
 import type { DescendantNodeSharedStateSpec } from './abstract/DescendantNode.ts';
 import { DescendantNode } from './abstract/DescendantNode.ts';
+import { Attribute } from './Attribute.ts';
 import { buildChildren } from './children/buildChildren.ts';
 import type { GeneralChildNode, GeneralParentNode } from './hierarchy.ts';
 import type { EvaluationContext } from './internal-api/EvaluationContext.ts';
@@ -30,6 +32,7 @@ interface GroupStateSpec extends DescendantNodeSharedStateSpec {
 	readonly label: Accessor<TextRange<'label'> | null>;
 	readonly hint: null;
 	readonly children: Accessor<readonly FormNodeID[]>;
+	readonly attributes: Accessor<readonly Attribute[]>;
 	readonly valueOptions: null;
 	readonly value: null;
 }
@@ -43,6 +46,7 @@ export class Group
 		ClientReactiveSerializableParentNode<GeneralChildNode>
 {
 	private readonly childrenState: ChildrenState<GeneralChildNode>;
+	private readonly attributeState: AttributeState;
 
 	override readonly [XPathNodeKindKey] = 'element';
 
@@ -68,8 +72,10 @@ export class Group
 		this.appearances = definition.bodyElement?.appearances ?? null;
 
 		const childrenState = createChildrenState<Group, GeneralChildNode>(this);
+		const attributeState = createAttributeState<Group>(this);
 
 		this.childrenState = childrenState;
+		this.attributeState = attributeState;
 
 		const state = createSharedNodeState(
 			this.scope,
@@ -82,6 +88,7 @@ export class Group
 				label: createNodeLabel(this, definition),
 				hint: null,
 				children: childrenState.childIds,
+				attributes: attributeState.getAttributes,
 				valueOptions: null,
 				value: null,
 			},
@@ -97,6 +104,7 @@ export class Group
 		);
 
 		childrenState.setChildren(buildChildren(this));
+		attributeState.setAttributes(buildAttributes(this));
 		this.validationState = createAggregatedViolations(this, this.instanceConfig);
 		this.instanceState = createParentNodeInstanceState(this);
 	}
@@ -104,4 +112,15 @@ export class Group
 	getChildren(): readonly GeneralChildNode[] {
 		return this.childrenState.getChildren();
 	}
+
+	getAttributes(): readonly Attribute[] {
+		return this.attributeState.getAttributes();
+	}
+}
+
+// TODO this belongs elsewhere - look at buildChildren
+function buildAttributes(group: Group): Attribute[] {
+	return Array.from(group.definition.attributes.values()).map(defn => {
+		return new Attribute(group, defn);
+	})
 }

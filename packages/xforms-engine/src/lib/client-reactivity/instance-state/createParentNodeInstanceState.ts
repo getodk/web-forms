@@ -16,7 +16,11 @@ export const createParentNodeInstanceState = (
 				return child.instanceState.instanceXML;
 			});
 
-			return serializeParentElementXML(node.definition.qualifiedName, serializedChildren);
+			const attributes = node.currentState.attributes.map((attribute) => {
+				return { serializeAttributeXML: () => attribute.instanceState.instanceXML };
+			});
+
+			return serializeParentElementXML(node.definition.qualifiedName, serializedChildren, { attributes });
 		},
 	};
 };

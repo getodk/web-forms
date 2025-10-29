@@ -51,7 +51,7 @@ export class RootDefinition extends NodeDefinition<'root'> {
 
 		this.qualifiedName = qualifiedName;
 		this.template = template;
-		this.attributes = RootAttributeMap.from(this, template);
+		this.attributes = RootAttributeMap.from(this, template, model.binds);
 		this.namespaceDeclarations = new NamespaceDeclarationMap(this);
 		this.children = this.buildSubtree(this, template);
 	}
@@ -107,7 +107,7 @@ export class RootDefinition extends NodeDefinition<'root'> {
 				);
 			}
 
-			return new GroupDefinition(parent, bind, bodyElement, element);
+			return new GroupDefinition(model, parent, bind, bodyElement, element);
 		});
 	}
 

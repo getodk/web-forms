@@ -146,6 +146,14 @@ const serializeElementXML = (
 	return `${prefix}>${children}</${nodeName}>`;
 };
 
+export const serializeAttributeXML = (
+	qualifiedName: QualifiedName,
+	xmlValue: EscapedXMLText
+): string => {
+	const nodeName = qualifiedName.getPrefixedName();
+	return ` ${nodeName}="${xmlValue.normalize()}"`;
+};
+
 export const serializeParentElementXML = (
 	qualifiedName: QualifiedName,
 	serializedChildren: readonly string[],

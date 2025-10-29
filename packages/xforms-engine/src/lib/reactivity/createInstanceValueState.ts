@@ -148,7 +148,6 @@ const createCalculation = (
 			if (context.isAttached() && context.isRelevant()) {
 				const calculated = calculate();
 				const value = context.decodeInstanceValue(calculated);
-
 				setRelevantValue(value);
 			}
 		});
