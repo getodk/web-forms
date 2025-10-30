@@ -199,6 +199,14 @@ const discardSavedFeature = () => {
 		height: 100%;
 		background-color: rgba(from var(--odk-muted-background-color) r g b / 0.9);
 		z-index: var(--odk-z-index-overlay);
+
+		.p-button.p-button-contrast.p-button-outlined {
+			background: var(--odk-base-background-color);
+
+			&:hover {
+				background: var(--odk-muted-background-color);
+			}
+		}
 	}
 }
 
