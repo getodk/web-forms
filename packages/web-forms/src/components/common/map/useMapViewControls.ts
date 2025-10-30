@@ -7,6 +7,7 @@ import { fromLonLat } from 'ol/proj';
 import VectorSource from 'ol/source/Vector';
 import { Icon, Style } from 'ol/style';
 import { shallowRef, watch } from 'vue';
+import type { TimerID } from '@getodk/common/types/timers.ts';
 import locationIcon from '@/assets/images/location-icon.svg';
 
 type LocationWatchID = ReturnType<typeof navigator.geolocation.watchPosition>;
@@ -29,12 +30,14 @@ export const MIN_ZOOM = 2;
 const MAX_ZOOM = 19;
 const GEOLOCATION_TIMEOUT_MS = 30 * 1000; // Field environments need more time and reduces false “no signal” warnings.
 const ANIMATION_TIME = 1000;
+const DEBOUNCE_DELAY_MS = 500;
 const SMALL_DEVICE_WIDTH = 576;
 
 export function useMapViewControls(mapInstance: Map): UseMapViewControls {
 	const watchLocation = shallowRef<LocationWatchID | undefined>();
 	const userCurrentLocation = shallowRef<BrowserLocation | undefined>();
 	const userCurrentLocationFeature = shallowRef<Feature<Point> | undefined>();
+	const debounceTimer = shallowRef<TimerID | undefined>();
 
 	const currentLocationSource = new VectorSource();
 	const currentLocationLayer = new VectorLayer({
@@ -73,9 +76,14 @@ export function useMapViewControls(mapInstance: Map): UseMapViewControls {
 		}
 
 		const handleSuccess = (position: GeolocationPosition) => {
-			const { latitude, longitude, altitude, accuracy } = position.coords;
-			userCurrentLocation.value = { latitude, longitude, altitude, accuracy };
-			onSuccess();
+			if (debounceTimer.value) {
+				clearTimeout(debounceTimer.value);
+			}
+			debounceTimer.value = setTimeout(() => {
+				const { latitude, longitude, altitude, accuracy } = position.coords;
+				userCurrentLocation.value = { latitude, longitude, altitude, accuracy };
+				onSuccess();
+			}, DEBOUNCE_DELAY_MS);
 		};
 
 		const handleError = () => {

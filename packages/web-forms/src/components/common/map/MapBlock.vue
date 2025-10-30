@@ -117,8 +117,6 @@ const discardSavedFeature = () => {
 			</div>
 
 			<div ref="mapElement" class="map-block">
-				<div ref="mapElement" />
-
 				<div v-if="mapHandler.shouldShowMapOverlay()" class="map-overlay">
 					<Button outlined severity="contrast" @click="mapHandler.watchCurrentLocation">
 						<IconSVG name="mdiCrosshairsGps" />
