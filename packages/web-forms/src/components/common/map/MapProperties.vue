@@ -44,7 +44,7 @@ const orderedProps = computed(() => {
 				<span>Remove selection</span>
 			</Button>
 			<Button v-if="!isSavedFeatureSelected && canSave" @click="emit('save')">
-				<IconSVG name="mdiCheck" size="sm" variant="inverted" />
+				<IconSVG name="mdiCheckboxMarkedCircleOutline" size="sm" variant="inverted" />
 				<!-- TODO: translations -->
 				<span>Save selected</span>
 			</Button>
