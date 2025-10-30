@@ -1,8 +1,8 @@
 import { Attribute } from "../Attribute";
-import type { AnyNode } from "../hierarchy";
+import type { GeneralParentNode } from "../hierarchy";
 
-export const buildAttributes = (group: AnyNode): Attribute[] => {
-  return Array.from(group.definition.attributes.values()).map(defn => {
-    return new Attribute(group, defn);
+export const buildAttributes = (parent: GeneralParentNode): Attribute[] => {
+  return Array.from(parent.definition.attributes.values()).map(defn => {
+    return new Attribute(parent, defn);
   })
 }

@@ -7,7 +7,7 @@ import type { EngineState } from '../lib/reactivity/node-state/createEngineState
 import { createSharedNodeState } from '../lib/reactivity/node-state/createSharedNodeState.ts';
 import type { RootAttributeDefinition } from '../parse/model/RootAttributeDefinition.ts';
 import { ValueNode, type ValueNodeStateSpec } from './abstract/ValueNode.ts';
-import type { AnyNode } from './hierarchy.ts';
+import type { GeneralParentNode } from './hierarchy.ts';
 import type { ClientReactiveSerializableAttributeNode } from './internal-api/serialization/ClientReactiveSerializableAttributeNode.ts';
 import type { Root } from './Root.ts';
 
@@ -30,7 +30,7 @@ export class Attribute
 	readonly nodeOptions = null;
 
 	constructor(
-		parent: AnyNode,
+		parent: GeneralParentNode,
 		definition: RootAttributeDefinition
 	) {
 
@@ -42,10 +42,10 @@ export class Attribute
 		const state = createSharedNodeState(
 			this.scope,
 			{
-				reference: `${parent.contextReference()}/${definition.qualifiedName.getPrefixedName()}`,
-				readonly: false,
-				relevant: true,
-				required: false,
+				reference: () => `${parent.contextReference()}/${definition.qualifiedName.getPrefixedName()}`,
+				readonly: this.isReadonly,
+				relevant: this.isRelevant,
+				required: this.isRequired,
 
 				label: null,
 				hint: null,
