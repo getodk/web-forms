@@ -4,21 +4,25 @@ import Button from 'primevue/button';
 import { computed } from 'vue';
 
 const props = defineProps<{
-	reservedProps: Record<string, string>;
+	reservedProps: Record<string, string> | undefined;
 	orderedExtraProps: Map<string, Array<[key: string, value: string]>>;
-	isFeatureSaved: boolean;
+	isSavedFeatureSelected: boolean;
 	canRemove: boolean;
 	canSave: boolean;
 }>();
 
 const emit = defineEmits(['close', 'save', 'discard']);
 const orderedProps = computed(() => {
-	return props.orderedExtraProps.get(props.reservedProps.odk_value) ?? [];
+	if (props.reservedProps) {
+		return props.orderedExtraProps.get(props.reservedProps.odk_value) ?? [];
+	}
+
+	return [];
 });
 </script>
 
 <template>
-	<div class="map-properties">
+	<div v-if="reservedProps" class="map-properties">
 		<div class="map-properties-header">
 			<strong>{{ reservedProps.odk_label ?? reservedProps.odk_geometry }}</strong>
 			<button class="close-icon" @click="emit('close')">
@@ -33,12 +37,12 @@ const orderedProps = computed(() => {
 		</dl>
 
 		<div class="map-properties-footer">
-			<Button v-if="isFeatureSaved && canRemove" outlined severity="contrast" @click="emit('discard')">
+			<Button v-if="isSavedFeatureSelected && canRemove" outlined severity="contrast" @click="emit('discard')">
 				<span>–</span>
 				<!-- TODO: translations -->
 				<span>Remove selection</span>
 			</Button>
-			<Button v-if="!isFeatureSaved && canSave" @click="emit('save')">
+			<Button v-if="!isSavedFeatureSelected && canSave" @click="emit('save')">
 				<IconSVG name="mdiCheck" size="sm" variant="inverted" />
 				<!-- TODO: translations -->
 				<span>Save selected</span>
@@ -68,7 +72,7 @@ const orderedProps = computed(() => {
 	gap: var(--odk-map-properties-spacing-md);
 	width: 360px;
 	height: 370px;
-	box-shadow: 1px 2px 3px 0px rgba(0, 0, 0, 0.2);
+	box-shadow: 1px 2px 3px 0 rgba(0, 0, 0, 0.2);
 }
 
 .map-properties-header {

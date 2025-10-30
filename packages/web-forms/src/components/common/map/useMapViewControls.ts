@@ -6,7 +6,7 @@ import VectorLayer from 'ol/layer/Vector';
 import { fromLonLat } from 'ol/proj';
 import VectorSource from 'ol/source/Vector';
 import { Icon, Style } from 'ol/style';
-import { type ShallowRef, shallowRef, watch } from 'vue';
+import { shallowRef, watch } from 'vue';
 import locationIcon from '@/assets/images/location-icon.svg';
 
 type LocationWatchID = ReturnType<typeof navigator.geolocation.watchPosition>;
@@ -14,21 +14,24 @@ type LocationWatchID = ReturnType<typeof navigator.geolocation.watchPosition>;
 interface BrowserLocation
 	extends Pick<GeolocationCoordinates, 'accuracy' | 'altitude' | 'latitude' | 'longitude'> {}
 
-export interface UseMapViewControlsReturn {
-	userCurrentLocation: ShallowRef<BrowserLocation | undefined>;
-	userCurrentLocationFeature: ShallowRef<Feature<Point> | undefined>;
+export interface UseMapViewControls {
 	centerFeatureLocation: (feature: Feature) => void;
+	centerFullWorldView: () => void;
 	fitToAllFeatures: (featureSource: VectorSource) => void;
+	getUserCurrentLocation: () => BrowserLocation | undefined;
+	hasCurrentLocationFeature: () => boolean;
 	stopWatchingCurrentLocation: () => void;
 	watchCurrentLocation: (onSuccess: () => void, onError: () => void) => void;
 }
 
+export const DEFAULT_VIEW_CENTER = [0, 0];
+export const MIN_ZOOM = 2;
 const MAX_ZOOM = 19;
 const GEOLOCATION_TIMEOUT_MS = 30 * 1000; // Field environments need more time and reduces false “no signal” warnings.
 const ANIMATION_TIME = 1000;
 const SMALL_DEVICE_WIDTH = 576;
 
-export function useMapViewControls(mapInstance: Map): UseMapViewControlsReturn {
+export function useMapViewControls(mapInstance: Map): UseMapViewControls {
 	const watchLocation = shallowRef<LocationWatchID | undefined>();
 	const userCurrentLocation = shallowRef<BrowserLocation | undefined>();
 	const userCurrentLocationFeature = shallowRef<Feature<Point> | undefined>();
@@ -40,14 +43,14 @@ export function useMapViewControls(mapInstance: Map): UseMapViewControlsReturn {
 	});
 	mapInstance.addLayer(currentLocationLayer);
 
-	const fitToAllFeatures = (featuresSource: VectorSource): void => {
-		if (featuresSource.isEmpty()) {
+	const fitToAllFeatures = (source: VectorSource): void => {
+		if (source.isEmpty()) {
 			return;
 		}
 
-		const extent = featuresSource.getExtent();
+		const extent = source.getExtent();
 		if (extent?.length) {
-			mapInstance?.getView().fit(extent, {
+			mapInstance.getView().fit(extent, {
 				padding: [50, 50, 50, 50],
 				duration: ANIMATION_TIME,
 				maxZoom: MAX_ZOOM,
@@ -58,8 +61,8 @@ export function useMapViewControls(mapInstance: Map): UseMapViewControlsReturn {
 	const watchCurrentLocation = (onSuccess: () => void, onError: () => void): void => {
 		if (watchLocation.value) {
 			if (userCurrentLocationFeature.value) {
-				mapInstance?.getView().animate({
-					center: userCurrentLocationFeature.value?.getGeometry()?.getCoordinates(),
+				mapInstance.getView().animate({
+					center: userCurrentLocationFeature.value.getGeometry()?.getCoordinates(),
 					zoom: MAX_ZOOM,
 					duration: ANIMATION_TIME,
 				});
@@ -76,7 +79,7 @@ export function useMapViewControls(mapInstance: Map): UseMapViewControlsReturn {
 		};
 
 		const handleError = () => {
-			currentLocationSource.clear(true);
+			stopWatchingCurrentLocation();
 			onError();
 		};
 
@@ -89,7 +92,7 @@ export function useMapViewControls(mapInstance: Map): UseMapViewControlsReturn {
 	};
 
 	const stopWatchingCurrentLocation = () => {
-		currentLocationSource.clear();
+		currentLocationSource.clear(true);
 		userCurrentLocation.value = undefined;
 
 		if (watchLocation.value) {
@@ -100,8 +103,8 @@ export function useMapViewControls(mapInstance: Map): UseMapViewControlsReturn {
 
 	const centerFeatureLocation = (feature: Feature): void => {
 		const geometry = feature.getGeometry();
-		const view = mapInstance?.getView();
-		const mapWidth = mapInstance?.getSize()?.[0];
+		const view = mapInstance.getView();
+		const mapWidth = mapInstance.getSize()?.[0];
 		if (!geometry || !view || mapWidth == null) {
 			return;
 		}
@@ -130,6 +133,14 @@ export function useMapViewControls(mapInstance: Map): UseMapViewControlsReturn {
 		});
 	};
 
+	const centerFullWorldView = () => {
+		mapInstance.getView().animate({
+			center: DEFAULT_VIEW_CENTER,
+			zoom: MIN_ZOOM,
+			duration: ANIMATION_TIME,
+		});
+	};
+
 	watch(
 		() => userCurrentLocation.value,
 		(newLocation) => {
@@ -143,16 +154,17 @@ export function useMapViewControls(mapInstance: Map): UseMapViewControlsReturn {
 			userCurrentLocationFeature.value = new Feature({ geometry: new Point(parsedCoords) });
 			currentLocationSource.addFeature(userCurrentLocationFeature.value);
 			mapInstance
-				?.getView()
+				.getView()
 				.animate({ center: parsedCoords, zoom: MAX_ZOOM, duration: ANIMATION_TIME });
 		}
 	);
 
 	return {
-		userCurrentLocation,
-		userCurrentLocationFeature,
 		centerFeatureLocation,
+		centerFullWorldView,
 		fitToAllFeatures,
+		getUserCurrentLocation: () => userCurrentLocation.value,
+		hasCurrentLocationFeature: () => !!userCurrentLocationFeature.value,
 		stopWatchingCurrentLocation,
 		watchCurrentLocation,
 	};

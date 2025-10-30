@@ -10,13 +10,10 @@ import type { TimerID } from '@getodk/common/types/timers.ts';
 import type VectorSource from 'ol/source/Vector';
 import { shallowRef } from 'vue';
 
-export interface UseMapInteractionsReturn {
+export interface UseMapInteractions {
 	removeMapInteractions: () => void;
 	setupFeatureDrag: (layer: VectorLayer, onDrag: (feature: Feature) => void) => void;
-	setupLongPressPoint: (
-		featuresSource: VectorSource,
-		onLongPress: (feature: Feature) => void
-	) => void;
+	setupLongPressPoint: (source: VectorSource, onLongPress: (feature: Feature) => void) => void;
 	setupMapVisibilityObserver: (mapContainer: HTMLElement, onMapNotVisible: () => void) => void;
 	teardownMap: () => void;
 	toggleSelectEvent: (
@@ -27,7 +24,7 @@ export interface UseMapInteractionsReturn {
 
 const LONG_PRESS_TIME = 1000;
 
-export function useMapInteractions(mapInstance: Map): UseMapInteractionsReturn {
+export function useMapInteractions(mapInstance: Map): UseMapInteractions {
 	const currentLocationObserver = shallowRef<IntersectionObserver | undefined>();
 	const pointerInteraction = shallowRef<PointerInteraction | undefined>();
 	const translateInteraction = shallowRef<Translate | undefined>();
@@ -52,6 +49,8 @@ export function useMapInteractions(mapInstance: Map): UseMapInteractionsReturn {
 		removeFeatureDrag();
 	};
 
+	const setCursor = (cursor: string) => (mapInstance.getTargetElement().style.cursor = cursor);
+
 	const setCursorPointerForSelect = (event: MapBrowserEvent) => {
 		if (event.dragging || !mapInstance) {
 			return;
@@ -60,8 +59,7 @@ export function useMapInteractions(mapInstance: Map): UseMapInteractionsReturn {
 		const hit = mapInstance.hasFeatureAtPixel(event.pixel, {
 			layerFilter: (layer) => layer instanceof WebGLVectorLayer,
 		});
-
-		mapInstance.getTargetElement().style.cursor = hit ? 'pointer' : '';
+		setCursor(hit ? 'pointer' : '');
 	};
 
 	const onSelectInMap = (
@@ -92,10 +90,7 @@ export function useMapInteractions(mapInstance: Map): UseMapInteractionsReturn {
 		}
 	};
 
-	const setupLongPressPoint = (
-		featuresSource: VectorSource,
-		onLongPress: (feature: Feature) => void
-	) => {
+	const setupLongPressPoint = (source: VectorSource, onLongPress: (feature: Feature) => void) => {
 		if (pointerInteraction.value) {
 			return;
 		}
@@ -107,7 +102,7 @@ export function useMapInteractions(mapInstance: Map): UseMapInteractionsReturn {
 		pointerInteraction.value = new PointerInteraction({
 			handleDownEvent: (event) => {
 				startPixel = event.pixel;
-				mapInstance.getTargetElement().style.cursor = 'pointer';
+				setCursor('pointer');
 				if (timer) {
 					clearTimeout(timer);
 				}
@@ -117,12 +112,12 @@ export function useMapInteractions(mapInstance: Map): UseMapInteractionsReturn {
 						return false;
 					}
 
-					if (!featuresSource.isEmpty()) {
-						featuresSource.clear(true);
+					if (!source.isEmpty()) {
+						source.clear(true);
 					}
 
 					const feature = new Feature({ geometry: new Point(event.coordinate) });
-					featuresSource.addFeature(feature);
+					source.addFeature(feature);
 					onLongPress(feature);
 				}, LONG_PRESS_TIME);
 				return false;
@@ -138,11 +133,11 @@ export function useMapInteractions(mapInstance: Map): UseMapInteractionsReturn {
 					clearTimeout(timer);
 					timer = null;
 					startPixel = null;
-					mapInstance.getTargetElement().style.cursor = '';
+					setCursor('');
 				}
 			},
 			handleUpEvent: () => {
-				mapInstance.getTargetElement().style.cursor = '';
+				setCursor('');
 				if (timer) {
 					clearTimeout(timer);
 				}
@@ -167,12 +162,10 @@ export function useMapInteractions(mapInstance: Map): UseMapInteractionsReturn {
 
 		translateInteraction.value = new Translate({ layers: [layer] });
 
-		translateInteraction.value.on('translating', () => {
-			mapInstance.getTargetElement().style.cursor = 'grab';
-		});
+		translateInteraction.value.on('translating', () => setCursor('grab'));
 
 		translateInteraction.value.on('translateend', (event) => {
-			mapInstance.getTargetElement().style.cursor = '';
+			setCursor('');
 			const feature = event.features.getArray()[0];
 			if (feature) {
 				onDrag(feature);

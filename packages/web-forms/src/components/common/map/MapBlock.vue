@@ -31,7 +31,7 @@ const showErrorStyle = inject<ComputedRef<boolean>>(
 	computed(() => false)
 );
 
-const mapHandler = useMapBlock(props.mode, () => emitSavedFeature());
+const mapHandler = useMapBlock(props.mode, { onFeaturePlacement: () => emitSavedFeature() });
 
 onMounted(() => {
 	if (!mapElement.value || !mapHandler) {
@@ -54,13 +54,15 @@ watch(
 	{ deep: true }
 );
 
-watch(() => props.savedFeatureValue, mapHandler.setSavedByValueProp);
+watch(
+	() => props.savedFeatureValue,
+	(newValue) => newValue && mapHandler.findAndSaveFeature(newValue)
+);
 
-watch(() => props.disabled, mapHandler.setupMapInteractions);
-
-const emitSavedFeature = () => {
-	emit('save', mapHandler.savedFeature.value?.getProperties()?.odk_value);
-};
+watch(
+	() => props.disabled,
+	(newValue) => mapHandler.setupMapInteractions(newValue)
+);
 
 const handleEscapeKey = (event: KeyboardEvent) => {
 	if (event.key === 'Escape' && isFullScreen.value) {
@@ -68,14 +70,23 @@ const handleEscapeKey = (event: KeyboardEvent) => {
 	}
 };
 
+const emitSavedFeature = () => {
+	emit('save', mapHandler.getSavedFeatureValue());
+};
+
 const saveSelection = () => {
-	mapHandler.saveFeature();
+	mapHandler.saveSelectedFeature();
+	emitSavedFeature();
+};
+
+const saveCurrentLocation = () => {
+	mapHandler.saveCurrentLocation();
 	emitSavedFeature();
 };
 
 const discardSavedFeature = () => {
 	mapHandler.discardSavedFeature();
-	emit('save', null);
+	emitSavedFeature();
 };
 </script>
 
@@ -118,24 +129,24 @@ const discardSavedFeature = () => {
 			</div>
 
 			<MapStatusBar
-				:is-feature-saved="!!mapHandler.savedFeature.value"
+				:is-feature-saved="mapHandler.isFeatureSaved()"
 				:is-capturing="mapHandler.currentState.value === STATES.CAPTURING"
 				class="map-status-bar-component"
 				:can-remove="!disabled && mapHandler.canRemoveCurrentLocation()"
 				:can-save="!disabled && mapHandler.canSaveCurrentLocation()"
 				:can-view-details="mapHandler.canViewProperties()"
 				@discard="discardSavedFeature"
-				@save="saveSelection"
+				@save="saveCurrentLocation"
 				@view-details="mapHandler.selectSavedFeature()"
 			/>
 
 			<MapProperties
-				v-if="mapHandler.canViewProperties() && mapHandler.selectedFeatureProperties.value"
+				v-if="mapHandler.canViewProperties()"
 				:can-remove="!disabled"
 				:can-save="!disabled"
-				:is-feature-saved="mapHandler.isSelectedFeatureSaved()"
+				:is-saved-feature-selected="mapHandler.isSavedFeatureSelected()"
 				:ordered-extra-props="orderedExtraProps"
-				:reserved-props="mapHandler.selectedFeatureProperties.value"
+				:reserved-props="mapHandler.getSelectedFeatureProperties()"
 				@close="mapHandler.unselectFeature()"
 				@discard="discardSavedFeature"
 				@save="saveSelection"

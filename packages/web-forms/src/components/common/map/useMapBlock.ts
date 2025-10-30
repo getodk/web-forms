@@ -5,26 +5,34 @@ import {
 	getUnselectedStyles,
 } from '@/components/common/map/map-styles.ts';
 import {
+	FEATURE_ID_PROPERTY,
+	SAVED_ID_PROPERTY,
+	SELECTED_ID_PROPERTY,
+	useMapFeatures,
+	type UseMapFeatures,
+} from '@/components/common/map/useMapFeatures.ts';
+import {
 	useMapInteractions,
-	type UseMapInteractionsReturn,
+	type UseMapInteractions,
 } from '@/components/common/map/useMapInteractions.ts';
 import {
+	DEFAULT_VIEW_CENTER,
+	MIN_ZOOM,
 	useMapViewControls,
-	type UseMapViewControlsReturn,
+	type UseMapViewControls,
 } from '@/components/common/map/useMapViewControls.ts';
 import type { FeatureCollection, Feature as GeoJsonFeature, GeoJsonProperties } from 'geojson';
 import { Map, View } from 'ol';
 import { Attribution, Zoom } from 'ol/control';
 import Feature from 'ol/Feature';
-import GeoJSON from 'ol/format/GeoJSON';
 import { Point } from 'ol/geom';
 import TileLayer from 'ol/layer/Tile';
 import VectorLayer from 'ol/layer/Vector';
 import WebGLVectorLayer from 'ol/layer/WebGLVector';
-import { fromLonLat, toLonLat } from 'ol/proj';
+import { toLonLat } from 'ol/proj';
 import { OSM } from 'ol/source';
 import VectorSource from 'ol/source/Vector';
-import { computed, shallowRef, watch } from 'vue';
+import { shallowRef, watch } from 'vue';
 import { get as getProjection } from 'ol/proj';
 
 export const STATES = {
@@ -34,32 +42,24 @@ export const STATES = {
 	CAPTURING: 'capturing',
 } as const;
 
-const DEFAULT_GEOJSON_PROJECTION = 'EPSG:4326';
 const DEFAULT_VIEW_PROJECTION = 'EPSG:3857';
-const DEFAULT_VIEW_CENTER = [0, 0];
-const MIN_ZOOM = 2;
-const ANIMATION_TIME = 1000;
-const FEATURE_ID_PROPERTY = 'odk_feature_id';
-const ODK_VALUE_PROPERTY = 'odk_value';
-const SAVED_ID_PROPERTY = 'savedId';
-const SELECTED_ID_PROPERTY = 'selectedId';
+export const ODK_VALUE_PROPERTY = 'odk_value';
 
-export function useMapBlock(mode: Mode, onFeaturePlacement: () => void) {
+export function useMapBlock(mode: Mode, events: { onFeaturePlacement: () => void }) {
 	let mapInstance: Map | undefined;
-	let mapInteractions: UseMapInteractionsReturn | undefined;
-	let mapViewControls: UseMapViewControlsReturn | undefined;
+	let mapInteractions: UseMapInteractions | undefined;
+	let mapViewControls: UseMapViewControls | undefined;
+	let mapFeatures: UseMapFeatures | undefined;
 
 	const currentMode = getModeConfig(mode);
 	const currentState = shallowRef<(typeof STATES)[keyof typeof STATES]>(STATES.LOADING);
 	const errorMessage = shallowRef<{ title: string; message: string } | undefined>();
 
-	const savedFeature = shallowRef<Feature | undefined>();
-	const selectedFeature = shallowRef<Feature | undefined>();
-	const selectedFeatureProperties = computed(() => {
-		return selectedFeature.value?.getProperties();
-	});
-
 	const featuresSource = new VectorSource();
+	const singleFeatureLayer = new VectorLayer({
+		source: featuresSource,
+		style: [...getSavedStyles(FEATURE_ID_PROPERTY, SAVED_ID_PROPERTY)],
+	});
 	const multiFeatureLayer = new WebGLVectorLayer({
 		source: featuresSource,
 		style: [
@@ -69,26 +69,22 @@ export function useMapBlock(mode: Mode, onFeaturePlacement: () => void) {
 		],
 		variables: { [SAVED_ID_PROPERTY]: '', [SELECTED_ID_PROPERTY]: '' },
 	});
-	const singleFeatureLayer = new VectorLayer({
-		source: featuresSource,
-		style: [...getSavedStyles(FEATURE_ID_PROPERTY, SAVED_ID_PROPERTY)],
-	});
 
 	const initMap = (
 		mapContainer: HTMLElement,
 		geoJSON: FeatureCollection,
 		savedFeatureValue: GeoJsonFeature | undefined
 	): void => {
+		if (mapInstance) {
+			return;
+		}
+
 		if (currentMode.capabilities.canLoadMultiFeatures && !isWebGLAvailable()) {
 			currentState.value = STATES.ERROR;
 			errorMessage.value = {
 				title: 'Graphics issue detected',
 				message: 'Your browser cannot display the map now. Enable graphics acceleration settings.',
 			};
-			return;
-		}
-
-		if (mapInstance) {
 			return;
 		}
 
@@ -108,6 +104,8 @@ export function useMapBlock(mode: Mode, onFeaturePlacement: () => void) {
 
 		mapInteractions = useMapInteractions(mapInstance);
 		mapViewControls = useMapViewControls(mapInstance);
+		mapFeatures = useMapFeatures(mapInstance, mapViewControls, multiFeatureLayer);
+
 		initLayer(geoJSON, savedFeatureValue);
 		mapInteractions.setupMapVisibilityObserver(
 			mapContainer,
@@ -140,8 +138,8 @@ export function useMapBlock(mode: Mode, onFeaturePlacement: () => void) {
 		// TODO: extend to LineString and Polygon types
 		if (savedFeatureValue && savedFeatureValue.geometry.type === 'Point') {
 			const [longitude, latitude] = savedFeatureValue.geometry.coordinates;
-			const feature = loadSingleFeature(longitude, latitude, savedFeatureValue.properties);
-			updateSavedFeature(feature);
+			loadAndSaveSingleFeature(longitude, latitude, savedFeatureValue.properties);
+			return;
 		}
 	};
 
@@ -157,7 +155,7 @@ export function useMapBlock(mode: Mode, onFeaturePlacement: () => void) {
 		}
 
 		if (currentMode.interactions.select) {
-			mapInteractions.toggleSelectEvent(true, selectFeature);
+			mapInteractions.toggleSelectEvent(true, mapFeatures?.selectFeature);
 		}
 
 		if (currentMode.interactions.drag) {
@@ -177,50 +175,36 @@ export function useMapBlock(mode: Mode, onFeaturePlacement: () => void) {
 
 		const [longitude, latitude] = toLonLat(geometry.getCoordinates());
 		feature.set(ODK_VALUE_PROPERTY, formatODKValue(longitude, latitude));
-		updateSavedFeature(feature);
+		mapFeatures?.saveFeature(feature);
 
-		if (onFeaturePlacement) {
-			onFeaturePlacement();
+		if (events.onFeaturePlacement) {
+			events.onFeaturePlacement();
 		}
 	};
 
-	const emptyMap = () => {
-		selectFeature(undefined);
-		updateSavedFeature(undefined);
+	const clearMap = () => {
+		mapFeatures?.selectFeature(undefined);
+		mapFeatures?.saveFeature(undefined);
 		featuresSource.clear(true);
 	};
 
-	const updateFeatureCollection = (
-		newCollection: FeatureCollection,
-		savedFeatureValue: GeoJsonFeature | undefined
-	) => {
-		loadFeatureCollection(newCollection);
-		setSavedByValueProp(savedFeatureValue);
+	const updateFeatureCollection = (features: FeatureCollection, savedFeature?: GeoJsonFeature) => {
+		loadFeatureCollection(features);
+		mapFeatures?.findAndSaveFeature(featuresSource, savedFeature);
 	};
 
-	const loadSingleFeature = (
+	const loadAndSaveSingleFeature = (
 		longitude: number,
 		latitude: number,
 		properties: GeoJsonProperties
-	): Feature | undefined => {
+	) => {
 		if (!mapInstance || currentMode.capabilities.canLoadMultiFeatures) {
 			return;
 		}
 
 		currentState.value = STATES.LOADING;
-		featuresSource.clear(true);
-
-		const parsedCoords = fromLonLat([longitude, latitude]);
-		const feature = new Feature({
-			geometry: new Point(parsedCoords),
-			...properties,
-		});
-		featuresSource.addFeature(feature);
+		mapFeatures?.loadAndSaveSingleFeature(featuresSource, longitude, latitude, properties);
 		currentState.value = STATES.READY;
-
-		mapViewControls?.fitToAllFeatures(featuresSource);
-
-		return feature;
 	};
 
 	const loadFeatureCollection = (geoJSON: FeatureCollection): void => {
@@ -229,86 +213,33 @@ export function useMapBlock(mode: Mode, onFeaturePlacement: () => void) {
 		}
 
 		currentState.value = STATES.LOADING;
-		emptyMap();
+		clearMap();
 
-		if (!geoJSON.features.length) {
-			mapInstance?.getView().animate({
-				center: DEFAULT_VIEW_CENTER,
-				zoom: MIN_ZOOM,
-				duration: ANIMATION_TIME,
-			});
-			currentState.value = STATES.READY;
-			return;
+		if (geoJSON.features.length) {
+			mapFeatures?.loadFeatureCollection(featuresSource, geoJSON);
+		} else {
+			mapViewControls?.centerFullWorldView();
 		}
 
-		const features = new GeoJSON().readFeatures(geoJSON, {
-			dataProjection: DEFAULT_GEOJSON_PROJECTION,
-			featureProjection: mapInstance.getView().getProjection(),
-		});
-
-		features.forEach((feature) => {
-			if (!feature.get(FEATURE_ID_PROPERTY)) {
-				feature.set(FEATURE_ID_PROPERTY, crypto.randomUUID());
-			}
-		});
-		featuresSource.addFeatures(features);
 		currentState.value = STATES.READY;
-
-		mapViewControls?.fitToAllFeatures(featuresSource);
 	};
 
-	const selectFeature = (feature?: Feature) => (selectedFeature.value = feature);
-
-	const saveFeature = () => {
-		if (
-			currentMode.capabilities.canSaveCurrentLocation &&
-			mapViewControls?.userCurrentLocation.value
-		) {
-			const { longitude, latitude } = mapViewControls.userCurrentLocation.value;
-			const feature = loadSingleFeature(longitude, latitude, {
-				[ODK_VALUE_PROPERTY]: formatODKValue(longitude, latitude),
+	const saveCurrentLocation = () => {
+		const location = mapViewControls?.getUserCurrentLocation();
+		if (currentMode.capabilities.canSaveCurrentLocation && location) {
+			loadAndSaveSingleFeature(location.longitude, location.latitude, {
+				[ODK_VALUE_PROPERTY]: formatODKValue(location.longitude, location.latitude),
 			});
-			updateSavedFeature(feature);
 			return;
 		}
-
-		updateSavedFeature(selectedFeature.value);
 	};
-
-	const updateSavedFeature = (feature?: Feature) => (savedFeature.value = feature);
 
 	const discardSavedFeature = () => {
 		if (currentMode.capabilities.canLoadMultiFeatures) {
-			updateSavedFeature(undefined);
+			mapFeatures?.saveFeature(undefined);
 			return;
 		}
-		emptyMap();
-	};
-
-	const setSavedByValueProp = (value: GeoJsonFeature | undefined): void => {
-		if (!value || featuresSource.isEmpty()) {
-			return;
-		}
-
-		const featureToSave = featuresSource.forEachFeature((feature) => {
-			const featureProps = feature.getProperties();
-			if (featureProps?.[ODK_VALUE_PROPERTY] === value.properties?.[ODK_VALUE_PROPERTY]) {
-				return feature;
-			}
-		});
-
-		if (!featureToSave) {
-			return;
-		}
-
-		updateSavedFeature(featureToSave);
-		mapViewControls?.centerFeatureLocation(featureToSave);
-	};
-
-	const isSelectedFeatureSaved = (): boolean => {
-		const savedId = savedFeature.value?.get(FEATURE_ID_PROPERTY) as string;
-		const selectedId = selectedFeature.value?.get(FEATURE_ID_PROPERTY) as string;
-		return savedId?.length > 0 && savedId === selectedId;
+		clearMap();
 	};
 
 	const formatODKValue = (longitude: number, latitude: number) => `${latitude} ${longitude}`;
@@ -320,26 +251,27 @@ export function useMapBlock(mode: Mode, onFeaturePlacement: () => void) {
 
 	const shouldShowMapOverlay = () => {
 		return (
-			currentMode.capabilities.canShowMapOverlay &&
-			!savedFeature.value &&
 			currentState.value === STATES.READY &&
-			!mapViewControls?.userCurrentLocationFeature.value
+			currentMode.capabilities.canShowMapOverlay &&
+			!mapViewControls?.hasCurrentLocationFeature() &&
+			!mapFeatures?.getSavedFeature()
 		);
 	};
 
 	const canSaveCurrentLocation = () => {
 		return (
 			currentMode.capabilities.canSaveCurrentLocation &&
-			!!mapViewControls?.userCurrentLocationFeature.value
+			!!mapViewControls?.hasCurrentLocationFeature()
 		);
 	};
 
 	const canRemoveCurrentLocation = () => {
-		return currentMode.capabilities.canRemoveCurrentLocation && !!savedFeature.value;
+		return currentMode.capabilities.canRemoveCurrentLocation && !!mapFeatures?.getSavedFeature();
 	};
 
 	const watchCurrentLocation = () => {
 		currentState.value = STATES.CAPTURING;
+
 		mapViewControls?.watchCurrentLocation(
 			() => (currentState.value = STATES.READY),
 			() => {
@@ -363,58 +295,33 @@ export function useMapBlock(mode: Mode, onFeaturePlacement: () => void) {
 		}
 	);
 
-	watch(
-		() => selectedFeature.value,
-		(newSelectedFeature) => {
-			if (currentMode.capabilities.canLoadMultiFeatures) {
-				multiFeatureLayer.updateStyleVariables({
-					[SELECTED_ID_PROPERTY]: (newSelectedFeature?.get(FEATURE_ID_PROPERTY) as string) ?? '',
-				});
-			}
-
-			if (newSelectedFeature != null) {
-				mapViewControls?.centerFeatureLocation(newSelectedFeature);
-			}
-		}
-	);
-
-	watch(
-		() => savedFeature.value,
-		(newSavedFeature) => {
-			mapViewControls?.stopWatchingCurrentLocation();
-
-			if (currentMode.capabilities.canLoadMultiFeatures) {
-				multiFeatureLayer.updateStyleVariables({
-					[SAVED_ID_PROPERTY]: (newSavedFeature?.get(FEATURE_ID_PROPERTY) as string) ?? '',
-				});
-			}
-		}
-	);
-
 	return {
 		currentState,
+		errorMessage,
 		initMap,
 		teardownMap,
 		updateFeatureCollection,
-		errorMessage,
 		setupMapInteractions,
 
 		canFitToAllFeatures: () => !featuresSource.isEmpty(),
 		fitToAllFeatures: () => mapViewControls?.fitToAllFeatures(featuresSource),
 		watchCurrentLocation,
-		stopWatchingCurrentLocation: () => mapViewControls?.stopWatchingCurrentLocation(),
 		canSaveCurrentLocation,
 		canRemoveCurrentLocation,
 
-		savedFeature,
 		discardSavedFeature,
-		saveFeature,
-		setSavedByValueProp,
+		saveSelectedFeature: () => mapFeatures?.saveSelectedFeature(),
+		saveCurrentLocation,
+		findAndSaveFeature: (feature: GeoJsonFeature) =>
+			mapFeatures?.findAndSaveFeature(featuresSource, feature),
+		isFeatureSaved: () => !!mapFeatures?.getSavedFeature(),
+		getSavedFeatureValue: (): string | undefined =>
+			mapFeatures?.getSavedFeature()?.getProperties()?.[ODK_VALUE_PROPERTY] as string,
+		isSavedFeatureSelected: () => !!mapFeatures?.isSavedFeatureSelected(),
 
-		selectedFeatureProperties,
-		selectSavedFeature: () => selectFeature(savedFeature.value),
-		unselectFeature: () => selectFeature(undefined),
-		isSelectedFeatureSaved,
+		getSelectedFeatureProperties: () => mapFeatures?.getSelectedFeatureProperties(),
+		selectSavedFeature: () => mapFeatures?.selectFeature(mapFeatures?.getSavedFeature()),
+		unselectFeature: () => mapFeatures?.selectFeature(undefined),
 
 		canViewProperties: () => currentMode.capabilities.canViewProperties,
 		shouldShowMapOverlay,
