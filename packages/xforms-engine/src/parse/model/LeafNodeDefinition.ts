@@ -40,7 +40,7 @@ export class LeafNodeDefinition<V extends ValueType = ValueType>
 		this.valueType = bind.type.resolved satisfies ValueType as V;
 		this.qualifiedName = template.qualifiedName;
 		this.namespaceDeclarations = new NamespaceDeclarationMap(this);
-		this.attributes = RootAttributeMap.from(model, this, template); // TODO this is passing in all binds, not just for this
+		this.attributes = RootAttributeMap.from(model, parent.root, template); // TODO this is passing in all binds, not just for this
 	}
 
 	toJSON() {

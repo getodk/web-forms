@@ -25,6 +25,7 @@ import { createAggregatedViolations } from '../lib/reactivity/validation/createA
 import type { BodyClassList } from '../parse/body/BodyDefinition.ts';
 import type { RootDefinition } from '../parse/model/RootDefinition.ts';
 import { DescendantNode } from './abstract/DescendantNode.ts';
+import { buildAttributes } from './attachments/buildAttributes.ts';
 import { Attribute } from './Attribute.ts';
 import { buildChildren } from './children/buildChildren.ts';
 import type { GeneralChildNode } from './hierarchy.ts';
@@ -141,7 +142,6 @@ export class Root
 		return this.childrenState.getChildren();
 	}
 
-	// TODO not needed?
 	getAttributes(): readonly Attribute[] {
 		return this.attributeState.getAttributes();
 	}
@@ -158,11 +158,4 @@ export class Root
 	): Promise<InstancePayload<PayloadType>> {
 		return this.rootDocument.prepareInstancePayload(options);
 	}
-}
-
-// TODO this belongs elsewhere - look at buildChildren
-function buildAttributes(root: Root): Attribute[] {
-	return Array.from(root.definition.attributes.values()).map(defn => {
-		return new Attribute(root, defn);
-	})
 }

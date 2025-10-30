@@ -42,7 +42,7 @@ export class GroupDefinition extends DescendentNodeDefinition<
 		this.namespaceDeclarations = new NamespaceDeclarationMap(this);
 		this.children = root.buildSubtree(this, template);
 
-		this.attributes = RootAttributeMap.from(model, this, template); // TODO this is passing in all binds, not just for this
+		this.attributes = RootAttributeMap.from(model, root, template); // TODO this is passing in all binds, not just for this
 	}
 
 	toJSON() {

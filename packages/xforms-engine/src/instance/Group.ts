@@ -21,6 +21,7 @@ import { createNodeLabel } from '../lib/reactivity/text/createNodeLabel.ts';
 import { createAggregatedViolations } from '../lib/reactivity/validation/createAggregatedViolations.ts';
 import type { DescendantNodeSharedStateSpec } from './abstract/DescendantNode.ts';
 import { DescendantNode } from './abstract/DescendantNode.ts';
+import { buildAttributes } from './attachments/buildAttributes.ts';
 import { Attribute } from './Attribute.ts';
 import { buildChildren } from './children/buildChildren.ts';
 import type { GeneralChildNode, GeneralParentNode } from './hierarchy.ts';
@@ -117,11 +118,4 @@ export class Group
 	getAttributes(): readonly Attribute[] {
 		return this.attributeState.getAttributes();
 	}
-}
-
-// TODO this belongs elsewhere - look at buildChildren
-function buildAttributes(group: Group): Attribute[] {
-	return Array.from(group.definition.attributes.values()).map(defn => {
-		return new Attribute(group, defn);
-	})
 }

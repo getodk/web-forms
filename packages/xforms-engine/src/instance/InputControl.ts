@@ -22,6 +22,7 @@ import { createFieldHint } from '../lib/reactivity/text/createFieldHint.ts';
 import { createNodeLabel } from '../lib/reactivity/text/createNodeLabel.ts';
 import type { InputControlDefinition } from '../parse/body/control/InputControlDefinition.ts';
 import { ValueNode, type ValueNodeStateSpec } from './abstract/ValueNode.ts';
+import { buildAttributes } from './attachments/buildAttributes.ts';
 import { Attribute } from './Attribute.ts';
 import type { GeneralParentNode } from './hierarchy.ts';
 import type { EvaluationContext } from './internal-api/EvaluationContext.ts';
@@ -160,13 +161,6 @@ export class InputControl<V extends ValueType = ValueType>
 	getAttributes(): readonly Attribute[] {
 		return this.attributeState.getAttributes();
 	}
-}
-
-// TODO this belongs elsewhere - look at buildChildren
-function buildAttributes(input: InputControl): Attribute[] {
-	return Array.from(input.definition.attributes.values()).map(defn => {
-		return new Attribute(input, defn);
-	})
 }
 
 export type AnyInputControl =

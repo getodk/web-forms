@@ -98,7 +98,7 @@ export class RootDefinition extends NodeDefinition<'root'> {
 
 			if (element.isLeafElement()) {
 				if (bodyElement?.type === 'range') {
-					return RangeNodeDefinition.from(parent, bind, bodyElement, element);
+					return RangeNodeDefinition.from(model, parent, bind, bodyElement, element);
 				}
 
 				return (
