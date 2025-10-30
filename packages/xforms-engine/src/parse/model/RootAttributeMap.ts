@@ -2,7 +2,7 @@ import { XMLNS_NAMESPACE_URI } from '@getodk/common/constants/xmlns.ts';
 import type { StaticAttribute } from '../../integration/xpath/static-dom/StaticAttribute.ts';
 import type { StaticElement } from '../../integration/xpath/static-dom/StaticElement.ts';
 import type { QualifiedName } from '../../lib/names/QualifiedName.ts';
-import type { ModelBindMap } from './ModelBindMap.ts';
+import type { ModelDefinition } from './ModelDefinition.ts';
 import { RootAttributeDefinition } from './RootAttributeDefinition.ts';
 import type { RootDefinition } from './RootDefinition.ts';
 
@@ -31,16 +31,17 @@ const isNonNamespaceAttribute = (attribute: StaticAttribute) => {
  * @see {@link QualifiedName} for more detail.
  */
 // TODO rename this - it's not just for roots anymore
+// TODO remove above todos!
 export class RootAttributeMap extends Map<QualifiedName, RootAttributeDefinition> {
-	static from(root: RootDefinition, instanceNode: StaticElement, binds: ModelBindMap) {
+	static from(model: ModelDefinition, root: RootDefinition, instanceNode: StaticElement) {
 		const nonNamespaceAttributes = instanceNode.attributes.filter(isNonNamespaceAttribute);
 		const definitions = nonNamespaceAttributes.map((attribute) => {
-			const bind = binds.get(attribute.nodeset);
+			const bind = model.binds.get(attribute.nodeset);
 			if (!bind) {
 				// TODO need to do something to support attributes without binds
 				return;
 			}
-			return new RootAttributeDefinition(root, attribute, bind);
+			return new RootAttributeDefinition(model, root, attribute, bind);
 		}).filter(defn => !!defn);
 
 		return new this(definitions);

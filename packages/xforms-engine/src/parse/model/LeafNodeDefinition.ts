@@ -8,7 +8,9 @@ import { QualifiedName } from '../../lib/names/QualifiedName.ts';
 import type { AnyBodyElementDefinition, ControlElementDefinition } from '../body/BodyDefinition.ts';
 import type { BindDefinition } from './BindDefinition.ts';
 import { DescendentNodeDefinition } from './DescendentNodeDefinition.ts';
+import type { ModelDefinition } from './ModelDefinition.ts';
 import type { ParentNodeDefinition } from './NodeDefinition.ts';
+import { RootAttributeMap } from './RootAttributeMap.ts';
 
 export class LeafNodeDefinition<V extends ValueType = ValueType>
 	extends DescendentNodeDefinition<'leaf-node', ControlElementDefinition | null>
@@ -20,8 +22,10 @@ export class LeafNodeDefinition<V extends ValueType = ValueType>
 	readonly namespaceDeclarations: NamespaceDeclarationMap;
 	readonly qualifiedName: QualifiedName;
 	readonly children = null;
+	readonly attributes: RootAttributeMap;
 
 	constructor(
+		model: ModelDefinition,
 		parent: ParentNodeDefinition,
 		bind: BindDefinition,
 		bodyElement: AnyBodyElementDefinition | null,
@@ -36,6 +40,7 @@ export class LeafNodeDefinition<V extends ValueType = ValueType>
 		this.valueType = bind.type.resolved satisfies ValueType as V;
 		this.qualifiedName = template.qualifiedName;
 		this.namespaceDeclarations = new NamespaceDeclarationMap(this);
+		this.attributes = RootAttributeMap.from(model, this, template); // TODO this is passing in all binds, not just for this
 	}
 
 	toJSON() {

@@ -3,11 +3,11 @@ import { createSignal } from 'solid-js';
 import type { FormNodeID } from '../../client/identity.ts';
 import type { OpaqueReactiveObjectFactory } from '../../index.ts';
 import type { Attribute } from '../../instance/Attribute.ts';
-import type { AnyParentNode } from '../../instance/hierarchy.ts';
 import type { materializeCurrentStateChildren } from './materializeCurrentStateChildren.ts';
 import type { ClientState } from './node-state/createClientState.ts';
 import type { CurrentState } from './node-state/createCurrentState.ts';
 import type { EngineState } from './node-state/createEngineState.ts';
+import type { ReactiveScope } from './scope.ts';
 
 export interface AttributeState {
 	readonly attributes: Signal<readonly Attribute[]>;
@@ -16,6 +16,8 @@ export interface AttributeState {
 }
 
 /**
+ * TODO update documentation - copy and paste version
+ * 
  * Creates a synchronized pair of:
  *
  * - Internal children state suitable for all parent node types
@@ -43,10 +45,10 @@ export interface AttributeState {
  * those {@link FormNodeID}s with the aforementioned
  * {@link materializeCurrentStateChildren}.
  */
-export const createAttributeState = <Parent extends AnyParentNode>(
-	parent: Parent
+export const createAttributeState = (
+	scope: ReactiveScope
 ): AttributeState => {
-	return parent.scope.runTask(() => {
+	return scope.runTask(() => {
 		const baseState = createSignal<readonly Attribute[]>([]);
 		const [getAttributes, baseSetAttributes] = baseState;
 

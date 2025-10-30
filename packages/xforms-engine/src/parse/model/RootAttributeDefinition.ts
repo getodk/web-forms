@@ -4,6 +4,7 @@ import { QualifiedName } from '../../lib/names/QualifiedName.ts';
 import { escapeXMLText } from '../../lib/xml-serialization.ts';
 import type { BindDefinition } from './BindDefinition.ts';
 import { LeafNodeDefinition } from './LeafNodeDefinition.ts';
+import type { ModelDefinition } from './ModelDefinition.ts';
 import type { RootDefinition } from './RootDefinition.ts';
 
 interface RootAttributeSource {
@@ -21,9 +22,8 @@ export class RootAttributeDefinition extends LeafNodeDefinition<'string'> implem
 
 	readonly value: string;
 
-	constructor(root: RootDefinition, source: RootAttributeSource, bind: BindDefinition) {
-
-		super(root, bind, null, source);
+	constructor(model: ModelDefinition, root: RootDefinition, source: RootAttributeSource, bind: BindDefinition) {
+		super(model, root, bind, null, source);
 
 		const { value } = source;
 

@@ -71,8 +71,9 @@ export class Group
 
 		this.appearances = definition.bodyElement?.appearances ?? null;
 
+		// TODO Surely we don't need to duplicate this everywhere!
 		const childrenState = createChildrenState<Group, GeneralChildNode>(this);
-		const attributeState = createAttributeState<Group>(this);
+		const attributeState = createAttributeState(this.scope);
 
 		this.childrenState = childrenState;
 		this.attributeState = attributeState;

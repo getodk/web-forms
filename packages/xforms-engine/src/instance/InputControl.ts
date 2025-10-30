@@ -13,6 +13,7 @@ import type { XFormsXPathElement } from '../integration/xpath/adapter/XFormsXPat
 import type { StaticLeafElement } from '../integration/xpath/static-dom/StaticElement.ts';
 import type { RuntimeInputValue, RuntimeValue } from '../lib/codecs/getSharedValueCodec.ts';
 import { getSharedValueCodec } from '../lib/codecs/getSharedValueCodec.ts';
+import { createAttributeState, type AttributeState } from '../lib/reactivity/createAttributeState.ts';
 import type { CurrentState } from '../lib/reactivity/node-state/createCurrentState.ts';
 import type { EngineState } from '../lib/reactivity/node-state/createEngineState.ts';
 import type { SharedNodeState } from '../lib/reactivity/node-state/createSharedNodeState.ts';
@@ -21,6 +22,7 @@ import { createFieldHint } from '../lib/reactivity/text/createFieldHint.ts';
 import { createNodeLabel } from '../lib/reactivity/text/createNodeLabel.ts';
 import type { InputControlDefinition } from '../parse/body/control/InputControlDefinition.ts';
 import { ValueNode, type ValueNodeStateSpec } from './abstract/ValueNode.ts';
+import { Attribute } from './Attribute.ts';
 import type { GeneralParentNode } from './hierarchy.ts';
 import type { EvaluationContext } from './internal-api/EvaluationContext.ts';
 import type { ClientReactiveSerializableValueNode } from './internal-api/serialization/ClientReactiveSerializableValueNode.ts';
@@ -70,6 +72,7 @@ interface InputControlStateSpec<V extends ValueType> extends ValueNodeStateSpec<
 	readonly label: Accessor<TextRange<'label'> | null>;
 	readonly hint: Accessor<TextRange<'hint'> | null>;
 	readonly valueOptions: null;
+	readonly attributes: Accessor<readonly Attribute[]>;
 }
 
 export class InputControl<V extends ValueType = ValueType>
@@ -93,6 +96,8 @@ export class InputControl<V extends ValueType = ValueType>
 	): InputControl<V> {
 		return new this(parent, instanceNode, definition);
 	}
+
+	private readonly attributeState: AttributeState;
 
 	// XFormsXPathElement
 	override readonly [XPathNodeKindKey] = 'element';
@@ -118,7 +123,9 @@ export class InputControl<V extends ValueType = ValueType>
 
 		this.appearances = definition.bodyElement.appearances;
 		this.nodeOptions = nodeOptionsFactoryByType[definition.valueType](definition.bodyElement);
-
+		
+		const attributeState = createAttributeState(this.scope);
+		this.attributeState = attributeState;
 		const state = createSharedNodeState(
 			this.scope,
 			{
@@ -130,6 +137,7 @@ export class InputControl<V extends ValueType = ValueType>
 				label: createNodeLabel(this, definition),
 				hint: createFieldHint(this, definition),
 				children: null,
+				attributes: attributeState.getAttributes,
 				valueOptions: null,
 				value: this.valueState,
 				instanceValue: this.getInstanceValue,
@@ -140,6 +148,7 @@ export class InputControl<V extends ValueType = ValueType>
 		this.state = state;
 		this.engineState = state.engineState;
 		this.currentState = state.currentState;
+		attributeState.setAttributes(buildAttributes(this));
 	}
 
 	setValue(value: InputNodeInputValue<V>): Root {
@@ -147,6 +156,17 @@ export class InputControl<V extends ValueType = ValueType>
 
 		return this.root;
 	}
+
+	getAttributes(): readonly Attribute[] {
+		return this.attributeState.getAttributes();
+	}
+}
+
+// TODO this belongs elsewhere - look at buildChildren
+function buildAttributes(input: InputControl): Attribute[] {
+	return Array.from(input.definition.attributes.values()).map(defn => {
+		return new Attribute(input, defn);
+	})
 }
 
 export type AnyInputControl =

@@ -7,7 +7,7 @@ import type { EngineState } from '../lib/reactivity/node-state/createEngineState
 import { createSharedNodeState } from '../lib/reactivity/node-state/createSharedNodeState.ts';
 import type { RootAttributeDefinition } from '../parse/model/RootAttributeDefinition.ts';
 import { ValueNode, type ValueNodeStateSpec } from './abstract/ValueNode.ts';
-import type { GeneralParentNode } from './hierarchy.ts';
+import type { AnyNode } from './hierarchy.ts';
 import type { ClientReactiveSerializableAttributeNode } from './internal-api/serialization/ClientReactiveSerializableAttributeNode.ts';
 import type { Root } from './Root.ts';
 
@@ -30,12 +30,12 @@ export class Attribute
 	readonly nodeOptions = null;
 
 	constructor(
-		parent: GeneralParentNode,
+		parent: AnyNode,
 		definition: RootAttributeDefinition
 	) {
 
 		const codec = getSharedValueCodec('string');
-		super(parent, null, definition, codec);
+		super(parent, null, definition, codec); // TODO this is complaining because I'm now treading leaf nodes as parents.
 
 		const getInstanceValue = this.getInstanceValue;
 
