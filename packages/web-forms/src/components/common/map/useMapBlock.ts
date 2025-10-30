@@ -107,9 +107,8 @@ export function useMapBlock(mode: Mode, events: { onFeaturePlacement: () => void
 		mapFeatures = useMapFeatures(mapInstance, mapViewControls, multiFeatureLayer);
 
 		initLayer(geoJSON, savedFeatureValue);
-		mapInteractions.setupMapVisibilityObserver(
-			mapContainer,
-			mapViewControls.stopWatchingCurrentLocation
+		mapInteractions.setupMapVisibilityObserver(mapContainer, () =>
+			mapViewControls?.stopWatchingCurrentLocation()
 		);
 		currentState.value = STATES.READY;
 	};
@@ -155,15 +154,19 @@ export function useMapBlock(mode: Mode, events: { onFeaturePlacement: () => void
 		}
 
 		if (currentMode.interactions.select) {
-			mapInteractions.toggleSelectEvent(true, mapFeatures?.selectFeature);
+			mapInteractions.toggleSelectEvent(true, (feature) => mapFeatures?.selectFeature(feature));
 		}
 
 		if (currentMode.interactions.drag) {
-			mapInteractions.setupFeatureDrag(singleFeatureLayer, handleFeaturePlacement);
+			mapInteractions.setupFeatureDrag(singleFeatureLayer, (feature) =>
+				handleFeaturePlacement(feature)
+			);
 		}
 
 		if (currentMode.interactions.longPress) {
-			mapInteractions.setupLongPressPoint(featuresSource, handleFeaturePlacement);
+			mapInteractions.setupLongPressPoint(featuresSource, (feature) =>
+				handleFeaturePlacement(feature)
+			);
 		}
 	};
 

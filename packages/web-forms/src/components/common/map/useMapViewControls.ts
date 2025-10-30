@@ -61,6 +61,22 @@ export function useMapViewControls(mapInstance: Map): UseMapViewControls {
 		}
 	};
 
+	const onGeolocationSuccess = (position: GeolocationPosition, onSuccess: () => void) => {
+		if (debounceTimer.value) {
+			clearTimeout(debounceTimer.value);
+		}
+		debounceTimer.value = setTimeout(() => {
+			const { latitude, longitude, altitude, accuracy } = position.coords;
+			userCurrentLocation.value = { latitude, longitude, altitude, accuracy };
+			onSuccess();
+		}, DEBOUNCE_DELAY_MS);
+	};
+
+	const onGeolocationError = (onError: () => void) => {
+		stopWatchingCurrentLocation();
+		onError();
+	};
+
 	const watchCurrentLocation = (onSuccess: () => void, onError: () => void): void => {
 		if (watchLocation.value) {
 			if (userCurrentLocationFeature.value) {
@@ -75,28 +91,16 @@ export function useMapViewControls(mapInstance: Map): UseMapViewControls {
 			return;
 		}
 
-		const handleSuccess = (position: GeolocationPosition) => {
-			if (debounceTimer.value) {
-				clearTimeout(debounceTimer.value);
-			}
-			debounceTimer.value = setTimeout(() => {
-				const { latitude, longitude, altitude, accuracy } = position.coords;
-				userCurrentLocation.value = { latitude, longitude, altitude, accuracy };
-				onSuccess();
-			}, DEBOUNCE_DELAY_MS);
-		};
-
-		const handleError = () => {
-			stopWatchingCurrentLocation();
-			onError();
-		};
-
 		if (!navigator.geolocation) {
-			handleError();
+			onGeolocationError(onError);
+			return;
 		}
 
-		const options = { enableHighAccuracy: true, timeout: GEOLOCATION_TIMEOUT_MS };
-		watchLocation.value = navigator.geolocation.watchPosition(handleSuccess, handleError, options);
+		watchLocation.value = navigator.geolocation.watchPosition(
+			(position) => onGeolocationSuccess(position, onSuccess),
+			() => onGeolocationError(onError),
+			{ enableHighAccuracy: true, timeout: GEOLOCATION_TIMEOUT_MS }
+		);
 	};
 
 	const stopWatchingCurrentLocation = () => {

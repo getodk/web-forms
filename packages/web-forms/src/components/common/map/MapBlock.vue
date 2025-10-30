@@ -135,7 +135,7 @@ const discardSavedFeature = () => {
 				:can-view-details="mapHandler.canViewProperties()"
 				@discard="discardSavedFeature"
 				@save="saveCurrentLocation"
-				@view-details="mapHandler.selectSavedFeature()"
+				@view-details="mapHandler.selectSavedFeature"
 			/>
 
 			<MapProperties
@@ -145,7 +145,7 @@ const discardSavedFeature = () => {
 				:is-saved-feature-selected="mapHandler.isSavedFeatureSelected()"
 				:ordered-extra-props="orderedExtraProps"
 				:reserved-props="mapHandler.getSelectedFeatureProperties()"
-				@close="mapHandler.unselectFeature()"
+				@close="mapHandler.unselectFeature"
 				@discard="discardSavedFeature"
 				@save="saveSelection"
 			/>

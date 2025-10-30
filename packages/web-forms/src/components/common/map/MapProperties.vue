@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import IconSVG from '@/components/common/IconSVG.vue';
+import { ODK_VALUE_PROPERTY } from '@/components/common/map/useMapBlock.ts';
 import Button from 'primevue/button';
 import { computed } from 'vue';
 
@@ -14,7 +15,7 @@ const props = defineProps<{
 const emit = defineEmits(['close', 'save', 'discard']);
 const orderedProps = computed(() => {
 	if (props.reservedProps) {
-		return props.orderedExtraProps.get(props.reservedProps.odk_value) ?? [];
+		return props.orderedExtraProps.get(props.reservedProps[ODK_VALUE_PROPERTY]) ?? [];
 	}
 
 	return [];
