@@ -13,6 +13,7 @@ import { QUESTION_HAS_ERROR } from '@/lib/constants/injection-keys.ts';
 import type { FeatureCollection, Feature } from 'geojson';
 import Button from 'primevue/button';
 import { computed, type ComputedRef, inject, onMounted, onUnmounted, ref, watch } from 'vue';
+import Message from 'primevue/message';
 
 interface MapBlockProps {
 	featureCollection: FeatureCollection;
@@ -124,6 +125,12 @@ const discardSavedFeature = () => {
 						<span>Get location</span>
 					</Button>
 				</div>
+
+				<Message v-if="!disabled && mapHandler.canLongPressAndDrag()" severity="contrast" closable size="small" class="map-message">
+					<!-- TODO: translations -->
+					<span v-if="savedFeatureValue">Long press and drag move point</span>
+					<span v-else>Long press to place a point</span>
+				</Message>
 			</div>
 
 			<MapStatusBar
@@ -331,6 +338,16 @@ const discardSavedFeature = () => {
 		margin-top: 0;
 		border-radius: 0;
 	}
+}
+
+.map-message {
+	width: max-content;
+	max-width: 90%;
+	position: absolute;
+	z-index: var(--odk-z-index-form-floating);
+	bottom: 0;
+	left: 50%;
+	transform: translate(-50%, -50%);
 }
 
 @media screen and (max-width: #{pf.$sm}) {

@@ -326,6 +326,7 @@ export function useMapBlock(mode: Mode, events: { onFeaturePlacement: () => void
 		selectSavedFeature: () => mapFeatures?.selectFeature(mapFeatures?.getSavedFeature()),
 		unselectFeature: () => mapFeatures?.selectFeature(undefined),
 
+		canLongPressAndDrag: () => currentMode.interactions.longPress && currentMode.interactions.drag,
 		canViewProperties: () => currentMode.capabilities.canViewProperties,
 		shouldShowMapOverlay,
 	};
