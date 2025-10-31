@@ -1,9 +1,5 @@
 import type { InstanceState } from '../../../client/serialization/InstanceState.ts';
 import type { QualifiedName } from '../../../lib/names/QualifiedName.ts';
-import type {
-	ClientReactiveSerializableChildNode,
-	ClientReactiveSerializableParentNode,
-} from './ClientReactiveSerializableParentNode.ts';
 
 export type SerializedInstanceValue = string;
 
@@ -22,7 +18,6 @@ interface ClientReactiveSerializableAttributeNodeDefinition {
 
 export interface ClientReactiveSerializableAttributeNode {
 	readonly definition: ClientReactiveSerializableAttributeNodeDefinition;
-	readonly parent: ClientReactiveSerializableParentNode<ClientReactiveSerializableChildNode>;
 	readonly currentState: ClientReactiveSerializableAttributeNodeCurrentState;
 	readonly instanceState: InstanceState;
 }

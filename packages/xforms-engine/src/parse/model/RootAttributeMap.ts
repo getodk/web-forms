@@ -41,7 +41,7 @@ export class RootAttributeMap extends Map<QualifiedName, RootAttributeDefinition
 				// TODO need to do something to support attributes without binds
 				return;
 			}
-			return new RootAttributeDefinition(model, root, attribute, bind);
+			return new RootAttributeDefinition(root, attribute, bind, instanceNode);
 		}).filter(defn => !!defn);
 
 		return new this(definitions);

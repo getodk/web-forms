@@ -109,6 +109,7 @@ export type XFormsXPathPrimaryInstanceNodeKind =
 	| XPathDocumentKind
 	| XFormsXPathNodeRangeKind
 	| XPathElementKind
+	| XPathAttributeKind
 	| XPathTextKind;
 
 export interface XFormsXPathPrimaryInstanceNode extends XFormsXPathNode {

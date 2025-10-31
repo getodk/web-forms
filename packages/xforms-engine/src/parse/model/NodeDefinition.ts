@@ -10,6 +10,8 @@ import type { BindDefinition } from './BindDefinition.ts';
 import type { GroupDefinition } from './GroupDefinition.ts';
 import type { LeafNodeDefinition } from './LeafNodeDefinition.ts';
 import type { AnyRepeatDefinition } from './RepeatDefinition.ts';
+import type { RootAttributeDefinition } from './RootAttributeDefinition.ts';
+import type { RootAttributeMap } from './RootAttributeMap.ts';
 import type { RootDefinition } from './RootDefinition.ts';
 
 /**
@@ -45,13 +47,16 @@ export type GroupNodeType = 'group';
  */
 export type LeafNodeType = 'leaf-node';
 
+export type AttributeNodeType = 'attribute';
+
 // prettier-ignore
 export type NodeDefinitionType =
 	// eslint-disable-next-line @typescript-eslint/sort-type-constituents
 	| RootNodeType
 	| RepeatType
 	| GroupNodeType
-	| LeafNodeType;
+	| LeafNodeType
+	| AttributeNodeType;
 
 // prettier-ignore
 export type ParentNodeDefinition =
@@ -78,6 +83,7 @@ export abstract class NodeDefinition<Type extends NodeDefinitionType>
 	abstract readonly parent: ParentNodeDefinition | null;
 	abstract readonly template: StaticElement;
 	abstract readonly children: readonly ChildNodeDefinition[] | null;
+	abstract readonly attributes: RootAttributeMap | null;
 
 	readonly nodeset: string;
 
@@ -92,4 +98,5 @@ export type AnyNodeDefinition =
 	| RootDefinition
 	| AnyRepeatDefinition
 	| GroupDefinition
-	| LeafNodeDefinition;
+	| LeafNodeDefinition
+	| RootAttributeDefinition;

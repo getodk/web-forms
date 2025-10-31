@@ -14,7 +14,7 @@ import type {
 } from '../../integration/xpath/adapter/XFormsXPathNode.ts';
 import type { PrimaryInstanceXPathNode } from '../../integration/xpath/adapter/kind.ts';
 import type { StaticDocument } from '../../integration/xpath/static-dom/StaticDocument.ts';
-import type { StaticElement } from '../../integration/xpath/static-dom/StaticElement.ts';
+import type { StaticElement, StaticLeafElement } from '../../integration/xpath/static-dom/StaticElement.ts';
 import type { MaterializedChildren } from '../../lib/reactivity/materializeCurrentStateChildren.ts';
 import type { CurrentState } from '../../lib/reactivity/node-state/createCurrentState.ts';
 import type { EngineState } from '../../lib/reactivity/node-state/createEngineState.ts';
@@ -26,7 +26,7 @@ import { createUniqueId } from '../../lib/unique-id.ts';
 import type { AnyNodeDefinition } from '../../parse/model/NodeDefinition.ts';
 import type { PrimaryInstance } from '../PrimaryInstance.ts';
 import type { Root } from '../Root.ts';
-import type { AnyChildNode, AnyNode, AnyParentNode } from '../hierarchy.ts';
+import type { AnyChildNode, AnyNode } from '../hierarchy.ts';
 import { nodeID } from '../identity.ts';
 import type { EvaluationContext } from '../internal-api/EvaluationContext.ts';
 import type { InstanceConfig } from '../internal-api/InstanceConfig.ts';
@@ -81,7 +81,7 @@ export type InstanceNodeCurrentState<
 		};
 
 interface ComputableReferenceNode {
-	readonly parent: AnyParentNode | null;
+	readonly parent: AnyNode | null;
 	readonly definition: AnyNodeDefinition;
 }
 
@@ -100,7 +100,7 @@ export abstract class InstanceNode<
 		Definition extends AnyNodeDefinition,
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		Spec extends InstanceNodeStateSpec<any>,
-		Parent extends AnyParentNode | null,
+		Parent extends AnyNode | null,
 		Child extends AnyChildNode | null = null,
 	>
 	implements BaseEngineNode, XFormsXPathPrimaryInstanceNode, EvaluationContext
@@ -191,7 +191,7 @@ export abstract class InstanceNode<
 	constructor(
 		readonly instanceConfig: InstanceConfig,
 		readonly parent: Parent,
-		readonly instanceNode: StaticDocument | StaticElement | null,
+		readonly instanceNode: StaticDocument | StaticElement | StaticLeafElement | null,
 		readonly definition: Definition,
 		options?: InstanceNodeOptions
 	) {
