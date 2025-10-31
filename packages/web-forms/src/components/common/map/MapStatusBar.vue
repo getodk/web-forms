@@ -32,7 +32,7 @@ const emit = defineEmits(['view-details', 'save', 'discard']);
 			<Button v-if="canRemove" outlined severity="contrast" @click="emit('discard')">
 				<span>–</span>
 				<!-- TODO: translations -->
-				<span>Remove selection</span>
+				<span>Remove <span class="desktop-only">selection</span></span>
 			</Button>
 			<Button v-if="canViewDetails" outlined severity="contrast" @click="emit('view-details')">
 				<!-- TODO: translations -->
@@ -49,7 +49,7 @@ const emit = defineEmits(['view-details', 'save', 'discard']);
 			<Button v-if="canSave" @click="emit('save')">
 				<IconSVG name="mdiCheckboxMarkedCircleOutline" size="sm" variant="inverted" />
 				<!-- TODO: translations -->
-				<span>Save selected</span>
+				<span>Save <span class="desktop-only">selected</span></span>
 			</Button>
 		</div>
 	</div>
@@ -94,5 +94,15 @@ const emit = defineEmits(['view-details', 'save', 'discard']);
 .map-status-spinner {
 	width: 20px;
 	height: 20px;
+}
+
+.desktop-only {
+	display: inline;
+}
+
+@media screen and (max-width: #{pf.$sm}) {
+	.desktop-only {
+		display: none;
+	}
 }
 </style>

@@ -93,7 +93,7 @@
         </translation>
       </itext>
       <instance>
-        <data id="_geopoint_with_map" version="202510311">
+        <data id="geopoint_with_map" version="202510311">
           <maps_group>
             <select_to_disable/>
             <select_to_show/>

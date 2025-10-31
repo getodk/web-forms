@@ -72,7 +72,7 @@ const orderedProps = computed(() => {
 	flex-direction: column;
 	gap: var(--odk-map-properties-spacing-md);
 	width: 360px;
-	height: 370px;
+	max-height: 370px;
 	box-shadow: 1px 2px 3px 0 rgba(0, 0, 0, 0.2);
 }
 
@@ -140,7 +140,7 @@ const orderedProps = computed(() => {
 		right: 0;
 		margin: 0 auto;
 		width: calc(100% - var(--odk-map-properties-spacing-md));
-		height: 50%;
+		max-height: 50%;
 	}
 }
 </style>
