@@ -17,6 +17,7 @@ describe('getModeConfig', () => {
 				canLoadMultiFeatures: true,
 				canViewProperties: true,
 				canShowMapOverlay: false,
+				canShowMapOverlayOnError: false,
 			},
 		});
 	});
@@ -36,6 +37,7 @@ describe('getModeConfig', () => {
 				canLoadMultiFeatures: false,
 				canViewProperties: false,
 				canShowMapOverlay: true,
+				canShowMapOverlayOnError: true,
 			},
 		});
 	});
@@ -55,6 +57,7 @@ describe('getModeConfig', () => {
 				canLoadMultiFeatures: false,
 				canViewProperties: false,
 				canShowMapOverlay: true,
+				canShowMapOverlayOnError: true,
 			},
 		});
 	});
@@ -75,6 +78,7 @@ describe('getModeConfig', () => {
 				canLoadMultiFeatures: false,
 				canViewProperties: false,
 				canShowMapOverlay: false,
+				canShowMapOverlayOnError: false,
 			},
 		});
 	});

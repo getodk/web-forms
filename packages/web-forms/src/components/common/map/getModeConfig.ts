@@ -17,6 +17,7 @@ interface ModeConfig {
 		canLoadMultiFeatures: boolean;
 		canViewProperties: boolean;
 		canShowMapOverlay: boolean;
+		canShowMapOverlayOnError: boolean;
 	};
 }
 
@@ -34,6 +35,7 @@ export const getModeConfig = (mode: Mode): ModeConfig => {
 				canLoadMultiFeatures: true,
 				canViewProperties: true,
 				canShowMapOverlay: false,
+				canShowMapOverlayOnError: false,
 			},
 		};
 	}
@@ -51,6 +53,7 @@ export const getModeConfig = (mode: Mode): ModeConfig => {
 				canLoadMultiFeatures: false,
 				canViewProperties: false,
 				canShowMapOverlay: true,
+				canShowMapOverlayOnError: true,
 			},
 		};
 	}
@@ -68,6 +71,7 @@ export const getModeConfig = (mode: Mode): ModeConfig => {
 				canLoadMultiFeatures: false,
 				canViewProperties: false,
 				canShowMapOverlay: true,
+				canShowMapOverlayOnError: false,
 			},
 		};
 	}
@@ -85,6 +89,7 @@ export const getModeConfig = (mode: Mode): ModeConfig => {
 			canLoadMultiFeatures: false,
 			canViewProperties: false,
 			canShowMapOverlay: false,
+			canShowMapOverlayOnError: false,
 		},
 	};
 };

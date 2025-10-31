@@ -253,11 +253,17 @@ export function useMapBlock(mode: Mode, events: { onFeaturePlacement: () => void
 	};
 
 	const shouldShowMapOverlay = () => {
+		const hasNoRelevantFeature =
+			!mapViewControls?.hasCurrentLocationFeature() && !mapFeatures?.getSavedFeature();
+
+		if (currentState.value === STATES.ERROR) {
+			return currentMode.capabilities.canShowMapOverlayOnError && hasNoRelevantFeature;
+		}
+
 		return (
 			currentState.value === STATES.READY &&
 			currentMode.capabilities.canShowMapOverlay &&
-			!mapViewControls?.hasCurrentLocationFeature() &&
-			!mapFeatures?.getSavedFeature()
+			hasNoRelevantFeature
 		);
 	};
 
