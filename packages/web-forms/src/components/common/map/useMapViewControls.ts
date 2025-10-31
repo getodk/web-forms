@@ -156,6 +156,7 @@ export function useMapViewControls(mapInstance: Map): UseMapViewControls {
 	watch(
 		() => userCurrentLocation.value,
 		(newLocation) => {
+			const canCenterView = !userCurrentLocationFeature.value;
 			userCurrentLocationFeature.value = undefined;
 			currentLocationSource.clear(true);
 			if (!newLocation) {
@@ -165,9 +166,12 @@ export function useMapViewControls(mapInstance: Map): UseMapViewControls {
 			const parsedCoords = fromLonLat([newLocation.longitude, newLocation.latitude]);
 			userCurrentLocationFeature.value = new Feature({ geometry: new Point(parsedCoords) });
 			currentLocationSource.addFeature(userCurrentLocationFeature.value);
-			mapInstance
-				.getView()
-				.animate({ center: parsedCoords, zoom: MAX_ZOOM, duration: ANIMATION_TIME });
+
+			if (canCenterView) {
+				mapInstance
+					.getView()
+					.animate({ center: parsedCoords, zoom: MAX_ZOOM, duration: ANIMATION_TIME });
+			}
 		}
 	);
 
