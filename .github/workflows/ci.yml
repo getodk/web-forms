@@ -150,7 +150,7 @@ jobs:
     steps:
       # Prepare for playwright install.
       - if: ${{ matrix.target == 'Web' }}
-        run: sudo bash -c 'echo "set man-db/auto-update false" | debconf-communicate; dpkg-reconfigure man-db'
+        run: sudo bash -ec 'echo "set man-db/auto-update false" | debconf-communicate; dpkg-reconfigure man-db'
 
       - uses: 'actions/checkout@v4'
 
@@ -214,7 +214,7 @@ jobs:
     steps:
       # Prepare for playwright install.
       - if: ${{ matrix.target == 'Web' }}
-        run: sudo bash -c 'echo "set man-db/auto-update false" | debconf-communicate; dpkg-reconfigure man-db'
+        run: sudo bash -ec 'echo "set man-db/auto-update false" | debconf-communicate; dpkg-reconfigure man-db'
 
       - uses: 'actions/checkout@v4'
 
@@ -278,7 +278,7 @@ jobs:
     steps:
       # Prepare for playwright install.
       - if: ${{ matrix.target == 'Web' }}
-        run: sudo bash -c 'echo "set man-db/auto-update false" | debconf-communicate; dpkg-reconfigure man-db'
+        run: sudo bash -ec 'echo "set man-db/auto-update false" | debconf-communicate; dpkg-reconfigure man-db'
 
       - uses: 'actions/checkout@v4'
 
@@ -342,7 +342,7 @@ jobs:
     steps:
       # Prepare for playwright install.
       - if: ${{ matrix.target == 'Web' }}
-        run: sudo bash -c 'echo "set man-db/auto-update false" | debconf-communicate; dpkg-reconfigure man-db'
+        run: sudo bash -ec 'echo "set man-db/auto-update false" | debconf-communicate; dpkg-reconfigure man-db'
 
       - uses: 'actions/checkout@v4'
 
@@ -451,7 +451,7 @@ jobs:
     steps:
       # Prepare for playwright install.
       - if: ${{ matrix.target == 'Web' }}
-        run: sudo bash -c 'echo "set man-db/auto-update false" | debconf-communicate; dpkg-reconfigure man-db'
+        run: sudo bash -ec 'echo "set man-db/auto-update false" | debconf-communicate; dpkg-reconfigure man-db'
 
       - uses: 'actions/checkout@v4'
 
