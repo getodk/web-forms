@@ -16,6 +16,7 @@ import locationIcon from '@/assets/images/location-icon.svg';
 type LocationWatchID = ReturnType<typeof navigator.geolocation.watchPosition>;
 
 export const DISTANCE_CATEGORY = {
+	UNKNOWN: 'unknown',
 	SHORT: 'short',
 	MID: 'mid',
 	LONG: 'long',
@@ -90,7 +91,7 @@ export function useMapViewControls(mapInstance: Map): UseMapViewControls {
 
 		view.fit(extent, {
 			padding: [50, 50, 50, 50],
-			duration: distance === DISTANCE_CATEGORY.SHORT ? ANIMATION_TIME_MS : 0,
+			duration: getZoomDuration(distance),
 			maxZoom: MAX_ZOOM,
 		});
 	};
@@ -170,13 +171,21 @@ export function useMapViewControls(mapInstance: Map): UseMapViewControls {
 			featureCenterLat - xOffsetInMapUnits * sinRotation - yOffsetInMapUnits * cosRotation,
 		];
 
-		transitionToLocation(targetCoordinates, MAX_ZOOM);
+		const targetZoom = view.getZoomForResolution(zoomResolution);
+		const zoom = targetZoom ? Math.min(targetZoom, MAX_ZOOM) : MAX_ZOOM;
+		transitionToLocation(targetCoordinates, zoom);
 	};
 
 	const evaluateDistance = (view: View, targetCoords: Coordinate): DistanceCategory => {
 		const currentCenter = view.getCenter();
-		if (!currentCenter || currentCenter.every((c) => c === 0)) {
-			return DISTANCE_CATEGORY.SHORT;
+		const isFullWorld = (center: Coordinate) => center.every((c) => c === 0);
+		if (
+			!currentCenter ||
+			!targetCoords ||
+			isFullWorld(currentCenter) ||
+			isFullWorld(targetCoords)
+		) {
+			return DISTANCE_CATEGORY.UNKNOWN;
 		}
 
 		const distanceMeters = getDistance(toLonLat(currentCenter), toLonLat(targetCoords));
@@ -191,14 +200,24 @@ export function useMapViewControls(mapInstance: Map): UseMapViewControls {
 		return DISTANCE_CATEGORY.MID;
 	};
 
+	const getZoomDuration = (distance: DistanceCategory) => {
+		if (distance === DISTANCE_CATEGORY.SHORT || distance === DISTANCE_CATEGORY.UNKNOWN) {
+			return ANIMATION_TIME_MS;
+		}
+
+		return 0;
+	};
+
 	const transitionToLocation = (targetCoords: Coordinate, targetZoom: number) => {
 		const view = mapInstance.getView();
 		const distance = evaluateDistance(view, targetCoords);
+		const zoomDuration = getZoomDuration(distance);
+
 		if (distance === DISTANCE_CATEGORY.LONG) {
 			view.animate(
 				{ zoom: INTERMEDIATE_ZOOM, duration: ANIMATION_TIME_MS, easing: easeOut },
 				{ center: targetCoords, duration: ANIMATION_TIME_MS, easing: easeOut },
-				{ zoom: targetZoom, duration: 0, easing: easeOut }
+				{ zoom: targetZoom, duration: zoomDuration, easing: easeOut }
 			);
 			return;
 		}
@@ -206,7 +225,7 @@ export function useMapViewControls(mapInstance: Map): UseMapViewControls {
 		view.animate({
 			center: targetCoords,
 			zoom: targetZoom,
-			duration: distance === DISTANCE_CATEGORY.SHORT ? ANIMATION_TIME_MS : 0,
+			duration: zoomDuration,
 			easing: easeOut,
 		});
 	};
