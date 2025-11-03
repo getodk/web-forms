@@ -15,10 +15,6 @@ export const createValueNodeInstanceState = (
 
 			const xmlValue = escapeXMLText(node.currentState.instanceValue);
 
-			// const attributes = node.currentState.attributes?.map((attribute) => { // TODO remove the ? when implemented in all nodes
-			// 	return { serializeAttributeXML: () => attribute.instanceState.instanceXML };
-			// });
-
 			return serializeLeafElementXML(qualifiedName, xmlValue);
 		},
 	};

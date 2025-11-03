@@ -151,7 +151,7 @@ export const serializeAttributeXML = (
 	xmlValue: EscapedXMLText
 ): string => {
 	const nodeName = qualifiedName.getPrefixedName();
-	return ` ${nodeName}="${xmlValue.normalize()}"`;
+	return` ${nodeName}="${xmlValue.normalize()}"`;
 };
 
 export const serializeParentElementXML = (

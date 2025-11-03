@@ -9,7 +9,7 @@ export const createAttributeNodeInstanceState = (
 
 	return {
 		get instanceXML() {
-			const xmlValue = escapeXMLText(node.currentState.instanceValue);
+			const xmlValue = escapeXMLText(node.currentState.instanceValue, true);
 			return serializeAttributeXML(qualifiedName, xmlValue);
 		},
 	};
