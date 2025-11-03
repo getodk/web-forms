@@ -17,9 +17,7 @@ import { Scenario } from '../src/jr/Scenario.ts';
 const IGNORED_INSTANCE_ID = 'ignored for purposes of functionality under test';
 
 describe('Bind to element attributes', () => {
-
 	describe('can bind to parent nodes', () => {
-
 		const formDefinition = html(
 			head(
 				title('Bind attributes'),
@@ -35,7 +33,10 @@ describe('Bind to element attributes', () => {
 					// can bind to root
 					bind('/root/@version').type('string').calculate('/root/grp/version').readonly('true()'),
 					// can bind to group
-					bind('/root/grp/@version').type('string').calculate('/root/grp/version').readonly('true()'),
+					bind('/root/grp/@version')
+						.type('string')
+						.calculate('/root/grp/version')
+						.readonly('true()'),
 					// can bind to leaf
 					// bind('/root/grp/test/@version').type('string').calculate('/root/grp/version').readonly('true()'),
 					bind('/root/grp/@uuid').type('string').calculate('/root/grp/test').readonly('true()')
@@ -72,11 +73,9 @@ describe('Bind to element attributes', () => {
 				await expectVersion('default id value', 'someversion');
 			});
 		});
-
 	});
 
 	describe('ignores jr:template attributes', () => {
-		
 		it('serializes correctly', async () => {
 			const scenario = await Scenario.init(
 				'Repeat serde (basic + calculate)',
@@ -107,7 +106,6 @@ describe('Bind to element attributes', () => {
 				t('orx:meta', t('orx:instanceID', IGNORED_INSTANCE_ID))
 			).asXml();
 			await expect(actual).toHavePreparedSubmissionXML(expected);
-		})
+		});
 	});
-
 });

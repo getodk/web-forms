@@ -15,12 +15,13 @@ export const createTemplatedNodeInstanceState = (
 				return child.instanceState.instanceXML;
 			});
 
-
 			const attributes = node.currentState.attributes.map((attribute) => {
 				return { serializeAttributeXML: () => attribute.instanceState.instanceXML };
 			});
 
-			return serializeParentElementXML(node.definition.qualifiedName, serializedChildren, { attributes });
+			return serializeParentElementXML(node.definition.qualifiedName, serializedChildren, {
+				attributes,
+			});
 		},
 	};
 };
