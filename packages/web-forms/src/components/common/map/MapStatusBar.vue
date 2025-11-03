@@ -32,7 +32,8 @@ const emit = defineEmits(['view-details', 'save', 'discard']);
 			<Button v-if="canRemove" outlined severity="contrast" @click="emit('discard')">
 				<span>–</span>
 				<!-- TODO: translations -->
-				<span>Remove <span class="desktop-only">selection</span></span>
+				<span class="mobile-only">Remove</span>
+				<span class="desktop-only">Remove selection</span>
 			</Button>
 			<Button v-if="canViewDetails" outlined severity="contrast" @click="emit('view-details')">
 				<!-- TODO: translations -->
@@ -49,15 +50,14 @@ const emit = defineEmits(['view-details', 'save', 'discard']);
 			<Button v-if="canSave" @click="emit('save')">
 				<IconSVG name="mdiCheckboxMarkedCircleOutline" size="sm" variant="inverted" />
 				<!-- TODO: translations -->
-				<span>Save <span class="desktop-only">selected</span></span>
+				<span class="mobile-only">Save</span>
+				<span class="desktop-only">Save selected</span>
 			</Button>
 		</div>
 	</div>
 </template>
 
 <style scoped lang="scss">
-@use 'primeflex/core/_variables.scss' as pf;
-
 .map-status-bar,
 .map-status-container,
 .map-status {
@@ -94,15 +94,5 @@ const emit = defineEmits(['view-details', 'save', 'discard']);
 .map-status-spinner {
 	width: 20px;
 	height: 20px;
-}
-
-.desktop-only {
-	display: inline;
-}
-
-@media screen and (max-width: #{pf.$sm}) {
-	.desktop-only {
-		display: none;
-	}
 }
 </style>
