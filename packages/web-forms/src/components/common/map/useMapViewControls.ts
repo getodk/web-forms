@@ -1,16 +1,27 @@
-import { Map } from 'ol';
+import { Map, type View } from 'ol';
+import type { Coordinate } from 'ol/coordinate';
+import { easeOut } from 'ol/easing';
 import { getCenter } from 'ol/extent';
 import Feature from 'ol/Feature';
 import { Point } from 'ol/geom';
 import VectorLayer from 'ol/layer/Vector';
-import { fromLonLat } from 'ol/proj';
+import { fromLonLat, toLonLat } from 'ol/proj';
 import VectorSource from 'ol/source/Vector';
+import { getDistance } from 'ol/sphere';
 import { Icon, Style } from 'ol/style';
 import { shallowRef, watch } from 'vue';
 import type { TimerID } from '@getodk/common/types/timers.ts';
 import locationIcon from '@/assets/images/location-icon.svg';
 
 type LocationWatchID = ReturnType<typeof navigator.geolocation.watchPosition>;
+
+export const DISTANCE_CATEGORY = {
+	SHORT: 'short',
+	MID: 'mid',
+	LONG: 'long',
+} as const;
+
+export type DistanceCategory = (typeof DISTANCE_CATEGORY)[keyof typeof DISTANCE_CATEGORY];
 
 interface BrowserLocation
 	extends Pick<GeolocationCoordinates, 'accuracy' | 'altitude' | 'latitude' | 'longitude'> {}
@@ -28,8 +39,11 @@ export interface UseMapViewControls {
 export const DEFAULT_VIEW_CENTER = [0, 0];
 export const MIN_ZOOM = 2;
 const MAX_ZOOM = 19;
+const INTERMEDIATE_ZOOM = 4;
+const LONG_DISTANCE_THRESHOLD_METERS = 50 * 1000;
+const SHORT_DISTANCE_THRESHOLD_METERS = 1000;
 const GEOLOCATION_TIMEOUT_MS = 30 * 1000; // Field environments need more time and reduces false “no signal” warnings.
-const ANIMATION_TIME = 1000;
+const ANIMATION_TIME_MS = 1000;
 const DEBOUNCE_DELAY_MS = 500;
 const SMALL_DEVICE_WIDTH = 576;
 
@@ -52,13 +66,33 @@ export function useMapViewControls(mapInstance: Map): UseMapViewControls {
 		}
 
 		const extent = source.getExtent();
-		if (extent?.length) {
-			mapInstance.getView().fit(extent, {
-				padding: [50, 50, 50, 50],
-				duration: ANIMATION_TIME,
-				maxZoom: MAX_ZOOM,
-			});
+		if (!extent?.length) {
+			return;
 		}
+
+		const view = mapInstance.getView();
+		const center = getCenter(extent);
+		const distance = evaluateDistance(view, center);
+		if (distance === DISTANCE_CATEGORY.LONG) {
+			view.animate(
+				{ zoom: INTERMEDIATE_ZOOM, duration: ANIMATION_TIME_MS, easing: easeOut },
+				{ center: center, duration: ANIMATION_TIME_MS, easing: easeOut },
+				() => {
+					view.fit(extent, {
+						padding: [50, 50, 50, 50],
+						duration: 0,
+						maxZoom: MAX_ZOOM,
+					});
+				}
+			);
+			return;
+		}
+
+		view.fit(extent, {
+			padding: [50, 50, 50, 50],
+			duration: distance === DISTANCE_CATEGORY.SHORT ? ANIMATION_TIME_MS : 0,
+			maxZoom: MAX_ZOOM,
+		});
 	};
 
 	const onGeolocationSuccess = (position: GeolocationPosition, onSuccess: () => void) => {
@@ -79,12 +113,9 @@ export function useMapViewControls(mapInstance: Map): UseMapViewControls {
 
 	const watchCurrentLocation = (onSuccess: () => void, onError: () => void): void => {
 		if (watchLocation.value) {
-			if (userCurrentLocationFeature.value) {
-				mapInstance.getView().animate({
-					center: userCurrentLocationFeature.value.getGeometry()?.getCoordinates(),
-					zoom: MAX_ZOOM,
-					duration: ANIMATION_TIME,
-				});
+			const userCoords = userCurrentLocationFeature.value?.getGeometry()?.getCoordinates();
+			if (userCoords) {
+				transitionToLocation(userCoords, MAX_ZOOM);
 				onSuccess();
 			}
 
@@ -139,17 +170,44 @@ export function useMapViewControls(mapInstance: Map): UseMapViewControls {
 			featureCenterLat - xOffsetInMapUnits * sinRotation - yOffsetInMapUnits * cosRotation,
 		];
 
-		view.animate({
-			center: targetCoordinates,
-			duration: ANIMATION_TIME,
-		});
+		transitionToLocation(targetCoordinates, MAX_ZOOM);
 	};
 
-	const centerFullWorldView = () => {
-		mapInstance.getView().animate({
-			center: DEFAULT_VIEW_CENTER,
-			zoom: MIN_ZOOM,
-			duration: ANIMATION_TIME,
+	const evaluateDistance = (view: View, targetCoords: Coordinate): DistanceCategory => {
+		const currentCenter = view.getCenter();
+		if (!currentCenter || currentCenter.every((c) => c === 0)) {
+			return DISTANCE_CATEGORY.SHORT;
+		}
+
+		const distanceMeters = getDistance(toLonLat(currentCenter), toLonLat(targetCoords));
+		if (distanceMeters <= SHORT_DISTANCE_THRESHOLD_METERS) {
+			return DISTANCE_CATEGORY.SHORT;
+		}
+
+		if (distanceMeters > LONG_DISTANCE_THRESHOLD_METERS) {
+			return DISTANCE_CATEGORY.LONG;
+		}
+
+		return DISTANCE_CATEGORY.MID;
+	};
+
+	const transitionToLocation = (targetCoords: Coordinate, targetZoom: number) => {
+		const view = mapInstance.getView();
+		const distance = evaluateDistance(view, targetCoords);
+		if (distance === DISTANCE_CATEGORY.LONG) {
+			view.animate(
+				{ zoom: INTERMEDIATE_ZOOM, duration: ANIMATION_TIME_MS, easing: easeOut },
+				{ center: targetCoords, duration: ANIMATION_TIME_MS, easing: easeOut },
+				{ zoom: targetZoom, duration: 0, easing: easeOut }
+			);
+			return;
+		}
+
+		view.animate({
+			center: targetCoords,
+			zoom: targetZoom,
+			duration: distance === DISTANCE_CATEGORY.SHORT ? ANIMATION_TIME_MS : 0,
+			easing: easeOut,
 		});
 	};
 
@@ -168,16 +226,14 @@ export function useMapViewControls(mapInstance: Map): UseMapViewControls {
 			currentLocationSource.addFeature(userCurrentLocationFeature.value);
 
 			if (canCenterView) {
-				mapInstance
-					.getView()
-					.animate({ center: parsedCoords, zoom: MAX_ZOOM, duration: ANIMATION_TIME });
+				transitionToLocation(parsedCoords, MAX_ZOOM);
 			}
 		}
 	);
 
 	return {
 		centerFeatureLocation,
-		centerFullWorldView,
+		centerFullWorldView: () => transitionToLocation(DEFAULT_VIEW_CENTER, MIN_ZOOM),
 		fitToAllFeatures,
 		getUserCurrentLocation: () => userCurrentLocation.value,
 		hasCurrentLocationFeature: () => !!userCurrentLocationFeature.value,
