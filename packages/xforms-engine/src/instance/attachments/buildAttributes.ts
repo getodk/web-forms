@@ -1,11 +1,11 @@
-import { Attribute } from "../Attribute";
-import type { AnyNode } from "../hierarchy";
+import { Attribute } from '../Attribute';
+import type { AnyParentNode } from '../hierarchy';
 
-export const buildAttributes = (owner: AnyNode): Attribute[] => {
-  if (!owner.definition.attributes) {
-    return []; // TODO should all definitions have attributes?
-  }
-  return Array.from(owner.definition.attributes?.values()).map(defn => {
-    return new Attribute(owner, defn, defn.template);
-  });
+export function buildAttributes(parent: AnyParentNode): Attribute[] {
+	if (!parent.definition.attributes) {
+		return []; // TODO should all definitions have attributes?
+	}
+	return Array.from(parent.definition.attributes?.values()).map((defn) => {
+		return new Attribute(parent, defn, defn.template); // TODO don't pass in template?
+	});
 }

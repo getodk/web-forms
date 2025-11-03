@@ -35,14 +35,16 @@ const isNonNamespaceAttribute = (attribute: StaticAttribute) => {
 export class RootAttributeMap extends Map<QualifiedName, RootAttributeDefinition> {
 	static from(model: ModelDefinition, root: RootDefinition, instanceNode: StaticElement) {
 		const nonNamespaceAttributes = instanceNode.attributes.filter(isNonNamespaceAttribute);
-		const definitions = nonNamespaceAttributes.map((attribute) => {
-			const bind = model.binds.get(attribute.nodeset);
-			if (!bind) {
-				// TODO need to do something to support attributes without binds
-				return;
-			}
-			return new RootAttributeDefinition(root, attribute, bind, instanceNode);
-		}).filter(defn => !!defn);
+		const definitions = nonNamespaceAttributes
+			.map((attribute) => {
+				const bind = model.binds.get(attribute.nodeset);
+				if (!bind) {
+					// TODO need to do something to support attributes without binds
+					return;
+				}
+				return new RootAttributeDefinition(root, attribute, bind, attribute);
+			})
+			.filter((defn) => !!defn);
 
 		return new this(definitions);
 	}

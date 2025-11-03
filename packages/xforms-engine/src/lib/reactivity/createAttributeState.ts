@@ -17,7 +17,7 @@ export interface AttributeState {
 
 /**
  * TODO update documentation - copy and paste version
- * 
+ *
  * Creates a synchronized pair of:
  *
  * - Internal children state suitable for all parent node types
@@ -45,9 +45,7 @@ export interface AttributeState {
  * those {@link FormNodeID}s with the aforementioned
  * {@link materializeCurrentStateChildren}.
  */
-export const createAttributeState = (
-	scope: ReactiveScope
-): AttributeState => {
+export const createAttributeState = (scope: ReactiveScope): AttributeState => {
 	return scope.runTask(() => {
 		const baseState = createSignal<readonly Attribute[]>([]);
 		const [getAttributes, baseSetAttributes] = baseState;
@@ -76,7 +74,7 @@ export const createAttributeState = (
 		return {
 			attributes,
 			getAttributes,
-			setAttributes
+			setAttributes,
 		};
 	});
 };

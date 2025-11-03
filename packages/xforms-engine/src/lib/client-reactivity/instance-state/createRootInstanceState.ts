@@ -17,7 +17,7 @@ export const createRootInstanceState = (node: Root): InstanceState => {
 
 			return serializeParentElementXML(node.definition.qualifiedName, serializedChildren, {
 				namespaceDeclarations,
-				attributes
+				attributes,
 			});
 		},
 	};

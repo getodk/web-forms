@@ -1,11 +1,11 @@
 import type { Signal } from 'solid-js';
 import { createComputed, createMemo, createSignal, untrack } from 'solid-js';
-import type { InstanceValueContext } from '../../instance/internal-api/InstanceValueContext.ts';
+import type { AttributeContext } from '../../instance/internal-api/AttributeContext.ts';
 import type { BindComputationExpression } from '../../parse/expression/BindComputationExpression.ts';
 import { createComputedExpression } from './createComputedExpression.ts';
 import type { SimpleAtomicState, SimpleAtomicStateSetter } from './types.ts';
 
-const isInstanceFirstLoad = (context: InstanceValueContext) => {
+const isInstanceFirstLoad = (context: AttributeContext) => {
 	return context.rootDocument.initializationMode === 'create';
 };
 
@@ -14,11 +14,11 @@ const isInstanceFirstLoad = (context: InstanceValueContext) => {
  *
  * @see {@link shouldPreloadUID}
  */
-const isEditInitialLoad = (context: InstanceValueContext) => {
+const isEditInitialLoad = (context: AttributeContext) => {
 	return context.rootDocument.initializationMode === 'edit';
 };
 
-const getInitialValue = (context: InstanceValueContext): string => {
+const getInitialValue = (context: AttributeContext): string => {
 	const sourceNode = context.instanceNode ?? context.definition.template;
 
 	return context.decodeInstanceValue(sourceNode.value);
@@ -36,7 +36,7 @@ type RelevantValueState = SimpleAtomicState<string>;
  *   node/context's relevance is restored
  */
 const createRelevantValueState = (
-	context: InstanceValueContext,
+	context: AttributeContext,
 	baseValueState: BaseValueState
 ): RelevantValueState => {
 	return context.scope.runTask(() => {
@@ -59,7 +59,7 @@ const createRelevantValueState = (
  * (client/user) writes when the field is in a `readonly` state.
  */
 const guardDownstreamReadonlyWrites = (
-	context: InstanceValueContext,
+	context: AttributeContext,
 	baseState: SimpleAtomicState<string>
 ): SimpleAtomicState<string> => {
 	const { readonly } = context.definition.bind;
@@ -94,7 +94,7 @@ const PRELOAD_UID_EXPRESSION = 'concat("uuid:", uuid())';
  * - When an instance is first loaded ({@link isInstanceFirstLoad})
  * - When an instance is initially loaded for editing ({@link isEditInitialLoad})
  */
-const shouldPreloadUID = (context: InstanceValueContext) => {
+const shouldPreloadUID = (context: AttributeContext) => {
 	return isInstanceFirstLoad(context) || isEditInitialLoad(context);
 };
 
@@ -107,10 +107,7 @@ const shouldPreloadUID = (context: InstanceValueContext) => {
  * {@link https://getodk.github.io/xforms-spec/#event:odk-instance-first-load | odk-instance-first-load event},
  * _and compute_ preloads semantically associated with that event.
  */
-const setPreloadUIDValue = (
-	context: InstanceValueContext,
-	valueState: RelevantValueState
-): void => {
+const setPreloadUIDValue = (context: AttributeContext, valueState: RelevantValueState): void => {
 	const { preload } = context.definition.bind;
 
 	if (preload?.type !== 'uid' || !shouldPreloadUID(context)) {
@@ -135,7 +132,7 @@ const setPreloadUIDValue = (
  * events and computations.
  */
 const createCalculation = (
-	context: InstanceValueContext,
+	context: AttributeContext,
 	setRelevantValue: SimpleAtomicStateSetter<string>,
 	calculateDefinition: BindComputationExpression<'calculate'>
 ): void => {
@@ -168,7 +165,7 @@ export type InstanceValueState = SimpleAtomicState<string>;
  *   nodes defined with one
  * - prevents downstream writes to nodes in a readonly state
  */
-export const createInstanceValueState = (context: InstanceValueContext): InstanceValueState => {
+export const createAttributeValueState = (context: AttributeContext): InstanceValueState => {
 	return context.scope.runTask(() => {
 		const initialValue = getInitialValue(context);
 		const baseValueState = createSignal(initialValue);

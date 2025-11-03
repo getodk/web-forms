@@ -17,7 +17,10 @@ import { EngineXPathEvaluator } from '../integration/xpath/EngineXPathEvaluator.
 import type { StaticDocument } from '../integration/xpath/static-dom/StaticDocument.ts';
 import { createPrimaryInstanceState } from '../lib/client-reactivity/instance-state/createPrimaryInstanceState.ts';
 import { prepareInstancePayload } from '../lib/client-reactivity/instance-state/prepareInstancePayload.ts';
-import { createAttributeState, type AttributeState } from '../lib/reactivity/createAttributeState.ts';
+import {
+	createAttributeState,
+	type AttributeState,
+} from '../lib/reactivity/createAttributeState.ts';
 import { createChildrenState } from '../lib/reactivity/createChildrenState.ts';
 import { createTranslationState } from '../lib/reactivity/createTranslationState.ts';
 import type { MaterializedChildren } from '../lib/reactivity/materializeCurrentStateChildren.ts';

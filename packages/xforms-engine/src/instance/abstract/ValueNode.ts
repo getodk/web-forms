@@ -13,7 +13,10 @@ import type {
 	RuntimeValueState,
 	ValueCodec,
 } from '../../lib/codecs/ValueCodec.ts';
-import { createAttributeState, type AttributeState } from '../../lib/reactivity/createAttributeState.ts';
+import {
+	createAttributeState,
+	type AttributeState,
+} from '../../lib/reactivity/createAttributeState.ts';
 import { createInstanceValueState } from '../../lib/reactivity/createInstanceValueState.ts';
 import type { CurrentState } from '../../lib/reactivity/node-state/createCurrentState.ts';
 import type { EngineState } from '../../lib/reactivity/node-state/createEngineState.ts';
@@ -22,8 +25,6 @@ import type { SimpleAtomicState } from '../../lib/reactivity/types.ts';
 import type { SharedValidationState } from '../../lib/reactivity/validation/createValidation.ts';
 import { createValidationState } from '../../lib/reactivity/validation/createValidation.ts';
 import { LeafNodeDefinition } from '../../parse/model/LeafNodeDefinition.ts';
-import { buildAttributes } from '../attachments/buildAttributes.ts';
-import type { Attribute } from '../Attribute.ts';
 import type { GeneralParentNode } from '../hierarchy.ts';
 import type { EvaluationContext } from '../internal-api/EvaluationContext.ts';
 import type {
@@ -39,9 +40,9 @@ export type ValueNodeDefinition<V extends ValueType> = LeafNodeDefinition<V>;
 
 export interface ValueNodeStateSpec<RuntimeValue> extends DescendantNodeStateSpec<RuntimeValue> {
 	readonly children: null;
+	readonly attributes: null;
 	readonly value: SimpleAtomicState<RuntimeValue>;
 	readonly instanceValue: Accessor<string>;
-	readonly attributes: Accessor<readonly Attribute[]>;
 }
 
 export abstract class ValueNode<
@@ -118,7 +119,7 @@ export abstract class ValueNode<
 		this.validation = createValidationState(this, this.instanceConfig);
 		this.instanceState = createValueNodeInstanceState(this);
 
-		attributeState.setAttributes(buildAttributes(this));
+		// attributeState.setAttributes(buildAttributes(this.definition, this.parent));
 	}
 
 	// ValidationContext
@@ -135,7 +136,7 @@ export abstract class ValueNode<
 		return [];
 	}
 
-	getAttributes(): readonly Attribute[] {
-		return this.attributeState.getAttributes();
+	getAttributes(): readonly [] {
+		return [];
 	}
 }

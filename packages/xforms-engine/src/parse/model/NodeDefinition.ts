@@ -1,3 +1,4 @@
+import type { StaticAttribute } from '../../integration/xpath/static-dom/StaticAttribute.ts';
 import type { StaticElement } from '../../integration/xpath/static-dom/StaticElement.ts';
 import type {
 	NamedSubtreeDefinition,
@@ -81,7 +82,7 @@ export abstract class NodeDefinition<Type extends NodeDefinitionType>
 	abstract readonly isTranslated: boolean;
 	abstract readonly root: RootDefinition;
 	abstract readonly parent: ParentNodeDefinition | null;
-	abstract readonly template: StaticElement;
+	abstract readonly template: StaticAttribute | StaticElement;
 	abstract readonly children: readonly ChildNodeDefinition[] | null;
 	abstract readonly attributes: RootAttributeMap | null;
 

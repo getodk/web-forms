@@ -5,7 +5,6 @@ import type { InstanceState } from './serialization/InstanceState.ts';
 
 // TODO review all the docs in this file - it was just copy and pasted!
 export interface AttributeNodeState {
-
 	/**
 	 * Certain kinds of nodes store a value state. Where they do, they will
 	 * specify the type of the value directly.
@@ -91,7 +90,6 @@ export interface AttributeNode {
 	 *    node, or its descendants.
 	 */
 	readonly currentState: AttributeNodeState;
-
 
 	/**
 	 * Represents the current instance state of the node.

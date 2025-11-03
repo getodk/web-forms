@@ -162,7 +162,7 @@ export abstract class DescendantNode<
 
 		this.isAttachedDescendant = this.scope.runTask(() => {
 			return createMemo(() => {
-				const attrs = parent.getAttributes && parent.getAttributes(); // TODO remove && when all parents have attributes
+				const attrs = parent.getAttributes();
 				if (attrs) {
 					for (const attr of attrs) {
 						if (attr === self) {

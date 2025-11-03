@@ -13,8 +13,12 @@ import type {
 	XFormsXPathPrimaryInstanceNodeKind,
 } from '../../integration/xpath/adapter/XFormsXPathNode.ts';
 import type { PrimaryInstanceXPathNode } from '../../integration/xpath/adapter/kind.ts';
+import type { StaticAttribute } from '../../integration/xpath/static-dom/StaticAttribute.ts';
 import type { StaticDocument } from '../../integration/xpath/static-dom/StaticDocument.ts';
-import type { StaticElement, StaticLeafElement } from '../../integration/xpath/static-dom/StaticElement.ts';
+import type {
+	StaticElement,
+	StaticLeafElement,
+} from '../../integration/xpath/static-dom/StaticElement.ts';
 import type { MaterializedChildren } from '../../lib/reactivity/materializeCurrentStateChildren.ts';
 import type { CurrentState } from '../../lib/reactivity/node-state/createCurrentState.ts';
 import type { EngineState } from '../../lib/reactivity/node-state/createEngineState.ts';
@@ -24,6 +28,7 @@ import { createReactiveScope } from '../../lib/reactivity/scope.ts';
 import type { SimpleAtomicState } from '../../lib/reactivity/types.ts';
 import { createUniqueId } from '../../lib/unique-id.ts';
 import type { AnyNodeDefinition } from '../../parse/model/NodeDefinition.ts';
+import type { Attribute } from '../Attribute.ts';
 import type { PrimaryInstance } from '../PrimaryInstance.ts';
 import type { Root } from '../Root.ts';
 import type { AnyChildNode, AnyNode } from '../hierarchy.ts';
@@ -51,6 +56,7 @@ export interface InstanceNodeStateSpec<Value = never> {
 	readonly label: Accessor<TextRange<'label'> | null> | null;
 	readonly hint: Accessor<TextRange<'hint'> | null> | null;
 	readonly children: Accessor<readonly FormNodeID[]> | null;
+	readonly attributes: Accessor<readonly Attribute[]> | null;
 	readonly valueOptions: InstanceNodeValueOptionsStateSpec;
 	readonly value: Signal<Value> | SimpleAtomicState<Value> | null;
 }
@@ -191,7 +197,12 @@ export abstract class InstanceNode<
 	constructor(
 		readonly instanceConfig: InstanceConfig,
 		readonly parent: Parent,
-		readonly instanceNode: StaticDocument | StaticElement | StaticLeafElement | null,
+		readonly instanceNode:
+			| StaticAttribute
+			| StaticDocument
+			| StaticElement
+			| StaticLeafElement
+			| null,
 		readonly definition: Definition,
 		options?: InstanceNodeOptions
 	) {
@@ -237,13 +248,13 @@ export abstract class InstanceNode<
 	 * (though for those nodes it will always be empty). This affords consistency
 	 * and efficiency of interface for those internal uses.
 	 */
-	abstract getChildren(this: AnyInstanceNode): readonly AnyChildNode[];
+	abstract getChildren(this: AnyInstanceNode): ReadonlyArray<Exclude<AnyChildNode, Attribute>>;
 
 	// XFormsXPathNode
 	/**
 	 * @todo Values as text nodes(?)
 	 */
-	getXPathChildNodes(): readonly AnyChildNode[] {
+	getXPathChildNodes(): ReadonlyArray<Exclude<AnyChildNode, Attribute>> {
 		return (this as AnyInstanceNode).getChildren().flatMap((child) => {
 			switch (child.nodeType) {
 				case 'repeat-range:controlled':

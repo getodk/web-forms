@@ -1,6 +1,9 @@
 import { XMLNS_NAMESPACE_URI } from '@getodk/common/constants/xmlns.ts';
-import type { StaticElement } from '../../integration/xpath/static-dom/StaticElement.ts';
-import { NamespaceDeclarationMap, type NamedNodeDefinition } from '../../lib/names/NamespaceDeclarationMap.ts';
+import type { StaticAttribute } from '../../integration/xpath/static-dom/StaticAttribute.ts';
+import {
+	NamespaceDeclarationMap,
+	type NamedNodeDefinition,
+} from '../../lib/names/NamespaceDeclarationMap.ts';
 import { QualifiedName } from '../../lib/names/QualifiedName.ts';
 import { escapeXMLText } from '../../lib/xml-serialization.ts';
 import type { BindDefinition } from './BindDefinition.ts';
@@ -17,7 +20,10 @@ interface RootAttributeSource {
  * usage and purpose. It **intentionally** avoids addressing the much broader
  * set of concerns around modeling attributes in primary instance/submissions.
  */
-export class RootAttributeDefinition extends NodeDefinition<'attribute'> implements NamedNodeDefinition {
+export class RootAttributeDefinition
+	extends NodeDefinition<'attribute'>
+	implements NamedNodeDefinition
+{
 	private readonly serializedXML: string;
 
 	readonly value: string;
@@ -36,7 +42,7 @@ export class RootAttributeDefinition extends NodeDefinition<'attribute'> impleme
 		root: RootDefinition,
 		source: RootAttributeSource,
 		bind: BindDefinition,
-		readonly template: StaticElement
+		readonly template: StaticAttribute
 	) {
 		// super(model, root, bind, null, source);
 		super(bind);

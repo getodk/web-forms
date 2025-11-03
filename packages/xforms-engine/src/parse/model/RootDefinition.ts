@@ -87,7 +87,7 @@ export class RootDefinition extends NodeDefinition<'root'> {
 			const [firstChild, ...restChildren] = children;
 
 			if (bodyElement?.type === 'repeat') {
-				return RepeatDefinition.from(parent, bind, bodyElement, children);
+				return RepeatDefinition.from(model, parent, bind, bodyElement, children);
 			}
 
 			if (restChildren.length) {
@@ -98,12 +98,12 @@ export class RootDefinition extends NodeDefinition<'root'> {
 
 			if (element.isLeafElement()) {
 				if (bodyElement?.type === 'range') {
-					return RangeNodeDefinition.from(model, parent, bind, bodyElement, element);
+					return RangeNodeDefinition.from(parent, bind, bodyElement, element);
 				}
 
 				return (
 					NoteNodeDefinition.from(parent, bind, bodyElement, element) ??
-					new LeafNodeDefinition(model, parent, bind, bodyElement, element)
+					new LeafNodeDefinition(parent, bind, bodyElement, element)
 				);
 			}
 

@@ -4,26 +4,35 @@ import type { AttributeNode } from '../client/AttributeNode.ts';
 import type { ActiveLanguage, InstanceState, LeafNodeValidationState } from '../client/index.ts';
 import type { XFormsXPathAttribute } from '../integration/xpath/adapter/XFormsXPathNode.ts';
 import type { EngineXPathEvaluator } from '../integration/xpath/EngineXPathEvaluator.ts';
-import type { StaticLeafElement } from '../integration/xpath/static-dom/StaticElement.ts';
+import type { StaticAttribute } from '../integration/xpath/static-dom/StaticAttribute.ts';
 import { createAttributeNodeInstanceState } from '../lib/client-reactivity/instance-state/createAttributeNodeInstanceState.ts';
-import { getSharedValueCodec, type RuntimeInputValue, type RuntimeValue } from '../lib/codecs/getSharedValueCodec.ts';
+import {
+	getSharedValueCodec,
+	type RuntimeInputValue,
+	type RuntimeValue,
+} from '../lib/codecs/getSharedValueCodec.ts';
 import type { RuntimeValueSetter, RuntimeValueState } from '../lib/codecs/ValueCodec.ts';
-import { createInstanceValueState } from '../lib/reactivity/createInstanceValueState.ts';
+import { createAttributeValueState } from '../lib/reactivity/createAttributeValueState.ts';
 import type { CurrentState } from '../lib/reactivity/node-state/createCurrentState.ts';
 import type { EngineState } from '../lib/reactivity/node-state/createEngineState.ts';
-import { createSharedNodeState, type SharedNodeState } from '../lib/reactivity/node-state/createSharedNodeState.ts';
+import {
+	createSharedNodeState,
+	type SharedNodeState,
+} from '../lib/reactivity/node-state/createSharedNodeState.ts';
 import type { SimpleAtomicState } from '../lib/reactivity/types.ts';
 import type { RootAttributeDefinition } from '../parse/model/RootAttributeDefinition.ts';
 import type { DescendantNodeSharedStateSpec } from './abstract/DescendantNode.ts';
 import { InstanceNode } from './abstract/InstanceNode.ts';
-import type { AnyNode } from './hierarchy.ts';
-import type { DecodeInstanceValue, InstanceValueContext } from './internal-api/InstanceValueContext.ts';
+import type { AnyNode, AnyParentNode } from './hierarchy.ts';
+import type { AttributeContext } from './internal-api/AttributeContext.ts';
+import type { DecodeInstanceValue } from './internal-api/InstanceValueContext.ts';
 import type { ClientReactiveSerializableAttributeNode } from './internal-api/serialization/ClientReactiveSerializableAttributeNode.ts';
 import type { Root } from './Root.ts';
 
-export interface AttributeStateSpec<RuntimeValue> extends DescendantNodeSharedStateSpec {
+export interface AttributeStateSpec extends DescendantNodeSharedStateSpec {
 	readonly children: null;
-	readonly value: SimpleAtomicState<RuntimeValue>;
+	readonly attributes: null;
+	readonly value: SimpleAtomicState<string>;
 	readonly instanceValue: Accessor<string>;
 	readonly label: null;
 	readonly hint: null;
@@ -31,20 +40,21 @@ export interface AttributeStateSpec<RuntimeValue> extends DescendantNodeSharedSt
 }
 
 export class Attribute
-	extends InstanceNode<RootAttributeDefinition, AttributeStateSpec<RuntimeValue<'string'>>, AnyNode, null>
-	// extends ValueNode<'string', RootAttributeDefinition, RuntimeValue<'string'>, RuntimeInputValue<'string'>>
-	implements AttributeNode, ClientReactiveSerializableAttributeNode, InstanceValueContext, XFormsXPathAttribute
+	extends InstanceNode<RootAttributeDefinition, AttributeStateSpec, AnyNode, null>
+	implements
+		AttributeNode,
+		ClientReactiveSerializableAttributeNode,
+		AttributeContext,
+		XFormsXPathAttribute
 {
 	override readonly [XPathNodeKindKey] = 'attribute';
 
-	// InstanceNode
-	protected readonly state: SharedNodeState<AttributeStateSpec<string>>;
-	protected readonly engineState: EngineState<AttributeStateSpec<string>>;
+	protected readonly state: SharedNodeState<AttributeStateSpec>;
+	protected readonly engineState: EngineState<AttributeStateSpec>;
 	readonly validationState: LeafNodeValidationState;
-	
-	// ValueNode
+
 	readonly nodeType = 'attribute';
-	readonly currentState: CurrentState<AttributeStateSpec<string>>;
+	readonly currentState: CurrentState<AttributeStateSpec>;
 	override readonly instanceState: InstanceState;
 
 	readonly appearances = null;
@@ -85,20 +95,29 @@ export class Attribute
 		return parent.hasNonRelevantAncestor() || !parent.isRelevant();
 	};
 
+	getReference(): string {
+		// TODO use this.computeChildStepReference from InstanceNode!
+		const parentReference = this.parent.contextReference();
+		const relative = '/@' + this.definition.qualifiedName.getPrefixedName(); // TODO or this.definition.nodeset??
+		if (parentReference === '/') {
+			return relative;
+		}
+		return parentReference + relative;
+	}
 
 	constructor(
-		owner: AnyNode,
+		parent: AnyParentNode,
+		// owner: QualifiedName,
 		definition: RootAttributeDefinition,
-		override readonly instanceNode: StaticLeafElement
+		override readonly instanceNode: StaticAttribute
 	) {
-
 		const codec = getSharedValueCodec('string');
-		
-		super(owner.instanceConfig, owner, instanceNode, definition, { scope: owner.scope });
 
-		this.root = owner.root;
+		super(parent.instanceConfig, parent, instanceNode, definition, { scope: parent.scope });
 
-		this.getActiveLanguage = owner.getActiveLanguage;
+		this.root = parent.root;
+
+		this.getActiveLanguage = parent.getActiveLanguage;
 
 		// TODO null validation state
 		this.validationState = {
@@ -106,22 +125,22 @@ export class Attribute
 			constraint: {
 				condition: 'constraint',
 				valid: true,
-				message: null
+				message: null,
 			},
 			required: {
 				condition: 'required',
 				valid: true,
-				message: null
+				message: null,
 			},
 		};
 
 		// const getInstanceValue = this.getInstanceValue;
 
 		this.valueType = 'string';
-		this.evaluator = owner.evaluator;
+		this.evaluator = parent.evaluator;
 		this.decodeInstanceValue = codec.decodeInstanceValue;
 
-		const instanceValueState = createInstanceValueState(this);
+		const instanceValueState = createAttributeValueState(this);
 		const valueState = codec.createRuntimeValueState(instanceValueState);
 
 		const [getInstanceValue] = instanceValueState;
@@ -139,7 +158,7 @@ export class Attribute
 		const state = createSharedNodeState(
 			this.scope,
 			{
-				reference: () => `${owner.contextReference()}/${definition.qualifiedName.getPrefixedName()}`, // TODO use this.computeChildStepReference from InstanceNode!
+				reference: () => this.getReference(),
 				readonly: this.isReadonly,
 				relevant: this.isRelevant,
 				required: () => false,
@@ -150,7 +169,7 @@ export class Attribute
 				valueOptions: null,
 				value: this.valueState,
 				instanceValue: this.getInstanceValue,
-				attributes: null
+				attributes: null,
 			},
 			this.instanceConfig
 		);
@@ -159,8 +178,6 @@ export class Attribute
 		this.engineState = state.engineState;
 		this.currentState = state.currentState;
 		this.instanceState = createAttributeNodeInstanceState(this);
-		
-
 	}
 
 	setValue(value: string): Root {

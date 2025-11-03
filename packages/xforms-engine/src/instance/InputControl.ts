@@ -21,7 +21,6 @@ import { createFieldHint } from '../lib/reactivity/text/createFieldHint.ts';
 import { createNodeLabel } from '../lib/reactivity/text/createNodeLabel.ts';
 import type { InputControlDefinition } from '../parse/body/control/InputControlDefinition.ts';
 import { ValueNode, type ValueNodeStateSpec } from './abstract/ValueNode.ts';
-import { buildAttributes } from './attachments/buildAttributes.ts';
 import type { GeneralParentNode } from './hierarchy.ts';
 import type { EvaluationContext } from './internal-api/EvaluationContext.ts';
 import type { ClientReactiveSerializableValueNode } from './internal-api/serialization/ClientReactiveSerializableValueNode.ts';
@@ -121,7 +120,7 @@ export class InputControl<V extends ValueType = ValueType>
 
 		this.appearances = definition.bodyElement.appearances;
 		this.nodeOptions = nodeOptionsFactoryByType[definition.valueType](definition.bodyElement);
-		
+
 		// const attributeState = createAttributeState(this.scope);
 		// this.attributeState = attributeState;
 		const state = createSharedNodeState(
@@ -135,7 +134,7 @@ export class InputControl<V extends ValueType = ValueType>
 				label: createNodeLabel(this, definition),
 				hint: createFieldHint(this, definition),
 				children: null,
-				attributes: this.attributeState.getAttributes,
+				attributes: null, //this.attributeState.getAttributes,
 				valueOptions: null,
 				value: this.valueState,
 				instanceValue: this.getInstanceValue,
@@ -146,7 +145,7 @@ export class InputControl<V extends ValueType = ValueType>
 		this.state = state;
 		this.engineState = state.engineState;
 		this.currentState = state.currentState;
-		this.attributeState.setAttributes(buildAttributes(this));
+		// this.attributeState.setAttributes(buildAttributes(this.definition, this.parent));
 	}
 
 	setValue(value: InputNodeInputValue<V>): Root {
@@ -154,7 +153,6 @@ export class InputControl<V extends ValueType = ValueType>
 
 		return this.root;
 	}
-
 }
 
 export type AnyInputControl =

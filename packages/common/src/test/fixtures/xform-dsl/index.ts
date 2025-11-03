@@ -11,7 +11,10 @@ import { TagXFormsElement } from './TagXFormsElement.ts';
 import type { XFormsElement } from './XFormsElement.ts';
 import { emptyMap } from './collections.ts';
 
-type NameAndAttributes = { name: string, attributes: Map<string, string> };
+interface NameAndAttributes {
+	name: string;
+	attributes: Map<string, string>;
+}
 type AttributeTuple = readonly [nodeName: string, value: string];
 type AttributeTuples = readonly AttributeTuple[];
 type Int = number;

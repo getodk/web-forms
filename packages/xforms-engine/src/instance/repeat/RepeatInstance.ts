@@ -13,7 +13,10 @@ import type { AncestorNodeValidationState } from '../../client/validation.ts';
 import type { XFormsXPathElement } from '../../integration/xpath/adapter/XFormsXPathNode.ts';
 import type { StaticElement } from '../../integration/xpath/static-dom/StaticElement.ts';
 import { createTemplatedNodeInstanceState } from '../../lib/client-reactivity/instance-state/createTemplatedNodeInstanceState.ts';
-import { createAttributeState, type AttributeState } from '../../lib/reactivity/createAttributeState.ts';
+import {
+	createAttributeState,
+	type AttributeState,
+} from '../../lib/reactivity/createAttributeState.ts';
 import type { ChildrenState } from '../../lib/reactivity/createChildrenState.ts';
 import { createChildrenState } from '../../lib/reactivity/createChildrenState.ts';
 import type { MaterializedChildren } from '../../lib/reactivity/materializeCurrentStateChildren.ts';

@@ -9,7 +9,10 @@ import { UploadValueTypeError } from '../error/UploadValueTypeError.ts';
 import type { XFormsXPathElement } from '../integration/xpath/adapter/XFormsXPathNode.ts';
 import type { StaticLeafElement } from '../integration/xpath/static-dom/StaticElement.ts';
 import { createValueNodeInstanceState } from '../lib/client-reactivity/instance-state/createValueNodeInstanceState.ts';
-import { createAttributeState, type AttributeState } from '../lib/reactivity/createAttributeState.ts';
+import {
+	createAttributeState,
+	type AttributeState,
+} from '../lib/reactivity/createAttributeState.ts';
 import { createInstanceAttachment } from '../lib/reactivity/createInstanceAttachment.ts';
 import type { CurrentState } from '../lib/reactivity/node-state/createCurrentState.ts';
 import type { EngineState } from '../lib/reactivity/node-state/createEngineState.ts';
@@ -133,9 +136,9 @@ export class UploadControl
 
 		this.appearances = definition.bodyElement.appearances;
 		this.nodeOptions = definition.bodyElement.options;
-		
+
 		const instanceAttachment = createInstanceAttachment(this);
-		
+
 		this.instanceAttachment = instanceAttachment;
 		const attributeState = createAttributeState(this.scope);
 		this.attributeState = attributeState;
