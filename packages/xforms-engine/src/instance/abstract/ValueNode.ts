@@ -13,10 +13,6 @@ import type {
 	RuntimeValueState,
 	ValueCodec,
 } from '../../lib/codecs/ValueCodec.ts';
-import {
-	createAttributeState,
-	type AttributeState,
-} from '../../lib/reactivity/createAttributeState.ts';
 import { createInstanceValueState } from '../../lib/reactivity/createInstanceValueState.ts';
 import type { CurrentState } from '../../lib/reactivity/node-state/createCurrentState.ts';
 import type { EngineState } from '../../lib/reactivity/node-state/createEngineState.ts';
@@ -65,8 +61,6 @@ export abstract class ValueNode<
 	protected readonly valueState: RuntimeValueState<RuntimeValue>;
 	protected readonly setValueState: RuntimeValueSetter<RuntimeInputValue>;
 
-	protected readonly attributeState: AttributeState;
-
 	// XFormsXPathElement
 	override readonly [XPathNodeKindKey] = 'element';
 	override readonly getXPathValue: () => string;
@@ -98,9 +92,6 @@ export abstract class ValueNode<
 	) {
 		super(parent, instanceNode, definition);
 
-		const attributeState = createAttributeState(this.scope);
-		this.attributeState = attributeState;
-
 		this.valueType = definition.valueType;
 		this.decodeInstanceValue = codec.decodeInstanceValue;
 
@@ -118,8 +109,6 @@ export abstract class ValueNode<
 		this.valueState = valueState;
 		this.validation = createValidationState(this, this.instanceConfig);
 		this.instanceState = createValueNodeInstanceState(this);
-
-		// attributeState.setAttributes(buildAttributes(this.definition, this.parent));
 	}
 
 	// ValidationContext
@@ -133,10 +122,6 @@ export abstract class ValueNode<
 
 	// InstanceNode
 	getChildren(): readonly [] {
-		return [];
-	}
-
-	getAttributes(): readonly [] {
 		return [];
 	}
 }

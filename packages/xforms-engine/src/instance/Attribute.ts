@@ -23,7 +23,7 @@ import type { SimpleAtomicState } from '../lib/reactivity/types.ts';
 import type { RootAttributeDefinition } from '../parse/model/RootAttributeDefinition.ts';
 import type { DescendantNodeSharedStateSpec } from './abstract/DescendantNode.ts';
 import { InstanceNode } from './abstract/InstanceNode.ts';
-import type { AnyNode, AnyParentNode } from './hierarchy.ts';
+import type { AnyParentNode } from './hierarchy.ts';
 import type { AttributeContext } from './internal-api/AttributeContext.ts';
 import type { DecodeInstanceValue } from './internal-api/InstanceValueContext.ts';
 import type { ClientReactiveSerializableAttributeNode } from './internal-api/serialization/ClientReactiveSerializableAttributeNode.ts';
@@ -40,7 +40,7 @@ export interface AttributeStateSpec extends DescendantNodeSharedStateSpec {
 }
 
 export class Attribute
-	extends InstanceNode<RootAttributeDefinition, AttributeStateSpec, AnyNode, null>
+	extends InstanceNode<RootAttributeDefinition, AttributeStateSpec, AnyParentNode, null>
 	implements
 		AttributeNode,
 		ClientReactiveSerializableAttributeNode,

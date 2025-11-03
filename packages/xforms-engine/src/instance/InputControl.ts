@@ -94,8 +94,6 @@ export class InputControl<V extends ValueType = ValueType>
 		return new this(parent, instanceNode, definition);
 	}
 
-	// private readonly attributeState: AttributeState;
-
 	// XFormsXPathElement
 	override readonly [XPathNodeKindKey] = 'element';
 
@@ -121,8 +119,6 @@ export class InputControl<V extends ValueType = ValueType>
 		this.appearances = definition.bodyElement.appearances;
 		this.nodeOptions = nodeOptionsFactoryByType[definition.valueType](definition.bodyElement);
 
-		// const attributeState = createAttributeState(this.scope);
-		// this.attributeState = attributeState;
 		const state = createSharedNodeState(
 			this.scope,
 			{
@@ -134,7 +130,7 @@ export class InputControl<V extends ValueType = ValueType>
 				label: createNodeLabel(this, definition),
 				hint: createFieldHint(this, definition),
 				children: null,
-				attributes: null, //this.attributeState.getAttributes,
+				attributes: null,
 				valueOptions: null,
 				value: this.valueState,
 				instanceValue: this.getInstanceValue,
@@ -145,7 +141,6 @@ export class InputControl<V extends ValueType = ValueType>
 		this.state = state;
 		this.engineState = state.engineState;
 		this.currentState = state.currentState;
-		// this.attributeState.setAttributes(buildAttributes(this.definition, this.parent));
 	}
 
 	setValue(value: InputNodeInputValue<V>): Root {

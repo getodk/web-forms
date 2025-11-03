@@ -31,7 +31,7 @@ import type { AnyNodeDefinition } from '../../parse/model/NodeDefinition.ts';
 import type { Attribute } from '../Attribute.ts';
 import type { PrimaryInstance } from '../PrimaryInstance.ts';
 import type { Root } from '../Root.ts';
-import type { AnyChildNode, AnyNode } from '../hierarchy.ts';
+import type { AnyChildNode, AnyNode, AnyParentNode } from '../hierarchy.ts';
 import { nodeID } from '../identity.ts';
 import type { EvaluationContext } from '../internal-api/EvaluationContext.ts';
 import type { InstanceConfig } from '../internal-api/InstanceConfig.ts';
@@ -87,7 +87,7 @@ export type InstanceNodeCurrentState<
 		};
 
 interface ComputableReferenceNode {
-	readonly parent: AnyNode | null;
+	readonly parent: AnyParentNode | null;
 	readonly definition: AnyNodeDefinition;
 }
 
@@ -106,7 +106,7 @@ export abstract class InstanceNode<
 		Definition extends AnyNodeDefinition,
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		Spec extends InstanceNodeStateSpec<any>,
-		Parent extends AnyNode | null,
+		Parent extends AnyParentNode | null,
 		Child extends AnyChildNode | null = null,
 	>
 	implements BaseEngineNode, XFormsXPathPrimaryInstanceNode, EvaluationContext
