@@ -5,10 +5,6 @@ export type SerializedInstanceValue = string;
 
 interface ClientReactiveSerializableAttributeNodeCurrentState {
 	get relevant(): boolean;
-
-	/**
-	 * @todo Consider moving into {@link InstanceState}
-	 */
 	get instanceValue(): SerializedInstanceValue;
 }
 

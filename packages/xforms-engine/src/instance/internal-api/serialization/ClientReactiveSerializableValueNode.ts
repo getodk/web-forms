@@ -11,7 +11,7 @@ interface ClientReactiveSerializableValueNodeCurrentState {
 	get relevant(): boolean;
 
 	/**
-	 * @todo Consider moving BOTH into {@link InstanceState}
+	 * @todo Consider moving into {@link InstanceState}
 	 */
 	get instanceValue(): SerializedInstanceValue;
 }

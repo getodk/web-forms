@@ -7,7 +7,7 @@ import type { BindDefinition } from './BindDefinition.ts';
 import { DescendentNodeDefinition } from './DescendentNodeDefinition.ts';
 import type { ModelDefinition } from './ModelDefinition.ts';
 import type { ChildNodeDefinition, ParentNodeDefinition } from './NodeDefinition.ts';
-import { RootAttributeMap } from './RootAttributeMap.ts';
+import { AttributeDefinitionMap } from './RootAttributeMap.ts';
 
 export class GroupDefinition extends DescendentNodeDefinition<
 	'group',
@@ -18,7 +18,7 @@ export class GroupDefinition extends DescendentNodeDefinition<
 	readonly namespaceDeclarations: NamespaceDeclarationMap;
 	readonly qualifiedName: QualifiedName;
 	readonly children: readonly ChildNodeDefinition[];
-	readonly attributes: RootAttributeMap;
+	readonly attributes: AttributeDefinitionMap;
 
 	constructor(
 		model: ModelDefinition,
@@ -42,7 +42,7 @@ export class GroupDefinition extends DescendentNodeDefinition<
 		this.namespaceDeclarations = new NamespaceDeclarationMap(this);
 		this.children = root.buildSubtree(this, template);
 
-		this.attributes = RootAttributeMap.from(model, root, template); // TODO this is passing in all binds, not just for this
+		this.attributes = AttributeDefinitionMap.from(model, template);
 	}
 
 	toJSON() {

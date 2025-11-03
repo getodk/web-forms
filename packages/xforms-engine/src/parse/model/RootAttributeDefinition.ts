@@ -15,12 +15,7 @@ interface RootAttributeSource {
 	readonly value: string;
 }
 
-/**
- * @todo This class is named and typed to emphasize its intentionally narrow
- * usage and purpose. It **intentionally** avoids addressing the much broader
- * set of concerns around modeling attributes in primary instance/submissions.
- */
-export class RootAttributeDefinition
+export class AttributeDefinition
 	extends NodeDefinition<'attribute'>
 	implements NamedNodeDefinition
 {
@@ -55,7 +50,6 @@ export class RootAttributeDefinition
 		this.namespaceDeclarations = new NamespaceDeclarationMap(this);
 
 		// We serialize namespace declarations separately
-		// TODO I guess don't do it here?
 		if (this.qualifiedName.namespaceURI?.href === XMLNS_NAMESPACE_URI) {
 			this.serializedXML = '';
 		} else {

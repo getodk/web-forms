@@ -7,7 +7,6 @@ export const createRootInstanceState = (node: Root): InstanceState => {
 		get instanceXML() {
 			const { namespaceDeclarations } = node.definition;
 
-			// TODO this is very common to createParentNodeInstanceState - find a way to reuse
 			const serializedChildren = node.currentState.children.map((child) => {
 				return child.instanceState.instanceXML;
 			});

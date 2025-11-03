@@ -11,8 +11,8 @@ import type { BindDefinition } from './BindDefinition.ts';
 import type { GroupDefinition } from './GroupDefinition.ts';
 import type { LeafNodeDefinition } from './LeafNodeDefinition.ts';
 import type { AnyRepeatDefinition } from './RepeatDefinition.ts';
-import type { RootAttributeDefinition } from './RootAttributeDefinition.ts';
-import type { RootAttributeMap } from './RootAttributeMap.ts';
+import type { AttributeDefinition } from './RootAttributeDefinition.ts';
+import type { AttributeDefinitionMap } from './RootAttributeMap.ts';
 import type { RootDefinition } from './RootDefinition.ts';
 
 /**
@@ -84,7 +84,7 @@ export abstract class NodeDefinition<Type extends NodeDefinitionType>
 	abstract readonly parent: ParentNodeDefinition | null;
 	abstract readonly template: StaticAttribute | StaticElement;
 	abstract readonly children: readonly ChildNodeDefinition[] | null;
-	abstract readonly attributes: RootAttributeMap | null;
+	abstract readonly attributes: AttributeDefinitionMap | null;
 
 	readonly nodeset: string;
 
@@ -100,4 +100,4 @@ export type AnyNodeDefinition =
 	| AnyRepeatDefinition
 	| GroupDefinition
 	| LeafNodeDefinition
-	| RootAttributeDefinition;
+	| AttributeDefinition;

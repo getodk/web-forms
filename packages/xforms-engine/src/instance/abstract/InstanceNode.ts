@@ -15,10 +15,7 @@ import type {
 import type { PrimaryInstanceXPathNode } from '../../integration/xpath/adapter/kind.ts';
 import type { StaticAttribute } from '../../integration/xpath/static-dom/StaticAttribute.ts';
 import type { StaticDocument } from '../../integration/xpath/static-dom/StaticDocument.ts';
-import type {
-	StaticElement,
-	StaticLeafElement,
-} from '../../integration/xpath/static-dom/StaticElement.ts';
+import type { StaticElement } from '../../integration/xpath/static-dom/StaticElement.ts';
 import type { MaterializedChildren } from '../../lib/reactivity/materializeCurrentStateChildren.ts';
 import type { CurrentState } from '../../lib/reactivity/node-state/createCurrentState.ts';
 import type { EngineState } from '../../lib/reactivity/node-state/createEngineState.ts';
@@ -197,12 +194,7 @@ export abstract class InstanceNode<
 	constructor(
 		readonly instanceConfig: InstanceConfig,
 		readonly parent: Parent,
-		readonly instanceNode:
-			| StaticAttribute
-			| StaticDocument
-			| StaticElement
-			| StaticLeafElement
-			| null,
+		readonly instanceNode: StaticAttribute | StaticDocument | StaticElement | null,
 		readonly definition: Definition,
 		options?: InstanceNodeOptions
 	) {

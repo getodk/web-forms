@@ -11,7 +11,7 @@ import { NodeDefinition } from './NodeDefinition.ts';
 import { NoteNodeDefinition } from './NoteNodeDefinition.ts';
 import { RangeNodeDefinition } from './RangeNodeDefinition.ts';
 import { RepeatDefinition } from './RepeatDefinition.ts';
-import { RootAttributeMap } from './RootAttributeMap.ts';
+import { AttributeDefinitionMap } from './RootAttributeMap.ts';
 import type { SubmissionDefinition } from './SubmissionDefinition.ts';
 
 export class RootDefinition extends NodeDefinition<'root'> {
@@ -22,7 +22,7 @@ export class RootDefinition extends NodeDefinition<'root'> {
 	readonly parent = null;
 	readonly template: StaticElement;
 	readonly namespaceDeclarations: NamespaceDeclarationMap;
-	readonly attributes: RootAttributeMap;
+	readonly attributes: AttributeDefinitionMap;
 	readonly children: readonly ChildNodeDefinition[];
 
 	readonly isTranslated = false;
@@ -51,7 +51,7 @@ export class RootDefinition extends NodeDefinition<'root'> {
 
 		this.qualifiedName = qualifiedName;
 		this.template = template;
-		this.attributes = RootAttributeMap.from(model, this, template);
+		this.attributes = AttributeDefinitionMap.from(model, template);
 		this.namespaceDeclarations = new NamespaceDeclarationMap(this);
 		this.children = this.buildSubtree(this, template);
 	}

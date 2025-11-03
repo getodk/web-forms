@@ -5,28 +5,27 @@ import type { BindComputationExpression } from '../../parse/expression/BindCompu
 import type { AnyBindPreloadDefinition } from '../../parse/model/BindPreloadDefinition.ts';
 import type { EvaluationContext } from './EvaluationContext.ts';
 
-// TODO I bet I can delete most of this
-export interface InstanceValueContextDocument {
+export interface InstanceAttributeContextDocument {
 	readonly initializationMode: FormInstanceInitializationMode;
 }
 
 export type DecodeInstanceValue = (value: string) => string;
 
-interface InstanceValueContextDefinitionBind {
+interface InstanceAttributeContextDefinitionBind {
 	readonly preload: AnyBindPreloadDefinition | null;
 	readonly calculate: BindComputationExpression<'calculate'> | null;
 	readonly readonly: BindComputationExpression<'readonly'>;
 }
 
-export interface InstanceValueContextDefinition {
-	readonly bind: InstanceValueContextDefinitionBind;
+export interface InstanceAttributeContextDefinition {
+	readonly bind: InstanceAttributeContextDefinitionBind;
 	readonly template: StaticAttribute;
 }
 
 export interface AttributeContext extends EvaluationContext {
 	readonly scope: ReactiveScope;
-	readonly rootDocument: InstanceValueContextDocument;
-	readonly definition: InstanceValueContextDefinition;
+	readonly rootDocument: InstanceAttributeContextDocument;
+	readonly definition: InstanceAttributeContextDefinition;
 	readonly instanceNode: StaticAttribute;
 	readonly decodeInstanceValue: DecodeInstanceValue;
 

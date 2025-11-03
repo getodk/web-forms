@@ -24,7 +24,7 @@ import { DescendentNodeDefinition } from './DescendentNodeDefinition.ts';
 import type { GroupDefinition } from './GroupDefinition.ts';
 import type { ModelDefinition } from './ModelDefinition.ts';
 import type { ChildNodeDefinition, ParentNodeDefinition } from './NodeDefinition.ts';
-import { RootAttributeMap } from './RootAttributeMap.ts';
+import { AttributeDefinitionMap } from './RootAttributeMap.ts';
 import type { RootDefinition } from './RootDefinition.ts';
 
 interface JavaRosaNamespaceURI extends NamespaceURL {
@@ -337,7 +337,7 @@ export class RepeatDefinition extends DescendentNodeDefinition<'repeat', RepeatE
 	readonly template: StaticElement;
 	readonly namespaceDeclarations: NamespaceDeclarationMap;
 	readonly qualifiedName: QualifiedName;
-	readonly attributes: RootAttributeMap;
+	readonly attributes: AttributeDefinitionMap;
 
 	private constructor(
 		model: ModelDefinition,
@@ -359,7 +359,7 @@ export class RepeatDefinition extends DescendentNodeDefinition<'repeat', RepeatE
 		this.children = root.buildSubtree(self, template);
 
 		const initialCount = this.omitTemplate(instanceNodes).length;
-		this.attributes = RootAttributeMap.from(model, root, template); // TODO this is passing in all binds, not just for this
+		this.attributes = AttributeDefinitionMap.from(model, template);
 
 		this.count = RepeatCountControlExpression.from(bodyElement, initialCount);
 	}

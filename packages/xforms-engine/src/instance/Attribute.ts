@@ -1,7 +1,7 @@
 import { XPathNodeKindKey } from '@getodk/xpath';
 import type { Accessor } from 'solid-js';
 import type { AttributeNode } from '../client/AttributeNode.ts';
-import type { ActiveLanguage, InstanceState, LeafNodeValidationState } from '../client/index.ts';
+import type { ActiveLanguage, InstanceState, NullValidationState } from '../client/index.ts';
 import type { XFormsXPathAttribute } from '../integration/xpath/adapter/XFormsXPathNode.ts';
 import type { EngineXPathEvaluator } from '../integration/xpath/EngineXPathEvaluator.ts';
 import type { StaticAttribute } from '../integration/xpath/static-dom/StaticAttribute.ts';
@@ -20,7 +20,7 @@ import {
 	type SharedNodeState,
 } from '../lib/reactivity/node-state/createSharedNodeState.ts';
 import type { SimpleAtomicState } from '../lib/reactivity/types.ts';
-import type { RootAttributeDefinition } from '../parse/model/RootAttributeDefinition.ts';
+import type { AttributeDefinition } from '../parse/model/RootAttributeDefinition.ts';
 import type { DescendantNodeSharedStateSpec } from './abstract/DescendantNode.ts';
 import { InstanceNode } from './abstract/InstanceNode.ts';
 import type { AnyParentNode } from './hierarchy.ts';
@@ -40,7 +40,7 @@ export interface AttributeStateSpec extends DescendantNodeSharedStateSpec {
 }
 
 export class Attribute
-	extends InstanceNode<RootAttributeDefinition, AttributeStateSpec, AnyParentNode, null>
+	extends InstanceNode<AttributeDefinition, AttributeStateSpec, AnyParentNode, null>
 	implements
 		AttributeNode,
 		ClientReactiveSerializableAttributeNode,
@@ -51,7 +51,7 @@ export class Attribute
 
 	protected readonly state: SharedNodeState<AttributeStateSpec>;
 	protected readonly engineState: EngineState<AttributeStateSpec>;
-	readonly validationState: LeafNodeValidationState;
+	readonly validationState: NullValidationState;
 
 	readonly nodeType = 'attribute';
 	readonly currentState: CurrentState<AttributeStateSpec>;
@@ -85,56 +85,30 @@ export class Attribute
 
 	readonly hasReadonlyAncestor: Accessor<boolean> = () => {
 		const { parent } = this;
-
 		return parent.hasReadonlyAncestor() || parent.isReadonly();
 	};
 
 	readonly hasNonRelevantAncestor: Accessor<boolean> = () => {
 		const { parent } = this;
-
 		return parent.hasNonRelevantAncestor() || !parent.isRelevant();
 	};
 
-	getReference(): string {
-		// TODO use this.computeChildStepReference from InstanceNode!
-		const parentReference = this.parent.contextReference();
-		const relative = '/@' + this.definition.qualifiedName.getPrefixedName(); // TODO or this.definition.nodeset??
-		if (parentReference === '/') {
-			return relative;
-		}
-		return parentReference + relative;
-	}
-
 	constructor(
 		parent: AnyParentNode,
-		// owner: QualifiedName,
-		definition: RootAttributeDefinition,
+		definition: AttributeDefinition,
 		override readonly instanceNode: StaticAttribute
 	) {
 		const codec = getSharedValueCodec('string');
 
-		super(parent.instanceConfig, parent, instanceNode, definition, { scope: parent.scope });
+		super(parent.instanceConfig, parent, instanceNode, definition, {
+			scope: parent.scope,
+			computeReference: (): string => '@' + this.definition.qualifiedName.getPrefixedName(),
+		});
 
 		this.root = parent.root;
 
 		this.getActiveLanguage = parent.getActiveLanguage;
-
-		// TODO null validation state
-		this.validationState = {
-			violation: null,
-			constraint: {
-				condition: 'constraint',
-				valid: true,
-				message: null,
-			},
-			required: {
-				condition: 'required',
-				valid: true,
-				message: null,
-			},
-		};
-
-		// const getInstanceValue = this.getInstanceValue;
+		this.validationState = { violations: [] };
 
 		this.valueType = 'string';
 		this.evaluator = parent.evaluator;
@@ -152,13 +126,11 @@ export class Attribute
 			return this.getInstanceValue();
 		};
 		this.valueState = valueState;
-		// this.validation = createValidationState(this, this.instanceConfig);
-		// this.instanceState = createAttributeNodeInstanceState(this);
 
 		const state = createSharedNodeState(
 			this.scope,
 			{
-				reference: () => this.getReference(),
+				reference: this.contextReference,
 				readonly: this.isReadonly,
 				relevant: this.isRelevant,
 				required: () => false,

@@ -37,8 +37,6 @@ describe('Bind to element attributes', () => {
 						.type('string')
 						.calculate('/root/grp/version')
 						.readonly('true()'),
-					// can bind to leaf
-					// bind('/root/grp/test/@version').type('string').calculate('/root/grp/version').readonly('true()'),
 					bind('/root/grp/@uuid').type('string').calculate('/root/grp/test').readonly('true()')
 				)
 			),
@@ -51,12 +49,7 @@ describe('Bind to element attributes', () => {
 			const actual = await scenario.prepareWebFormsInstancePayload();
 			const expected = t(
 				`root xmlns:orx="http://openrosa.org/xforms" id="bind-attributes" version="${version}"`,
-				t(
-					`grp uuid="${id}" version="${version}"`,
-					t('version', version),
-					// t(`test version="${version}"`, id),
-					t(`test`, id)
-				),
+				t(`grp uuid="${id}" version="${version}"`, t('version', version), t(`test`, id)),
 				t('orx:meta', t('orx:instanceID', IGNORED_INSTANCE_ID))
 			).asXml();
 			await expect(actual).toHavePreparedSubmissionXML(expected);
@@ -79,21 +72,22 @@ describe('Bind to element attributes', () => {
 		it('serializes correctly', async () => {
 			const scenario = await Scenario.init(
 				'Repeat serde (basic + calculate)',
-				// prettier-ignore
 				html(
 					head(
 						title('Repeat serde (basic + calculate)'),
 						model(
-							mainInstance(t('data id="repeat-serde-basic-calculate"',
-								t('repeat jr:template=""',
-									t('inner1', '4'),
-								),
-							t('orx:meta', t('orx:instanceID', IGNORED_INSTANCE_ID)))))),
-	
-					body(
-						repeat('/data/repeat',
-							input('/data/repeat/inner1',
-								label('inner1')))))
+							mainInstance(
+								t(
+									'data id="repeat-serde-basic-calculate"',
+									t('repeat jr:template=""', t('inner1', '4')),
+									t('orx:meta', t('orx:instanceID', IGNORED_INSTANCE_ID))
+								)
+							)
+						)
+					),
+
+					body(repeat('/data/repeat', input('/data/repeat/inner1', label('inner1'))))
+				)
 			);
 
 			scenario.next('/data/repeat');
