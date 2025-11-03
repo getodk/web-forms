@@ -41,11 +41,10 @@ describe('Bind to element attributes', () => {
 
 	let scenario: Scenario;
 
-	// TODO test attributes without binds and make sure they serialize anyway
 	async function expectVersion(id: string, version: string) {
 		const actual = await scenario.prepareWebFormsInstancePayload();
 		const expected = t(
-			`root xmlns:orx="http://openrosa.org/xforms" version="${version}"`,
+			`root xmlns:orx="http://openrosa.org/xforms" id="bind-attributes" version="${version}"`,
 			t(
 				`grp uuid="${id}" version="${version}"`,
 				t('version', version),

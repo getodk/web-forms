@@ -44,7 +44,6 @@ export class RootAttributeDefinition
 		bind: BindDefinition,
 		readonly template: StaticAttribute
 	) {
-		// super(model, root, bind, null, source);
 		super(bind);
 
 		const { value } = source;

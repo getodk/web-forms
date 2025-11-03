@@ -37,11 +37,7 @@ export class RootAttributeMap extends Map<QualifiedName, RootAttributeDefinition
 		const nonNamespaceAttributes = instanceNode.attributes.filter(isNonNamespaceAttribute);
 		const definitions = nonNamespaceAttributes
 			.map((attribute) => {
-				const bind = model.binds.get(attribute.nodeset);
-				if (!bind) {
-					// TODO need to do something to support attributes without binds
-					return;
-				}
+				const bind = model.binds.getOrCreateBindDefinition(attribute.nodeset);
 				return new RootAttributeDefinition(root, attribute, bind, attribute);
 			})
 			.filter((defn) => !!defn);
