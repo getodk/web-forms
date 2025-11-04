@@ -59,6 +59,7 @@ export function useMapBlock(mode: Mode, events: { onFeaturePlacement: () => void
 	const singleFeatureLayer = new VectorLayer({
 		source: featuresSource,
 		style: [...getSavedStyles(FEATURE_ID_PROPERTY, SAVED_ID_PROPERTY)],
+		updateWhileAnimating: true,
 	});
 	const multiFeatureLayer = new WebGLVectorLayer({
 		source: featuresSource,
