@@ -63,6 +63,7 @@ const handleSubmit = async (payload: MonolithicInstancePayload) => {
 	// eslint-disable-next-line no-console
 	console.log('submission payload:', payload);
 	for (const value of payload.data[0].values()) {
+		// eslint-disable-next-line no-console
 		console.log(await value.text());
 	}
 	alert('Submit button was pressed');
