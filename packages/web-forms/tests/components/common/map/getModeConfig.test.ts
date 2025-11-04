@@ -57,7 +57,7 @@ describe('getModeConfig', () => {
 				canLoadMultiFeatures: false,
 				canViewProperties: false,
 				canShowMapOverlay: true,
-				canShowMapOverlayOnError: true,
+				canShowMapOverlayOnError: false,
 			},
 		});
 	});
