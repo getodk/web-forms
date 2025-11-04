@@ -19,12 +19,12 @@ import type { NamespaceURL } from '../../lib/names/NamespaceURL.ts';
 import type { QualifiedName, QualifiedNameSource } from '../../lib/names/QualifiedName.ts';
 import type { RepeatElementDefinition } from '../body/RepeatElementDefinition.ts';
 import { RepeatCountControlExpression } from '../expression/RepeatCountControlExpression.ts';
+import { AttributeDefinitionMap } from './AttributeDefinitionMap.ts';
 import type { BindDefinition } from './BindDefinition.ts';
 import { DescendentNodeDefinition } from './DescendentNodeDefinition.ts';
 import type { GroupDefinition } from './GroupDefinition.ts';
 import type { ModelDefinition } from './ModelDefinition.ts';
 import type { ChildNodeDefinition, ParentNodeDefinition } from './NodeDefinition.ts';
-import { AttributeDefinitionMap } from './RootAttributeMap.ts';
 import type { RootDefinition } from './RootDefinition.ts';
 
 interface JavaRosaNamespaceURI extends NamespaceURL {

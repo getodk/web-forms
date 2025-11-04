@@ -2,8 +2,8 @@ import { XMLNS_NAMESPACE_URI } from '@getodk/common/constants/xmlns.ts';
 import type { StaticAttribute } from '../../integration/xpath/static-dom/StaticAttribute.ts';
 import type { StaticElement } from '../../integration/xpath/static-dom/StaticElement.ts';
 import type { QualifiedName } from '../../lib/names/QualifiedName.ts';
+import { AttributeDefinition } from './AttributeDefinition.ts';
 import type { ModelDefinition } from './ModelDefinition.ts';
-import { AttributeDefinition } from './RootAttributeDefinition.ts';
 
 /**
  * @todo We should probably just distinguish these as separate `StaticNode`
@@ -28,7 +28,7 @@ export class AttributeDefinitionMap extends Map<QualifiedName, AttributeDefiniti
 		const nonNamespaceAttributes = instanceNode.attributes.filter(isNonNamespaceAttribute);
 		const definitions = nonNamespaceAttributes.map((attribute) => {
 			const bind = model.binds.getOrCreateBindDefinition(attribute.nodeset);
-			return new AttributeDefinition(model.root, attribute, bind, attribute);
+			return new AttributeDefinition(model.root, bind, attribute);
 		});
 		return new this(definitions);
 	}

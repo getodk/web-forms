@@ -20,7 +20,7 @@ import {
 	type SharedNodeState,
 } from '../lib/reactivity/node-state/createSharedNodeState.ts';
 import type { SimpleAtomicState } from '../lib/reactivity/types.ts';
-import type { AttributeDefinition } from '../parse/model/RootAttributeDefinition.ts';
+import type { AttributeDefinition } from '../parse/model/AttributeDefinition.ts';
 import type { DescendantNodeSharedStateSpec } from './abstract/DescendantNode.ts';
 import { InstanceNode } from './abstract/InstanceNode.ts';
 import type { AnyParentNode } from './hierarchy.ts';

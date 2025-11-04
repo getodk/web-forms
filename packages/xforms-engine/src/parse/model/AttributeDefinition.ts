@@ -5,15 +5,10 @@ import {
 	type NamedNodeDefinition,
 } from '../../lib/names/NamespaceDeclarationMap.ts';
 import { QualifiedName } from '../../lib/names/QualifiedName.ts';
-import { escapeXMLText } from '../../lib/xml-serialization.ts';
+import { escapeXMLText, serializeAttributeXML } from '../../lib/xml-serialization.ts';
 import type { BindDefinition } from './BindDefinition.ts';
 import { NodeDefinition } from './NodeDefinition.ts';
 import type { RootDefinition } from './RootDefinition.ts';
-
-interface RootAttributeSource {
-	readonly qualifiedName: QualifiedName;
-	readonly value: string;
-}
 
 export class AttributeDefinition
 	extends NodeDefinition<'attribute'>
@@ -35,27 +30,25 @@ export class AttributeDefinition
 
 	constructor(
 		root: RootDefinition,
-		source: RootAttributeSource,
 		bind: BindDefinition,
 		readonly template: StaticAttribute
 	) {
 		super(bind);
 
-		const { value } = source;
+		const { value } = template;
 
 		this.root = root;
 
 		this.value = value;
-		this.qualifiedName = source.qualifiedName;
+		this.qualifiedName = template.qualifiedName;
 		this.namespaceDeclarations = new NamespaceDeclarationMap(this);
 
 		// We serialize namespace declarations separately
 		if (this.qualifiedName.namespaceURI?.href === XMLNS_NAMESPACE_URI) {
 			this.serializedXML = '';
 		} else {
-			const nodeName = this.qualifiedName.getPrefixedName();
-
-			this.serializedXML = ` ${nodeName}="${escapeXMLText(value, true)}"`;
+			const xmlValue = escapeXMLText(this.value, true);
+			this.serializedXML = serializeAttributeXML(this.qualifiedName, xmlValue);
 		}
 	}
 

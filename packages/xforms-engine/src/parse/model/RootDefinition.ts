@@ -3,6 +3,7 @@ import { NamespaceDeclarationMap } from '../../lib/names/NamespaceDeclarationMap
 import { QualifiedName } from '../../lib/names/QualifiedName.ts';
 import type { BodyClassList } from '../body/BodyDefinition.ts';
 import type { XFormDefinition } from '../XFormDefinition.ts';
+import { AttributeDefinitionMap } from './AttributeDefinitionMap.ts';
 import { GroupDefinition } from './GroupDefinition.ts';
 import { LeafNodeDefinition } from './LeafNodeDefinition.ts';
 import type { ModelDefinition } from './ModelDefinition.ts';
@@ -11,7 +12,6 @@ import { NodeDefinition } from './NodeDefinition.ts';
 import { NoteNodeDefinition } from './NoteNodeDefinition.ts';
 import { RangeNodeDefinition } from './RangeNodeDefinition.ts';
 import { RepeatDefinition } from './RepeatDefinition.ts';
-import { AttributeDefinitionMap } from './RootAttributeMap.ts';
 import type { SubmissionDefinition } from './SubmissionDefinition.ts';
 
 export class RootDefinition extends NodeDefinition<'root'> {

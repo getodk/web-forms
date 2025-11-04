@@ -1,5 +1,5 @@
 import type { Root } from '../instance/Root.ts';
-import type { AttributeDefinition } from '../parse/model/RootAttributeDefinition.ts';
+import type { AttributeDefinition } from '../parse/model/AttributeDefinition.ts';
 import type { OpaqueReactiveObjectFactory } from './OpaqueReactiveObjectFactory.ts';
 import type { InstanceState } from './serialization/InstanceState.ts';
 
@@ -37,16 +37,16 @@ export interface AttributeNode {
 	readonly parent: unknown;
 
 	/**
-	 * Each node provides a discrete object representing the stateful aspects\* of
-	 * that node which will change over time. When a client provides a
-	 * {@link OpaqueReactiveObjectFactory}, the engine will update the properties
-	 * of this object as their respective states change, so a client can implement
-	 * reactive updates that respond to changes as they occur.
+	 * Each node provides a discrete object representing the stateful aspects of
+	 * that node which will change over time. This includes state which is either
+	 * client-/user-mutable, or state which is computed based on the core XForms
+	 * computation model. Each node also exposes {@link validationState}, which
+	 * reflects the validity of the node, or its descendants.
 	 *
-	 * \* This includes state which is either client-/user-mutable, or state which
-	 *    is computed based on the core XForms computation model. Each node also
-	 *    exposes {@link validationState}, which reflects the validity of the
-	 *    node, or its descendants.
+	 * When a client provides a {@link OpaqueReactiveObjectFactory}, the engine
+	 * will update the properties of this object as their respective states
+	 * change, so a client can implement reactive updates that respond to changes
+	 * as they occur.
 	 */
 	readonly currentState: AttributeNodeState;
 

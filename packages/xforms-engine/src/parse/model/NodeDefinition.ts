@@ -7,12 +7,12 @@ import type {
 import type { QualifiedName } from '../../lib/names/QualifiedName.ts';
 import type { AnyBodyElementDefinition } from '../body/BodyDefinition.ts';
 import type { RepeatElementDefinition } from '../body/RepeatElementDefinition.ts';
+import type { AttributeDefinition } from './AttributeDefinition.ts';
+import type { AttributeDefinitionMap } from './AttributeDefinitionMap.ts';
 import type { BindDefinition } from './BindDefinition.ts';
 import type { GroupDefinition } from './GroupDefinition.ts';
 import type { LeafNodeDefinition } from './LeafNodeDefinition.ts';
 import type { AnyRepeatDefinition } from './RepeatDefinition.ts';
-import type { AttributeDefinition } from './RootAttributeDefinition.ts';
-import type { AttributeDefinitionMap } from './RootAttributeMap.ts';
 import type { RootDefinition } from './RootDefinition.ts';
 
 /**
