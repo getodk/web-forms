@@ -1163,6 +1163,7 @@ __metadata:
     vue: "npm:3.5.18"
     vue-draggable-plus: "npm:^0.6.0"
     vue-router: "npm:^4.5.1"
+    vue-tsc: "npm:^3.0.1"
   peerDependencies:
     vue: ^3.5.18
   languageName: unknown
