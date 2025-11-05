@@ -10,8 +10,5 @@ runs:
     - run: sudo bash -ec 'echo "set man-db/auto-update false" | debconf-communicate; dpkg-reconfigure man-db'
       shell: sh
 
-    - run: yarn workspace @getodk/common test-browser:${{ inputs.browser }}
-      shell: sh
-
-    - run: "echo 'we have completed what we set out to do.'"
+    - run: yarn playwright install ${{ inputs.browser }} --with-deps
       shell: sh
