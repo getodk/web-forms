@@ -1,0 +1,12 @@
+name: Setup Playwright
+inputs:
+  browser:
+    description: The browser to test on
+    required: true
+runs:
+  using: composite
+  steps:
+    # Handle https://github.com/getodk/web-forms/issues/531
+    - run: sudo bash -ec 'echo "set man-db/auto-update false" | debconf-communicate; dpkg-reconfigure man-db'
+
+    - run: yarn workspace @getodk/common test-browser:${{ inputs.browser }}

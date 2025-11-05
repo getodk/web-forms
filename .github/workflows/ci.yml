@@ -148,10 +148,6 @@ jobs:
             browser: webkit
 
     steps:
-      # Prepare for playwright install.
-      - if: ${{ matrix.target == 'Web' }}
-        run: sudo bash -ec 'echo "set man-db/auto-update false" | debconf-communicate; dpkg-reconfigure man-db'
-
       - uses: 'actions/checkout@v4'
 
       - uses: 'volta-cli/action@v4'
@@ -185,7 +181,9 @@ jobs:
         run: 'yarn workspace @getodk/common test-node:jsdom'
 
       - if: ${{ matrix.target == 'Web' }}
-        run: 'yarn playwright install ${{ matrix.browser }} --with-deps'
+        uses: ./.github/actions/setup-playwright
+        with:
+          browser: ${{ matrix.browser }}
 
       - if: ${{ matrix.target == 'Web' }}
         run: 'yarn workspace @getodk/common test-browser:${{ matrix.browser }}'
@@ -212,10 +210,6 @@ jobs:
             browser: webkit
 
     steps:
-      # Prepare for playwright install.
-      - if: ${{ matrix.target == 'Web' }}
-        run: sudo bash -ec 'echo "set man-db/auto-update false" | debconf-communicate; dpkg-reconfigure man-db'
-
       - uses: 'actions/checkout@v4'
 
       - uses: 'volta-cli/action@v4'
@@ -249,7 +243,9 @@ jobs:
         run: 'yarn workspace @getodk/xforms-engine test-node:jsdom'
 
       - if: ${{ matrix.target == 'Web' }}
-        run: 'yarn playwright install ${{ matrix.browser }} --with-deps'
+        uses: ./.github/actions/setup-playwright
+        with:
+          browser: ${{ matrix.browser }}
 
       - if: ${{ matrix.target == 'Web' }}
         run: 'yarn workspace @getodk/xforms-engine test-browser:${{ matrix.browser }}'
@@ -276,10 +272,6 @@ jobs:
             browser: webkit
 
     steps:
-      # Prepare for playwright install.
-      - if: ${{ matrix.target == 'Web' }}
-        run: sudo bash -ec 'echo "set man-db/auto-update false" | debconf-communicate; dpkg-reconfigure man-db'
-
       - uses: 'actions/checkout@v4'
 
       - uses: 'volta-cli/action@v4'
@@ -313,7 +305,9 @@ jobs:
         run: 'yarn workspace @getodk/scenario test-node:jsdom'
 
       - if: ${{ matrix.target == 'Web' }}
-        run: 'yarn playwright install ${{ matrix.browser }} --with-deps'
+        uses: ./.github/actions/setup-playwright
+        with:
+          browser: ${{ matrix.browser }}
 
       - if: ${{ matrix.target == 'Web' }}
         run: 'yarn workspace @getodk/scenario test-browser:${{ matrix.browser }}'
@@ -340,10 +334,6 @@ jobs:
             browser: webkit
 
     steps:
-      # Prepare for playwright install.
-      - if: ${{ matrix.target == 'Web' }}
-        run: sudo bash -ec 'echo "set man-db/auto-update false" | debconf-communicate; dpkg-reconfigure man-db'
-
       - uses: 'actions/checkout@v4'
 
       - uses: 'volta-cli/action@v4'
@@ -383,7 +373,9 @@ jobs:
         run: 'yarn workspace @getodk/xpath test-node:jsdom'
 
       - if: ${{ matrix.target == 'Web' }}
-        run: 'yarn playwright install ${{ matrix.browser }} --with-deps'
+        uses: ./.github/actions/setup-playwright
+        with:
+          browser: ${{ matrix.browser }}
 
       - if: ${{ matrix.target == 'Web' }}
         run: 'yarn workspace @getodk/xpath test-browser:${{ matrix.browser }}'
@@ -449,10 +441,6 @@ jobs:
             browser: webkit
 
     steps:
-      # Prepare for playwright install.
-      - if: ${{ matrix.target == 'Web' }}
-        run: sudo bash -ec 'echo "set man-db/auto-update false" | debconf-communicate; dpkg-reconfigure man-db'
-
       - uses: 'actions/checkout@v4'
 
       - uses: 'volta-cli/action@v4'
@@ -486,7 +474,9 @@ jobs:
         run: 'yarn workspace @getodk/web-forms test-node:jsdom'
 
       - if: ${{ matrix.target == 'Web' }}
-        run: 'yarn playwright install ${{ matrix.browser }} --with-deps'
+        uses: ./.github/actions/setup-playwright
+        with:
+          browser: ${{ matrix.browser }}
 
       # TODO: hopefully temporary! Attempt to mitigate flakiness in webkit by
       # running twice when first run fails. At least in local testing, this has
