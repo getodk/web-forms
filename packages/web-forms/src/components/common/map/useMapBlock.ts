@@ -194,7 +194,7 @@ export function useMapBlock(mode: Mode, events: { onFeaturePlacement: () => void
 
 	const updateFeatureCollection = (features: FeatureCollection, savedFeature?: GeoJsonFeature) => {
 		loadFeatureCollection(features);
-		mapFeatures?.findAndSaveFeature(featuresSource, savedFeature);
+		mapFeatures?.findAndSaveFeature(featuresSource, savedFeature, true);
 	};
 
 	const loadAndSaveSingleFeature = (
@@ -323,7 +323,11 @@ export function useMapBlock(mode: Mode, events: { onFeaturePlacement: () => void
 		saveSelectedFeature: () => mapFeatures?.saveSelectedFeature(),
 		saveCurrentLocation,
 		findAndSaveFeature: (feature: GeoJsonFeature) =>
-			mapFeatures?.findAndSaveFeature(featuresSource, feature),
+			mapFeatures?.findAndSaveFeature(
+				featuresSource,
+				feature,
+				currentMode.capabilities.canViewProperties
+			),
 		isFeatureSaved: () => !!mapFeatures?.getSavedFeature(),
 		getSavedFeatureValue: (): string | undefined =>
 			mapFeatures?.getSavedFeature()?.getProperties()?.[ODK_VALUE_PROPERTY] as string,
