@@ -7371,6 +7371,7 @@ __metadata:
     "@changesets/changelog-github": "npm:^0.5.1"
     "@changesets/cli": "npm:^2.29.5"
     "@eslint/js": "npm:^9.30.1"
+    "@playwright/test": "npm:^1.55.1"
     "@tsconfig/node20": "npm:^20.1.6"
     "@types/eslint": "npm:^9.6.1"
     "@types/eslint-config-prettier": "npm:^6.11.3"
