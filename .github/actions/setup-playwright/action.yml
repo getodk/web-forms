@@ -12,3 +12,6 @@ runs:
 
     - run: yarn workspace @getodk/common test-browser:${{ inputs.browser }}
       shell: sh
+
+    - run: "echo 'we have completed what we set out to do.'"
+      shell: sh
