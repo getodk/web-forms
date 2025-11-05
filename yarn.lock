@@ -1155,6 +1155,7 @@ __metadata:
     primeflex: "npm:^4.0.0"
     primevue: "npm:4.3.3"
     ramda: "npm:^0.31.3"
+    rimraf: "npm:^6.0.1"
     sass: "npm:^1.89.2"
     vite: "npm:^7.0.8"
     vite-plugin-css-injected-by-js: "npm:^3.5.2"
