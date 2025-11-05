@@ -53,7 +53,6 @@ jobs:
       - uses: 'volta-cli/action@v4'
         with:
           node-version: '${{ matrix.node-version }}'
-          yarn-version: '1.22.22'
 
       - uses: 'actions/cache@v4'
         id: cache-install
@@ -83,7 +82,7 @@ jobs:
           timezoneMacos: ${{ env.TZ }}
           timezoneWindows: ${{ env.TZ }}
 
-      - run: 'yarn install --frozen-lockfile'
+      - run: 'yarn install --immutable'
       - run: 'yarn build --force'
 
   lint:
@@ -101,7 +100,6 @@ jobs:
       - uses: 'volta-cli/action@v4'
         with:
           node-version: '${{ matrix.node-version }}'
-          yarn-version: '1.22.22'
 
       - uses: 'actions/cache@v4'
         id: cache-install
@@ -153,7 +151,6 @@ jobs:
       - uses: 'volta-cli/action@v4'
         with:
           node-version: '${{ matrix.node-version }}'
-          yarn-version: '1.22.22'
 
       - uses: 'actions/cache@v4'
         id: cache-install
@@ -213,7 +210,6 @@ jobs:
       - uses: 'volta-cli/action@v4'
         with:
           node-version: '${{ matrix.node-version }}'
-          yarn-version: '1.22.22'
 
       - uses: 'actions/cache@v4'
         id: cache-install
@@ -273,7 +269,6 @@ jobs:
       - uses: 'volta-cli/action@v4'
         with:
           node-version: '${{ matrix.node-version }}'
-          yarn-version: '1.22.22'
 
       - uses: 'actions/cache@v4'
         id: cache-install
@@ -333,7 +328,6 @@ jobs:
       - uses: 'volta-cli/action@v4'
         with:
           node-version: '${{ matrix.node-version }}'
-          yarn-version: '1.22.22'
 
       - uses: 'actions/cache@v4'
         id: cache-install
@@ -388,7 +382,6 @@ jobs:
       - uses: 'volta-cli/action@v4'
         with:
           node-version: '${{ matrix.node-version }}'
-          yarn-version: '1.22.22'
 
       - uses: 'actions/cache@v4'
         id: cache-install
@@ -438,7 +431,6 @@ jobs:
       - uses: 'volta-cli/action@v4'
         with:
           node-version: '${{ matrix.node-version }}'
-          yarn-version: '1.22.22'
 
       - uses: 'actions/cache@v4'
         id: cache-install
