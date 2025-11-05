@@ -66,6 +66,7 @@
     "@vitejs/plugin-vue-jsx": "^5.0.1",
     "@vue/test-utils": "^2.4.6",
     "jsdom": "^26.1.0",
+    "npm-run-all2": "^8.0.4",
     "primeflex": "^4.0.0",
     "primevue": "4.3.3",
     "ramda": "^0.31.3",
