@@ -39,7 +39,7 @@
     "yarn": "1.22.22"
   },
   "scripts": {
-    "test": "npm-run-all --print-name --print-label test-node:* test-browser:*",
+    "test": "npm-run-all -nl 'test-node:*' 'test-browser:*'",
     "test-node:jsdom": "vitest run",
     "test-browser:chromium": "BROWSER_NAME=chromium vitest run",
     "test-browser:firefox": "BROWSER_NAME=firefox vitest run",

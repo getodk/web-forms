@@ -30,12 +30,12 @@
     "yarn": "1.22.22"
   },
   "scripts": {
-    "benchmark": "npm-run-all --print-name --print-label benchmark-node:* benchmark-browser:*",
+    "benchmark": "npm-run-all -nl 'benchmark-node:*' 'benchmark-browser:*'",
     "benchmark-node:jsdom": "vitest bench --run",
     "benchmark-browser:chromium": "BROWSER_NAME=chromium vitest bench --run",
     "benchmark-browser:firefox": "BROWSER_NAME=firefox vitest bench --run",
     "benchmark-browser:webkit": "BROWSER_NAME=webkit vitest bench --run",
-    "test": "npm-run-all --print-name --print-label test-node:* test-browser:* test:*",
+    "test": "npm-run-all -nl 'test-node:*' 'test-browser:*' 'test:*'",
     "test-node:jsdom": "vitest run",
     "test-browser:chromium": "BROWSER_NAME=chromium vitest run",
     "test-browser:firefox": "BROWSER_NAME=firefox vitest run",

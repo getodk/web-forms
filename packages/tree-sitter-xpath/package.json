@@ -24,12 +24,12 @@
     "yarn": "1.22.22"
   },
   "scripts": {
-    "build": "npm-run-all -nl build:*",
+    "build": "npm-run-all -nl 'build:*'",
     "build:pre": "node ./scripts/build/pre.mjs",
     "build:js": "vite build",
     "build:tree-sitter": "cd dist && tree-sitter generate && tree-sitter build --wasm",
     "build:parser-types": "node ./scripts/build/parser-types.mjs",
-    "test": "npm-run-all -nl test:*",
+    "test": "npm-run-all -nl 'test:*'",
     "test:types": "tsc --project ./tsconfig.json",
     "test:grammar": "tree-sitter test --wasm"
   },
@@ -43,10 +43,6 @@
   },
   "peerDependencies": {
     "web-tree-sitter": "0.24.5"
-  },
-  "resolutions": {
-    "**/tree-sitter": "0.22.1",
-    "@asgerf/dts-tree-sitter/tree-sitter": "0.22.1"
   },
   "publishConfig": {
     "access": "public"

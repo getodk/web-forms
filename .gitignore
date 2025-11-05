@@ -1,5 +1,6 @@
 # Package management
 node_modules/
+.yarn
 
 # Environment detritus
 .DS_Store

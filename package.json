@@ -13,7 +13,7 @@
   },
   "volta": {
     "node": "22.12.0",
-    "yarn": "1.22.22"
+    "yarn": "4.10.3"
   },
   "packageManager": "yarn@1.22.22",
   "workspaces": [
@@ -68,6 +68,7 @@
     "vue-tsc": "^3.0.1"
   },
   "resolutions": {
-    "**/tree-sitter": "0.22.1"
+    "tree-sitter": "0.22.1",
+    "@asgerf/dts-tree-sitter/tree-sitter": "0.22.1"
   }
 }

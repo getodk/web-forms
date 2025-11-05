@@ -27,13 +27,13 @@
     "yarn": "1.22.22"
   },
   "scripts": {
-    "build": "npm-run-all -nl build:*",
+    "build": "npm-run-all -nl 'build:*'",
     "build:clean": "rimraf dist/ dist-demo/",
     "build:demo": "vite build --mode demo --outDir dist-demo",
     "build:js": "vite build",
     "dev": "vite",
     "dist-demo": "yarn build && yarn vite serve dist-demo --port 5174",
-    "test": "npm-run-all -nl test:*",
+    "test": "npm-run-all -nl 'test:*'",
     "test:e2e:functional:all": "playwright test --project=functional-*",
     "test:e2e:functional:chromium": "playwright test --project=functional-chromium",
     "test:e2e:functional:firefox": "playwright test --project=functional-firefox",
@@ -49,7 +49,7 @@
     "test-watch:chromium": "BROWSER_NAME=chromium vitest",
     "test-watch:firefox": "BROWSER_NAME=firefox vitest",
     "test-watch:webkit": "BROWSER_NAME=webkit vitest",
-    "test:types": "npm-run-all -nl test:types:*",
+    "test:types": "npm-run-all -nl 'test:types:*'",
     "test:types:app": "vue-tsc --project ./tsconfig.app.json --emitDeclarationOnly false --noEmit",
     "test:types:node": "vue-tsc --project ./tsconfig.node.json --emitDeclarationOnly false --noEmit",
     "test:types:vitest": "vue-tsc --project ./tsconfig.vitest.json --emitDeclarationOnly false --noEmit"
