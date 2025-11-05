@@ -2,6 +2,7 @@ import { ODK_VALUE_PROPERTY } from '@/components/common/map/useMapBlock.ts';
 import type { UseMapViewControls } from '@/components/common/map/useMapViewControls.ts';
 import type { FeatureCollection, Feature as GeoJsonFeature, GeoJsonProperties } from 'geojson';
 import { Map } from 'ol';
+import { intersects } from 'ol/extent';
 import Feature from 'ol/Feature';
 import GeoJSON from 'ol/format/GeoJSON';
 import { Point } from 'ol/geom';
@@ -11,7 +12,11 @@ import type VectorSource from 'ol/source/Vector';
 import { shallowRef, watch } from 'vue';
 
 export interface UseMapFeatures {
-	findAndSaveFeature: (source: VectorSource, value: GeoJsonFeature | undefined) => void;
+	findAndSaveFeature: (
+		source: VectorSource,
+		value: GeoJsonFeature | undefined,
+		forceCenter: boolean
+	) => void;
 	getSavedFeature: () => Feature | undefined;
 	getSelectedFeatureProperties: () => Record<string, string> | undefined;
 	isSavedFeatureSelected: () => boolean;
@@ -89,7 +94,11 @@ export function useMapFeatures(
 		}
 	};
 
-	const findAndSaveFeature = (source: VectorSource, value: GeoJsonFeature | undefined): void => {
+	const findAndSaveFeature = (
+		source: VectorSource,
+		value: GeoJsonFeature | undefined,
+		forceCenter = false
+	): void => {
 		if (!value || source.isEmpty()) {
 			return;
 		}
@@ -106,7 +115,20 @@ export function useMapFeatures(
 		}
 
 		saveFeature(featureToSave);
-		viewControls.centerFeatureLocation(featureToSave);
+
+		if (forceCenter || !isFeatureInMapViewPort(featureToSave)) {
+			viewControls.centerFeatureLocation(featureToSave);
+		}
+	};
+
+	const isFeatureInMapViewPort = (feature: Feature): boolean => {
+		const viewExtent = mapInstance.getView().calculateExtent(mapInstance.getSize());
+		const featureExtent = feature.getGeometry()?.getExtent();
+		if (!featureExtent) {
+			return false;
+		}
+
+		return intersects(viewExtent, featureExtent);
 	};
 
 	const saveSelectedFeature = () => saveFeature(selectedFeature.value);
