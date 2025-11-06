@@ -12,17 +12,11 @@ export const createParentNodeInstanceState = (
 				return '';
 			}
 
-			const serializedChildren = node.currentState.children.map((child) => {
-				return child.instanceState.instanceXML;
-			});
-
-			const attributes = node.currentState.attributes.map((attribute) => {
-				return { serializeAttributeXML: () => attribute.instanceState.instanceXML };
-			});
-
-			return serializeParentElementXML(node.definition.qualifiedName, serializedChildren, {
-				attributes,
-			});
+			return serializeParentElementXML(
+				node.definition.qualifiedName,
+				node.currentState.children,
+				node.currentState.attributes
+			);
 		},
 	};
 };

@@ -5,19 +5,12 @@ import { serializeParentElementXML } from '../../xml-serialization.ts';
 export const createRootInstanceState = (node: Root): InstanceState => {
 	return {
 		get instanceXML() {
-			const { namespaceDeclarations } = node.definition;
-
-			const serializedChildren = node.currentState.children.map((child) => {
-				return child.instanceState.instanceXML;
-			});
-			const attributes = node.currentState.attributes.map((attribute) => {
-				return { serializeAttributeXML: () => attribute.instanceState.instanceXML };
-			});
-
-			return serializeParentElementXML(node.definition.qualifiedName, serializedChildren, {
-				namespaceDeclarations,
-				attributes,
-			});
+			return serializeParentElementXML(
+				node.definition.qualifiedName,
+				node.currentState.children,
+				node.currentState.attributes,
+				node.definition.namespaceDeclarations
+			);
 		},
 	};
 };
