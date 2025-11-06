@@ -40,37 +40,53 @@ export default defineConfig({
 
 		/* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
 		trace: 'on-first-retry',
-
-		// Turning off headless for visual tests (to compare snapshots) in CI
-		headless: false,
 	},
 
 	/* Configure projects for major browsers */
 	projects: [
 		{
-			name: 'chromium',
+			name: 'functional-chromium',
+			testMatch: ['**/functional/*.test.ts', '**/build/*.test.ts'],
 			use: {
 				...devices['Desktop Chrome'],
-				contextOptions: {
-					//Chrome-specific permissions for test cases requiring copy/paste actions
-					permissions: ['clipboard-read', 'clipboard-write'],
-				},
-				launchOptions: {
-					args: ['--ignore-gpu-blocklist'], // This argument is needed for visual tests on CI's Linux Chrome.
-				},
+				//Chrome-specific permissions for test cases requiring copy/paste actions
+				contextOptions: { permissions: ['clipboard-read', 'clipboard-write'] },
+				headless: true,
 			},
 		},
 		{
-			name: 'firefox',
+			name: 'functional-firefox',
+			testMatch: ['**/functional/*.test.ts', '**/build/*.test.ts'],
+			use: { ...devices['Desktop Firefox'], headless: true },
+		},
+		{
+			name: 'functional-webkit',
+			testMatch: ['**/functional/*.test.ts', '**/build/*.test.ts'],
+			use: { ...devices['Desktop Safari'], headless: true },
+		},
+		{
+			name: 'visual-chromium',
+			testMatch: ['**/visual/*.test.ts'],
 			use: {
-				...devices['Desktop Firefox'],
+				...devices['Desktop Chrome'],
+				//Chrome-specific permissions for test cases requiring copy/paste actions
+				contextOptions: { permissions: ['clipboard-read', 'clipboard-write'] },
+				// This argument is needed for visual tests on CI's Linux Chrome.
+				launchOptions: { args: ['--ignore-gpu-blocklist'] },
+				headless: false, // Turning headless off to compare snapshots in CI
 			},
 		},
 		{
-			name: 'webkit',
-			use: {
-				...devices['Desktop Safari'],
-			},
+			name: 'visual-firefox',
+			testMatch: ['**/visual/*.test.ts'],
+			// Turning headless off to compare snapshots in CI
+			use: { ...devices['Desktop Firefox'], headless: false },
+		},
+		{
+			name: 'visual-webkit',
+			testMatch: ['**/visual/*.test.ts'],
+			// Turning headless off to compare snapshots in CI
+			use: { ...devices['Desktop Safari'], headless: false },
 		},
 
 		/* Test against mobile viewports. */
