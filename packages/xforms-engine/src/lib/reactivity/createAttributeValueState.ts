@@ -107,6 +107,7 @@ const shouldPreloadUID = (context: AttributeContext) => {
  * {@link https://getodk.github.io/xforms-spec/#event:odk-instance-first-load | odk-instance-first-load event},
  * _and compute_ preloads semantically associated with that event.
  */
+// TODO clean this out?
 const setPreloadUIDValue = (context: AttributeContext, valueState: RelevantValueState): void => {
 	const { preload } = context.definition.bind;
 

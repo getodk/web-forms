@@ -53,13 +53,16 @@ export class RootDefinition extends NodeDefinition<'root'> {
 		this.template = template;
 		this.attributes = AttributeDefinitionMap.from(model, template);
 		this.namespaceDeclarations = new NamespaceDeclarationMap(this);
+
+		// TODO If we scan the whole model for setvalue here and build the action map, then the children can find the actions that apply to them
+
 		this.children = this.buildSubtree(this, template);
 	}
 
 	buildSubtree(parent: ParentNodeDefinition, node: StaticElement): readonly ChildNodeDefinition[] {
 		const { form, model } = this;
 		const { body } = form;
-		const { binds } = model;
+		const { binds, actions } = model;
 		const { bind: parentBind } = parent;
 		const { nodeset: parentNodeset } = parentBind;
 
@@ -82,9 +85,10 @@ export class RootDefinition extends NodeDefinition<'root'> {
 
 		return Array.from(childrenByName).map(([nodeName, children]) => {
 			const nodeset = `${parentNodeset}/${nodeName}`;
-			const bind = binds.getOrCreateBindDefinition(nodeset);
+			const bind = binds.getOrCreateBindDefinition(nodeset); // TODO treat "odk-instance-first-load" the same as a bind preload
 			const bodyElement = body.getBodyElement(nodeset);
 			const [firstChild, ...restChildren] = children;
+			const action = actions.get(nodeset); // just create - don't pass it in anywhere
 
 			if (bodyElement?.type === 'repeat') {
 				return RepeatDefinition.from(model, parent, bind, bodyElement, children);
@@ -103,7 +107,7 @@ export class RootDefinition extends NodeDefinition<'root'> {
 
 				return (
 					NoteNodeDefinition.from(model, parent, bind, bodyElement, element) ??
-					new LeafNodeDefinition(model, parent, bind, bodyElement, element)
+					new LeafNodeDefinition(model, parent, bind, action, bodyElement, element)
 				);
 			}
 
