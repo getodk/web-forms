@@ -1,5 +1,6 @@
 import type {
 	AnyLeafNode,
+	AttributeNode,
 	InputNode,
 	ModelValueNode,
 	RangeNode,
@@ -15,7 +16,8 @@ export type ValueNode =
 	| ModelValueNode
 	| RangeNode
 	| RankNode
-	| SelectNode;
+	| SelectNode
+	| AttributeNode;
 
 export abstract class ValueNodeAnswer<Node extends ValueNode = ValueNode> extends ComparableAnswer {
 	constructor(readonly node: Node) {
