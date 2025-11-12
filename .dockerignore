@@ -1,0 +1,12 @@
+node_modules
+dist
+dist-demo
+packages/**/dist
+packages/*/playwright-report
+packages/*/test-results
+
+.eslintcache
+.turbo/
+*.log
+.git
+.idea
