@@ -7,6 +7,8 @@ import process from 'node:process';
  */
 // require('dotenv').config();
 
+const snapshotPath = '{snapshotDir}/{testFileDir}/{testFileName}-snapshots/';
+
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
@@ -29,8 +31,6 @@ export default defineConfig({
 	workers: process.env.CI ? 1 : undefined,
 	/* Reporter to use. See https://playwright.dev/docs/test-reporters */
 	reporter: 'html',
-	snapshotPathTemplate:
-		'{snapshotDir}/{testFileDir}/{testFileName}-snapshots/{arg}-{projectName}{ext}',
 	/* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
 	use: {
 		/* Maximum time each action such as `click()` can take. Defaults to 0 (no limit). */
@@ -67,6 +67,7 @@ export default defineConfig({
 		{
 			name: 'visual-chromium',
 			testMatch: ['**/visual/*.test.ts'],
+			snapshotPathTemplate: `${snapshotPath}{arg}-chromium{ext}`,
 			use: {
 				...devices['Desktop Chrome'],
 				//Chrome-specific permissions for test cases requiring copy/paste actions
@@ -79,12 +80,14 @@ export default defineConfig({
 		{
 			name: 'visual-firefox',
 			testMatch: ['**/visual/*.test.ts'],
+			snapshotPathTemplate: `${snapshotPath}{arg}-firefox{ext}`,
 			// Turning headless off to compare snapshots in CI
 			use: { ...devices['Desktop Firefox'], headless: false },
 		},
 		{
 			name: 'visual-webkit',
 			testMatch: ['**/visual/*.test.ts'],
+			snapshotPathTemplate: `${snapshotPath}{arg}-webkit{ext}`,
 			// Turning headless off to compare snapshots in CI
 			use: { ...devices['Desktop Safari'], headless: false },
 		},

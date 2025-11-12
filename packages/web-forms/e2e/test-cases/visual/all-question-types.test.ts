@@ -35,10 +35,6 @@ test.describe('All Question Types (Visual)', () => {
 		await context?.close();
 	});
 
-	/**
-	 * This is a slow suite; it waits for map animations and rendering to finish.
-	 * If additional tests are included, we might run them only on one browser, on merge, or on request.
-	 */
 	test.describe('Select one from map', () => {
 		let mapComponent: Locator;
 
