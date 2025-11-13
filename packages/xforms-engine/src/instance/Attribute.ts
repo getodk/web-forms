@@ -19,12 +19,14 @@ import {
 	createSharedNodeState,
 	type SharedNodeState,
 } from '../lib/reactivity/node-state/createSharedNodeState.ts';
+import type { ReactiveScope } from '../lib/reactivity/scope.ts';
 import type { SimpleAtomicState } from '../lib/reactivity/types.ts';
 import type { AttributeDefinition } from '../parse/model/AttributeDefinition.ts';
 import type { AnyChildNode, AnyNode } from './hierarchy.ts';
 import type { AttributeContext } from './internal-api/AttributeContext.ts';
 import type { DecodeInstanceValue } from './internal-api/InstanceValueContext.ts';
 import type { ClientReactiveSerializableAttributeNode } from './internal-api/serialization/ClientReactiveSerializableAttributeNode.ts';
+import type { PrimaryInstance } from './PrimaryInstance.ts';
 import type { Root } from './Root.ts';
 
 export interface AttributeStateSpec {
@@ -60,9 +62,9 @@ export class Attribute
 	protected readonly setValueState: RuntimeValueSetter<RuntimeInputValue<'string'>>;
 	readonly evaluator: EngineXPathEvaluator;
 	readonly getActiveLanguage: Accessor<ActiveLanguage>;
-	readonly contextNode;
-	readonly scope;
-	readonly rootDocument;
+	readonly contextNode: AnyNode;
+	readonly scope: ReactiveScope;
+	readonly rootDocument: PrimaryInstance;
 
 	readonly root: Root;
 
