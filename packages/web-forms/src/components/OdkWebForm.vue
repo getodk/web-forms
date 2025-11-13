@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import IconSVG from '@/components/common/IconSVG.vue';
-import { FORM_IMAGE_CACHE, FORM_OPTIONS, SUBMIT_PRESSED } from '@/lib/constants/injection-keys.ts';
+import {
+	FORM_IMAGE_CACHE,
+	FORM_MODE,
+	FORM_OPTIONS,
+	SUBMIT_PRESSED,
+} from '@/lib/constants/injection-keys.ts';
 import type { FormStateSuccessResult } from '@/lib/init/form-state.ts';
 import { initializeFormState } from '@/lib/init/initialize-form-state.ts';
 import type { EditInstanceOptions, FormOptions } from '@/lib/init/load-form-state.ts';
@@ -25,6 +30,7 @@ import { computed, getCurrentInstance, provide, readonly, ref, watchEffect } fro
 import FormLoadFailureDialog from '@/components/FormLoadFailureDialog.vue';
 import FormHeader from '@/components/form-layout/FormHeader.vue';
 import QuestionList from '@/components/form-layout/QuestionList.vue';
+import { FORM_MODES, type FormMode } from '@/lib/constants/form-modes.ts';
 
 const webFormsVersion = __WEB_FORMS_VERSION__;
 
@@ -47,6 +53,11 @@ export interface OdkWebFormsProps {
 }
 
 const props = defineProps<OdkWebFormsProps>();
+
+const formMode = computed<FormMode>(() =>
+	props.editInstance != null ? FORM_MODES.EDIT : FORM_MODES.CREATE
+);
+provide(FORM_MODE, readonly(formMode));
 
 const hostSubmissionResultCallbackFactory = (
 	currentState: FormStateSuccessResult
