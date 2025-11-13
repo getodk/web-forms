@@ -286,6 +286,7 @@ const discardSavedFeature = () => {
 		-webkit-tap-highlight-color: transparent;
 		font-size: 24px;
 		font-weight: 300;
+		color: var(--odk-text-color);
 		cursor: pointer;
 
 		&:first-child {
@@ -294,6 +295,7 @@ const discardSavedFeature = () => {
 
 		&:hover {
 			background: var(--odk-muted-background-color);
+			color: var(--odk-text-color);
 		}
 	}
 }
