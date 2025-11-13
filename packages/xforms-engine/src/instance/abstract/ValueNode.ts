@@ -125,5 +125,4 @@ export abstract class ValueNode<
 	getChildren(): readonly [] {
 		return [];
 	}
-
 }
