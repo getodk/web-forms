@@ -126,7 +126,4 @@ export abstract class ValueNode<
 		return [];
 	}
 
-	getAttributes(): readonly Attribute[] {
-		return []; // TODO replace
-	}
 }
