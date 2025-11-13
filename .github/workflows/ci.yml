@@ -148,6 +148,10 @@ jobs:
             browser: webkit
 
     steps:
+      # Prepare for playwright install.
+      - if: ${{ matrix.target == 'Web' }}
+        run: sudo bash -ec 'echo "set man-db/auto-update false" | debconf-communicate; dpkg-reconfigure man-db'
+
       - uses: 'actions/checkout@v4'
 
       - uses: 'volta-cli/action@v4'
@@ -208,6 +212,10 @@ jobs:
             browser: webkit
 
     steps:
+      # Prepare for playwright install.
+      - if: ${{ matrix.target == 'Web' }}
+        run: sudo bash -ec 'echo "set man-db/auto-update false" | debconf-communicate; dpkg-reconfigure man-db'
+
       - uses: 'actions/checkout@v4'
 
       - uses: 'volta-cli/action@v4'
@@ -268,6 +276,10 @@ jobs:
             browser: webkit
 
     steps:
+      # Prepare for playwright install.
+      - if: ${{ matrix.target == 'Web' }}
+        run: sudo bash -ec 'echo "set man-db/auto-update false" | debconf-communicate; dpkg-reconfigure man-db'
+
       - uses: 'actions/checkout@v4'
 
       - uses: 'volta-cli/action@v4'
@@ -328,6 +340,10 @@ jobs:
             browser: webkit
 
     steps:
+      # Prepare for playwright install.
+      - if: ${{ matrix.target == 'Web' }}
+        run: sudo bash -ec 'echo "set man-db/auto-update false" | debconf-communicate; dpkg-reconfigure man-db'
+
       - uses: 'actions/checkout@v4'
 
       - uses: 'volta-cli/action@v4'
@@ -433,6 +449,10 @@ jobs:
             browser: webkit
 
     steps:
+      # Prepare for playwright install.
+      - if: ${{ matrix.target == 'Web' }}
+        run: sudo bash -ec 'echo "set man-db/auto-update false" | debconf-communicate; dpkg-reconfigure man-db'
+
       - uses: 'actions/checkout@v4'
 
       - uses: 'volta-cli/action@v4'
