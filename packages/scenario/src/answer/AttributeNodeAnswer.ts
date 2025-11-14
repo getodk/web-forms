@@ -1,17 +1,14 @@
-import type { InputValue } from '@getodk/xforms-engine';
 import type { AttributeNode } from '../../../xforms-engine/dist/client/AttributeNode';
-import { ValueNodeAnswer } from './ValueNodeAnswer.ts';
+import { ComparableAnswer } from './ComparableAnswer.ts';
 
-export class AttributeNodeAnswer extends ValueNodeAnswer<
-	AttributeNode
-> {
+export class AttributeNodeAnswer extends ComparableAnswer {
 	readonly valueType = 'attribute';
 	readonly stringValue: string;
-	readonly value: InputValue<V>;
+	readonly value: string;
 
-	constructor(node: AttributeNode) {
-		super(node);
-		this.stringValue = node.value;
-		this.value = node.value;
+	constructor(readonly node: AttributeNode) {
+		super();
+		this.stringValue = node.currentState.value;
+		this.value = node.currentState.value;
 	}
 }

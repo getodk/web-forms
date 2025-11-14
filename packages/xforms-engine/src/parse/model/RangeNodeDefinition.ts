@@ -110,7 +110,7 @@ export class RangeNodeDefinition<V extends RangeValueType = RangeValueType>
 		override readonly bodyElement: RangeControlDefinition,
 		node: StaticLeafElement
 	) {
-		super(model, parent, bind, bodyElement, node);
+		super(model, parent, bind, undefined, bodyElement, node); // pass in action
 
 		this.bounds = RangeNodeBoundsDefinition.from(bodyElement.bounds, bind);
 	}

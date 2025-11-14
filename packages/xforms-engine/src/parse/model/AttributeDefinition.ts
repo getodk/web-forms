@@ -37,8 +37,6 @@ export class AttributeDefinition
 	) {
 		super(bind);
 
-		console.log('got action', template.qualifiedName.localName, action);
-
 		const { value } = template;
 
 		this.root = root;

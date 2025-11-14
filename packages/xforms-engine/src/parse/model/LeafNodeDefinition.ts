@@ -37,9 +37,8 @@ export class LeafNodeDefinition<V extends ValueType = ValueType>
 			throw new Error(`Unexpected body element for nodeset ${bind.nodeset}`);
 		}
 
-		super(parent, bind, bodyElement); // pass action up to parent
-		
-		
+		super(parent, bind, bodyElement); // TODO pass action up to parent
+
 		this.valueType = bind.type.resolved satisfies ValueType as V;
 		this.qualifiedName = template.qualifiedName;
 		this.namespaceDeclarations = new NamespaceDeclarationMap(this);

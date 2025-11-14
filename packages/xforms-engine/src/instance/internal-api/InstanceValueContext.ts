@@ -1,3 +1,4 @@
+import type { Accessor } from 'solid-js';
 import type { FormInstanceInitializationMode } from '../../client/index.ts';
 import type { StaticLeafElement } from '../../integration/xpath/static-dom/StaticElement.ts';
 import type { ReactiveScope } from '../../lib/reactivity/scope.ts';
@@ -8,6 +9,7 @@ import type { EvaluationContext } from './EvaluationContext.ts';
 
 export interface InstanceValueContextDocument {
 	readonly initializationMode: FormInstanceInitializationMode;
+	readonly isAttached: Accessor<boolean>;
 }
 
 export type DecodeInstanceValue = (value: string) => string;

@@ -1,13 +1,21 @@
 import type { Signal } from 'solid-js';
 import { createComputed, createMemo, createSignal, untrack } from 'solid-js';
+import type { AttributeContext } from '../../instance/internal-api/AttributeContext.ts';
 import type { InstanceValueContext } from '../../instance/internal-api/InstanceValueContext.ts';
 import { ActionComputationExpression } from '../../parse/expression/ActionComputationExpression.ts';
 import type { BindComputationExpression } from '../../parse/expression/BindComputationExpression.ts';
+import { ActionDefinition, SET_ACTION_EVENTS } from '../../parse/model/ActionDefinition.ts';
 import { createComputedExpression } from './createComputedExpression.ts';
 import type { SimpleAtomicState, SimpleAtomicStateSetter } from './types.ts';
 
-const isInstanceFirstLoad = (context: InstanceValueContext) => {
+type ValueContext = AttributeContext | InstanceValueContext;
+
+const isInstanceFirstLoad = (context: ValueContext) => {
 	return context.rootDocument.initializationMode === 'create';
+};
+
+const isAddingRepeatChild = (context: ValueContext) => {
+	return context.rootDocument.isAttached();
 };
 
 /**
@@ -15,11 +23,11 @@ const isInstanceFirstLoad = (context: InstanceValueContext) => {
  *
  * @see {@link shouldPreloadUID}
  */
-const isEditInitialLoad = (context: InstanceValueContext) => {
+const isEditInitialLoad = (context: ValueContext) => {
 	return context.rootDocument.initializationMode === 'edit';
 };
 
-const getInitialValue = (context: InstanceValueContext): string => {
+const getInitialValue = (context: ValueContext): string => {
 	const sourceNode = context.instanceNode ?? context.definition.template;
 
 	return context.decodeInstanceValue(sourceNode.value);
@@ -37,7 +45,7 @@ type RelevantValueState = SimpleAtomicState<string>;
  *   node/context's relevance is restored
  */
 const createRelevantValueState = (
-	context: InstanceValueContext,
+	context: ValueContext,
 	baseValueState: BaseValueState
 ): RelevantValueState => {
 	return context.scope.runTask(() => {
@@ -60,7 +68,7 @@ const createRelevantValueState = (
  * (client/user) writes when the field is in a `readonly` state.
  */
 const guardDownstreamReadonlyWrites = (
-	context: InstanceValueContext,
+	context: ValueContext,
 	baseState: SimpleAtomicState<string>
 ): SimpleAtomicState<string> => {
 	const { readonly } = context.definition.bind;
@@ -96,7 +104,7 @@ const PRELOAD_UID_EXPRESSION = 'concat("uuid:", uuid())';
  * - When an instance is initially loaded for editing ({@link isEditInitialLoad})
  */
 // TODO rename to isFirstLoad??
-const shouldPreloadUID = (context: InstanceValueContext) => {
+const shouldPreloadUID = (context: ValueContext) => {
 	return isInstanceFirstLoad(context) || isEditInitialLoad(context);
 };
 
@@ -110,10 +118,7 @@ const shouldPreloadUID = (context: InstanceValueContext) => {
  * _and compute_ preloads semantically associated with that event.
  */
 // TODO expand on this
-const setPreloadUIDValue = (
-	context: InstanceValueContext,
-	valueState: RelevantValueState
-): void => {
+const setPreloadUIDValue = (context: ValueContext, valueState: RelevantValueState): void => {
 	const { preload } = context.definition.bind;
 
 	if (preload?.type !== 'uid' || !shouldPreloadUID(context)) {
@@ -138,9 +143,11 @@ const setPreloadUIDValue = (
  * events and computations.
  */
 const createCalculation = (
-	context: InstanceValueContext,
+	context: ValueContext,
 	setRelevantValue: SimpleAtomicStateSetter<string>,
-	calculateDefinition: BindComputationExpression<'calculate'>
+	calculateDefinition:
+		| ActionComputationExpression<'string'>
+		| BindComputationExpression<'calculate'>
 ): void => {
 	context.scope.runTask(() => {
 		const calculate = createComputedExpression(context, calculateDefinition, {
@@ -151,15 +158,58 @@ const createCalculation = (
 			if (context.isAttached() && context.isRelevant()) {
 				const calculated = calculate();
 				const value = context.decodeInstanceValue(calculated);
-
 				setRelevantValue(value);
 			}
 		});
 	});
 };
 
-export type InstanceValueState = SimpleAtomicState<string>;
+const registerActions = (
+	context: ValueContext,
+	action: ActionDefinition,
+	relevantValueState: RelevantValueState,
+	initialValue: string
+) => {
+	const [, setValue] = relevantValueState;
+	if (action.events.includes(SET_ACTION_EVENTS.odkInstanceFirstLoad)) {
+		if (shouldPreloadUID(context)) {
+			if (!isAddingRepeatChild(context)) {
+				createCalculation(context, setValue, action.computation); // TODO change to be more like setPreloadUIDValue
+			}
+		}
+	}
+	if (action.events.includes(SET_ACTION_EVENTS.odkInstanceLoad)) {
+		if (!isAddingRepeatChild(context)) {
+			createCalculation(context, setValue, action.computation); // TODO change to be more like setPreloadUIDValue
+		}
+	}
+	if (action.events.includes(SET_ACTION_EVENTS.odkNewRepeat)) {
+		createCalculation(context, setValue, action.computation); // TODO change to be more like setPreloadUIDValue
+	}
+	if (action.events.includes(SET_ACTION_EVENTS.xformsValueChanged)) {
+		let initial = initialValue;
+		const source = action.element.parentElement?.getAttribute('ref'); // put the source in actiondefinition
 
+		context.scope.runTask(() => {
+			const calculateValueSource = createComputedExpression(
+				context,
+				new ActionComputationExpression('string', source!)
+			); // registers listener
+			createComputed(() => {
+				const valueSource = calculateValueSource();
+				if (initial !== valueSource) {
+					initial = valueSource;
+					if (context.isAttached() && context.isRelevant()) {
+						const value = context.evaluator.evaluateString(action.computation.expression, context);
+						setValue(value);
+					}
+				}
+			});
+		});
+	}
+};
+
+export type InstanceValueState = SimpleAtomicState<string>;
 
 /**
  * Provides a consistent interface for value nodes of any type which:
@@ -172,7 +222,7 @@ export type InstanceValueState = SimpleAtomicState<string>;
  *   nodes defined with one
  * - prevents downstream writes to nodes in a readonly state
  */
-export const createInstanceValueState = (context: InstanceValueContext): InstanceValueState => {
+export const createInstanceValueState = (context: ValueContext): InstanceValueState => {
 	return context.scope.runTask(() => {
 		const initialValue = getInitialValue(context);
 		const baseValueState = createSignal(initialValue);
@@ -181,96 +231,18 @@ export const createInstanceValueState = (context: InstanceValueContext): Instanc
 		/**
 		 * @see {@link setPreloadUIDValue} for important details about spec ordering of events and computations.
 		 */
-		setPreloadUIDValue(context, relevantValueState);
+		setPreloadUIDValue(context, relevantValueState); // TODO what does preload do in repeat instances?
 
 		const { calculate } = context.definition.bind;
 
 		if (calculate != null) {
 			const [, setValue] = relevantValueState;
-
 			createCalculation(context, setValue, calculate);
 		}
 
 		const action = context.definition.action;
 		if (action) {
-			if (action.events.includes('odk-instance-first-load')) {
-				if (shouldPreloadUID(context)) {
-
-					console.log('running', action.computation);
-
-				
-					const [, setValue] = relevantValueState;
-					createCalculation(context, setValue, action.computation); // TODO change to be more like setPreloadUIDValue
-				// this.scope.runTask(() => {
-				// 	const calculate = createComputedExpression(this, action.computation);
-
-				// 	createComputed(() => {
-				// 		console.log({ blank: this.isBlank(), attached: this.isAttached(), relevant: this.isRelevant(), val: this.getInstanceValue() });
-				// 		if (this.isBlank()) { // TODO what if the user clears it out?
-				// 			if (this.isAttached() && this.isRelevant()) { // maybe we don't need to check this
-				// 				const calculated = calculate();
-				// 				const value = this.decodeInstanceValue(calculated);
-				// 				setValueState(value);
-				// 			}
-				// 		}
-				// 	});
-				// });
-				}
-			}
-			if (action.events.includes('xforms-value-changed')) {
-				// let dirty = false;
-				let initial = '';
-				// this.scope.runTask(() => {
-				const source = action.element.parentElement?.getAttribute('ref'); // put the source in actiondefinition
-				console.log('source', source);
-				
-				context.scope.runTask(() => {
-					const calculate = createComputedExpression(context, new ActionComputationExpression('string', source!)); // registers listener
-					createComputed(() => {
-						const valueSource = calculate();
-						console.log({ initial, valueSource});
-						if (initial !== valueSource) {
-							initial = valueSource;
-							if (context.isAttached() && context.isRelevant()) {
-								const value = context.evaluator.evaluateString(action.computation.expression, context);
-								
-								const [, setValue] = relevantValueState;
-								setValue(value);
-							}
-						}
-					});
-				});
-
-
-				
-
-					// createCalculation(context, setValue, new ActionComputationExpression('string', action.computation.expression!));
-					// const calculate = createComputedExpression(this, new ActionComputationExpression('string', source!));
-					// // const calculate2 = createComputedExpression(this, action.computation);
-					// createComputed(() => {
-
-					// 		const valueSource = calculate();
-					// 		console.log({ dirty, initial, valueSource});
-					// 		if (initial !== valueSource) {
-								
-					// 			initial = valueSource;
-					// 			if (this.isAttached() && this.isRelevant()) {
-					// 				// const value = calculate2();
-					// 				// const value = '4';
-					// 				const value = this.evaluator.evaluateString(action.computation.expression, { contextNode: this.contextNode });
-									
-									
-					// 				console.log('instanceNode?.parent.nodeset', instanceNode?.nodeset);
-					// 				console.log('node', instanceNode?.qualifiedName.localName, 'value', action.value);
-					// 				console.log('got', value);
-					// 				setValueState(value);
-					// 			}
-					// 		}
-
-					// });
-				// });
-			}
-
+			registerActions(context, action, relevantValueState, initialValue);
 		}
 
 		return guardDownstreamReadonlyWrites(context, relevantValueState);

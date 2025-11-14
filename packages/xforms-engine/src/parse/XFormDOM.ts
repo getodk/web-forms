@@ -370,7 +370,10 @@ export class XFormDOM {
 				contextNode: model,
 			}
 		);
-		const setValues: readonly DOMSetValueElement[] = evaluator.evaluateNodes<DOMSetValueElement>('//xf:setvalue[@event]', { contextNode: html });
+		const setValues: readonly DOMSetValueElement[] = evaluator.evaluateNodes<DOMSetValueElement>(
+			'//xf:setvalue[@event]',
+			{ contextNode: html }
+		);
 
 		const instances = evaluator.evaluateNodes<DOMInstanceElement>('./xf:instance', {
 			contextNode: model,

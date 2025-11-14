@@ -2,10 +2,19 @@ import { ActionComputationExpression } from '../expression/ActionComputationExpr
 import type { XFormDefinition } from '../XFormDefinition.ts';
 import type { ModelDefinition } from './ModelDefinition.ts';
 
-export class ActionDefinition {
+export const SET_ACTION_EVENTS = {
+	odkInstanceLoad: 'odk-instance-load',
+	odkInstanceFirstLoad: 'odk-instance-first-load',
+	odkNewRepeat: 'odk-new-repeat',
+	xformsValueChanged: 'xforms-value-changed',
+} as const;
+type SetActionEvent = (typeof SET_ACTION_EVENTS)[keyof typeof SET_ACTION_EVENTS];
+const isKnownEvent = (event: SetActionEvent): event is SetActionEvent =>
+	Object.values(SET_ACTION_EVENTS).includes(event);
 
+export class ActionDefinition {
 	readonly computation: ActionComputationExpression<'string'>;
-	
+
 	constructor(
 		readonly form: XFormDefinition,
 		protected readonly model: ModelDefinition,
@@ -14,8 +23,20 @@ export class ActionDefinition {
 		readonly events: string[],
 		readonly value: string
 	) {
+		const unknownEvents = events.filter((event) => !isKnownEvent(event as SetActionEvent));
+
+		if (unknownEvents.length) {
+			throw new Error(
+				`An action was registered for unsupported events: ${unknownEvents.join(', ')}`
+			);
+		}
+
+		const inModel = element.parentElement?.nodeName === 'model';
+		if (inModel && events.includes('odk-new-repeat')) {
+			throw new Error('Model contains "setvalue" element with "odk-new-repeat" event');
+		}
+
 		// consider storing the source element and/or getter for the source value
 		this.computation = new ActionComputationExpression('string', value || "''");
 	}
-
 }

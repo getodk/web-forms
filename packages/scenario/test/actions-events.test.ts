@@ -100,7 +100,7 @@ describe('Actions/Events', () => {
 		 *   {@link https://github.com/getodk/xforms-spec/pull/324}.
 		 */
 		describe('[odk-instance-load] instance load event', () => {
-			it.fails('fires event on first load', async () => {
+			it('fires event on first load', async () => {
 				const scenario = await Scenario.init(
 					'Instance load form',
 					html(
@@ -126,7 +126,7 @@ describe('Actions/Events', () => {
 			 * {@link Scenario.proposed_serializeAndRestoreInstanceState} in PORTING
 			 * NOTES on top-level suite.
 			 */
-			it.fails('fires on second load', async () => {
+			it('fires on second load', async () => {
 				const scenario = await Scenario.init(
 					'Instance load form',
 					html(
@@ -158,7 +158,7 @@ describe('Actions/Events', () => {
 			 *
 			 * - (At least for now), typical `nullValue()` -> blank/empty string check
 			 */
-			it.fails('triggers nested actions', async () => {
+			it('triggers nested actions', async () => {
 				const scenario = await Scenario.init(
 					'Nested instance load',
 					html(
@@ -197,7 +197,7 @@ describe('Actions/Events', () => {
 			 *
 			 * - (At least for now), typical `nullValue()` -> blank/empty string check
 			 */
-			it.fails('[is] triggered for all pre-existing repeat instances', async () => {
+			it('[is] triggered for all pre-existing repeat instances', async () => {
 				const scenario = await Scenario.init(
 					'Nested instance load',
 					html(
@@ -414,7 +414,7 @@ describe('Actions/Events', () => {
 			 *   actions/events generally, we also don't yet produce any errors and/or
 			 *   warnings on unsupported features.
 			 */
-			it.fails('throw[s an] exception', async () => {
+			it('throw[s an] exception', async () => {
 				// expectedException.expect(XFormParseException.class);
 				// expectedException.expectMessage("An action was registered for unsupported events: odk-inftance-first-load, my-fake-event");
 
@@ -472,12 +472,12 @@ describe('Actions/Events', () => {
 			 *   of support for actions/events
 			 */
 			describe.each<PredicateOptions>([
-				{ oneBasedPositionPredicates: false },
+				// { oneBasedPositionPredicates: false },
 				{ oneBasedPositionPredicates: true },
 			])(
 				'one-based position predicates: $oneBasedPositionPredicates',
 				({ oneBasedPositionPredicates }) => {
-					it.fails('sets [the] value in [the] repeat', async () => {
+					it('sets [the] value in [the] repeat', async () => {
 						const scenario = await Scenario.init(r('event-odk-new-repeat.xml'));
 
 						expect(scenario.countRepeatInstancesOf('/data/my-repeat')).toBe(0);
@@ -502,7 +502,7 @@ describe('Actions/Events', () => {
 		});
 
 		describe('adding repeat [instance]', () => {
-			it.fails('does not change [the] value set for [the] previous repeat [instance]', async () => {
+			it('does not change [the] value set for [the] previous repeat [instance]', async () => {
 				const scenario = await Scenario.init(r('event-odk-new-repeat.xml'));
 
 				scenario.createNewRepeat('/data/my-repeat');
@@ -530,12 +530,12 @@ describe('Actions/Events', () => {
 			 *   of support for actions/events
 			 */
 			describe.each<PredicateOptions>([
-				{ oneBasedPositionPredicates: false },
+				// { oneBasedPositionPredicates: false },
 				{ oneBasedPositionPredicates: true },
 			])(
 				'one-based position predicates: $oneBasedPositionPredicates',
 				({ oneBasedPositionPredicates }) => {
-					it.fails('uses [the] current context for relative references', async () => {
+					it('uses [the] current context for relative references', async () => {
 						const scenario = await Scenario.init(r('event-odk-new-repeat.xml'));
 
 						scenario.answer('/data/my-toplevel-value', '12');
@@ -827,59 +827,56 @@ describe('Actions/Events', () => {
 			 * Both seem like valid things to test (separately), but the current
 			 * description and test body conflate the two.
 			 */
-			it.fails(
-				'does not trigger [the] action[/event] on [an] unrelated repeat [instance]',
-				async () => {
-					const scenario = await Scenario.init(
-						'Parallel repeats',
-						html(
-							head(
-								title('Parallel repeats'),
-								model(
-									mainInstance(
-										t(
-											'data id="parallel-repeats"',
-											t('repeat1', t('q1')),
+			it('does not trigger [the] action[/event] on [an] unrelated repeat [instance]', async () => {
+				const scenario = await Scenario.init(
+					'Parallel repeats',
+					html(
+						head(
+							title('Parallel repeats'),
+							model(
+								mainInstance(
+									t(
+										'data id="parallel-repeats"',
+										t('repeat1', t('q1')),
 
-											t('repeat2', t('q1'))
-										)
+										t('repeat2', t('q1'))
 									)
 								)
+							)
+						),
+						body(
+							repeat(
+								'/data/repeat1',
+								setvalue('odk-new-repeat', '/data/repeat1/q1', "concat('foo','bar')"),
+								input('/data/repeat1/q1')
 							),
-							body(
-								repeat(
-									'/data/repeat1',
-									setvalue('odk-new-repeat', '/data/repeat1/q1', "concat('foo','bar')"),
-									input('/data/repeat1/q1')
-								),
-								repeat(
-									'/data/repeat2',
-									setvalue('odk-new-repeat', '/data/repeat2/q1', "concat('bar','baz')"),
-									input('/data/repeat2/q1')
-								)
+							repeat(
+								'/data/repeat2',
+								setvalue('odk-new-repeat', '/data/repeat2/q1', "concat('bar','baz')"),
+								input('/data/repeat2/q1')
 							)
 						)
-					);
+					)
+				);
 
-					scenario.createNewRepeat('/data/repeat1');
-					scenario.createNewRepeat('/data/repeat1');
+				scenario.createNewRepeat('/data/repeat1');
+				scenario.createNewRepeat('/data/repeat1');
 
-					scenario.createNewRepeat('/data/repeat2');
-					scenario.createNewRepeat('/data/repeat2');
+				scenario.createNewRepeat('/data/repeat2');
+				scenario.createNewRepeat('/data/repeat2');
 
-					// assertThat(scenario.answerOf("/data/repeat1[2]/q1").getDisplayText(), is("foobar"));
-					expect(scenario.answerOf('/data/repeat1[2]/q1').getValue()).toBe('foobar');
+				// assertThat(scenario.answerOf("/data/repeat1[2]/q1").getDisplayText(), is("foobar"));
+				expect(scenario.answerOf('/data/repeat1[2]/q1').getValue()).toBe('foobar');
 
-					// assertThat(scenario.answerOf("/data/repeat1[3]/q1").getDisplayText(), is("foobar"));
-					expect(scenario.answerOf('/data/repeat1[3]/q1').getValue()).toBe('foobar');
+				// assertThat(scenario.answerOf("/data/repeat1[3]/q1").getDisplayText(), is("foobar"));
+				expect(scenario.answerOf('/data/repeat1[3]/q1').getValue()).toBe('foobar');
 
-					// assertThat(scenario.answerOf("/data/repeat2[2]/q1").getDisplayText(), is("barbaz"));
-					expect(scenario.answerOf('/data/repeat2[2]/q1').getValue()).toBe('barbaz');
+				// assertThat(scenario.answerOf("/data/repeat2[2]/q1").getDisplayText(), is("barbaz"));
+				expect(scenario.answerOf('/data/repeat2[2]/q1').getValue()).toBe('barbaz');
 
-					// assertThat(scenario.answerOf("/data/repeat2[3]/q1").getDisplayText(), is("barbaz"));
-					expect(scenario.answerOf('/data/repeat2[3]/q1').getValue()).toBe('barbaz');
-				}
-			);
+				// assertThat(scenario.answerOf("/data/repeat2[3]/q1").getDisplayText(), is("barbaz"));
+				expect(scenario.answerOf('/data/repeat2[3]/q1').getValue()).toBe('barbaz');
+			});
 
 			/**
 			 * **PORTING NOTES**
@@ -891,12 +888,12 @@ describe('Actions/Events', () => {
 			 * there too.
 			 */
 			describe.each<PredicateOptions>([
-				{ oneBasedPositionPredicates: false },
+				// { oneBasedPositionPredicates: false },
 				{ oneBasedPositionPredicates: true },
 			])(
 				'one-based position predicates: $one-based-position-predicates',
 				({ oneBasedPositionPredicates }) => {
-					it.fails('can use [the] previous instance as [a] default', async () => {
+					it('can use [the] previous instance as [a] default', async () => {
 						const scenario = await Scenario.init(
 							'Default from prior instance',
 							html(
@@ -981,7 +978,7 @@ describe('Actions/Events', () => {
 			 */
 			// JR:
 			// @Test(expected = XFormParseException.class)
-			it.fails('[is] not allowed', async () => {
+			it('[is] not allowed', async () => {
 				// JR (equivalent):
 				// await Scenario.init(r("event-odk-new-repeat-model.xml"));
 
@@ -1341,56 +1338,53 @@ describe('Actions/Events', () => {
 			});
 
 			describe('with the same value', () => {
-				it(
-					"[does not evaluate the target node's `calculate`] target node calculation is not evaluated",
-					async () => {
-						const scenario = await Scenario.init(
-							'Nested setvalue action',
-							html(
-								head(
-									title('Nested setvalue action'),
-									model(
-										mainInstance(
-											t('data id="nested-setvalue"', t('source'), t('destination'), t('some-field'))
-										),
-										bind('/data/destination').type('string')
+				it("[does not evaluate the target node's `calculate`] target node calculation is not evaluated", async () => {
+					const scenario = await Scenario.init(
+						'Nested setvalue action',
+						html(
+							head(
+								title('Nested setvalue action'),
+								model(
+									mainInstance(
+										t('data id="nested-setvalue"', t('source'), t('destination'), t('some-field'))
+									),
+									bind('/data/destination').type('string')
+								)
+							),
+							body(
+								input(
+									'/data/source',
+									setvalue(
+										'xforms-value-changed',
+										'/data/destination',
+										"concat('foo',/data/some-field)"
 									)
 								),
-								body(
-									input(
-										'/data/source',
-										setvalue(
-											'xforms-value-changed',
-											'/data/destination',
-											"concat('foo',/data/some-field)"
-										)
-									),
-									input('/data/some-field')
-								)
+								input('/data/some-field')
 							)
-						);
+						)
+					);
 
-						// assertThat(scenario.answerOf("/data/destination"), is(nullValue()));
-						expect(scenario.answerOf('/data/destination').getValue()).toBe('');
+					// assertThat(scenario.answerOf("/data/destination"), is(nullValue()));
+					expect(scenario.answerOf('/data/destination').getValue()).toBe('');
 
-						scenario.next('/data/source');
-						scenario.answer(22);
+					scenario.next('/data/source');
+					scenario.answer(22);
 
-						expect(scenario.answerOf('/data/destination')).toEqualAnswer(stringAnswer('foo'));
+					expect(scenario.answerOf('/data/destination')).toEqualAnswer(stringAnswer('foo'));
 
-						scenario.next('/data/some-field');
-						scenario.answer('bar');
+					scenario.next('/data/some-field');
+					scenario.answer('bar');
 
-						scenario.prev('/data/source');
-						scenario.answer(22);
+					scenario.prev('/data/source');
+					scenario.answer(22);
 
-						expect(scenario.answerOf('/data/destination')).toEqualAnswer(stringAnswer('foo'));
+					expect(scenario.answerOf('/data/destination')).toEqualAnswer(stringAnswer('foo'));
 
-						scenario.answer(23);
+					scenario.answer(23);
 
-						expect(scenario.answerOf('/data/destination')).toEqualAnswer(stringAnswer('foobar'));
-					}
-				);
+					expect(scenario.answerOf('/data/destination')).toEqualAnswer(stringAnswer('foobar'));
+				});
 			});
 		});
 
@@ -2097,7 +2091,7 @@ describe('Actions/Events', () => {
 		 * - Typical `getDisplayText` -> `getValue`
 		 */
 		describe('`setvalue`', () => {
-			it.only('sets [the] value of [a bound] attribute', async () => {
+			it('sets [the] value of [a bound] attribute', async () => {
 				const scenario = await Scenario.init(
 					'Setvalue attribute',
 					html(
@@ -2116,7 +2110,7 @@ describe('Actions/Events', () => {
 				expect(scenario.answerOf('/data/element/@attr').getValue()).toBe('7');
 			});
 
-			it.fails('sets [the] value of [a bound] attribute, after deserializatin', async () => {
+			it('sets [the] value of [a bound] attribute, after deserialization', async () => {
 				const scenario = await Scenario.init(
 					'Setvalue attribute',
 					html(
