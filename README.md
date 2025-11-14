@@ -33,7 +33,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  ##### Question types (basic functionality)<br/>🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 38\%
+  ##### Question types (basic functionality)<br/>🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜ 41\%
 
   </summary>
   <br/>
@@ -49,7 +49,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | select\_\*\_from_file      |    ✅    |
 | repeat                     |    ✅    |
 | group                      |    ✅    |
-| geopoint                   |    🚧    |
+| geopoint                   |    ✅    |
 | geotrace                   |          |
 | geoshape                   |          |
 | start-geopoint             |          |
@@ -81,7 +81,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  ##### Appearances<br/>🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 34\%
+  ##### Appearances<br/>🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 39\%
 
   </summary>
   <br/>
@@ -112,8 +112,8 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | bikram-sambat              |          |
 | myanmar                    |          |
 | persian                    |          |
-| placement-map              |          |
-| maps                       |          |
+| placement-map              |    ✅    |
+| maps                       |    ✅    |
 | hide-input                 |          |
 | minimal                    |    ✅    |
 | search / autocomplete      |    ✅    |
