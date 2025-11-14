@@ -214,7 +214,7 @@ export class MapControl {
 		}
 
 		await expect(map).toHaveScreenshot(snapshotName, {
-			maxDiffPixels: 0.02,
+			maxDiffPixelRatio: 0.02,
 		});
 	}
 }
