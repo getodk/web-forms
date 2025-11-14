@@ -33,7 +33,7 @@ const emit = defineEmits(['view-details', 'save', 'discard']);
 				<span>–</span>
 				<!-- TODO: translations -->
 				<span class="mobile-only">Remove</span>
-				<span class="desktop-only">Remove selection</span>
+				<span class="desktop-only">Remove point</span>
 			</Button>
 			<Button v-if="canViewDetails" outlined severity="contrast" @click="emit('view-details')">
 				<!-- TODO: translations -->
@@ -51,7 +51,7 @@ const emit = defineEmits(['view-details', 'save', 'discard']);
 				<IconSVG name="mdiCheckboxMarkedCircleOutline" size="sm" variant="inverted" />
 				<!-- TODO: translations -->
 				<span class="mobile-only">Save</span>
-				<span class="desktop-only">Save selected</span>
+				<span class="desktop-only">Save point</span>
 			</Button>
 		</div>
 	</div>
