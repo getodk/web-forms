@@ -15,8 +15,11 @@ e2e/
         ├── GeopointControl.ts    # Example of a reusable control for the geopoint question type.
     ├── pages/        # Full page representations.
         ├── FillFormPage.ts       # Example of a full page representation for a form.
-├── test-cases/            # Test specification files.
+├── test-cases/       # Test specification files.
+    ├── build/        # Contains tests that validate the build process.
+    ├── functional/   # Contains tests that validate the core functionality, run in headless mode.
         ├── geopoint.test.ts      # Example of a test file for the geopoint question type.
+    ├── visual/       # Includes tests that perform visual comparisons with headless mode disabled, and they should only execute in the CI.
 ```
 
 ## Key concepts
@@ -35,16 +38,16 @@ e2e/
    ```
 
 2. **Run tests**
-   Execute all E2E tests:
+   Execute all functional E2E tests:
 
    ```bash
-    yarn workspace @getodk/web-forms test:e2e
+    yarn workspace @getodk/web-forms test:e2e:functional:all
    ```
 
    Or run specific tests:
 
    ```bash
-   yarn workspace @getodk/web-forms test:e2e <filepath, e.g. e2e/test-cases/geopoint.test.ts>
+   yarn workspace @getodk/web-forms test:e2e:functional:<browser> <filepath, e.g. e2e/test-cases/geopoint.test.ts>
    ```
 
 ## Contributing

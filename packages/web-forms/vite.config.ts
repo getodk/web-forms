@@ -17,16 +17,14 @@ const { version = 'Unknown' } = JSON.parse(
 	readFileSync(resolve('package.json'), 'utf-8')
 ) as PackageJson;
 
-let buildNumber;
-if (existsSync('.git')) {
-	try {
-		buildNumber = execSync('git rev-parse --short HEAD', {
-			encoding: 'utf-8',
-			stdio: ['ignore', 'pipe', 'ignore'],
-		}).trim();
-	} catch {
-		buildNumber = 'Unknown';
-	}
+let buildNumber: string | null = null;
+try {
+	buildNumber = execSync('git rev-parse --short HEAD', {
+		encoding: 'utf-8',
+		stdio: ['ignore', 'pipe', 'ignore'],
+	}).trim();
+} catch {
+	buildNumber = null;
 }
 
 const supportedBrowsers = new Set(['chromium', 'firefox', 'webkit'] as const);

@@ -99,6 +99,81 @@ test.describe('All Question Types (Visual)', () => {
 			await formPage.map.expectMapScreenshot(mapComponent, 'select-map-zoom-current-location.png');
 		});
 	});
+
+	test.describe('Geopoint with "placement-map" appearance', () => {
+		let mapComponent: Locator;
+
+		test.beforeAll(async () => {
+			await formPage.waitForNetworkIdle();
+			await formPage.text.expectHint('geopoint type with placement-map appearance');
+			mapComponent = formPage.map.getMapComponentLocator(
+				'Point that can be manually-entered on map'
+			);
+		});
+
+		test.beforeEach(async () => {
+			await formPage.waitForNetworkIdle();
+			await formPage.map.expectMapVisible(mapComponent);
+			await formPage.map.scrollMapIntoView(mapComponent);
+		});
+
+		test('renders overlay and taps on button to start the action', async () => {
+			await formPage.map.expectMapScreenshot(mapComponent, 'placement-map-initial-state.png');
+			await formPage.map.getLocationFromOverlay(mapComponent);
+			await formPage.waitForNetworkIdle();
+			await formPage.map.scrollMapIntoView(mapComponent);
+			await formPage.map.expectMapScreenshot(mapComponent, 'placement-map-current-location.png');
+		});
+
+		test('saves current location, adds a new point elsewhere, removes saved point', async () => {
+			await formPage.map.savePoint(mapComponent);
+			await formPage.map.expectMapScreenshot(
+				mapComponent,
+				'placement-map-current-location-saved.png'
+			);
+
+			await formPage.map.longPressMap(mapComponent, 100, 100);
+			await formPage.map.expectMapScreenshot(mapComponent, 'placement-map-new-point-saved.png');
+
+			await formPage.map.removeSavedPoint(mapComponent);
+			await formPage.map.expectMapScreenshot(mapComponent, 'placement-map-initial-state.png');
+		});
+	});
+
+	test.describe('Geopoint with "maps" appearance', () => {
+		let mapComponent: Locator;
+
+		test.beforeAll(async () => {
+			await formPage.waitForNetworkIdle();
+			await formPage.text.expectHint('geopoint type with maps appearance');
+			mapComponent = formPage.map.getMapComponentLocator('Point with user confirmation on map');
+		});
+
+		test.beforeEach(async () => {
+			await formPage.waitForNetworkIdle();
+			await formPage.map.expectMapVisible(mapComponent);
+			await formPage.map.scrollMapIntoView(mapComponent);
+		});
+
+		test('renders overlay and taps on button to start the action', async () => {
+			await formPage.map.expectMapScreenshot(mapComponent, 'geopoint-maps-initial-state.png');
+			await formPage.map.getLocationFromOverlay(mapComponent);
+			await formPage.waitForNetworkIdle();
+			await formPage.map.scrollMapIntoView(mapComponent);
+			await formPage.map.expectMapScreenshot(mapComponent, 'geopoint-maps-current-location.png');
+		});
+
+		test('saves current location and removes saved point', async () => {
+			await formPage.map.savePoint(mapComponent);
+			await formPage.map.expectMapScreenshot(
+				mapComponent,
+				'geopoint-maps-current-location-saved.png'
+			);
+
+			await formPage.map.removeSavedPoint(mapComponent);
+			await formPage.map.expectMapScreenshot(mapComponent, 'geopoint-maps-initial-state.png');
+		});
+	});
 });
 
 test.describe('All Question Types - Geolocation permission denied', () => {
