@@ -19,11 +19,14 @@ const isValueNode = (node: AnyNode | AttributeNode) => {
 		node.nodeType === 'input' ||
 		node.nodeType === 'trigger' ||
 		node.nodeType === 'upload' ||
-		node.nodeType === 'static-attribute'
+		node.nodeType === 'attribute'
 	);
 };
 
-export const answerOf = (instanceRoot: RootNode, reference: string): ValueNodeAnswer => {
+export const answerOf = (
+	instanceRoot: RootNode,
+	reference: string
+): AttributeNodeAnswer | ValueNodeAnswer => {
 	const node = getNodeForReference(instanceRoot, reference);
 	if (node == null || !isValueNode(node)) {
 		throw new Error(`Cannot get answer, not a value node: ${reference}`);
@@ -48,7 +51,7 @@ export const answerOf = (instanceRoot: RootNode, reference: string): ValueNodeAn
 		case 'upload':
 			return new UploadNodeAnswer(node);
 
-		case 'static-attribute': // TODO i'm gonna hve to fix the hierarchy again
+		case 'attribute':
 			return new AttributeNodeAnswer(node);
 
 		default:

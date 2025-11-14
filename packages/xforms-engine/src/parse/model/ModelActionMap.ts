@@ -12,9 +12,12 @@ export class ModelActionMap extends Map<string, ActionDefinition> {
 		if (element.hasAttribute('value')) {
 			return element.getAttribute('value');
 		}
+		// TODO assert the first child is a text node?
 		if (element.firstChild?.nodeValue) {
+			// use the text content as the literal value
 			return `'${element.firstChild?.nodeValue}'`;
 		}
+		// TODO throw?
 		return null;
 	}
 
@@ -26,39 +29,10 @@ export class ModelActionMap extends Map<string, ActionDefinition> {
 			form.xformDOM.setValues.map((setValueElement) => {
 				const ref = setValueElement.getAttribute('ref');
 				const events = setValueElement.getAttribute('event')?.split(' ');
-
-				// const parentRef = setValueElement.parentElement?.getAttribute('ref'); // TODO this is needed only for value attributes, not literals
-				// console.log('listen to: ', {parentRef});
-
 				const value = ModelActionMap.getValue(setValueElement);
 				const action = new ActionDefinition(form, model, setValueElement, ref!, events, value!); // TODO do something about ref and value - they must not be undefined
-
-				console.log('~~~~~~~~~ creation, pushing', ref, events);
 				return [ref!, action];
 			})
 		);
 	}
-
-	getOrCreateActionDefinition(nodeset: string, element: Element): ActionDefinition | undefined { // TODO I don't think we need to "create" any more - we're doing everything in the construcotr
-		const ref = element?.getAttribute('ref');
-		let action;
-		if (element && ref) {
-
-			action = this.get(ref);
-	
-			
-			if (action == null) {
-				const events = element.getAttribute('event')?.split(' ');
-				const value = ModelActionMap.getValue(element);
-				if (ref && events && value) {
-					action = new ActionDefinition(this.form, this.model, element, ref!, events!, value!);
-					console.log('~~~~~~~~~ fetching, pushing', ref);
-					this.set(ref, action);
-				}
-			}
-		}
-
-		return action;
-	}
-
 }

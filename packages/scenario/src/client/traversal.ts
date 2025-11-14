@@ -1,5 +1,6 @@
 import { UnreachableError } from '@getodk/common/lib/error/UnreachableError.ts';
 import type { AnyNode, AttributeNode, RepeatRangeNode, RootNode } from '@getodk/xforms-engine';
+import type { Attribute } from '../../../xforms-engine/dist/instance/Attribute';
 import type { Scenario } from '../jr/Scenario.ts';
 
 /**
@@ -38,18 +39,21 @@ export const collectFlatNodeList = (currentNode: AnyNode): readonly AnyNode[] =>
 	}
 };
 
-export const getNodeForReference = (instanceRoot: RootNode, reference: string): AnyNode | AttributeNode | null => {
+export const getNodeForReference = (
+	instanceRoot: RootNode,
+	reference: string
+): AnyNode | AttributeNode | null => {
 	const nodes = collectFlatNodeList(instanceRoot);
 	const [nodeRef, attrRef] = reference.split('/@', 2);
 	const result = nodes.find((node) => node.currentState.reference === nodeRef);
 	if (!result) {
 		return null;
 	}
-	if (attrRef) {
-		const attrs = result.instanceNode?.attributes ?? [];
-		return attrs.find(attr =>  attr.nodeset === reference);
+	if (!attrRef || !('attributes' in result.currentState)) {
+		return result;
 	}
-	return result ?? null;
+	const attrs = (result.currentState.attributes as Attribute[]) ?? [];
+	return attrs.find((attr) => attr.definition.nodeset === reference) ?? null;
 };
 
 export const getClosestRepeatRange = (currentNode: AnyNode): RepeatRangeNode | null => {

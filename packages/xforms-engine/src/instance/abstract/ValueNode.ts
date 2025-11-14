@@ -97,12 +97,11 @@ export abstract class ValueNode<
 		this.decodeInstanceValue = codec.decodeInstanceValue;
 
 		const instanceValueState = createInstanceValueState(this);
-		console.log('creating instance value state', instanceNode?.qualifiedName.localName, definition.action?.events);
 		const valueState = codec.createRuntimeValueState(instanceValueState);
-		
+
 		const [getInstanceValue] = instanceValueState;
 		const [, setValueState] = valueState;
-		
+
 		this.getInstanceValue = getInstanceValue;
 		this.setValueState = setValueState;
 		this.getXPathValue = () => {
