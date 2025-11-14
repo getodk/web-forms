@@ -497,9 +497,14 @@ jobs:
       - if: ${{ matrix.target == 'Web' && matrix.browser != 'webkit' }}
         run: 'yarn workspace @getodk/web-forms test-browser:${{ matrix.browser }}'
 
+      - if: ${{ matrix.target == 'Web' }}
+        name: 'Run functional e2e tests'
+        run: 'yarn workspace @getodk/web-forms test:e2e:functional:${{ matrix.browser }}'
+
       # xvfb-run is used for visual tests to compare snapshots more accurately.
       - if: ${{ matrix.target == 'Web' }}
-        run: 'xvfb-run --auto-servernum yarn workspace @getodk/web-forms test:e2e:${{ matrix.browser }}'
+        name: 'Run visual e2e tests'
+        run: 'xvfb-run --auto-servernum yarn workspace @getodk/web-forms test:e2e:visual:${{ matrix.browser }}'
 
       - name: 'Upload Playwright results'
         if: always() && matrix.target == 'Web'
