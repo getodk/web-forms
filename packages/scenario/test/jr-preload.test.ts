@@ -124,7 +124,7 @@ describe('`jr:preload`', () => {
 				 * supported the functionality. As such, it also uses the same
 				 * `toStartWith` assertion extension in place of `getDisplayText`.
 				 */
-				it.fails('preloads [specified data in bound] attributes (alternate)', async () => {
+				it('preloads [specified data in bound] attributes (alternate)', async () => {
 					const scenario = await Scenario.init(
 						'Preload attribute',
 						html(
