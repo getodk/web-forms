@@ -2,7 +2,7 @@
 import IconSVG from '@/components/common/IconSVG.vue';
 import {
 	FORM_IMAGE_CACHE,
-	FORM_MODE,
+	IS_FORM_EDIT_MODE,
 	FORM_OPTIONS,
 	SUBMIT_PRESSED,
 } from '@/lib/constants/injection-keys.ts';
@@ -26,11 +26,10 @@ import type {
 import Button from 'primevue/button';
 import Card from 'primevue/card';
 import Message from 'primevue/message';
-import { computed, getCurrentInstance, provide, readonly, ref, watchEffect } from 'vue';
+import { computed, getCurrentInstance, provide, readonly, ref, shallowRef, watchEffect } from 'vue';
 import FormLoadFailureDialog from '@/components/FormLoadFailureDialog.vue';
 import FormHeader from '@/components/form-layout/FormHeader.vue';
 import QuestionList from '@/components/form-layout/QuestionList.vue';
-import { FORM_MODES, type FormMode } from '@/lib/constants/form-modes.ts';
 
 const webFormsVersion = __WEB_FORMS_VERSION__;
 
@@ -54,10 +53,8 @@ export interface OdkWebFormsProps {
 
 const props = defineProps<OdkWebFormsProps>();
 
-const formMode = computed<FormMode>(() =>
-	props.editInstance != null ? FORM_MODES.EDIT : FORM_MODES.CREATE
-);
-provide(FORM_MODE, readonly(formMode));
+const isFormEditMode = shallowRef(false);
+provide(IS_FORM_EDIT_MODE, readonly(isFormEditMode));
 
 const hostSubmissionResultCallbackFactory = (
 	currentState: FormStateSuccessResult
@@ -169,6 +166,10 @@ const init = async () => {
 		form: formOptions,
 		editInstance: props.editInstance ?? null,
 	});
+
+	if (state.value.instance?.mode === 'edit') {
+		isFormEditMode.value = true;
+	}
 };
 
 void init();
