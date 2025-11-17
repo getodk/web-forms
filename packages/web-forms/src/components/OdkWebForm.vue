@@ -2,8 +2,8 @@
 import IconSVG from '@/components/common/IconSVG.vue';
 import {
 	FORM_IMAGE_CACHE,
-	IS_FORM_EDIT_MODE,
 	FORM_OPTIONS,
+	IS_FORM_EDIT_MODE,
 	SUBMIT_PRESSED,
 } from '@/lib/constants/injection-keys.ts';
 import type { FormStateSuccessResult } from '@/lib/init/form-state.ts';

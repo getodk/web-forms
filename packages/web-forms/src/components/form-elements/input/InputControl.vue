@@ -18,7 +18,7 @@ interface InputControlProps {
 
 defineProps<InputControlProps>();
 
-const isFormEditMode = inject(IS_FORM_EDIT_MODE, false);
+const isFormEditMode = inject(IS_FORM_EDIT_MODE);
 </script>
 
 <template>
