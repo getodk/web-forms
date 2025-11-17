@@ -55,6 +55,7 @@ e2e/
    ```bash
     yarn workspace @getodk/web-forms test:e2e:visual:<browser, e.g webkit, chromium or firefox>
    ```
+
 ## Contributing
 
 - Keep tests focused.
