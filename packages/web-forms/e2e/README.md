@@ -47,9 +47,14 @@ e2e/
    Or run specific tests:
 
    ```bash
-   yarn workspace @getodk/web-forms test:e2e:functional:<browser> <filepath, e.g. e2e/test-cases/geopoint.test.ts>
+   yarn workspace @getodk/web-forms test:e2e:functional:<browser, e.g webkit, chromium or firefox> <filepath, e.g. e2e/test-cases/geopoint.test.ts>
    ```
 
+   Execute visual tests, but note that they are designed to work only in the CI environment. Running them locally may cause issues due to differences in snapshot sizes.
+
+   ```bash
+    yarn workspace @getodk/web-forms test:e2e:visual:<browser, e.g webkit, chromium or firefox>
+   ```
 ## Contributing
 
 - Keep tests focused.
