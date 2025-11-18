@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { stringAnswer } from '../../src/answer/ExpectedStringAnswer.ts';
 import { Scenario } from '../../src/jr/Scenario.ts';
 import { r } from '../../src/jr/resource/ResourcePathHelper.ts';
 
@@ -654,6 +655,8 @@ describe('Form initialization smoke tests', () => {
 			const scenario = await Scenario.init(r('form-with-setvalue-action.xml'));
 
 			expectNoInitializationErrors(scenario);
+
+			expect(scenario.answerOf('/data/text')).toEqualAnswer(stringAnswer('Test Value'));
 
 			// // dispatch 'odk-instance-first-load' event (Actions.EVENT_ODK_INSTANCE_FIRST_LOAD)
 			// formDef.initialize(true, new InstanceInitializationFactory());

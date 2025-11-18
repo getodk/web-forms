@@ -29,6 +29,22 @@ export class ModelActionMap extends Map<string, ActionDefinition> {
 		return normalized;
 	}
 
+	static getRef(model: ModelDefinition, setValueElement: Element): string | null {
+		if (setValueElement.hasAttribute('ref')) {
+			return setValueElement.getAttribute('ref') ?? '';
+		}
+		if (setValueElement.hasAttribute('bind')) {
+			const bindId = setValueElement.getAttribute('bind');
+			for (const definition of Array.from(model.binds.values())) {
+				const element = definition.bindElement;
+				if (element.getAttribute('id') === bindId) {
+					return element.getAttribute('nodeset');
+				}
+			}
+		}
+		return null;
+	}
+
 	protected constructor(
 		protected readonly form: XFormDefinition,
 		protected readonly model: ModelDefinition
@@ -36,7 +52,7 @@ export class ModelActionMap extends Map<string, ActionDefinition> {
 		super(
 			form.xformDOM.setValues.map((setValueElement) => {
 				// TODO do something about ref and value - they must not be undefined
-				const ref = setValueElement.getAttribute('ref');
+				const ref = ModelActionMap.getRef(model, setValueElement);
 				const events = setValueElement.getAttribute('event')?.split(' ');
 				const key = ModelActionMap.getKey(ref!);
 				const value = ModelActionMap.getValue(setValueElement);
