@@ -225,7 +225,9 @@ const registerActions = (
 		}
 	}
 	if (action.events.includes(SET_ACTION_EVENTS.odkNewRepeat)) {
-		createCalculation(context, setValue, action); // TODO change to be more like setPreloadUIDValue
+		if (isAddingRepeatChild(context)) {
+			createCalculation(context, setValue, action); // TODO change to be more like setPreloadUIDValue
+		}
 	}
 	if (action.events.includes(SET_ACTION_EVENTS.xformsValueChanged)) {
 

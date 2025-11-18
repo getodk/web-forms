@@ -532,88 +532,39 @@ describe('Actions/Events', () => {
 		});
 
 		describe('[`setvalue`] set value on repeat with count', () => {
-			/**
-			 * **PORTING NOTES**
-			 *
-			 * - Typical `getDisplayText` commentary
-			 *
-			 * - Fails on current lack of support for both actions/events and
-			 *   `jr:count`
-			 *
-			 * - The `while` loops, ported directly, don't adapt well to our addition
-			 *   of an asserted/expected node-set reference to the
-			 *   {@link Scenario.next} signature. A best effort is made to preserve
-			 *   the apparent intent, but it may be worth considering adopting a
-			 *   `range`-based approach similar to many tests in `repeat.test.ts`. On
-			 *   the other hand, it's not clear if there's any value in these
-			 *   {@link Scenario.next} calls, which isn't redundant given the other
-			 *   assertions?
-			 */
-			it.fails('sets [the] value for each repeat [instance]', async () => {
+
+			it('sets [the] value for each repeat [instance]', async () => {
 				const scenario = await Scenario.init(r('event-odk-new-repeat.xml'));
 
-				scenario.answer('/data/repeat-count', 4);
+				const REPEAT_COUNT = 4;
+				scenario.answer('/data/repeat-count', REPEAT_COUNT);
 
-				let expectedRepeatPosition = 0;
-				while (!scenario.atTheEndOfForm()) {
-					// WAS:
-					//
-					// scenario.next();
-
-					expectedRepeatPosition += 1;
-
-					scenario.next(`/data/my-jr-count-repeat[${expectedRepeatPosition}]`);
-					scenario.next(
-						`/data/my-jr-count-repeat[${expectedRepeatPosition}]/defaults-to-position-again`
-					);
+				for (let i = 1; i < REPEAT_COUNT; i++) {
+					scenario.next(`/data/my-jr-count-repeat[${i}]`);
+					scenario.next(`/data/my-jr-count-repeat[${i}]/defaults-to-position-again`);
+					expect(
+						scenario.answerOf(`/data/my-jr-count-repeat[${i}]/defaults-to-position-again`).getValue()
+					).toBe(`${i}`);
 				}
 
-				expect(scenario.countRepeatInstancesOf('/data/my-jr-count-repeat')).toBe(4);
-
-				// assertThat(scenario.answerOf("/data/my-jr-count-repeat[1]/defaults-to-position-again").getDisplayText(), is("1"));
-				expect(
-					scenario.answerOf('/data/my-jr-count-repeat[1]/defaults-to-position-again').getValue()
-				).toBe('1');
-
-				// assertThat(scenario.answerOf("/data/my-jr-count-repeat[2]/defaults-to-position-again").getDisplayText(), is("2"));
-				expect(
-					scenario.answerOf('/data/my-jr-count-repeat[2]/defaults-to-position-again').getValue()
-				).toBe('2');
-
-				// assertThat(scenario.answerOf("/data/my-jr-count-repeat[3]/defaults-to-position-again").getDisplayText(), is("3"));
-				expect(
-					scenario.answerOf('/data/my-jr-count-repeat[3]/defaults-to-position-again').getValue()
-				).toBe('3');
-
-				// assertThat(scenario.answerOf("/data/my-jr-count-repeat[4]/defaults-to-position-again").getDisplayText(), is("4"));
-				expect(
-					scenario.answerOf('/data/my-jr-count-repeat[4]/defaults-to-position-again').getValue()
-				).toBe('4');
+				expect(scenario.countRepeatInstancesOf('/data/my-jr-count-repeat')).toBe(REPEAT_COUNT);
 
 				// Adding repeats should trigger odk-new-repeat for those new nodes
-				scenario.answer('/data/repeat-count', 6);
+				const NEW_REPEAT_COUNT = 6;
+				scenario.answer('/data/repeat-count', NEW_REPEAT_COUNT);
 
 				scenario.jumpToBeginningOfForm();
 
-				expectedRepeatPosition = 0;
-
-				while (!scenario.atTheEndOfForm()) {
-					// WAS:
-					//
-					// scenario.next();
-
-					if (expectedRepeatPosition === 0) {
-						scenario.next('/data/my-toplevel-value');
-						scenario.next('/data/repeat-count');
-					}
-
-					expectedRepeatPosition += 1;
-					scenario.next(`/data/my-jr-count-repeat[${expectedRepeatPosition}]`);
+				scenario.next('/data/my-toplevel-value');
+				scenario.next('/data/my-repeat');
+				scenario.next('/data/repeat-count');
+				for (let i = 1; i < NEW_REPEAT_COUNT; i++) {
+					scenario.next(`/data/my-jr-count-repeat[${i}]`);
+					scenario.next(`/data/my-jr-count-repeat[${i}]/defaults-to-position-again`);
 				}
 
 				expect(scenario.countRepeatInstancesOf('/data/my-jr-count-repeat')).toBe(6);
 
-				// assertThat(scenario.answerOf("/data/my-jr-count-repeat[6]/defaults-to-position-again").getDisplayText(), is("6"));
 				expect(
 					scenario.answerOf('/data/my-jr-count-repeat[6]/defaults-to-position-again').getValue()
 				).toBe('6');
@@ -761,31 +712,19 @@ describe('Actions/Events', () => {
 		});
 
 		describe('repeat in form def instance', () => {
-			/**
-			 * **PORTING NOTES**
-			 *
-			 * - Typical `nullValue()` -> blank/empty string check.
-			 *
-			 * - First assertions pass as expected, but now we can use the test to
-			 *   help us keep it that way when we implement this feature to make the
-			 *   last one pass.
-			 */
-			it.fails('never fires [an odk-new-repeat] new repeat event', async () => {
+
+			it('never fires [an odk-new-repeat] new repeat event', async () => {
 				const scenario = await Scenario.init(r('event-odk-new-repeat.xml'));
 
-				// assertThat(scenario.answerOf("/data/my-repeat-without-template[1]/my-value"), is(nullValue()));
 				expect(scenario.answerOf('/data/my-repeat-without-template[1]/my-value').getValue()).toBe(
 					''
 				);
 
-				// assertThat(scenario.answerOf("/data/my-repeat-without-template[2]/my-value"), is(nullValue()));
 				expect(scenario.answerOf('/data/my-repeat-without-template[2]/my-value').getValue()).toBe(
 					''
 				);
 
 				scenario.createNewRepeat('/data/my-repeat-without-template');
-
-				// assertThat(scenario.answerOf("/data/my-repeat-without-template[3]/my-value").getDisplayText(), is("2"));
 				expect(scenario.answerOf('/data/my-repeat-without-template[3]/my-value').getValue()).toBe(
 					'2'
 				);
