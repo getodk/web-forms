@@ -55,6 +55,7 @@ jobs:
           name: playwright-results-functional-${{ matrix.browser }}
           path: packages/web-forms/test-results
           retention-days: 10
+          if-no-files-found: ignore
 
   web-forms-e2e-visual:
     name: '@getodk/web-forms (visual e2e)'
@@ -108,3 +109,4 @@ jobs:
           name: playwright-results-visual-${{ matrix.browser }}
           path: packages/web-forms/test-results
           retention-days: 10
+          if-no-files-found: ignore
