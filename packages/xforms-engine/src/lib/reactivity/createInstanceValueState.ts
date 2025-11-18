@@ -187,23 +187,29 @@ const referencesCurrentNode = (context: ValueContext, ref: string): boolean => {
 		contextNode: context.contextNode,
 	});
 	if (nodes.length > 1) {
-		throw new Error('You are trying to target a repeated field. Currently you may only target a field in a specific repeat instance. XPath nodeset has more than one node.');
+		throw new Error(
+			'You are trying to target a repeated field. Currently you may only target a field in a specific repeat instance. XPath nodeset has more than one node.'
+		);
 	}
 	return nodes.includes(context.contextNode);
 };
 
 // TODO rename
-const fixUnboundRepeatsInRef = (context: ValueContext, source: string, ref: string): { source: string, ref: string } => {
+const fixUnboundRepeatsInRef = (
+	context: ValueContext,
+	source: string,
+	ref: string
+): { source: string; ref: string } => {
 	const contextRef = context.contextReference();
-	for (const part of contextRef.matchAll(/([^\[]*)(\[[0-9]+\])/gm)) {
-		const unbound = part[1]! + '/';
-		const bound = part[0]! + '/';
+	for (const part of contextRef.matchAll(/([^[]*)(\[[0-9]+\])/gm)) {
+		const unbound = part[1] + '/';
+		const bound = part[0] + '/';
 		if (source.includes(unbound)) {
 			source = source.replace(unbound, bound);
 			ref = ref.replace(unbound, bound);
 		}
 	}
-	return {source, ref};
+	return { source, ref };
 };
 
 const registerActions = (
@@ -230,12 +236,11 @@ const registerActions = (
 		}
 	}
 	if (action.events.includes(SET_ACTION_EVENTS.xformsValueChanged)) {
-
 		let initial = '';
 		// TODO put the source in actiondefinition
 		// TODO source is required
-		const source = action.element.parentElement?.getAttribute('ref')!;
-		const res = fixUnboundRepeatsInRef(context, source, action.ref);
+		const source = action.element.parentElement?.getAttribute('ref');
+		const res = fixUnboundRepeatsInRef(context, source!, action.ref);
 		const newsource = res.source;
 		const newref = res.ref;
 
@@ -256,7 +261,6 @@ const registerActions = (
 				}
 			});
 		});
-		
 	}
 };
 

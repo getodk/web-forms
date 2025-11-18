@@ -481,11 +481,8 @@ describe('Actions/Events', () => {
 				expect(scenario.countRepeatInstancesOf('/data/my-repeat')).toBe(1);
 
 				// assertThat(scenario.answerOf("/data/my-repeat[0]/defaults-to-position").getDisplayText(), is("1"));
-				expect(scenario.answerOf('/data/my-repeat[1]/defaults-to-position').getValue()).toBe(
-					'1'
-				);
-				}
-			);
+				expect(scenario.answerOf('/data/my-repeat[1]/defaults-to-position').getValue()).toBe('1');
+			});
 		});
 
 		describe('adding repeat [instance]', () => {
@@ -516,23 +513,19 @@ describe('Actions/Events', () => {
 			 * - Still fails with 1-based position predicate correction: current lack
 			 *   of support for actions/events
 			 */
-				it('uses [the] current context for relative references', async () => {
-					const scenario = await Scenario.init(r('event-odk-new-repeat.xml'));
+			it('uses [the] current context for relative references', async () => {
+				const scenario = await Scenario.init(r('event-odk-new-repeat.xml'));
 
-					scenario.answer('/data/my-toplevel-value', '12');
+				scenario.answer('/data/my-toplevel-value', '12');
 
-					scenario.createNewRepeat('/data/my-repeat');
+				scenario.createNewRepeat('/data/my-repeat');
 
-					// assertThat(scenario.answerOf("/data/my-repeat[0]/defaults-to-toplevel").getDisplayText(), is("14"));
-					expect(scenario.answerOf('/data/my-repeat[1]/defaults-to-toplevel').getValue()).toBe(
-						'14'
-					);
-				}
-			);
+				// assertThat(scenario.answerOf("/data/my-repeat[0]/defaults-to-toplevel").getDisplayText(), is("14"));
+				expect(scenario.answerOf('/data/my-repeat[1]/defaults-to-toplevel').getValue()).toBe('14');
+			});
 		});
 
 		describe('[`setvalue`] set value on repeat with count', () => {
-
 			it('sets [the] value for each repeat [instance]', async () => {
 				const scenario = await Scenario.init(r('event-odk-new-repeat.xml'));
 
@@ -543,7 +536,9 @@ describe('Actions/Events', () => {
 					scenario.next(`/data/my-jr-count-repeat[${i}]`);
 					scenario.next(`/data/my-jr-count-repeat[${i}]/defaults-to-position-again`);
 					expect(
-						scenario.answerOf(`/data/my-jr-count-repeat[${i}]/defaults-to-position-again`).getValue()
+						scenario
+							.answerOf(`/data/my-jr-count-repeat[${i}]/defaults-to-position-again`)
+							.getValue()
 					).toBe(`${i}`);
 				}
 
@@ -712,7 +707,6 @@ describe('Actions/Events', () => {
 		});
 
 		describe('repeat in form def instance', () => {
-
 			it('never fires [an odk-new-repeat] new repeat event', async () => {
 				const scenario = await Scenario.init(r('event-odk-new-repeat.xml'));
 
@@ -1496,11 +1490,9 @@ describe('Actions/Events', () => {
 					}
 
 					for (let i = 1; i <= REPEAT_COUNT; i++) {
-						expect(scenario.answerOf(`/data/repeat[${i}]/source`)).toEqualAnswer(
-							intAnswer(i)
-						);
+						expect(scenario.answerOf(`/data/repeat[${i}]/source`)).toEqualAnswer(intAnswer(i));
 						expect(scenario.answerOf(`/data/repeat[${i}]/destination`)).toEqualAnswer(
-							intAnswer(i*4)
+							intAnswer(i * 4)
 						);
 					}
 
@@ -1572,53 +1564,50 @@ describe('Actions/Events', () => {
 					expect(scenario.answerOf('/data/repeat[4]/destination').getValue()).toBe('');
 				});
 
-				it(
-					"(alternate) sets value of node in first repeat instance, as specified in the action's predicate",
-					async () => {
-						const scenario = await Scenario.init(
-							'Setvalue into first repeat instance',
-							html(
-								head(
-									title('Setvalue into first repeat instance'),
-									model(
-										mainInstance(
-											t(
-												'data id="setvalue-into-first-repeat-instance"',
-												t('source'),
-												t('repeat', t('destination'))
-											)
+				it("(alternate) sets value of node in first repeat instance, as specified in the action's predicate", async () => {
+					const scenario = await Scenario.init(
+						'Setvalue into first repeat instance',
+						html(
+							head(
+								title('Setvalue into first repeat instance'),
+								model(
+									mainInstance(
+										t(
+											'data id="setvalue-into-first-repeat-instance"',
+											t('source'),
+											t('repeat', t('destination'))
 										)
 									)
-								),
-								body(
-									input(
-										'/data/source',
-										setvalue(
-											'xforms-value-changed',
-											'/data/repeat[position()=1]/destination',
-											'/data/source'
-										)
-									),
-									repeat('/data/repeat', input('/data/repeat/destination'))
 								)
+							),
+							body(
+								input(
+									'/data/source',
+									setvalue(
+										'xforms-value-changed',
+										'/data/repeat[position()=1]/destination',
+										'/data/source'
+									)
+								),
+								repeat('/data/repeat', input('/data/repeat/destination'))
 							)
-						);
+						)
+					);
 
-						scenario.createNewRepeat('/data/repeat');
-						scenario.createNewRepeat('/data/repeat');
-						scenario.createNewRepeat('/data/repeat');
+					scenario.createNewRepeat('/data/repeat');
+					scenario.createNewRepeat('/data/repeat');
+					scenario.createNewRepeat('/data/repeat');
 
-						expect(scenario.answerOf('/data/repeat[1]/destination').getValue()).toBe('');
-						expect(scenario.answerOf('/data/repeat[2]/destination').getValue()).toBe('');
-						expect(scenario.answerOf('/data/repeat[3]/destination').getValue()).toBe('');
+					expect(scenario.answerOf('/data/repeat[1]/destination').getValue()).toBe('');
+					expect(scenario.answerOf('/data/repeat[2]/destination').getValue()).toBe('');
+					expect(scenario.answerOf('/data/repeat[3]/destination').getValue()).toBe('');
 
-						scenario.answer('/data/source', 'foo');
+					scenario.answer('/data/source', 'foo');
 
-						expect(scenario.answerOf('/data/repeat[1]/destination').getValue()).toBe('foo');
-						expect(scenario.answerOf('/data/repeat[2]/destination').getValue()).toBe('');
-						expect(scenario.answerOf('/data/repeat[3]/destination').getValue()).toBe('');
-					}
-				);
+					expect(scenario.answerOf('/data/repeat[1]/destination').getValue()).toBe('foo');
+					expect(scenario.answerOf('/data/repeat[2]/destination').getValue()).toBe('');
+					expect(scenario.answerOf('/data/repeat[3]/destination').getValue()).toBe('');
+				});
 
 				/**
 				 * **PORTING NOTES**
@@ -1688,46 +1677,39 @@ describe('Actions/Events', () => {
 				 * - JavaRosa description references "expression" where it seems to have
 				 *   meant "exception"?
 				 */
-				it(
-					'[produces an error?] throws [s/]expression[/exception/ ?] when target is [an] unbound reference',
-					async () => {
-						const scenario = await Scenario.init(
-							'Setvalue into repeat',
-							html(
-								head(
-									title('Setvalue into repeat'),
-									model(
-										mainInstance(
-											t(
-												'data id="setvalue-into-repeat"',
-												t('source'),
-												t('repeat', t('destination'))
-											)
-										)
+				it('[produces an error?] throws [s/]expression[/exception/ ?] when target is [an] unbound reference', async () => {
+					const scenario = await Scenario.init(
+						'Setvalue into repeat',
+						html(
+							head(
+								title('Setvalue into repeat'),
+								model(
+									mainInstance(
+										t('data id="setvalue-into-repeat"', t('source'), t('repeat', t('destination')))
 									)
-								),
-								body(
-									input(
-										'/data/source',
-										setvalue('xforms-value-changed', '/data/repeat/destination', '/data/source')
-									),
-									repeat('/data/repeat', input('/data/repeat/destination'))
 								)
+							),
+							body(
+								input(
+									'/data/source',
+									setvalue('xforms-value-changed', '/data/repeat/destination', '/data/source')
+								),
+								repeat('/data/repeat', input('/data/repeat/destination'))
 							)
-						);
+						)
+					);
 
-						scenario.createNewRepeat('/data/repeat');
-						scenario.createNewRepeat('/data/repeat');
-						scenario.createNewRepeat('/data/repeat');
-						const answer = () => {
-							scenario.answer('/data/source', 'foo');
+					scenario.createNewRepeat('/data/repeat');
+					scenario.createNewRepeat('/data/repeat');
+					scenario.createNewRepeat('/data/repeat');
+					const answer = () => {
+						scenario.answer('/data/source', 'foo');
 
-							expect.fail('Expected multiple node target to fail');
-						};
+						expect.fail('Expected multiple node target to fail');
+					};
 
-						expect(answer).toThrowError('has more than one node');
-					}
-				);
+					expect(answer).toThrowError('has more than one node');
+				});
 			});
 
 			describe('`setvalue` in repeat', () => {
@@ -1812,9 +1794,9 @@ describe('Actions/Events', () => {
 					scenario.answer('/data/repeat1[1]/source', 'foo');
 
 					// assertThat(scenario.answerOf("/data/repeat1[1]/repeat2[1]/destination").getDisplayText(), is("foo"));
-					expect(
-						scenario.answerOf('/data/repeat1[1]/repeat2[1]/destination').getValue()
-					).toBe('foo');
+					expect(scenario.answerOf('/data/repeat1[1]/repeat2[1]/destination').getValue()).toBe(
+						'foo'
+					);
 				});
 			});
 		});

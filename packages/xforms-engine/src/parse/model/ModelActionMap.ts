@@ -57,7 +57,15 @@ export class ModelActionMap extends Map<string, ActionDefinition> {
 				const key = ModelActionMap.getKey(ref!);
 				const value = ModelActionMap.getValue(setValueElement);
 				const conditional = key !== ref;
-				const action = new ActionDefinition(form, model, setValueElement, ref!, events, value!, conditional);
+				const action = new ActionDefinition(
+					form,
+					model,
+					setValueElement,
+					ref!,
+					events,
+					value!,
+					conditional
+				);
 				return [key, action];
 			})
 		);
