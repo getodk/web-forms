@@ -21,9 +21,12 @@ export class ActionDefinition {
 		readonly element: Element,
 		readonly ref: string,
 		readonly events: string[],
-		readonly value: string
+		readonly value: string,
+		readonly isConditional: boolean
 	) {
 		const unknownEvents = events.filter((event) => !isKnownEvent(event as SetActionEvent));
+
+		// console.log('creating defn', {ref, events, value});
 
 		if (unknownEvents.length) {
 			throw new Error(
@@ -37,6 +40,7 @@ export class ActionDefinition {
 		}
 
 		// consider storing the source element and/or getter for the source value
+		// TODO probably can't use this - it needs to be more dynamic
 		this.computation = new ActionComputationExpression('string', value || "''");
 	}
 }

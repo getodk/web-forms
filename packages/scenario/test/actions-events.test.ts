@@ -22,9 +22,8 @@ import { Scenario, getRef } from '../src/jr/Scenario.ts';
 import type { JRFormDef } from '../src/jr/form/JRFormDef.ts';
 import { r } from '../src/jr/resource/ResourcePathHelper.ts';
 
-interface PredicateOptions {
-	readonly oneBasedPositionPredicates: boolean;
-}
+// TODO go through and fix all test names, add comment to refer to original test
+// TODO split test file up
 
 /**
  *
@@ -471,32 +470,20 @@ describe('Actions/Events', () => {
 			 * - Still fails with 1-based position predicate correction: current lack
 			 *   of support for actions/events
 			 */
-			describe.each<PredicateOptions>([
-				// { oneBasedPositionPredicates: false },
-				{ oneBasedPositionPredicates: true },
-			])(
-				'one-based position predicates: $oneBasedPositionPredicates',
-				({ oneBasedPositionPredicates }) => {
-					it('sets [the] value in [the] repeat', async () => {
-						const scenario = await Scenario.init(r('event-odk-new-repeat.xml'));
 
-						expect(scenario.countRepeatInstancesOf('/data/my-repeat')).toBe(0);
+			it('sets [the] value in [the] repeat', async () => {
+				const scenario = await Scenario.init(r('event-odk-new-repeat.xml'));
 
-						scenario.createNewRepeat('/data/my-repeat');
+				expect(scenario.countRepeatInstancesOf('/data/my-repeat')).toBe(0);
 
-						expect(scenario.countRepeatInstancesOf('/data/my-repeat')).toBe(1);
+				scenario.createNewRepeat('/data/my-repeat');
 
-						// assertThat(scenario.answerOf("/data/my-repeat[0]/defaults-to-position").getDisplayText(), is("1"));
-						if (oneBasedPositionPredicates) {
-							expect(scenario.answerOf('/data/my-repeat[1]/defaults-to-position').getValue()).toBe(
-								'1'
-							);
-						} else {
-							expect(scenario.answerOf('/data/my-repeat[0]/defaults-to-position').getValue()).toBe(
-								'1'
-							);
-						}
-					});
+				expect(scenario.countRepeatInstancesOf('/data/my-repeat')).toBe(1);
+
+				// assertThat(scenario.answerOf("/data/my-repeat[0]/defaults-to-position").getDisplayText(), is("1"));
+				expect(scenario.answerOf('/data/my-repeat[1]/defaults-to-position').getValue()).toBe(
+					'1'
+				);
 				}
 			);
 		});
@@ -529,30 +516,17 @@ describe('Actions/Events', () => {
 			 * - Still fails with 1-based position predicate correction: current lack
 			 *   of support for actions/events
 			 */
-			describe.each<PredicateOptions>([
-				// { oneBasedPositionPredicates: false },
-				{ oneBasedPositionPredicates: true },
-			])(
-				'one-based position predicates: $oneBasedPositionPredicates',
-				({ oneBasedPositionPredicates }) => {
-					it('uses [the] current context for relative references', async () => {
-						const scenario = await Scenario.init(r('event-odk-new-repeat.xml'));
+				it('uses [the] current context for relative references', async () => {
+					const scenario = await Scenario.init(r('event-odk-new-repeat.xml'));
 
-						scenario.answer('/data/my-toplevel-value', '12');
+					scenario.answer('/data/my-toplevel-value', '12');
 
-						scenario.createNewRepeat('/data/my-repeat');
+					scenario.createNewRepeat('/data/my-repeat');
 
-						// assertThat(scenario.answerOf("/data/my-repeat[0]/defaults-to-toplevel").getDisplayText(), is("14"));
-						if (oneBasedPositionPredicates) {
-							expect(scenario.answerOf('/data/my-repeat[1]/defaults-to-toplevel').getValue()).toBe(
-								'14'
-							);
-						} else {
-							expect(scenario.answerOf('/data/my-repeat[0]/defaults-to-toplevel').getValue()).toBe(
-								'14'
-							);
-						}
-					});
+					// assertThat(scenario.answerOf("/data/my-repeat[0]/defaults-to-toplevel").getDisplayText(), is("14"));
+					expect(scenario.answerOf('/data/my-repeat[1]/defaults-to-toplevel').getValue()).toBe(
+						'14'
+					);
 				}
 			);
 		});
@@ -887,85 +861,69 @@ describe('Actions/Events', () => {
 			 * predicates. It seems like **at least** the first assertion should fail
 			 * there too.
 			 */
-			describe.each<PredicateOptions>([
-				// { oneBasedPositionPredicates: false },
-				{ oneBasedPositionPredicates: true },
-			])(
-				'one-based position predicates: $one-based-position-predicates',
-				({ oneBasedPositionPredicates }) => {
-					it('can use [the] previous instance as [a] default', async () => {
-						const scenario = await Scenario.init(
-							'Default from prior instance',
-							html(
-								head(
-									title('Default from prior instance'),
-									model(
-										mainInstance(t('data id="default-from-prior-instance"', t('repeat', t('q')))),
-										bind('/data/repeat/q').type('integer')
-									)
-								),
-								body(
-									repeat(
-										'/data/repeat',
-										setvalue(
-											'odk-new-repeat',
-											'/data/repeat/q',
-											'/data/repeat[position()=position(current()/..)-1]/q'
-										),
-										input('/data/repeat/q')
-									)
-								)
+			it('can use [the] previous instance as [a] default', async () => {
+				const scenario = await Scenario.init(
+					'Default from prior instance',
+					html(
+						head(
+							title('Default from prior instance'),
+							model(
+								mainInstance(t('data id="default-from-prior-instance"', t('repeat', t('q')))),
+								bind('/data/repeat/q').type('integer')
 							)
-						);
+						),
+						body(
+							repeat(
+								'/data/repeat',
+								setvalue(
+									'odk-new-repeat',
+									'/data/repeat/q',
+									'/data/repeat[position()=position(current()/..)-1]/q'
+								),
+								input('/data/repeat/q')
+							)
+						)
+					)
+				);
 
-						scenario.next('/data/repeat[1]');
-						scenario.next('/data/repeat[1]/q');
-						scenario.answer(7);
+				scenario.next('/data/repeat[1]');
+				scenario.next('/data/repeat[1]/q');
+				scenario.answer(7);
 
-						if (oneBasedPositionPredicates) {
-							expect(scenario.answerOf('/data/repeat[1]/q')).toEqualAnswer(intAnswer(7));
-						} else {
-							expect(scenario.answerOf('/data/repeat[0]/q')).toEqualAnswer(intAnswer(7));
-						}
+				expect(scenario.answerOf('/data/repeat[1]/q')).toEqualAnswer(intAnswer(7));
 
-						scenario.next('/data/repeat');
-						scenario.createNewRepeat({
-							assertCurrentReference: '/data/repeat',
-						});
+				scenario.next('/data/repeat');
+				scenario.createNewRepeat({
+					assertCurrentReference: '/data/repeat',
+				});
 
-						scenario.next('/data/repeat[2]/q');
+				scenario.next('/data/repeat[2]/q');
 
-						if (oneBasedPositionPredicates) {
-							expect(scenario.answerOf('/data/repeat[2]/q')).toEqualAnswer(intAnswer(7));
-						} else {
-							expect(scenario.answerOf('/data/repeat[1]/q')).toEqualAnswer(intAnswer(7));
-						}
+				expect(scenario.answerOf('/data/repeat[2]/q')).toEqualAnswer(intAnswer(7));
 
-						scenario.answer(8); // override the default
+				scenario.answer(8); // override the default
 
-						scenario.next('/data/repeat');
-						scenario.createNewRepeat({
-							assertCurrentReference: '/data/repeat',
-						});
+				scenario.next('/data/repeat');
+				scenario.createNewRepeat({
+					assertCurrentReference: '/data/repeat',
+				});
 
-						/**
-						 * **PORTING NOTES**
-						 *
-						 * Does this... do anything??
-						 */
-						scenario.next('/data/repeat[3]/q');
+				/**
+				 * **PORTING NOTES**
+				 *
+				 * Does this... do anything??
+				 */
+				scenario.next('/data/repeat[3]/q');
 
-						/**
-						 * **PORTING NOTES**
-						 *
-						 * These were already updated (hence lack of branch on their references)
-						 */
-						expect(scenario.answerOf('/data/repeat[1]/q')).toEqualAnswer(intAnswer(7));
-						expect(scenario.answerOf('/data/repeat[2]/q')).toEqualAnswer(intAnswer(8));
-						expect(scenario.answerOf('/data/repeat[3]/q')).toEqualAnswer(intAnswer(8));
-					});
-				}
-			);
+				/**
+				 * **PORTING NOTES**
+				 *
+				 * These were already updated (hence lack of branch on their references)
+				 */
+				expect(scenario.answerOf('/data/repeat[1]/q')).toEqualAnswer(intAnswer(7));
+				expect(scenario.answerOf('/data/repeat[2]/q')).toEqualAnswer(intAnswer(8));
+				expect(scenario.answerOf('/data/repeat[3]/q')).toEqualAnswer(intAnswer(8));
+			});
 		});
 
 		describe('[`setvalue`] set value on repeat insert[?] in model', () => {
@@ -1556,6 +1514,63 @@ describe('Actions/Events', () => {
 						);
 					}
 				});
+
+				it('updates the destination in only the same repeat instance', async () => {
+					const scenario = await Scenario.init(
+						'Nested setvalue action with repeats',
+						html(
+							head(
+								title('Nested setvalue action with repeats'),
+								model(
+									mainInstance(
+										t(
+											'data id="nested-setvalue-repeats"',
+											t('repeat', t('source'), t('destination'))
+										)
+									),
+									bind('/data/repeat/destination').type('int')
+								)
+							),
+							body(
+								repeat(
+									'/data/repeat',
+									input(
+										'/data/repeat/source',
+										setvalue('xforms-value-changed', '/data/repeat/destination', '4*../source')
+									)
+								)
+							)
+						)
+					);
+
+					const REPEAT_COUNT = 5;
+
+					for (let i = 1; i <= REPEAT_COUNT; i++) {
+						scenario.createNewRepeat('/data/repeat');
+
+						// assertThat(scenario.answerOf("/data/repeat[" + i + "]/destination"), is(nullValue()));
+						expect(scenario.answerOf('/data/repeat[' + i + ']/destination').getValue()).toBe('');
+					}
+
+					for (let i = 1; i <= REPEAT_COUNT; i++) {
+						scenario.answer('/data/repeat[' + i + ']/source', i);
+					}
+
+					for (let i = 1; i <= REPEAT_COUNT; i++) {
+						expect(scenario.answerOf(`/data/repeat[${i}]/source`)).toEqualAnswer(
+							intAnswer(i)
+						);
+						expect(scenario.answerOf(`/data/repeat[${i}]/destination`)).toEqualAnswer(
+							intAnswer(i*4)
+						);
+					}
+
+					for (let i = 1; i <= REPEAT_COUNT; i++) {
+						expect(scenario.answerOf('/data/repeat[' + i + ']/destination')).toEqualAnswer(
+							intAnswer(4 * i)
+						);
+					}
+				});
 			});
 
 			describe('`setvalue` at root', () => {
@@ -1579,7 +1594,7 @@ describe('Actions/Events', () => {
 				 * Alternate test follows which seems more clear to me (which also fails
 				 * pending feature support).
 				 */
-				it.fails('sets value of node in first repeat instance', async () => {
+				it('sets value of node in first repeat instance', async () => {
 					const scenario = await Scenario.init(
 						'Setvalue into repeat',
 						html(
@@ -1613,9 +1628,12 @@ describe('Actions/Events', () => {
 
 					// assertThat(scenario.answerOf("/data/repeat[1]/destination").getDisplayText(), is("foo"));
 					expect(scenario.answerOf('/data/repeat[1]/destination').getValue()).toBe('foo');
+					expect(scenario.answerOf('/data/repeat[2]/destination').getValue()).toBe('');
+					expect(scenario.answerOf('/data/repeat[3]/destination').getValue()).toBe('');
+					expect(scenario.answerOf('/data/repeat[4]/destination').getValue()).toBe('');
 				});
 
-				it.fails(
+				it(
 					"(alternate) sets value of node in first repeat instance, as specified in the action's predicate",
 					async () => {
 						const scenario = await Scenario.init(
@@ -1684,7 +1702,7 @@ describe('Actions/Events', () => {
 				 *      routine/cadence to include focus on TODOs, bug bashing, general
 				 *      dedicated time for coming back to things that get put aside?
 				 */
-				it.fails('sets value of node in repeat instance added after form load', async () => {
+				it('sets value of node in repeat instance added after form load', async () => {
 					const scenario = await Scenario.init(
 						'Setvalue into repeat',
 						html(
@@ -1731,7 +1749,7 @@ describe('Actions/Events', () => {
 				 * - JavaRosa description references "expression" where it seems to have
 				 *   meant "exception"?
 				 */
-				it.fails(
+				it(
 					'[produces an error?] throws [s/]expression[/exception/ ?] when target is [an] unbound reference',
 					async () => {
 						const scenario = await Scenario.init(
@@ -1762,7 +1780,6 @@ describe('Actions/Events', () => {
 						scenario.createNewRepeat('/data/repeat');
 						scenario.createNewRepeat('/data/repeat');
 						scenario.createNewRepeat('/data/repeat');
-
 						const answer = () => {
 							scenario.answer('/data/source', 'foo');
 
@@ -1804,19 +1821,11 @@ describe('Actions/Events', () => {
 						)
 					);
 
-					const REPEAT_COUNT = 1;
+					scenario.createNewRepeat('/data/repeat');
+					expect(scenario.answerOf('/data/destination')).toEqualAnswer(intAnswer(0));
 
-					for (let i = 1; i <= REPEAT_COUNT; i++) {
-						scenario.createNewRepeat('/data/repeat');
-
-						expect(scenario.answerOf('/data/destination')).toEqualAnswer(intAnswer(0));
-					}
-
-					for (let i = 1; i <= REPEAT_COUNT; i++) {
-						scenario.answer(`/data/repeat[${i}]/source`, 7);
-
-						expect(scenario.answerOf('/data/destination')).toEqualAnswer(intAnswer(i));
-					}
+					scenario.answer(`/data/repeat[1]/source`, 7);
+					expect(scenario.answerOf('/data/destination')).toEqualAnswer(intAnswer(1));
 				});
 			});
 
@@ -1829,62 +1838,45 @@ describe('Actions/Events', () => {
 			 *   pending feature support.
 			 */
 			describe('`setvalue` in outer repeat', () => {
-				describe.each<PredicateOptions>([
-					// { oneBasedPositionPredicates: false }, // TODO this isn't valid as far as I can tell
-					{ oneBasedPositionPredicates: true },
-				])(
-					'one-based position predicates: $oneBasedPositionPredicates',
-					({ oneBasedPositionPredicates }) => {
-						it('sets inner repeat value', async () => {
-							const scenario = await Scenario.init(
-								'Nested repeats',
-								html(
-									head(
-										title('Nested repeats'),
-										model(
-											mainInstance(
-												t(
-													'data id="nested-repeats"',
-													t('repeat1', t('source'), t('repeat2', t('destination')))
-												)
-											)
-										)
-									),
-									body(
-										repeat(
-											'/data/repeat1',
-											input(
-												'/data/repeat1/source',
-												setvalue(
-													'xforms-value-changed',
-													'/data/repeat1/repeat2/destination',
-													'../../source'
-												)
-											),
-											repeat('/data/repeat1/repeat2', input('/data/repeat1/repeat2/destination'))
+				it('sets inner repeat value', async () => {
+					const scenario = await Scenario.init(
+						'Nested repeats',
+						html(
+							head(
+								title('Nested repeats'),
+								model(
+									mainInstance(
+										t(
+											'data id="nested-repeats"',
+											t('repeat1', t('source'), t('repeat2', t('destination')))
 										)
 									)
 								)
-							);
+							),
+							body(
+								repeat(
+									'/data/repeat1',
+									input(
+										'/data/repeat1/source',
+										setvalue(
+											'xforms-value-changed',
+											'/data/repeat1/repeat2/destination',
+											'../../source'
+										)
+									),
+									repeat('/data/repeat1/repeat2', input('/data/repeat1/repeat2/destination'))
+								)
+							)
+						)
+					);
 
-							if (oneBasedPositionPredicates) {
-								scenario.answer('/data/repeat1[1]/source', 'foo');
+					scenario.answer('/data/repeat1[1]/source', 'foo');
 
-								// assertThat(scenario.answerOf("/data/repeat1[1]/repeat2[1]/destination").getDisplayText(), is("foo"));
-								expect(
-									scenario.answerOf('/data/repeat1[1]/repeat2[1]/destination').getValue()
-								).toBe('foo');
-							} else {
-								scenario.answer('/data/repeat1[0]/source', 'foo');
-
-								// assertThat(scenario.answerOf("/data/repeat1[0]/repeat2[0]/destination").getDisplayText(), is("foo"));
-								expect(
-									scenario.answerOf('/data/repeat1[0]/repeat2[0]/destination').getValue()
-								).toBe('foo');
-							}
-						});
-					}
-				);
+					// assertThat(scenario.answerOf("/data/repeat1[1]/repeat2[1]/destination").getDisplayText(), is("foo"));
+					expect(
+						scenario.answerOf('/data/repeat1[1]/repeat2[1]/destination').getValue()
+					).toBe('foo');
+				});
 			});
 		});
 

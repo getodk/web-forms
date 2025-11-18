@@ -85,10 +85,10 @@ export class RootDefinition extends NodeDefinition<'root'> {
 
 		return Array.from(childrenByName).map(([nodeName, children]) => {
 			const nodeset = `${parentNodeset}/${nodeName}`;
-			const bind = binds.getOrCreateBindDefinition(nodeset); // TODO treat "odk-instance-first-load" the same as a bind preload
+			const bind = binds.getOrCreateBindDefinition(nodeset);
 			const bodyElement = body.getBodyElement(nodeset);
 			const [firstChild, ...restChildren] = children;
-			const action = actions.get(nodeset); // just create - don't pass it in anywhere
+			const action = actions.get(nodeset);
 
 			if (bodyElement?.type === 'repeat') {
 				return RepeatDefinition.from(model, parent, bind, bodyElement, children);

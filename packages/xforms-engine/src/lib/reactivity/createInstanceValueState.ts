@@ -134,6 +134,28 @@ const setPreloadUIDValue = (context: ValueContext, valueState: RelevantValueStat
 	setValue(preloadUIDValue);
 };
 
+// TODO maybe merge these two if not too complicated/
+const createBindCalculation = (
+	context: ValueContext,
+	setRelevantValue: SimpleAtomicStateSetter<string>,
+	calculateDefinition: BindComputationExpression<'calculate'>
+): void => {
+	context.scope.runTask(() => {
+		const calculate = createComputedExpression(context, calculateDefinition, {
+			defaultValue: '',
+		});
+
+		createComputed(() => {
+			if (context.isAttached() && context.isRelevant()) {
+				const calculated = calculate();
+				const value = context.decodeInstanceValue(calculated);
+
+				setRelevantValue(value);
+			}
+		});
+	});
+};
+
 /**
  * Defines a reactive effect which writes the result of `calculate` bind
  * computations to the provided value setter, on initialization and any
@@ -145,15 +167,10 @@ const setPreloadUIDValue = (context: ValueContext, valueState: RelevantValueStat
 const createCalculation = (
 	context: ValueContext,
 	setRelevantValue: SimpleAtomicStateSetter<string>,
-	calculateDefinition:
-		| ActionComputationExpression<'string'>
-		| BindComputationExpression<'calculate'>
+	action: ActionDefinition
 ): void => {
 	context.scope.runTask(() => {
-		const calculate = createComputedExpression(context, calculateDefinition, {
-			defaultValue: '',
-		});
-
+		const calculate = createComputedExpression(context, action.computation);
 		createComputed(() => {
 			if (context.isAttached() && context.isRelevant()) {
 				const calculated = calculate();
@@ -164,48 +181,80 @@ const createCalculation = (
 	});
 };
 
+const referencesCurrentNode = (context: ValueContext, ref: string): boolean => {
+	const newref = ref;
+	const nodes = context.evaluator.evaluateNodes(newref, {
+		contextNode: context.contextNode,
+	});
+	if (nodes.length > 1) {
+		throw new Error('You are trying to target a repeated field. Currently you may only target a field in a specific repeat instance. XPath nodeset has more than one node.');
+	}
+	return nodes.includes(context.contextNode);
+};
+
+// TODO rename
+const fixUnboundRepeatsInRef = (context: ValueContext, source: string, ref: string): { source: string, ref: string } => {
+	const contextRef = context.contextReference();
+	for (const part of contextRef.matchAll(/([^\[]*)(\[[0-9]+\])/gm)) {
+		const unbound = part[1]! + '/';
+		const bound = part[0]! + '/';
+		if (source.includes(unbound)) {
+			source = source.replace(unbound, bound);
+			ref = ref.replace(unbound, bound);
+		}
+	}
+	return {source, ref};
+};
+
 const registerActions = (
 	context: ValueContext,
 	action: ActionDefinition,
-	relevantValueState: RelevantValueState,
-	initialValue: string
+	relevantValueState: RelevantValueState
 ) => {
 	const [, setValue] = relevantValueState;
 	if (action.events.includes(SET_ACTION_EVENTS.odkInstanceFirstLoad)) {
 		if (shouldPreloadUID(context)) {
 			if (!isAddingRepeatChild(context)) {
-				createCalculation(context, setValue, action.computation); // TODO change to be more like setPreloadUIDValue
+				createCalculation(context, setValue, action); // TODO change to be more like setPreloadUIDValue
 			}
 		}
 	}
 	if (action.events.includes(SET_ACTION_EVENTS.odkInstanceLoad)) {
 		if (!isAddingRepeatChild(context)) {
-			createCalculation(context, setValue, action.computation); // TODO change to be more like setPreloadUIDValue
+			createCalculation(context, setValue, action); // TODO change to be more like setPreloadUIDValue
 		}
 	}
 	if (action.events.includes(SET_ACTION_EVENTS.odkNewRepeat)) {
-		createCalculation(context, setValue, action.computation); // TODO change to be more like setPreloadUIDValue
+		createCalculation(context, setValue, action); // TODO change to be more like setPreloadUIDValue
 	}
 	if (action.events.includes(SET_ACTION_EVENTS.xformsValueChanged)) {
-		let initial = initialValue;
-		const source = action.element.parentElement?.getAttribute('ref'); // put the source in actiondefinition
+
+		let initial = '';
+		// TODO put the source in actiondefinition
+		// TODO source is required
+		const source = action.element.parentElement?.getAttribute('ref')!;
+		const res = fixUnboundRepeatsInRef(context, source, action.ref);
+		const newsource = res.source;
+		const newref = res.ref;
 
 		context.scope.runTask(() => {
-			const calculateValueSource = createComputedExpression(
-				context,
-				new ActionComputationExpression('string', source!)
-			); // registers listener
+			const sourceElementExpression = new ActionComputationExpression('string', newsource);
+			const calculateValueSource = createComputedExpression(context, sourceElementExpression); // registers listener
 			createComputed(() => {
-				const valueSource = calculateValueSource();
-				if (initial !== valueSource) {
-					initial = valueSource;
-					if (context.isAttached() && context.isRelevant()) {
-						const value = context.evaluator.evaluateString(action.computation.expression, context);
-						setValue(value);
+				if (context.isAttached() && context.isRelevant()) {
+					const valueSource = calculateValueSource();
+					if (initial !== valueSource) {
+						initial = valueSource;
+						if (referencesCurrentNode(context, newref)) {
+							const calc = context.evaluator.evaluateString(action.computation.expression, context);
+							const value = context.decodeInstanceValue(calc);
+							setValue(value);
+						}
 					}
 				}
 			});
 		});
+		
 	}
 };
 
@@ -237,12 +286,13 @@ export const createInstanceValueState = (context: ValueContext): InstanceValueSt
 
 		if (calculate != null) {
 			const [, setValue] = relevantValueState;
-			createCalculation(context, setValue, calculate);
+			createBindCalculation(context, setValue, calculate);
 		}
 
 		const action = context.definition.action;
+
 		if (action) {
-			registerActions(context, action, relevantValueState, initialValue);
+			registerActions(context, action, relevantValueState);
 		}
 
 		return guardDownstreamReadonlyWrites(context, relevantValueState);
