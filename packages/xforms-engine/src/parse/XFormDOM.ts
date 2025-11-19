@@ -371,8 +371,10 @@ export class XFormDOM {
 			}
 		);
 		const setValues: readonly DOMSetValueElement[] = evaluator.evaluateNodes<DOMSetValueElement>(
-			'//xf:setvalue[@event]',
-			{ contextNode: html }
+			'./xf:setvalue[@event]',
+			{
+				contextNode: model,
+			}
 		);
 
 		const instances = evaluator.evaluateNodes<DOMInstanceElement>('./xf:instance', {

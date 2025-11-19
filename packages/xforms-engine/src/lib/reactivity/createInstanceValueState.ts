@@ -295,8 +295,7 @@ export const createInstanceValueState = (context: ValueContext): InstanceValueSt
 			createBindCalculation(context, setValue, calculate);
 		}
 
-		const action = context.definition.action;
-
+		const action = context.definition.model.actions.get(context.contextReference());
 		if (action) {
 			registerActions(context, action, relevantValueState);
 		}

@@ -53,16 +53,21 @@ export class RootDefinition extends NodeDefinition<'root'> {
 		this.template = template;
 		this.attributes = AttributeDefinitionMap.from(model, template);
 		this.namespaceDeclarations = new NamespaceDeclarationMap(this);
-
-		// TODO If we scan the whole model for setvalue here and build the action map, then the children can find the actions that apply to them
-
 		this.children = this.buildSubtree(this, template);
+	}
+
+	private mapActions(children: HTMLCollection) {
+		for (const child of children) {
+			if (child.nodeName === 'setvalue') {
+				this.model.actions.add(this.form, child);
+			}
+		}
 	}
 
 	buildSubtree(parent: ParentNodeDefinition, node: StaticElement): readonly ChildNodeDefinition[] {
 		const { form, model } = this;
 		const { body } = form;
-		const { binds, actions } = model;
+		const { binds } = model;
 		const { bind: parentBind } = parent;
 		const { nodeset: parentNodeset } = parentBind;
 
@@ -88,7 +93,10 @@ export class RootDefinition extends NodeDefinition<'root'> {
 			const bind = binds.getOrCreateBindDefinition(nodeset);
 			const bodyElement = body.getBodyElement(nodeset);
 			const [firstChild, ...restChildren] = children;
-			const action = actions.get(nodeset);
+
+			if (bodyElement) {
+				this.mapActions(bodyElement.element.children);
+			}
 
 			if (bodyElement?.type === 'repeat') {
 				return RepeatDefinition.from(model, parent, bind, bodyElement, children);
@@ -107,7 +115,7 @@ export class RootDefinition extends NodeDefinition<'root'> {
 
 				return (
 					NoteNodeDefinition.from(model, parent, bind, bodyElement, element) ??
-					new LeafNodeDefinition(model, parent, bind, action, bodyElement, element)
+					new LeafNodeDefinition(model, parent, bind, bodyElement, element)
 				);
 			}
 

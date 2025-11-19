@@ -28,8 +28,7 @@ export class AttributeDefinitionMap extends Map<QualifiedName, AttributeDefiniti
 		const nonNamespaceAttributes = instanceNode.attributes.filter(isNonNamespaceAttribute);
 		const definitions = nonNamespaceAttributes.map((attribute) => {
 			const bind = model.binds.getOrCreateBindDefinition(attribute.nodeset);
-			const action = model.actions.get(attribute.nodeset);
-			return new AttributeDefinition(model.root, bind, action, attribute);
+			return new AttributeDefinition(model, bind, attribute);
 		});
 		return new this(definitions);
 	}

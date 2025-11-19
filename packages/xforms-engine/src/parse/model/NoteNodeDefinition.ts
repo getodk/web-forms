@@ -70,6 +70,6 @@ export class NoteNodeDefinition<V extends ValueType = ValueType> extends LeafNod
 		readonly noteTextDefinition: NoteTextDefinition,
 		template: StaticLeafElement
 	) {
-		super(model, parent, bind, undefined, bodyElement, template); // TODO pass actions through from everywhere
+		super(model, parent, bind, bodyElement, template);
 	}
 }

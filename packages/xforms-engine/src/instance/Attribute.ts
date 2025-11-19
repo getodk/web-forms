@@ -92,7 +92,7 @@ export class Attribute
 	};
 
 	readonly contextReference = (): string => {
-		return '@' + this.definition.qualifiedName.getPrefixedName();
+		return this.owner.contextReference() + '/@' + this.definition.qualifiedName.getPrefixedName();
 	};
 
 	constructor(

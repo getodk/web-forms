@@ -187,7 +187,6 @@ describe('WHO VA fixture(s): smoketests', () => {
 				},
 			])(
 				'relax calculated date arithmetic precision: $relaxCalculatedDateArithmeticPrecision;  skip writes to note nodes: $skipWritesToNoteNodes',
-				{ timeout: 10 * 1000 },
 				({ relaxCalculatedDateArithmeticPrecision, skipWritesToNoteNodes }) => {
 					let testFn: typeof it | typeof it.fails;
 

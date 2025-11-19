@@ -6,8 +6,8 @@ import {
 } from '../../lib/names/NamespaceDeclarationMap.ts';
 import { QualifiedName } from '../../lib/names/QualifiedName.ts';
 import { escapeXMLText, serializeAttributeXML } from '../../lib/xml-serialization.ts';
-import type { ActionDefinition } from './ActionDefinition.ts';
 import type { BindDefinition } from './BindDefinition.ts';
+import type { ModelDefinition } from './ModelDefinition.ts';
 import { NodeDefinition } from './NodeDefinition.ts';
 import type { RootDefinition } from './RootDefinition.ts';
 
@@ -30,16 +30,15 @@ export class AttributeDefinition
 	readonly qualifiedName: QualifiedName;
 
 	constructor(
-		root: RootDefinition,
+		readonly model: ModelDefinition,
 		bind: BindDefinition,
-		readonly action: ActionDefinition | undefined,
 		readonly template: StaticAttribute
 	) {
 		super(bind);
 
 		const { value } = template;
 
-		this.root = root;
+		this.root = model.root;
 
 		this.value = value;
 		this.qualifiedName = template.qualifiedName;

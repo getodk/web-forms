@@ -3,8 +3,8 @@ import type { FormInstanceInitializationMode } from '../../client/index.ts';
 import type { StaticLeafElement } from '../../integration/xpath/static-dom/StaticElement.ts';
 import type { ReactiveScope } from '../../lib/reactivity/scope.ts';
 import type { BindComputationExpression } from '../../parse/expression/BindComputationExpression.ts';
-import type { ActionDefinition } from '../../parse/model/ActionDefinition.ts';
 import type { AnyBindPreloadDefinition } from '../../parse/model/BindPreloadDefinition.ts';
+import type { ModelDefinition } from '../../parse/model/ModelDefinition.ts';
 import type { EvaluationContext } from './EvaluationContext.ts';
 
 export interface InstanceValueContextDocument {
@@ -23,7 +23,7 @@ interface InstanceValueContextDefinitionBind {
 export interface InstanceValueContextDefinition {
 	readonly bind: InstanceValueContextDefinitionBind;
 	readonly template: StaticLeafElement;
-	readonly action: ActionDefinition | undefined; // it'd be good to get rid of the undefined?
+	readonly model: ModelDefinition;
 }
 
 export interface InstanceValueContext extends EvaluationContext {

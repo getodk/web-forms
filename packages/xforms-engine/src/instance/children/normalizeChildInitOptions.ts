@@ -217,14 +217,7 @@ const buildDeprecatedIDDefinition = (
 	const nodeset = instanceNode.nodeset;
 	const bind = group.model.binds.getOrCreateBindDefinition(nodeset);
 
-	return new LeafNodeDefinition(
-		group.model,
-		group.parent.definition,
-		bind,
-		undefined,
-		null,
-		instanceNode
-	);
+	return new LeafNodeDefinition(group.model, group.parent.definition, bind, null, instanceNode);
 };
 
 const buildDeprecatedID = (

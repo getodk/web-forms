@@ -6,7 +6,6 @@ import {
 } from '../../lib/names/NamespaceDeclarationMap.ts';
 import { QualifiedName } from '../../lib/names/QualifiedName.ts';
 import type { AnyBodyElementDefinition, ControlElementDefinition } from '../body/BodyDefinition.ts';
-import type { ActionDefinition } from './ActionDefinition.ts';
 import { AttributeDefinitionMap } from './AttributeDefinitionMap.ts';
 import type { BindDefinition } from './BindDefinition.ts';
 import { DescendentNodeDefinition } from './DescendentNodeDefinition.ts';
@@ -26,10 +25,9 @@ export class LeafNodeDefinition<V extends ValueType = ValueType>
 	readonly attributes: AttributeDefinitionMap;
 
 	constructor(
-		model: ModelDefinition,
+		readonly model: ModelDefinition,
 		parent: ParentNodeDefinition,
 		bind: BindDefinition,
-		readonly action: ActionDefinition | undefined,
 		bodyElement: AnyBodyElementDefinition | null,
 		readonly template: StaticLeafElement
 	) {
@@ -37,7 +35,7 @@ export class LeafNodeDefinition<V extends ValueType = ValueType>
 			throw new Error(`Unexpected body element for nodeset ${bind.nodeset}`);
 		}
 
-		super(parent, bind, bodyElement); // TODO pass action up to parent
+		super(parent, bind, bodyElement);
 
 		this.valueType = bind.type.resolved satisfies ValueType as V;
 		this.qualifiedName = template.qualifiedName;
