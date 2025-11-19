@@ -43,7 +43,9 @@ jobs:
           key: build-${{ matrix.node-version }}-${{ github.sha }}
           fail-on-cache-miss: true
 
-      - run: 'yarn playwright install ${{ matrix.browser }} --with-deps'
+      - uses: ./.github/actions/setup-playwright
+        with:
+          browser: ${{ matrix.browser }}
 
       - name: 'Run functional e2e tests'
         run: 'yarn workspace @getodk/web-forms test:e2e:functional:${{ matrix.browser }}'
@@ -96,7 +98,9 @@ jobs:
           key: build-${{ matrix.node-version }}-${{ github.sha }}
           fail-on-cache-miss: true
 
-      - run: 'yarn playwright install ${{ matrix.browser }} --with-deps'
+      - uses: ./.github/actions/setup-playwright
+        with:
+          browser: ${{ matrix.browser }}
 
       # xvfb-run is used for visual tests to compare snapshots more accurately.
       - name: 'Run visual e2e tests'
