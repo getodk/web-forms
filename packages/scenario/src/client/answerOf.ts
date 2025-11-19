@@ -1,7 +1,6 @@
 import { UnreachableError } from '@getodk/common/lib/error/UnreachableError.ts';
 import type { AnyNode, RootNode } from '@getodk/xforms-engine';
 import type { AttributeNode } from '../../../xforms-engine/dist/client/AttributeNode';
-import { AttributeNodeAnswer } from '../answer/AttributeNodeAnswer.ts';
 import { InputNodeAnswer } from '../answer/InputNodeAnswer.ts';
 import { ModelValueNodeAnswer } from '../answer/ModelValueNodeAnswer.ts.ts';
 import { RankNodeAnswer } from '../answer/RankNodeAnswer.ts';
@@ -18,15 +17,11 @@ const isValueNode = (node: AnyNode | AttributeNode) => {
 		node.nodeType === 'select' ||
 		node.nodeType === 'input' ||
 		node.nodeType === 'trigger' ||
-		node.nodeType === 'upload' ||
-		node.nodeType === 'attribute'
+		node.nodeType === 'upload'
 	);
 };
 
-export const answerOf = (
-	instanceRoot: RootNode,
-	reference: string
-): AttributeNodeAnswer | ValueNodeAnswer => {
+export const answerOf = (instanceRoot: RootNode, reference: string): ValueNodeAnswer => {
 	const node = getNodeForReference(instanceRoot, reference);
 	if (node == null || !isValueNode(node)) {
 		throw new Error(`Cannot get answer, not a value node: ${reference}`);
@@ -50,9 +45,6 @@ export const answerOf = (
 
 		case 'upload':
 			return new UploadNodeAnswer(node);
-
-		case 'attribute':
-			return new AttributeNodeAnswer(node);
 
 		default:
 			throw new UnreachableError(node);

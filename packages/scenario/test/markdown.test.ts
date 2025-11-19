@@ -12,7 +12,6 @@ import {
 	title,
 } from '@getodk/common/test/fixtures/xform-dsl/index.ts';
 import { describe, expect, it } from 'vitest';
-import type { ValueNodeAnswer } from '../src/answer/ValueNodeAnswer.ts';
 import { Scenario } from '../src/jr/Scenario.ts';
 
 describe('Markdown', () => {
@@ -466,7 +465,7 @@ double line break`;
 				body(input('/data/constrained-input'), input('/data/required-input'))
 			)
 		);
-		const result = scenario.answerOf('/data/required-input') as ValueNodeAnswer;
+		const result = scenario.answerOf('/data/required-input');
 		const formatted = result.node.validationState.required.message?.formatted ?? [];
 		expect(formatted).toMatchObject([
 			{ value: 'Field is ' },

@@ -71,7 +71,7 @@ describe('Data (<bind type>) type support', () => {
 			reference: string,
 			valueType: V
 		): ModelValueNodeAnswer<V> => {
-			const answer = scenario.answerOf(reference) as ValueNodeAnswer;
+			const answer = scenario.answerOf(reference);
 
 			assertTypedModelValueNodeAnswer(answer, valueType);
 
@@ -301,7 +301,7 @@ describe('Data (<bind type>) type support', () => {
 			reference: string,
 			valueType: V
 		): InputNodeAnswer<V> => {
-			const answer = scenario.answerOf(reference) as ValueNodeAnswer;
+			const answer = scenario.answerOf(reference);
 
 			assertTypedInputNodeAnswer(answer, valueType);
 

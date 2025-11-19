@@ -3,7 +3,6 @@ import { xmlElement } from '@getodk/common/test/fixtures/xform-dsl/index.ts';
 import type {
 	AnyFormInstance,
 	AnyNode,
-	AttributeNode,
 	FormResource,
 	InstancePayload,
 	InstancePayloadOptions,
@@ -20,7 +19,7 @@ import { constants as ENGINE_CONSTANTS } from '@getodk/xforms-engine';
 import type { Accessor, Owner, Setter } from 'solid-js';
 import { createMemo, createSignal } from 'solid-js';
 import { afterEach, assert, expect } from 'vitest';
-import type { AttributeNodeAnswer } from '../answer/AttributeNodeAnswer.ts';
+import { AttributeNodeAnswer } from '../answer/AttributeNodeAnswer.ts';
 import { RankValuesAnswer } from '../answer/RankValuesAnswer.ts';
 import { SelectValuesAnswer } from '../answer/SelectValuesAnswer.ts';
 import type { ValueNodeAnswer } from '../answer/ValueNodeAnswer.ts';
@@ -463,8 +462,19 @@ export class Scenario {
 		return event.answerQuestion(value);
 	}
 
-	answerOf(reference: string): AttributeNodeAnswer | ValueNodeAnswer {
+	answerOf(reference: string): ValueNodeAnswer {
 		return answerOf(this.instanceRoot, reference);
+	}
+
+	attributeOf(reference: string, attributeName: string): AttributeNodeAnswer {
+		const node = this.getInstanceNode(reference);
+		const attribute = node.currentState.attributes.find((attr) => {
+			return attr.definition.qualifiedName.localName === attributeName;
+		});
+		if (attribute == null) {
+			throw new Error(`No attribute node for reference: ${reference}/@${attributeName}`);
+		}
+		return new AttributeNodeAnswer(attribute);
 	}
 
 	/**
@@ -474,7 +484,7 @@ export class Scenario {
 	 * this note discussed giving it a more general name, and we landed on this in
 	 * review. This note should be removed if JavaRosa is updated to match.
 	 */
-	getInstanceNode(reference: string): AnyNode | AttributeNode {
+	getInstanceNode(reference: string): AnyNode {
 		const node = getNodeForReference(this.instanceRoot, reference);
 
 		if (node == null) {

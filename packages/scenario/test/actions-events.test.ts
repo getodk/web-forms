@@ -2020,7 +2020,7 @@ describe('Actions/Events', () => {
 				);
 
 				// assertThat(scenario.answerOf("/data/element/@attr").getDisplayText(), is("7"));
-				expect(scenario.answerOf('/data/element/@attr').getValue()).toBe('7');
+				expect(scenario.attributeOf('/data/element', 'attr').getValue()).toBe('7');
 			});
 
 			it('sets [the] value of [a bound] attribute, after deserialization', async () => {
@@ -2039,14 +2039,14 @@ describe('Actions/Events', () => {
 				);
 
 				// assertThat(scenario.answerOf("/data/element/@attr").getDisplayText(), is("7"));
-				expect(scenario.answerOf('/data/element/@attr').getValue()).toBe('7');
+				expect(scenario.attributeOf('/data/element', 'attr').getValue()).toBe('7');
 
 				const cached = await scenario.proposed_serializeAndRestoreInstanceState();
 
 				const newInstance = cached.newInstance();
 
 				// assertThat(cached.answerOf("/data/element/@attr").getDisplayText(), is("7"));
-				expect(newInstance.answerOf('/data/element/@attr').getValue()).toBe('7');
+				expect(newInstance.attributeOf('/data/element', 'attr').getValue()).toBe('7');
 			});
 		});
 	});
