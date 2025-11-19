@@ -2,18 +2,23 @@
 import ValidationMessage from '@/components/common/ValidationMessage.vue';
 import ControlText from '@/components/form-elements/ControlText.vue';
 import InputGeopoint from '@/components/form-elements/input/geopoint/InputGeopoint.vue';
+import InputGeopointWithMap from '@/components/form-elements/input/InputGeopointWithMap.vue';
 import InputDate from '@/components/form-elements/input/InputDate.vue';
 import InputDecimal from '@/components/form-elements/input/InputDecimal.vue';
 import InputInt from '@/components/form-elements/input/InputInt.vue';
 import InputNumbersAppearance from '@/components/form-elements/input/InputNumbersAppearance.vue';
 import InputText from '@/components/form-elements/input/InputText.vue';
+import { IS_FORM_EDIT_MODE } from '@/lib/constants/injection-keys.ts';
 import type { AnyInputNode } from '@getodk/xforms-engine';
+import { inject } from 'vue';
 
 interface InputControlProps {
 	readonly node: AnyInputNode;
 }
 
 defineProps<InputControlProps>();
+
+const isFormEditMode = inject(IS_FORM_EDIT_MODE);
 </script>
 
 <template>
@@ -30,7 +35,8 @@ defineProps<InputControlProps>();
 			<InputNumbersAppearance :node="node" />
 		</template>
 		<template v-else-if="node.valueType === 'geopoint'">
-			<InputGeopoint :question="node" />
+			<InputGeopointWithMap v-if="isFormEditMode || (node.appearances['placement-map'] || node.appearances.maps)" :question="node" />
+			<InputGeopoint v-else :question="node" />
 		</template>
 		<template v-else-if="node.valueType === 'date'">
 			<InputDate :question="node" />

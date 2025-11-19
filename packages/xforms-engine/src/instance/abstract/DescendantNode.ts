@@ -167,7 +167,6 @@ export abstract class DescendantNode<
 						return true;
 					}
 				}
-
 				return false;
 			});
 		});

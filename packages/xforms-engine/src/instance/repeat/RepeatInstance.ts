@@ -10,10 +10,10 @@ import type {
 import type { InstanceState } from '../../client/serialization/InstanceState.ts';
 import type { TextRange } from '../../client/TextRange.ts';
 import type { AncestorNodeValidationState } from '../../client/validation.ts';
-import type { TemplatedNodeAttributeSerializationError } from '../../error/TemplatedNodeAttributeSerializationError.ts';
 import type { XFormsXPathElement } from '../../integration/xpath/adapter/XFormsXPathNode.ts';
 import type { StaticElement } from '../../integration/xpath/static-dom/StaticElement.ts';
 import { createTemplatedNodeInstanceState } from '../../lib/client-reactivity/instance-state/createTemplatedNodeInstanceState.ts';
+import { createAttributeState } from '../../lib/reactivity/createAttributeState.ts';
 import type { ChildrenState } from '../../lib/reactivity/createChildrenState.ts';
 import { createChildrenState } from '../../lib/reactivity/createChildrenState.ts';
 import type { MaterializedChildren } from '../../lib/reactivity/materializeCurrentStateChildren.ts';
@@ -26,6 +26,7 @@ import { createNodeLabel } from '../../lib/reactivity/text/createNodeLabel.ts';
 import { createAggregatedViolations } from '../../lib/reactivity/validation/createAggregatedViolations.ts';
 import type { DescendantNodeSharedStateSpec } from '../abstract/DescendantNode.ts';
 import { DescendantNode } from '../abstract/DescendantNode.ts';
+import type { Attribute } from '../Attribute.ts';
 import { buildChildren } from '../children/buildChildren.ts';
 import type { GeneralChildNode, RepeatRange } from '../hierarchy.ts';
 import type { EvaluationContext } from '../internal-api/EvaluationContext.ts';
@@ -35,9 +36,7 @@ interface RepeatInstanceStateSpec extends DescendantNodeSharedStateSpec {
 	readonly label: Accessor<TextRange<'label'> | null>;
 	readonly hint: null;
 
-	/** @see {@link TemplatedNodeAttributeSerializationError} */
-	readonly attributes: null;
-
+	readonly attributes: Accessor<readonly Attribute[]>;
 	readonly children: Accessor<readonly FormNodeID[]>;
 	readonly valueOptions: null;
 	readonly value: null;
@@ -132,6 +131,7 @@ export class RepeatInstance
 		this.appearances = definition.bodyElement.appearances;
 
 		const childrenState = createChildrenState<RepeatInstance, GeneralChildNode>(this);
+		const attributeState = createAttributeState(this.scope);
 
 		this.childrenState = childrenState;
 		this.currentIndex = currentIndex;
@@ -147,7 +147,7 @@ export class RepeatInstance
 				// TODO: only-child <group><label>
 				label: createNodeLabel(this, definition),
 				hint: null,
-				attributes: null,
+				attributes: attributeState.getAttributes,
 				children: childrenState.childIds,
 				valueOptions: null,
 				value: null,

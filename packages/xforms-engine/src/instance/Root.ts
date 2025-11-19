@@ -12,6 +12,7 @@ import type { InstanceState } from '../client/serialization/InstanceState.ts';
 import type { AncestorNodeValidationState } from '../client/validation.ts';
 import type { XFormsXPathElement } from '../integration/xpath/adapter/XFormsXPathNode.ts';
 import { createRootInstanceState } from '../lib/client-reactivity/instance-state/createRootInstanceState.ts';
+import { createAttributeState } from '../lib/reactivity/createAttributeState.ts';
 import type { ChildrenState } from '../lib/reactivity/createChildrenState.ts';
 import { createChildrenState } from '../lib/reactivity/createChildrenState.ts';
 import type { MaterializedChildren } from '../lib/reactivity/materializeCurrentStateChildren.ts';
@@ -24,6 +25,8 @@ import { createAggregatedViolations } from '../lib/reactivity/validation/createA
 import type { BodyClassList } from '../parse/body/BodyDefinition.ts';
 import type { RootDefinition } from '../parse/model/RootDefinition.ts';
 import { DescendantNode } from './abstract/DescendantNode.ts';
+import { buildAttributes } from './attachments/buildAttributes.ts';
+import { Attribute } from './Attribute.ts';
 import { buildChildren } from './children/buildChildren.ts';
 import type { GeneralChildNode } from './hierarchy.ts';
 import type { EvaluationContext } from './internal-api/EvaluationContext.ts';
@@ -39,6 +42,7 @@ interface RootStateSpec {
 	readonly label: null;
 	readonly hint: null;
 	readonly children: Accessor<readonly FormNodeID[]>;
+	readonly attributes: Accessor<readonly Attribute[]>;
 	readonly valueOptions: null;
 	readonly value: null;
 
@@ -95,6 +99,7 @@ export class Root
 		this.classes = parent.classes;
 
 		const childrenState = createChildrenState<Root, GeneralChildNode>(this);
+		const attributeState = createAttributeState(this.scope);
 
 		this.childrenState = childrenState;
 		this.languages = parent.languages;
@@ -112,6 +117,7 @@ export class Root
 				valueOptions: null,
 				value: null,
 				children: childrenState.childIds,
+				attributes: attributeState.getAttributes,
 			},
 			this.instanceConfig
 		);
@@ -125,6 +131,7 @@ export class Root
 		);
 
 		childrenState.setChildren(buildChildren(this));
+		attributeState.setAttributes(buildAttributes(this));
 		this.validationState = createAggregatedViolations(this, this.instanceConfig);
 		this.instanceState = createRootInstanceState(this);
 	}
