@@ -5,7 +5,6 @@ import type { InstanceState } from './serialization/InstanceState.ts';
 
 export interface AttributeNodeState {
 	get value(): string;
-	get relevant(): boolean;
 }
 
 /**

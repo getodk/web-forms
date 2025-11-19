@@ -1,5 +1,5 @@
 import { XPathNodeKindKey } from '@getodk/xpath';
-import { type Accessor } from 'solid-js';
+import type { Accessor } from 'solid-js';
 import type { BaseValueNode } from '../../client/BaseValueNode.ts';
 import type { LeafNodeType as ValueNodeType } from '../../client/node-types.ts';
 import type { InstanceState } from '../../client/serialization/InstanceState.ts';
@@ -108,7 +108,6 @@ export abstract class ValueNode<
 			return this.getInstanceValue();
 		};
 		this.valueState = valueState;
-
 		this.validation = createValidationState(this, this.instanceConfig);
 		this.instanceState = createValueNodeInstanceState(this);
 	}

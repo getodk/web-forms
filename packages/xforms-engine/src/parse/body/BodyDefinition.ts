@@ -79,6 +79,7 @@ type BodyElementReference = string;
 class BodyElementMap extends Map<BodyElementReference, AnyBodyElementDefinition> {
 	constructor(elements: BodyElementDefinitionArray) {
 		super();
+
 		this.mapElementsByReference(elements);
 	}
 
