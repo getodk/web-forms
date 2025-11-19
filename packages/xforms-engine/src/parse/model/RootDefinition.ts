@@ -59,7 +59,7 @@ export class RootDefinition extends NodeDefinition<'root'> {
 	private mapActions(children: HTMLCollection) {
 		for (const child of children) {
 			if (child.nodeName === 'setvalue') {
-				this.model.actions.add(this.form, child);
+				this.model.actions.add(this.model, child);
 			}
 		}
 	}

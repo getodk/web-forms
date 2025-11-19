@@ -1,6 +1,5 @@
 import { isTextNode } from '@getodk/common/lib/dom/predicates.ts';
 import { ActionComputationExpression } from '../expression/ActionComputationExpression.ts';
-import type { XFormDefinition } from '../XFormDefinition.ts';
 import type { ModelDefinition } from './ModelDefinition.ts';
 
 export const SET_ACTION_EVENTS = {
@@ -56,10 +55,10 @@ export class ActionDefinition {
 	readonly computation: ActionComputationExpression<'string'>;
 
 	constructor(
-		form: XFormDefinition,
+		model: ModelDefinition,
 		readonly element: Element
 	) {
-		const ref = ActionDefinition.getRef(form.model, element);
+		const ref = ActionDefinition.getRef(model, element);
 		if (!ref) {
 			throw new Error(
 				'Invalid setvalue element - you must define either "ref" or "bind" attribute'

@@ -20,7 +20,7 @@ export class ModelActionMap extends Map<string, ActionDefinition> {
 	) {
 		super(
 			form.xformDOM.setValues.map((setValueElement) => {
-				const action = new ActionDefinition(form, setValueElement);
+				const action = new ActionDefinition(model, setValueElement);
 				if (action.events.includes(SET_ACTION_EVENTS.odkNewRepeat)) {
 					throw new Error('Model contains "setvalue" element with "odk-new-repeat" event');
 				}
@@ -34,8 +34,8 @@ export class ModelActionMap extends Map<string, ActionDefinition> {
 		return super.get(ModelActionMap.getKey(ref));
 	}
 
-	add(form: XFormDefinition, setValueElement: Element) {
-		const action = new ActionDefinition(form, setValueElement);
+	add(model: ModelDefinition, setValueElement: Element) {
+		const action = new ActionDefinition(model, setValueElement);
 		const key = ModelActionMap.getKey(action.ref);
 		this.set(key, action);
 	}
