@@ -134,28 +134,6 @@ const setPreloadUIDValue = (context: ValueContext, valueState: RelevantValueStat
 	setValue(preloadUIDValue);
 };
 
-// TODO maybe merge these two if not too complicated/
-const createBindCalculation = (
-	context: ValueContext,
-	setRelevantValue: SimpleAtomicStateSetter<string>,
-	calculateDefinition: BindComputationExpression<'calculate'>
-): void => {
-	context.scope.runTask(() => {
-		const calculate = createComputedExpression(context, calculateDefinition, {
-			defaultValue: '',
-		});
-
-		createComputed(() => {
-			if (context.isAttached() && context.isRelevant()) {
-				const calculated = calculate();
-				const value = context.decodeInstanceValue(calculated);
-
-				setRelevantValue(value);
-			}
-		});
-	});
-};
-
 /**
  * Defines a reactive effect which writes the result of `calculate` bind
  * computations to the provided value setter, on initialization and any
@@ -167,10 +145,10 @@ const createBindCalculation = (
 const createCalculation = (
 	context: ValueContext,
 	setRelevantValue: SimpleAtomicStateSetter<string>,
-	action: ActionDefinition
+	computation: ActionComputationExpression<'string'> | BindComputationExpression<'calculate'>
 ): void => {
 	context.scope.runTask(() => {
-		const calculate = createComputedExpression(context, action.computation);
+		const calculate = createComputedExpression(context, computation);
 		createComputed(() => {
 			if (context.isAttached() && context.isRelevant()) {
 				const calculated = calculate();
@@ -221,18 +199,18 @@ const registerActions = (
 	if (action.events.includes(SET_ACTION_EVENTS.odkInstanceFirstLoad)) {
 		if (shouldPreloadUID(context)) {
 			if (!isAddingRepeatChild(context)) {
-				createCalculation(context, setValue, action); // TODO change to be more like setPreloadUIDValue
+				createCalculation(context, setValue, action.computation); // TODO change to be more like setPreloadUIDValue
 			}
 		}
 	}
 	if (action.events.includes(SET_ACTION_EVENTS.odkInstanceLoad)) {
 		if (!isAddingRepeatChild(context)) {
-			createCalculation(context, setValue, action); // TODO change to be more like setPreloadUIDValue
+			createCalculation(context, setValue, action.computation); // TODO change to be more like setPreloadUIDValue
 		}
 	}
 	if (action.events.includes(SET_ACTION_EVENTS.odkNewRepeat)) {
 		if (isAddingRepeatChild(context)) {
-			createCalculation(context, setValue, action); // TODO change to be more like setPreloadUIDValue
+			createCalculation(context, setValue, action.computation); // TODO change to be more like setPreloadUIDValue
 		}
 	}
 	if (action.events.includes(SET_ACTION_EVENTS.xformsValueChanged)) {
@@ -292,7 +270,7 @@ export const createInstanceValueState = (context: ValueContext): InstanceValueSt
 
 		if (calculate != null) {
 			const [, setValue] = relevantValueState;
-			createBindCalculation(context, setValue, calculate);
+			createCalculation(context, setValue, calculate);
 		}
 
 		const action = context.definition.model.actions.get(context.contextReference());
