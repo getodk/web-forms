@@ -147,15 +147,13 @@ const createCalculation = (
 	setRelevantValue: SimpleAtomicStateSetter<string>,
 	computation: ActionComputationExpression<'string'> | BindComputationExpression<'calculate'>
 ): void => {
-	context.scope.runTask(() => {
-		const calculate = createComputedExpression(context, computation);
-		createComputed(() => {
-			if (context.isAttached() && context.isRelevant()) {
-				const calculated = calculate();
-				const value = context.decodeInstanceValue(calculated);
-				setRelevantValue(value);
-			}
-		});
+	const calculate = createComputedExpression(context, computation);
+	createComputed(() => {
+		if (context.isAttached() && context.isRelevant()) {
+			const calculated = calculate();
+			const value = context.decodeInstanceValue(calculated);
+			setRelevantValue(value);
+		}
 	});
 };
 
@@ -172,72 +170,71 @@ const referencesCurrentNode = (context: ValueContext, ref: string): boolean => {
 	return nodes.includes(context.contextNode);
 };
 
-// TODO rename
-const fixUnboundRepeatsInRef = (
+const bindToRepeatInstance = (
 	context: ValueContext,
-	source: string,
-	ref: string
-): { source: string; ref: string } => {
-	const contextRef = context.contextReference();
-	for (const part of contextRef.matchAll(/([^[]*)(\[[0-9]+\])/gm)) {
-		const unbound = part[1] + '/';
-		const bound = part[0] + '/';
-		if (source.includes(unbound)) {
-			source = source.replace(unbound, bound);
-			ref = ref.replace(unbound, bound);
+	action: ActionDefinition
+): { source: string | undefined; ref: string } => {
+	let source = action.source;
+	let ref = action.ref;
+	if (source) {
+		const contextRef = context.contextReference();
+		for (const part of contextRef.matchAll(/([^[]*)(\[[0-9]+\])/gm)) {
+			const unbound = part[1] + '/';
+			const bound = part[0] + '/';
+			if (source.includes(unbound)) {
+				source = source.replace(unbound, bound);
+				ref = ref.replace(unbound, bound);
+			}
 		}
 	}
 	return { source, ref };
 };
 
-const registerActions = (
+const registerAction = (
 	context: ValueContext,
 	action: ActionDefinition,
-	relevantValueState: RelevantValueState
+	setValue: SimpleAtomicStateSetter<string>
 ) => {
-	const [, setValue] = relevantValueState;
 	if (action.events.includes(SET_ACTION_EVENTS.odkInstanceFirstLoad)) {
 		if (shouldPreloadUID(context)) {
 			if (!isAddingRepeatChild(context)) {
-				createCalculation(context, setValue, action.computation); // TODO change to be more like setPreloadUIDValue
+				createCalculation(context, setValue, action.computation);
 			}
 		}
 	}
 	if (action.events.includes(SET_ACTION_EVENTS.odkInstanceLoad)) {
 		if (!isAddingRepeatChild(context)) {
-			createCalculation(context, setValue, action.computation); // TODO change to be more like setPreloadUIDValue
+			createCalculation(context, setValue, action.computation);
 		}
 	}
 	if (action.events.includes(SET_ACTION_EVENTS.odkNewRepeat)) {
 		if (isAddingRepeatChild(context)) {
-			createCalculation(context, setValue, action.computation); // TODO change to be more like setPreloadUIDValue
+			createCalculation(context, setValue, action.computation);
 		}
 	}
-	if (action.events.includes(SET_ACTION_EVENTS.xformsValueChanged)) {
-		let initial = '';
-		// TODO put the source in actiondefinition
-		// TODO source is required
-		const source = action.element.parentElement?.getAttribute('ref');
-		const res = fixUnboundRepeatsInRef(context, source!, action.ref);
-		const newsource = res.source;
-		const newref = res.ref;
 
-		context.scope.runTask(() => {
-			const sourceElementExpression = new ActionComputationExpression('string', newsource);
-			const calculateValueSource = createComputedExpression(context, sourceElementExpression); // registers listener
-			createComputed(() => {
-				if (context.isAttached() && context.isRelevant()) {
-					const valueSource = calculateValueSource();
-					if (initial !== valueSource) {
-						initial = valueSource;
-						if (referencesCurrentNode(context, newref)) {
-							const calc = context.evaluator.evaluateString(action.computation.expression, context);
-							const value = context.decodeInstanceValue(calc);
-							setValue(value);
-						}
+	if (action.events.includes(SET_ACTION_EVENTS.xformsValueChanged)) {
+		let previous = ''; // TODO figure out how to make this a memo!
+		const { source, ref } = bindToRepeatInstance(context, action);
+		if (!source) {
+			// no element to listen to
+			return;
+		}
+
+		const sourceElementExpression = new ActionComputationExpression('string', source);
+		const calculateValueSource = createComputedExpression(context, sourceElementExpression); // registers listener
+		createComputed(() => {
+			if (context.isAttached() && context.isRelevant()) {
+				const valueSource = calculateValueSource();
+				if (previous !== valueSource) {
+					if (referencesCurrentNode(context, ref)) {
+						const calc = context.evaluator.evaluateString(action.computation.expression, context);
+						const value = context.decodeInstanceValue(calc);
+						setValue(value);
 					}
 				}
-			});
+				previous = valueSource;
+			}
 		});
 	}
 };
@@ -264,18 +261,18 @@ export const createInstanceValueState = (context: ValueContext): InstanceValueSt
 		/**
 		 * @see {@link setPreloadUIDValue} for important details about spec ordering of events and computations.
 		 */
-		setPreloadUIDValue(context, relevantValueState); // TODO what does preload do in repeat instances?
+		setPreloadUIDValue(context, relevantValueState);
+
+		const [, setValue] = relevantValueState;
 
 		const { calculate } = context.definition.bind;
-
 		if (calculate != null) {
-			const [, setValue] = relevantValueState;
 			createCalculation(context, setValue, calculate);
 		}
 
 		const action = context.definition.model.actions.get(context.contextReference());
 		if (action) {
-			registerActions(context, action, relevantValueState);
+			registerAction(context, action, setValue);
 		}
 
 		return guardDownstreamReadonlyWrites(context, relevantValueState);

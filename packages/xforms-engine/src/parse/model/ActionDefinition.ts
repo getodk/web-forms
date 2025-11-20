@@ -53,10 +53,12 @@ export class ActionDefinition {
 	readonly ref: string;
 	readonly events: SetActionEvent[];
 	readonly computation: ActionComputationExpression<'string'>;
+	readonly source: string | undefined;
 
 	constructor(
 		model: ModelDefinition,
-		readonly element: Element
+		readonly element: Element,
+		source?: string
 	) {
 		const ref = ActionDefinition.getRef(model, element);
 		if (!ref) {
@@ -68,5 +70,6 @@ export class ActionDefinition {
 		this.events = ActionDefinition.getEvents(element);
 		const value = ActionDefinition.getValue(element);
 		this.computation = new ActionComputationExpression('string', value);
+		this.source = source;
 	}
 }

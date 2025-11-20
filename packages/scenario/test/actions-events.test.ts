@@ -1289,7 +1289,7 @@ describe('Actions/Events', () => {
 					scenario.createNewRepeat('/data/repeat');
 					expect(scenario.answerOf('/data/destination')).toEqualAnswer(intAnswer(0));
 
-					scenario.answer(`/data/repeat[1]/source`, 7);
+					scenario.answer('/data/repeat[1]/source', 7);
 					expect(scenario.answerOf('/data/destination')).toEqualAnswer(intAnswer(1));
 				});
 			});
