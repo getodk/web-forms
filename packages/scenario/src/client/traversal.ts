@@ -41,6 +41,7 @@ export const collectFlatNodeList = (currentNode: AnyNode): readonly AnyNode[] =>
 export const getNodeForReference = (instanceRoot: RootNode, reference: string): AnyNode | null => {
 	const nodes = collectFlatNodeList(instanceRoot);
 	const result = nodes.find((node) => node.currentState.reference === reference);
+
 	return result ?? null;
 };
 

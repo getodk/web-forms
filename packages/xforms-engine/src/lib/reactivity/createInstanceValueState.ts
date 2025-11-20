@@ -8,6 +8,8 @@ import { ActionDefinition, SET_ACTION_EVENTS } from '../../parse/model/ActionDef
 import { createComputedExpression } from './createComputedExpression.ts';
 import type { SimpleAtomicState, SimpleAtomicStateSetter } from './types.ts';
 
+const REPEAT_INDEX_REGEX = /([^[]*)(\[[0-9]+\])/g;
+
 type ValueContext = AttributeContext | InstanceValueContext;
 
 const isInstanceFirstLoad = (context: ValueContext) => {
@@ -150,10 +152,10 @@ const bindToRepeatInstance = (
 	let ref = action.ref;
 	if (source) {
 		const contextRef = context.contextReference();
-		for (const part of contextRef.matchAll(/([^[]*)(\[[0-9]+\])/gm)) {
+		for (const part of contextRef.matchAll(REPEAT_INDEX_REGEX)) {
 			const unbound = part[1] + '/';
-			const bound = part[0] + '/';
 			if (source.includes(unbound)) {
+				const bound = part[0] + '/';
 				source = source.replace(unbound, bound);
 				ref = ref.replace(unbound, bound);
 			}
@@ -220,10 +222,8 @@ const registerAction = (
 	action: ActionDefinition
 ) => {
 	if (action.events.includes(SET_ACTION_EVENTS.odkInstanceFirstLoad)) {
-		if (shouldPreloadUID(context)) {
-			if (!isAddingRepeatChild(context)) {
-				createCalculation(context, setValue, action.computation);
-			}
+		if (!isAddingRepeatChild(context) && shouldPreloadUID(context)) {
+			createCalculation(context, setValue, action.computation);
 		}
 	}
 	if (action.events.includes(SET_ACTION_EVENTS.odkInstanceLoad)) {

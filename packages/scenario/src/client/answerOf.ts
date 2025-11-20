@@ -1,6 +1,5 @@
 import { UnreachableError } from '@getodk/common/lib/error/UnreachableError.ts';
 import type { AnyNode, RootNode } from '@getodk/xforms-engine';
-import type { AttributeNode } from '../../../xforms-engine/dist/client/AttributeNode';
 import { InputNodeAnswer } from '../answer/InputNodeAnswer.ts';
 import { ModelValueNodeAnswer } from '../answer/ModelValueNodeAnswer.ts.ts';
 import { RankNodeAnswer } from '../answer/RankNodeAnswer.ts';
@@ -10,7 +9,7 @@ import { UploadNodeAnswer } from '../answer/UploadNodeAnswer.ts';
 import type { ValueNodeAnswer } from '../answer/ValueNodeAnswer.ts';
 import { getNodeForReference } from './traversal.ts';
 
-const isValueNode = (node: AnyNode | AttributeNode) => {
+const isValueNode = (node: AnyNode) => {
 	return (
 		node.nodeType === 'model-value' ||
 		node.nodeType === 'rank' ||
@@ -23,6 +22,7 @@ const isValueNode = (node: AnyNode | AttributeNode) => {
 
 export const answerOf = (instanceRoot: RootNode, reference: string): ValueNodeAnswer => {
 	const node = getNodeForReference(instanceRoot, reference);
+
 	if (node == null || !isValueNode(node)) {
 		throw new Error(`Cannot get answer, not a value node: ${reference}`);
 	}
