@@ -103,7 +103,6 @@ const PRELOAD_UID_EXPRESSION = 'concat("uuid:", uuid())';
  * - When an instance is first loaded ({@link isInstanceFirstLoad})
  * - When an instance is initially loaded for editing ({@link isEditInitialLoad})
  */
-// TODO rename to isFirstLoad??
 const shouldPreloadUID = (context: ValueContext) => {
 	return isInstanceFirstLoad(context) || isEditInitialLoad(context);
 };
@@ -111,13 +110,7 @@ const shouldPreloadUID = (context: ValueContext) => {
 /**
  * @todo This is a temporary one-off, until we support the full range of
  * {@link https://getodk.github.io/xforms-spec/#preload-attributes | preloads}.
- *
- * @todo ALSO, IMPORTANTLY(!): the **call site** for this function is
- * semantically where we would expect to trigger a
- * {@link https://getodk.github.io/xforms-spec/#event:odk-instance-first-load | odk-instance-first-load event},
- * _and compute_ preloads semantically associated with that event.
  */
-// TODO expand on this
 const setPreloadUIDValue = (context: ValueContext, valueState: RelevantValueState): void => {
 	const { preload } = context.definition.bind;
 
@@ -132,6 +125,41 @@ const setPreloadUIDValue = (context: ValueContext, valueState: RelevantValueStat
 	const [, setValue] = valueState;
 
 	setValue(preloadUIDValue);
+};
+
+const referencesCurrentNode = (context: ValueContext, ref: string): boolean => {
+	const newref = ref;
+	const nodes = context.evaluator.evaluateNodes(newref, {
+		contextNode: context.contextNode,
+	});
+	if (nodes.length > 1) {
+		throw new Error(
+			'You are trying to target a repeated field. Currently you may only target a field in a specific repeat instance. XPath nodeset has more than one node.'
+		);
+	}
+	return nodes.includes(context.contextNode);
+};
+
+// Replaces the unbound repeat references in source and ref, with references
+// bound to the repeat instace of the context.
+const bindToRepeatInstance = (
+	context: ValueContext,
+	action: ActionDefinition
+): { source: string | undefined; ref: string } => {
+	let source = action.source;
+	let ref = action.ref;
+	if (source) {
+		const contextRef = context.contextReference();
+		for (const part of contextRef.matchAll(/([^[]*)(\[[0-9]+\])/gm)) {
+			const unbound = part[1] + '/';
+			const bound = part[0] + '/';
+			if (source.includes(unbound)) {
+				source = source.replace(unbound, bound);
+				ref = ref.replace(unbound, bound);
+			}
+		}
+	}
+	return { source, ref };
 };
 
 /**
@@ -157,43 +185,39 @@ const createCalculation = (
 	});
 };
 
-const referencesCurrentNode = (context: ValueContext, ref: string): boolean => {
-	const newref = ref;
-	const nodes = context.evaluator.evaluateNodes(newref, {
-		contextNode: context.contextNode,
-	});
-	if (nodes.length > 1) {
-		throw new Error(
-			'You are trying to target a repeated field. Currently you may only target a field in a specific repeat instance. XPath nodeset has more than one node.'
-		);
-	}
-	return nodes.includes(context.contextNode);
-};
-
-const bindToRepeatInstance = (
+const createValueChangedCalculation = (
 	context: ValueContext,
+	setRelevantValue: SimpleAtomicStateSetter<string>,
 	action: ActionDefinition
-): { source: string | undefined; ref: string } => {
-	let source = action.source;
-	let ref = action.ref;
-	if (source) {
-		const contextRef = context.contextReference();
-		for (const part of contextRef.matchAll(/([^[]*)(\[[0-9]+\])/gm)) {
-			const unbound = part[1] + '/';
-			const bound = part[0] + '/';
-			if (source.includes(unbound)) {
-				source = source.replace(unbound, bound);
-				ref = ref.replace(unbound, bound);
-			}
-		}
+): void => {
+	const { source, ref } = bindToRepeatInstance(context, action);
+	if (!source) {
+		// no element to listen to
+		return;
 	}
-	return { source, ref };
+	let previous = '';
+	const sourceElementExpression = new ActionComputationExpression('string', source);
+	const calculateValueSource = createComputedExpression(context, sourceElementExpression); // registers listener
+	createComputed(() => {
+		if (context.isAttached() && context.isRelevant()) {
+			const valueSource = calculateValueSource();
+			if (previous !== valueSource) {
+				// only update if value has changed
+				if (referencesCurrentNode(context, ref)) {
+					const calc = context.evaluator.evaluateString(action.computation.expression, context);
+					const value = context.decodeInstanceValue(calc);
+					setRelevantValue(value);
+				}
+			}
+			previous = valueSource;
+		}
+	});
 };
 
 const registerAction = (
 	context: ValueContext,
-	action: ActionDefinition,
-	setValue: SimpleAtomicStateSetter<string>
+	setValue: SimpleAtomicStateSetter<string>,
+	action: ActionDefinition
 ) => {
 	if (action.events.includes(SET_ACTION_EVENTS.odkInstanceFirstLoad)) {
 		if (shouldPreloadUID(context)) {
@@ -212,30 +236,8 @@ const registerAction = (
 			createCalculation(context, setValue, action.computation);
 		}
 	}
-
 	if (action.events.includes(SET_ACTION_EVENTS.xformsValueChanged)) {
-		let previous = ''; // TODO figure out how to make this a memo!
-		const { source, ref } = bindToRepeatInstance(context, action);
-		if (!source) {
-			// no element to listen to
-			return;
-		}
-
-		const sourceElementExpression = new ActionComputationExpression('string', source);
-		const calculateValueSource = createComputedExpression(context, sourceElementExpression); // registers listener
-		createComputed(() => {
-			if (context.isAttached() && context.isRelevant()) {
-				const valueSource = calculateValueSource();
-				if (previous !== valueSource) {
-					if (referencesCurrentNode(context, ref)) {
-						const calc = context.evaluator.evaluateString(action.computation.expression, context);
-						const value = context.decodeInstanceValue(calc);
-						setValue(value);
-					}
-				}
-				previous = valueSource;
-			}
-		});
+		createValueChangedCalculation(context, setValue, action);
 	}
 };
 
@@ -272,7 +274,7 @@ export const createInstanceValueState = (context: ValueContext): InstanceValueSt
 
 		const action = context.definition.model.actions.get(context.contextReference());
 		if (action) {
-			registerAction(context, action, setValue);
+			registerAction(context, setValue, action);
 		}
 
 		return guardDownstreamReadonlyWrites(context, relevantValueState);
