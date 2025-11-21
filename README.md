@@ -438,7 +438,7 @@ So instead of `cd packages/web-forms && yarn test`, run `yarn workspace @getodk/
 ```sh
 yarn
 yarn build
-TZ=America/Phoenix CI=true npx turbo run test --concurrency=1
+yarn test
 ```
 
 ### Packages
