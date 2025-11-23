@@ -21,7 +21,7 @@
   ],
   "scripts": {
     "preinstall": "npx only-allow yarn",
-    "test": "turbo run test",
+    "test": "TZ=America/Phoenix npx turbo run test",
     "build": "turbo run build",
     "types": "turbo run types",
     "bump": "changeset add",
