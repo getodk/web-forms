@@ -165,7 +165,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  ##### Form Logic<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜ 84\%
+  ##### Form Logic<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜ 85\%
 
   </summary>
   <br/>
@@ -185,6 +185,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | query parameter            |          |
 | repeat_count               |    ✅    |
 | create or update Entities  |    ✅    |
+| setvalue actions           |    ✅    |
 
 </details>
 

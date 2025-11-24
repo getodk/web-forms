@@ -130,8 +130,7 @@ const setPreloadUIDValue = (context: ValueContext, valueState: RelevantValueStat
 };
 
 const referencesCurrentNode = (context: ValueContext, ref: string): boolean => {
-	const newref = ref;
-	const nodes = context.evaluator.evaluateNodes(newref, {
+	const nodes = context.evaluator.evaluateNodes(ref, {
 		contextNode: context.contextNode,
 	});
 	if (nodes.length > 1) {

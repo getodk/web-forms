@@ -22,7 +22,7 @@ export class ActionDefinition {
 			const bindDefinition = Array.from(model.binds.values()).find((definition) => {
 				return definition.bindElement.getAttribute('id') === bindId;
 			});
-			return bindDefinition ? bindDefinition.nodeset : null;
+			return bindDefinition?.nodeset ?? null;
 		}
 		return null;
 	}

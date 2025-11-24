@@ -108,7 +108,8 @@
     "default": "✅",
     "query parameter": "",
     "repeat_count": "✅",
-    "create or update Entities": "✅"
+    "create or update Entities": "✅",
+    "setvalue actions": "✅"
   },
   "Descriptions and Annotations": {
     "label": "✅",
