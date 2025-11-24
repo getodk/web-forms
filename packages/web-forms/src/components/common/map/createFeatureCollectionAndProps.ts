@@ -25,7 +25,7 @@ export interface Feature {
 	properties: Record<string, string>;
 }
 
-const getGeoJSONCoordinates = (geometry: string) => {
+const getGeoJSONCoordinates = (geometry: string): Coordinates[] | undefined => {
 	const coordinates: Coordinates[] = [];
 	for (const coord of geometry.split(';')) {
 		const [lat, lon] = coord.trim().split(/\s+/).map(Number);
@@ -48,11 +48,11 @@ const getGeoJSONCoordinates = (geometry: string) => {
 
 const getGeoJSONGeometry = (coords: Coordinates[]): Geometry => {
 	if (coords.length === 1) {
-		return { type: 'Point', coordinates: coords[0] };
+		return { type: 'Point', coordinates: coords[0]! };
 	}
 
-	const [firstLongitude, firstLatitude] = coords[0];
-	const [lastLongitude, lastLatitude] = coords[coords.length - 1];
+	const [firstLongitude, firstLatitude] = coords[0]!;
+	const [lastLongitude, lastLatitude] = coords[coords.length - 1]!;
 
 	if (firstLongitude === lastLongitude && firstLatitude === lastLatitude) {
 		return { type: 'Polygon', coordinates: [coords] };
@@ -91,7 +91,7 @@ export const createFeatureCollectionAndProps = (
 			[PROPERTY_PREFIX + 'value']: normalizedFeature.value,
 		};
 
-		normalizedFeature.properties.forEach(([key, value]) => {
+		normalizedFeature.properties.forEach(([key = '', value = '']) => {
 			if (RESERVED_MAP_PROPERTIES.includes(key)) {
 				reservedProps[PROPERTY_PREFIX + key] = value.trim();
 			} else {

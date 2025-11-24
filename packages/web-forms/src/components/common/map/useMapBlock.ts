@@ -138,7 +138,9 @@ export function useMapBlock(mode: Mode, events: { onFeaturePlacement: () => void
 		// TODO: extend to LineString and Polygon types
 		if (savedFeatureValue?.geometry.type === 'Point') {
 			const [longitude, latitude] = savedFeatureValue.geometry.coordinates;
-			loadAndSaveSingleFeature(longitude, latitude, savedFeatureValue.properties);
+			if (longitude !== undefined && latitude !== undefined) {
+				loadAndSaveSingleFeature(longitude, latitude, savedFeatureValue.properties);
+			}
 			return;
 		}
 	};
@@ -178,7 +180,7 @@ export function useMapBlock(mode: Mode, events: { onFeaturePlacement: () => void
 		}
 
 		const [longitude, latitude] = toLonLat(geometry.getCoordinates());
-		feature.set(ODK_VALUE_PROPERTY, formatODKValue(longitude, latitude));
+		feature.set(ODK_VALUE_PROPERTY, formatODKValue(longitude!, latitude!));
 		mapFeatures?.saveFeature(feature);
 
 		if (events.onFeaturePlacement) {

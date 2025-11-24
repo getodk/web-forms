@@ -94,9 +94,9 @@ const swapItems = (index: number, newPosition: number) => {
 	setHighlight(index);
 
 	const swappedValues = values.value.slice();
-	const movedValue = swappedValues[index];
+	const movedValue = swappedValues[index]!;
 
-	swappedValues[index] = swappedValues[newPosition];
+	swappedValues[index] = swappedValues[newPosition]!;
 	swappedValues[newPosition] = movedValue;
 	values.value = swappedValues;
 
