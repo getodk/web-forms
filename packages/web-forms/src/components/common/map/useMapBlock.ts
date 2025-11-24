@@ -136,7 +136,7 @@ export function useMapBlock(mode: Mode, events: { onFeaturePlacement: () => void
 
 		mapInstance.addLayer(singleFeatureLayer);
 		// TODO: extend to LineString and Polygon types
-		if (savedFeatureValue && savedFeatureValue.geometry.type === 'Point') {
+		if (savedFeatureValue?.geometry.type === 'Point') {
 			const [longitude, latitude] = savedFeatureValue.geometry.coordinates;
 			loadAndSaveSingleFeature(longitude, latitude, savedFeatureValue.properties);
 			return;

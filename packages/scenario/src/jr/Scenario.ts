@@ -120,7 +120,7 @@ type AnswerItemCollectionParameters = readonly [reference: string, ...selectionV
 
 // prettier-ignore
 type AnswerParameters =
-	| AnswerItemCollectionParameters
+	| AnswerItemCollectionParameters // eslint-disable-line @typescript-eslint/no-redundant-type-constituents
 	| readonly [reference: string, value: unknown]
 	| readonly [value: unknown];
 
@@ -489,7 +489,7 @@ export class Scenario {
 			return node?.currentState.reference === reference;
 		});
 
-		if (event == null || event.eventType !== 'QUESTION' || event.node.nodeType !== 'select') {
+		if (event?.eventType !== 'QUESTION' || event.node.nodeType !== 'select') {
 			throw new Error(`No choices for reference: ${reference}`);
 		}
 

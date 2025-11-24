@@ -20,7 +20,7 @@ import { xpathDOMProvider } from './xpathDOMProvider.ts';
  * types to their WHAT* equivalent. This is for clarity at usage and reference
  * sites, internally but especially at the package boundary.
  */
-type AsDefault<T> = T | (T & { readonly _?: never });
+type AsDefault<T> = T | (T & { readonly _?: never }); // eslint-disable-line @typescript-eslint/no-redundant-type-constituents
 
 type DefaultDOMAdapter = AsDefault<WHATDOMAdapter>;
 
