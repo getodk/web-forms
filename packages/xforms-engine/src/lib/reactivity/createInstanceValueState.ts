@@ -116,6 +116,7 @@ const getPreloadValue = (
 	context: ValueContext,
 	preload: AnyBindPreloadDefinition
 ): string | undefined => {
+	// TODO type all of these options - it's too easy to get them wrong
 	if (preload.type === 'uid') {
 		return context.evaluator.evaluateString(PRELOAD_UID_EXPRESSION, {
 			contextNode: context.contextNode,
@@ -127,6 +128,21 @@ const getPreloadValue = (
 	if (preload.type === 'date' && preload.parameter === 'today') {
 		return Temporal.Now.plainDateISO().toString();
 	}
+	if (preload.type === 'property') {
+		if (preload.parameter === 'deviceid') {
+			return context.instanceConfig.preloadProperties.deviceid;
+		}
+		if (preload.parameter === 'email') {
+			return context.instanceConfig.preloadProperties.email;
+		}
+		if (preload.parameter === 'phone number') {
+			return context.instanceConfig.preloadProperties.phonenumber;
+		}
+		if (preload.parameter === 'username') {
+			return context.instanceConfig.preloadProperties.username;
+		}
+	}
+	return;
 };
 
 // TODO rename because it's now doing every preload

@@ -131,4 +131,55 @@ describe('`jr:preload`', () => {
 			expect(actual).toBeLessThanOrEqual(end);
 		});
 	});
+
+	// TODO need an e2e test for this too because need to test integration
+	describe('property', () => {
+		it('bound from given properties', async () => {
+			const deviceId = '123456';
+			const email = 'my@email';
+			const username = 'mukesh';
+			const phoneNumber = '+15551234';
+
+			const scenario = await Scenario.init(
+				'Properties',
+				html(
+					head(
+						title('Properties'),
+						model(
+							mainInstance(
+								t(
+									'data id="properties"',
+									t('deviceid'),
+									t('email'),
+									t('username'),
+									t('phonenumber')
+								)
+							),
+							bind('/data/deviceid').type('string').preload('property').preloadParams('deviceid'),
+							bind('/data/email').type('string').preload('property').preloadParams('email'),
+							bind('/data/username').type('string').preload('property').preloadParams('username'),
+							bind('/data/phonenumber')
+								.type('string')
+								.preload('property')
+								.preloadParams('phone number')
+						)
+					),
+					body()
+				),
+				{
+					preloadProperties: {
+						deviceid: deviceId,
+						email: email,
+						username: username,
+						phonenumber: phoneNumber,
+					},
+				}
+			);
+
+			expect(scenario.answerOf('/data/deviceid').toString()).to.equal(deviceId);
+			expect(scenario.answerOf('/data/email').toString()).to.equal(email);
+			expect(scenario.answerOf('/data/username').toString()).to.equal(username);
+			expect(scenario.answerOf('/data/phonenumber').toString()).to.equal(phoneNumber);
+		});
+	});
 });

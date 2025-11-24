@@ -6,6 +6,7 @@ import { escapeXMLText, serializeLeafElementXML } from '../../xml-serialization.
 const getValue = (node: ClientReactiveSerializableValueNode): string => {
 	const preload = node.definition.bind.preload;
 	if (preload) {
+		// TODO If the preload has a concept of event, then we can check for `xforms-revalidate` instead of hardcoding things here
 		if (preload.type === 'timestamp' && preload.parameter === 'end') {
 			return Temporal.Now.instant().toString();
 		}

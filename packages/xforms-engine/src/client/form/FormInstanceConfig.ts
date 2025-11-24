@@ -1,6 +1,13 @@
 import type { InstanceAttachmentsConfig } from '../attachments/InstanceAttachmentsConfig.ts';
 import type { OpaqueReactiveObjectFactory } from '../OpaqueReactiveObjectFactory.ts';
 
+export interface PreloadProperties {
+	readonly deviceid?: string;
+	readonly email?: string;
+	readonly username?: string;
+	readonly phonenumber?: string;
+}
+
 export interface FormInstanceConfig {
 	/**
 	 * A client may specify a generic function for constructing stateful objects.
@@ -18,4 +25,6 @@ export interface FormInstanceConfig {
 	readonly stateFactory?: OpaqueReactiveObjectFactory;
 
 	readonly instanceAttachments?: InstanceAttachmentsConfig;
+
+	readonly preloadProperties?: PreloadProperties;
 }
