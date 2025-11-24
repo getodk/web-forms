@@ -1,15 +1,13 @@
 import { Temporal } from 'temporal-polyfill';
 import type { InstanceState } from '../../../client/serialization/InstanceState.ts';
 import type { ClientReactiveSerializableValueNode } from '../../../instance/internal-api/serialization/ClientReactiveSerializableValueNode.ts';
+import { XFORM_EVENT } from '../../../parse/model/Event.ts';
 import { escapeXMLText, serializeLeafElementXML } from '../../xml-serialization.ts';
 
 const getValue = (node: ClientReactiveSerializableValueNode): string => {
 	const preload = node.definition.bind.preload;
-	if (preload) {
-		// TODO If the preload has a concept of event, then we can check for `xforms-revalidate` instead of hardcoding things here
-		if (preload.type === 'timestamp' && preload.parameter === 'end') {
-			return Temporal.Now.instant().toString();
-		}
+	if (preload && preload.event === XFORM_EVENT.xformsRevalidate) {
+		return Temporal.Now.instant().toString(); // TODO preload.getValue()
 	}
 
 	return escapeXMLText(node.currentState.instanceValue);

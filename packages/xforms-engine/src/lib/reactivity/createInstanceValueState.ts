@@ -1,12 +1,12 @@
 import type { Signal } from 'solid-js';
 import { createComputed, createMemo, createSignal, untrack } from 'solid-js';
-import { Temporal } from 'temporal-polyfill';
 import type { AttributeContext } from '../../instance/internal-api/AttributeContext.ts';
 import type { InstanceValueContext } from '../../instance/internal-api/InstanceValueContext.ts';
 import { ActionComputationExpression } from '../../parse/expression/ActionComputationExpression.ts';
 import type { BindComputationExpression } from '../../parse/expression/BindComputationExpression.ts';
-import { ActionDefinition, SET_ACTION_EVENTS } from '../../parse/model/ActionDefinition.ts';
+import { ActionDefinition } from '../../parse/model/ActionDefinition.ts';
 import type { AnyBindPreloadDefinition } from '../../parse/model/BindPreloadDefinition.ts';
+import { XFORM_EVENT } from '../../parse/model/Event.ts';
 import { createComputedExpression } from './createComputedExpression.ts';
 import type { SimpleAtomicState, SimpleAtomicStateSetter } from './types.ts';
 
@@ -97,11 +97,6 @@ const guardDownstreamReadonlyWrites = (
 };
 
 /**
- * Per {@link https://getodk.github.io/xforms-spec/#preload-attributes:~:text=concatenation%20of%20%E2%80%98uuid%3A%E2%80%99%20and%20uuid()}
- */
-const PRELOAD_UID_EXPRESSION = 'concat("uuid:", uuid())';
-
-/**
  * @todo It feels increasingly awkward to keep piling up preload stuff here, but it won't stay that way for long. In the meantime, this seems like the best way to express the cases where `preload="uid"` should be effective, i.e.:
  *
  * - When an instance is first loaded ({@link isInstanceFirstLoad})
@@ -116,33 +111,16 @@ const getPreloadValue = (
 	context: ValueContext,
 	preload: AnyBindPreloadDefinition
 ): string | undefined => {
-	// TODO type all of these options - it's too easy to get them wrong
-	if (preload.type === 'uid') {
-		return context.evaluator.evaluateString(PRELOAD_UID_EXPRESSION, {
-			contextNode: context.contextNode,
-		});
+	const preloadValue = preload.getValue(context.instanceConfig.preloadProperties);
+	if (!preloadValue) {
+		return;
 	}
-	if (preload.type === 'timestamp' && preload.parameter === 'start') {
-		return Temporal.Now.instant().toString();
+	if (preloadValue.type === 'literal') {
+		return preloadValue.literal;
 	}
-	if (preload.type === 'date' && preload.parameter === 'today') {
-		return Temporal.Now.plainDateISO().toString();
-	}
-	if (preload.type === 'property') {
-		if (preload.parameter === 'deviceid') {
-			return context.instanceConfig.preloadProperties.deviceid;
-		}
-		if (preload.parameter === 'email') {
-			return context.instanceConfig.preloadProperties.email;
-		}
-		if (preload.parameter === 'phone number') {
-			return context.instanceConfig.preloadProperties.phonenumber;
-		}
-		if (preload.parameter === 'username') {
-			return context.instanceConfig.preloadProperties.username;
-		}
-	}
-	return;
+	return context.evaluator.evaluateString(preloadValue.expression, {
+		contextNode: context.contextNode,
+	});
 };
 
 // TODO rename because it's now doing every preload
@@ -253,22 +231,22 @@ const registerAction = (
 	setValue: SimpleAtomicStateSetter<string>,
 	action: ActionDefinition
 ) => {
-	if (action.events.includes(SET_ACTION_EVENTS.odkInstanceFirstLoad)) {
+	if (action.events.includes(XFORM_EVENT.odkInstanceFirstLoad)) {
 		if (isInstanceFirstLoad(context)) {
 			createCalculation(context, setValue, action.computation);
 		}
 	}
-	if (action.events.includes(SET_ACTION_EVENTS.odkInstanceLoad)) {
+	if (action.events.includes(XFORM_EVENT.odkInstanceLoad)) {
 		if (!isAddingRepeatChild(context)) {
 			createCalculation(context, setValue, action.computation);
 		}
 	}
-	if (action.events.includes(SET_ACTION_EVENTS.odkNewRepeat)) {
+	if (action.events.includes(XFORM_EVENT.odkNewRepeat)) {
 		if (isAddingRepeatChild(context)) {
 			createCalculation(context, setValue, action.computation);
 		}
 	}
-	if (action.events.includes(SET_ACTION_EVENTS.xformsValueChanged)) {
+	if (action.events.includes(XFORM_EVENT.xformsValueChanged)) {
 		createValueChangedCalculation(context, setValue, action);
 	}
 };

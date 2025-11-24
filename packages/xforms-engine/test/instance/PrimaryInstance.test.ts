@@ -86,7 +86,7 @@ describe('PrimaryInstance engine representation of instance state', () => {
 				config: {
 					clientStateFactory,
 					computeAttachmentName: () => null,
-					preloadProperties: {}
+					preloadProperties: {},
 				},
 			});
 		});

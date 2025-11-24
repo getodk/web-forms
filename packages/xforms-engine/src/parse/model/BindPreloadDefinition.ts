@@ -1,6 +1,14 @@
 import { JAVAROSA_NAMESPACE_URI } from '@getodk/common/constants/xmlns.ts';
 import type { PartiallyKnownString } from '@getodk/common/types/string/PartiallyKnownString.ts';
+import { Temporal } from 'temporal-polyfill';
+import type { PreloadProperties } from '../../client/index.ts';
 import type { BindElement } from './BindElement.ts';
+import { XFORM_EVENT, type XFormEvent } from './Event.ts';
+
+/**
+ * Per {@link https://getodk.github.io/xforms-spec/#preload-attributes:~:text=concatenation%20of%20%E2%80%98uuid%3A%E2%80%99%20and%20uuid()}
+ */
+const PRELOAD_UID_EXPRESSION = 'concat("uuid:", uuid())';
 
 type PartiallyKnownPreloadParameter<Known extends string> = PartiallyKnownString<
 	NonNullable<Known>
@@ -84,12 +92,55 @@ export class BindPreloadDefinition<Type extends PreloadType> implements PreloadI
 
 	readonly type: Type;
 	readonly parameter: PreloadParameter<Type>;
+	readonly event: XFormEvent;
+
+	getValue(properties: PreloadProperties): PreloadValue | undefined {
+		if (this.type === 'uid') {
+			return { type: 'expression', expression: PRELOAD_UID_EXPRESSION }; // TODO do better
+		}
+		if (this.type === 'timestamp' && this.parameter === 'start') {
+			return { type: 'literal', literal: Temporal.Now.instant().toString() };
+		}
+		if (this.type === 'date' && this.parameter === 'today') {
+			return { type: 'literal', literal: Temporal.Now.plainDateISO().toString() };
+		}
+		if (this.type === 'property') {
+			if (this.parameter === 'deviceid') {
+				return { type: 'literal', literal: properties.deviceid ?? '' };
+			}
+			if (this.parameter === 'email') {
+				return { type: 'literal', literal: properties.email ?? '' };
+			}
+			if (this.parameter === 'phonenumber') {
+				return { type: 'literal', literal: properties.phonenumber ?? '' };
+			}
+			if (this.parameter === 'username') {
+				return { type: 'literal', literal: properties.username ?? '' };
+			}
+		}
+		return;
+	}
 
 	private constructor(input: PreloadInput<Type>) {
 		this.type = input.type;
 		this.parameter = input.parameter;
+		this.event =
+			this.type === 'timestamp' && this.parameter === 'end'
+				? XFORM_EVENT.xformsRevalidate
+				: XFORM_EVENT.odkInstanceFirstLoad;
 	}
 }
+
+interface LiteralPreloadValue {
+	type: 'literal';
+	literal: string;
+}
+interface ExpressionPreloadValue {
+	type: 'expression';
+	expression: string; // is there something richer than string here?
+}
+
+export type PreloadValue = ExpressionPreloadValue | LiteralPreloadValue;
 
 // prettier-ignore
 export type AnyBindPreloadDefinition =

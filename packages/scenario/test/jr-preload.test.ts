@@ -161,7 +161,7 @@ describe('`jr:preload`', () => {
 							bind('/data/phonenumber')
 								.type('string')
 								.preload('property')
-								.preloadParams('phone number')
+								.preloadParams('phonenumber')
 						)
 					),
 					body()
