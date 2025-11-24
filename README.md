@@ -165,27 +165,26 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  ##### Form Logic<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜ 85\%
+  ##### Form Logic<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜ 92\%
 
   </summary>
   <br/>
 
-| Feature <img width=250px/> | Progress |
-| -------------------------- | :------: |
-| calculate                  |    ✅    |
-| relevant                   |    ✅    |
-| required                   |    ✅    |
-| required message           |    ✅    |
-| custom constraint          |    ✅    |
-| constraint message         |    ✅    |
-| read only                  |    ✅    |
-| trigger                    |          |
-| choice filter              |    ✅    |
-| default                    |    ✅    |
-| query parameter            |          |
-| repeat_count               |    ✅    |
-| create or update Entities  |    ✅    |
-| setvalue actions           |    ✅    |
+| Feature <img width=250px/>                      | Progress |
+| ----------------------------------------------- | :------: |
+| calculate                                       |    ✅    |
+| relevant                                        |    ✅    |
+| required                                        |    ✅    |
+| required message                                |    ✅    |
+| custom constraint                               |    ✅    |
+| constraint message                              |    ✅    |
+| read only                                       |    ✅    |
+| dynamic defaults (including trigger<br/>column) |    ✅    |
+| choice filter                                   |    ✅    |
+| default                                         |    ✅    |
+| query parameter                                 |          |
+| repeat_count                                    |    ✅    |
+| create or update Entities                       |    ✅    |
 
 </details>
 

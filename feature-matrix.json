@@ -103,13 +103,12 @@
     "custom constraint": "✅",
     "constraint message": "✅",
     "read only": "✅",
-    "trigger": "",
+    "dynamic defaults (including trigger column)": "✅",
     "choice filter": "✅",
     "default": "✅",
     "query parameter": "",
     "repeat_count": "✅",
-    "create or update Entities": "✅",
-    "setvalue actions": "✅"
+    "create or update Entities": "✅"
   },
   "Descriptions and Annotations": {
     "label": "✅",
