@@ -9,45 +9,126 @@ import {
 	t,
 	title,
 } from '@getodk/common/test/fixtures/xform-dsl/index.ts';
+import { Temporal } from 'temporal-polyfill';
 import { describe, expect, it } from 'vitest';
 import { Scenario } from '../src/jr/Scenario.ts';
 
 describe('`jr:preload`', () => {
-	// ported from: https://github.com/getodk/javarosa/blob/2dd8e15e9f3110a86f8d7d851efc98627ae5692e/src/test/java/org/javarosa/core/model/utils/test/QuestionPreloaderTest.java#L23
-	it('preloads specified data in bound elements', async () => {
-		const scenario = await Scenario.init(
-			'Preload attribute',
-			html(
-				head(
-					title('Preload element'),
-					model(
-						mainInstance(t('data id="preload-attribute"', t('element'))),
-						bind('/data/element').preload('uid')
-					)
-				),
-				body(input('/data/element'))
-			)
-		);
+	describe('uid', () => {
+		// ported from: https://github.com/getodk/javarosa/blob/2dd8e15e9f3110a86f8d7d851efc98627ae5692e/src/test/java/org/javarosa/core/model/utils/test/QuestionPreloaderTest.java#L23
+		it('preloads specified data in bound elements', async () => {
+			const scenario = await Scenario.init(
+				'Preload attribute',
+				html(
+					head(
+						title('Preload element'),
+						model(
+							mainInstance(t('data id="preload-attribute"', t('element'))),
+							bind('/data/element').preload('uid')
+						)
+					),
+					body(input('/data/element'))
+				)
+			);
 
-		expect(scenario.answerOf('/data/element')).toStartWith('uuid:');
+			expect(scenario.answerOf('/data/element')).toStartWith('uuid:');
+		});
+
+		// ported from: https://github.com/getodk/javarosa/blob/2dd8e15e9f3110a86f8d7d851efc98627ae5692e/src/test/java/org/javarosa/core/model/utils/test/QuestionPreloaderTest.java#L43
+		it('preloads specified data in bound attributes', async () => {
+			const scenario = await Scenario.init(
+				'Preload attribute',
+				html(
+					head(
+						title('Preload attribute'),
+						model(
+							mainInstance(t('data id="preload-attribute"', t('element attr=""'))),
+							bind('/data/element/@attr').preload('uid')
+						)
+					),
+					body(input('/data/element'))
+				)
+			);
+
+			expect(scenario.attributeOf('/data/element', 'attr')).toStartWith('uuid:');
+		});
 	});
 
-	// ported from: https://github.com/getodk/javarosa/blob/2dd8e15e9f3110a86f8d7d851efc98627ae5692e/src/test/java/org/javarosa/core/model/utils/test/QuestionPreloaderTest.java#L43
-	it('preloads specified data in bound attributes', async () => {
-		const scenario = await Scenario.init(
-			'Preload attribute',
-			html(
-				head(
-					title('Preload attribute'),
-					model(
-						mainInstance(t('data id="preload-attribute"', t('element attr=""'))),
-						bind('/data/element/@attr').preload('uid')
-					)
-				),
-				body(input('/data/element'))
-			)
-		);
+	describe('datetime', () => {
+		it('preloads timestamp start', async () => {
+			const start = Temporal.Now.instant().epochNanoseconds;
+			const scenario = await Scenario.init(
+				'Preload start date',
+				html(
+					head(
+						title('Preload start date'),
+						model(
+							mainInstance(t('data id="preload-attribute"', t('element'))),
+							bind('/data/element').type('xsd:dateTime').preload('timestamp').preloadParams('start')
+						)
+					),
+					body()
+				)
+			);
+			const end = Temporal.Now.instant().epochNanoseconds;
+			const actual = Temporal.Instant.from(
+				scenario.answerOf('/data/element').toString()
+			).epochNanoseconds;
 
-		expect(scenario.attributeOf('/data/element', 'attr')).toStartWith('uuid:');
+			expect(actual).toBeGreaterThanOrEqual(start);
+			expect(actual).toBeLessThanOrEqual(end);
+		});
+
+		it('preloads date today', async () => {
+			const start = Temporal.Now.plainDateISO();
+			const scenario = await Scenario.init(
+				'Preload start date',
+				html(
+					head(
+						title('Preload start date'),
+						model(
+							mainInstance(t('data id="preload-attribute"', t('element'))),
+							bind('/data/element').type('xsd:date').preload('date').preloadParams('today')
+						)
+					),
+					body()
+				)
+			);
+			const end = Temporal.Now.plainDateISO();
+
+			expect(scenario.answerOf('/data/element').toString()).toSatisfy((actual: string) => {
+				const actualDate = Temporal.PlainDate.from(actual);
+				return actualDate.equals(start) || actualDate.equals(end); // just in case this test runs at midnight...
+			});
+		});
+
+		it('preloads timestamp end', async () => {
+			const scenario = await Scenario.init(
+				'Preload end date',
+				html(
+					head(
+						title('Preload end date'),
+						model(
+							mainInstance(t('data id="preload-attribute"', t('element'))),
+							bind('/data/element').type('xsd:dateTime').preload('timestamp').preloadParams('end')
+						)
+					),
+					body()
+				)
+			);
+			expect(scenario.answerOf('/data/element').toString()).toEqual(''); // doesn't trigger until submission
+
+			const start = Temporal.Now.instant().epochNanoseconds;
+			const xml = scenario.proposed_serializeInstance();
+			const end = Temporal.Now.instant().epochNanoseconds;
+			const timestampElement = /<element>(.*)<\/element>/g.exec(xml);
+			if (!timestampElement || timestampElement.length < 2 || !timestampElement[1]) {
+				throw new Error('element not found');
+			}
+
+			const actual = Temporal.Instant.from(timestampElement[1]).epochNanoseconds;
+			expect(actual).toBeGreaterThanOrEqual(start);
+			expect(actual).toBeLessThanOrEqual(end);
+		});
 	});
 });

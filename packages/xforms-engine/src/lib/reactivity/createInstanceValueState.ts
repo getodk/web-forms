@@ -1,10 +1,12 @@
 import type { Signal } from 'solid-js';
 import { createComputed, createMemo, createSignal, untrack } from 'solid-js';
+import { Temporal } from 'temporal-polyfill';
 import type { AttributeContext } from '../../instance/internal-api/AttributeContext.ts';
 import type { InstanceValueContext } from '../../instance/internal-api/InstanceValueContext.ts';
 import { ActionComputationExpression } from '../../parse/expression/ActionComputationExpression.ts';
 import type { BindComputationExpression } from '../../parse/expression/BindComputationExpression.ts';
 import { ActionDefinition, SET_ACTION_EVENTS } from '../../parse/model/ActionDefinition.ts';
+import type { AnyBindPreloadDefinition } from '../../parse/model/BindPreloadDefinition.ts';
 import { createComputedExpression } from './createComputedExpression.ts';
 import type { SimpleAtomicState, SimpleAtomicStateSetter } from './types.ts';
 
@@ -105,28 +107,43 @@ const PRELOAD_UID_EXPRESSION = 'concat("uuid:", uuid())';
  * - When an instance is first loaded ({@link isInstanceFirstLoad})
  * - When an instance is initially loaded for editing ({@link isEditInitialLoad})
  */
+// TODO rename this, something like: isLoading?
 const shouldPreloadUID = (context: ValueContext) => {
 	return isInstanceFirstLoad(context) || isEditInitialLoad(context);
 };
 
-/**
- * @todo This is a temporary one-off, until we support the full range of
- * {@link https://getodk.github.io/xforms-spec/#preload-attributes | preloads}.
- */
-const setPreloadUIDValue = (context: ValueContext, valueState: RelevantValueState): void => {
+const getPreloadValue = (
+	context: ValueContext,
+	preload: AnyBindPreloadDefinition
+): string | undefined => {
+	if (preload.type === 'uid') {
+		return context.evaluator.evaluateString(PRELOAD_UID_EXPRESSION, {
+			contextNode: context.contextNode,
+		});
+	}
+	if (preload.type === 'timestamp' && preload.parameter === 'start') {
+		return Temporal.Now.instant().toString();
+	}
+	if (preload.type === 'date' && preload.parameter === 'today') {
+		return Temporal.Now.plainDateISO().toString();
+	}
+};
+
+// TODO rename because it's now doing every preload
+const setPreloadUIDValue = (
+	context: ValueContext,
+	setValue: SimpleAtomicStateSetter<string>
+): void => {
 	const { preload } = context.definition.bind;
 
-	if (preload?.type !== 'uid' || !shouldPreloadUID(context)) {
+	if (!preload || !shouldPreloadUID(context)) {
 		return;
 	}
 
-	const preloadUIDValue = context.evaluator.evaluateString(PRELOAD_UID_EXPRESSION, {
-		contextNode: context.contextNode,
-	});
-
-	const [, setValue] = valueState;
-
-	setValue(preloadUIDValue);
+	const value = getPreloadValue(context, preload);
+	if (value) {
+		setValue(value);
+	}
 };
 
 const referencesCurrentNode = (context: ValueContext, ref: string): boolean => {
@@ -259,12 +276,9 @@ export const createInstanceValueState = (context: ValueContext): InstanceValueSt
 		const baseValueState = createSignal(initialValue);
 		const relevantValueState = createRelevantValueState(context, baseValueState);
 
-		/**
-		 * @see {@link setPreloadUIDValue} for important details about spec ordering of events and computations.
-		 */
-		setPreloadUIDValue(context, relevantValueState);
-
 		const [, setValue] = relevantValueState;
+
+		setPreloadUIDValue(context, setValue);
 
 		const { calculate } = context.definition.bind;
 		if (calculate != null) {
