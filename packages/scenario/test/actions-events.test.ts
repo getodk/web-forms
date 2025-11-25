@@ -189,7 +189,7 @@ describe('Actions/Events', () => {
 
 		describe('odk-instance-first-load event', () => {
 			// ported from: https://github.com/getodk/javarosa/blob/2dd8e15e9f3110a86f8d7d851efc98627ae5692e/src/test/java/org/javarosa/core/model/actions/InstanceLoadEventsTest.java#L72
-			it('does not fire on second load', async () => {
+			it('does not fire when restoring', async () => {
 				const scenario = await Scenario.init(
 					'Instance load form',
 					html(
@@ -208,6 +208,28 @@ describe('Actions/Events', () => {
 				expect(scenario.answerOf('/data/q1')).toEqualAnswer(intAnswer(16));
 				scenario.answer('/data/q1', 555);
 				const restored = await scenario.proposed_serializeAndRestoreInstanceState();
+				expect(restored.answerOf('/data/q1')).toEqualAnswer(intAnswer(555));
+			});
+
+			it('does not fire when editing', async () => {
+				const scenario = await Scenario.init(
+					'Instance load form',
+					html(
+						head(
+							title('Instance load form'),
+							model(
+								mainInstance(t('data id="instance-load-form"', t('q1'))),
+								bind('/data/q1').type('int'),
+								setvalue('odk-instance-first-load', '/data/q1', '4*4')
+							)
+						),
+						body(input('/data/q1'))
+					)
+				);
+
+				expect(scenario.answerOf('/data/q1')).toEqualAnswer(intAnswer(16));
+				scenario.answer('/data/q1', 555);
+				const restored = await scenario.proposed_editCurrentInstanceState();
 				expect(restored.answerOf('/data/q1')).toEqualAnswer(intAnswer(555));
 			});
 		});

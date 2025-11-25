@@ -181,11 +181,12 @@ export class Scenario {
 		this: This,
 		...args: ScenarioStaticInitParameters
 	): Promise<This['prototype']> {
-		let formMeta: ScenarioFormMeta;
-
 		if (isFormFileName(args[0])) {
 			return this.init(r(args[0]));
-		} else if (args.length === 1) {
+		}
+
+		let formMeta: ScenarioFormMeta;
+		if (args.length === 1) {
 			const [resource] = args;
 
 			formMeta = {

@@ -221,7 +221,7 @@ const registerAction = (
 	action: ActionDefinition
 ) => {
 	if (action.events.includes(SET_ACTION_EVENTS.odkInstanceFirstLoad)) {
-		if (!isAddingRepeatChild(context) && shouldPreloadUID(context)) {
+		if (isInstanceFirstLoad(context)) {
 			createCalculation(context, setValue, action.computation);
 		}
 	}
