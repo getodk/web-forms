@@ -123,7 +123,7 @@ export function useMapInteractions(mapInstance: Map): UseMapInteractions {
 				return false;
 			},
 			handleMoveEvent: (event) => {
-				if (!startPixel || !timer || !event.pixel.length) {
+				if (!startPixel || !timer || !event.pixel?.length) {
 					return;
 				}
 
