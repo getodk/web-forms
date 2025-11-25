@@ -15,7 +15,7 @@ import { Scenario } from '../src/jr/Scenario.ts';
 
 const CENTRAL_DATE_FORMAT_REGEX = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
 const CENTRAL_DATETIME_FORMAT_REGEX =
-	/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{2,3}[+|-][0-9]{2}:[0-9]{2}$/;
+	/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]+[+|-][0-9]{2}:[0-9]{2}$/;
 
 describe('`jr:preload`', () => {
 	describe('uid', () => {

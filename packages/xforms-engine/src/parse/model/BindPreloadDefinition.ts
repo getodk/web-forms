@@ -1,7 +1,7 @@
 import { JAVAROSA_NAMESPACE_URI } from '@getodk/common/constants/xmlns.ts';
 import type { PartiallyKnownString } from '@getodk/common/types/string/PartiallyKnownString.ts';
-import { Temporal } from 'temporal-polyfill';
 import type { PreloadProperties } from '../../client/index.ts';
+import { now, today } from '../../lib/date-format.ts';
 import type { BindElement } from './BindElement.ts';
 import { XFORM_EVENT, type XFormEvent } from './Event.ts';
 
@@ -69,15 +69,6 @@ const getPreloadInput = (bindElement: BindElement): AnyPreloadInput | null => {
  *
  * - {@link type}, a `jr:preload`
  * - {@link parameter}, an associated `jr:preloadParams` value
- *
- * @todo It would probably make sense for the _definition_ to also convey:
- *
- * 1. Which {@link https://getodk.github.io/xforms-spec/#events | event} the
- *    preload is semantically associated with (noting that the spec may be a tad
- *    overzealous about this association).
- *
- * 2. The constant XPath expression (or other computation?) expressed by the
- *    combined {@link type} and {@link parameter}.
  */
 export class BindPreloadDefinition<Type extends PreloadType> implements PreloadInput<Type> {
 	static from(bindElement: BindElement): AnyBindPreloadDefinition | null {
@@ -99,12 +90,10 @@ export class BindPreloadDefinition<Type extends PreloadType> implements PreloadI
 			return { type: 'expression', expression: PRELOAD_UID_EXPRESSION }; // TODO do better
 		}
 		if (this.type === 'timestamp' && this.parameter === 'start') {
-			const timeZone = Temporal.Now.timeZoneId();
-			const date = Temporal.Now.instant().toString({ timeZone });
-			return { type: 'literal', literal: date };
+			return { type: 'literal', literal: now() };
 		}
 		if (this.type === 'date' && this.parameter === 'today') {
-			return { type: 'literal', literal: Temporal.Now.plainDateISO().toString() };
+			return { type: 'literal', literal: today() };
 		}
 		if (this.type === 'property') {
 			if (this.parameter === 'deviceid') {
@@ -139,7 +128,7 @@ interface LiteralPreloadValue {
 }
 interface ExpressionPreloadValue {
 	type: 'expression';
-	expression: string; // is there something richer than string here?
+	expression: string;
 }
 
 export type PreloadValue = ExpressionPreloadValue | LiteralPreloadValue;
