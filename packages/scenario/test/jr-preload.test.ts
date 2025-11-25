@@ -13,6 +13,10 @@ import { Temporal } from 'temporal-polyfill';
 import { describe, expect, it } from 'vitest';
 import { Scenario } from '../src/jr/Scenario.ts';
 
+const CENTRAL_DATE_FORMAT_REGEX = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
+const CENTRAL_DATETIME_FORMAT_REGEX =
+	/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}\+[0-9]{2}:[0-9]{2}$/;
+
 describe('`jr:preload`', () => {
 	describe('uid', () => {
 		// ported from: https://github.com/getodk/javarosa/blob/2dd8e15e9f3110a86f8d7d851efc98627ae5692e/src/test/java/org/javarosa/core/model/utils/test/QuestionPreloaderTest.java#L23
@@ -71,12 +75,13 @@ describe('`jr:preload`', () => {
 				)
 			);
 			const end = Temporal.Now.instant().epochNanoseconds;
-			const actual = Temporal.Instant.from(
-				scenario.answerOf('/data/element').toString()
-			).epochNanoseconds;
+			const val = scenario.answerOf('/data/element').toString();
+			const actual = Temporal.Instant.from(val).epochNanoseconds;
 
 			expect(actual).toBeGreaterThanOrEqual(start);
 			expect(actual).toBeLessThanOrEqual(end);
+
+			expect(val).toMatch(CENTRAL_DATETIME_FORMAT_REGEX);
 		});
 
 		it('preloads date today', async () => {
@@ -98,6 +103,7 @@ describe('`jr:preload`', () => {
 
 			expect(scenario.answerOf('/data/element').toString()).toSatisfy((actual: string) => {
 				const actualDate = Temporal.PlainDate.from(actual);
+				expect(actual).toMatch(CENTRAL_DATE_FORMAT_REGEX);
 				return actualDate.equals(start) || actualDate.equals(end); // just in case this test runs at midnight...
 			});
 		});
@@ -126,9 +132,13 @@ describe('`jr:preload`', () => {
 				throw new Error('element not found');
 			}
 
-			const actual = Temporal.Instant.from(timestampElement[1]).epochNanoseconds;
+			const val = timestampElement[1];
+
+			const actual = Temporal.Instant.from(val).epochNanoseconds;
 			expect(actual).toBeGreaterThanOrEqual(start);
 			expect(actual).toBeLessThanOrEqual(end);
+
+			expect(val).toMatch(CENTRAL_DATETIME_FORMAT_REGEX);
 		});
 	});
 

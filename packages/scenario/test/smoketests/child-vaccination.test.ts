@@ -668,6 +668,7 @@ type KnownFailureTest = () => Promise<void>;
 
 type KnownFailureTestAPI = (description: string, fn: KnownFailureTest) => void;
 
+// TODO can we get the values for the binding and see that they work?
 describe('ChildVaccinationTest.java', () => {
 	afterEach(() => {
 		refSingletons.clear();

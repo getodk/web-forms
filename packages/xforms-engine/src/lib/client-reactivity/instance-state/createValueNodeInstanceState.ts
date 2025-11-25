@@ -7,7 +7,9 @@ import { escapeXMLText, serializeLeafElementXML } from '../../xml-serialization.
 const getValue = (node: ClientReactiveSerializableValueNode): string => {
 	const preload = node.definition.bind.preload;
 	if (preload && preload.event === XFORM_EVENT.xformsRevalidate) {
-		return Temporal.Now.instant().toString(); // TODO preload.getValue()
+		// TODO preload.getValue()
+		const timeZone = Temporal.Now.timeZoneId();
+		return Temporal.Now.instant().toString({ timeZone });
 	}
 
 	return escapeXMLText(node.currentState.instanceValue);

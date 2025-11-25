@@ -99,7 +99,9 @@ export class BindPreloadDefinition<Type extends PreloadType> implements PreloadI
 			return { type: 'expression', expression: PRELOAD_UID_EXPRESSION }; // TODO do better
 		}
 		if (this.type === 'timestamp' && this.parameter === 'start') {
-			return { type: 'literal', literal: Temporal.Now.instant().toString() };
+			const timeZone = Temporal.Now.timeZoneId();
+			const date = Temporal.Now.instant().toString({ timeZone });
+			return { type: 'literal', literal: date };
 		}
 		if (this.type === 'date' && this.parameter === 'today') {
 			return { type: 'literal', literal: Temporal.Now.plainDateISO().toString() };
