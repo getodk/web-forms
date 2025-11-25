@@ -18,6 +18,8 @@ import type {
 	InstantiableForm,
 } from './form-state.ts';
 
+const DEVICE_ID_KEY = 'odk-deviceid';
+
 export interface FormOptions {
 	readonly fetchFormAttachment: FetchFormAttachment;
 	readonly missingResourceBehavior?: MissingResourceBehavior;
@@ -67,7 +69,7 @@ const resolvableFormInstanceInput = (options: EditInstanceOptions): ResolvableFo
 interface LoadFormStateOptions {
 	readonly form: FormOptions;
 	readonly editInstance?: EditInstanceOptions | null;
-	readonly properties?: PreloadProperties;
+	readonly preloadProperties?: PreloadProperties;
 }
 
 const failure = (error: FormInitializationError): FormStateFailureResult => {
@@ -90,14 +92,25 @@ const success = (form: InstantiableForm, instance: AnyFormInstance): FormStateSu
 	};
 };
 
-const getFormInstanceConfig = (options: LoadFormStateOptions) => {
-	if (options.properties) {
-		return {
-			...ENGINE_FORM_INSTANCE_CONFIG,
-			properties: options.properties,
-		};
+const getDeviceId = () => {
+	const id = localStorage.getItem(DEVICE_ID_KEY);
+	if (id) {
+		return id;
 	}
-	return ENGINE_FORM_INSTANCE_CONFIG;
+	const uuid = crypto.randomUUID();
+	localStorage.setItem(DEVICE_ID_KEY, uuid);
+	return uuid;
+};
+
+const getFormInstanceConfig = (options: LoadFormStateOptions) => {
+	const preloadProperties = {
+		...options.preloadProperties,
+	};
+	preloadProperties.deviceid ??= getDeviceId();
+	return {
+		...ENGINE_FORM_INSTANCE_CONFIG,
+		preloadProperties,
+	};
 };
 
 export const loadFormState = async (

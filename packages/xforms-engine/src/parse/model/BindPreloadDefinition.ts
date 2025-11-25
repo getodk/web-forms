@@ -87,7 +87,7 @@ export class BindPreloadDefinition<Type extends PreloadType> implements PreloadI
 
 	getValue(properties: PreloadProperties): PreloadValue | undefined {
 		if (this.type === 'uid') {
-			return { type: 'expression', expression: PRELOAD_UID_EXPRESSION }; // TODO do better
+			return { type: 'expression', expression: PRELOAD_UID_EXPRESSION };
 		}
 		if (this.type === 'timestamp' && this.parameter === 'start') {
 			return { type: 'literal', literal: now() };
