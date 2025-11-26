@@ -116,10 +116,11 @@ type GetQuestionAtIndexParameters<
 	expectedType?: ExpectedQuestionType | null
 ];
 
-type AnswerItemCollectionParameters = readonly [reference: string, ...selectionValues: string[]];
+type AnswerItemCollectionParameters = readonly [reference: string, ...selectionValues: [string, string, ...string[]]];
 
 // prettier-ignore
 type AnswerParameters =
+	| AnswerItemCollectionParameters
 	| readonly [reference: string, value: unknown]
 	| readonly [value: unknown];
 
