@@ -120,13 +120,10 @@ type AnswerItemCollectionParameters = readonly [reference: string, ...selectionV
 
 // prettier-ignore
 type AnswerParameters =
-	| AnswerItemCollectionParameters // eslint-disable-line @typescript-eslint/no-redundant-type-constituents
 	| readonly [reference: string, value: unknown]
 	| readonly [value: unknown];
 
-const isAnswerItemCollectionParams = (
-	args: AnswerParameters
-): args is AnswerItemCollectionParameters => {
+const isAnswerItemCollectionParams = (args: AnswerParameters) => {
 	return args.length > 2 && args.every((arg) => typeof arg === 'string');
 };
 
@@ -422,7 +419,7 @@ export class Scenario {
 
 	answer(...args: AnswerParameters): ValueNodeAnswer {
 		if (isAnswerItemCollectionParams(args)) {
-			return this.answerItemCollectionQuestion(...args);
+			return this.answerItemCollectionQuestion(...(args as AnswerItemCollectionParameters));
 		}
 
 		const [arg0, arg1, ...rest] = args;

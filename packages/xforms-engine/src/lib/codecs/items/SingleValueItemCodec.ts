@@ -13,8 +13,8 @@ export type SingleValueSelectRuntimeValues =
  */
 // prettier-ignore
 type SingleValueSelectCodecValues =
-	| SingleValueSelectRuntimeValues // eslint-disable-line @typescript-eslint/no-redundant-type-constituents
-	| readonly string[];
+	| SingleValueSelectRuntimeValues
+	| readonly [string, string, ...string[]];
 
 /**
  * @todo This is more permissive than it should be, allowing an array of any
