@@ -142,10 +142,9 @@ describe('`jr:preload`', () => {
 		});
 	});
 
-	// TODO need an e2e test for this too because need to test integration
 	describe('property', () => {
 		it('bound from given properties', async () => {
-			const deviceId = '123456';
+			const deviceID = '123456';
 			const email = 'my@email';
 			const username = 'mukesh';
 			const phoneNumber = '+15551234';
@@ -178,15 +177,15 @@ describe('`jr:preload`', () => {
 				),
 				{
 					preloadProperties: {
-						deviceid: deviceId,
-						email: email,
-						username: username,
-						phonenumber: phoneNumber,
+						deviceID,
+						email,
+						username,
+						phoneNumber,
 					},
 				}
 			);
 
-			expect(scenario.answerOf('/data/deviceid').toString()).to.equal(deviceId);
+			expect(scenario.answerOf('/data/deviceid').toString()).to.equal(deviceID);
 			expect(scenario.answerOf('/data/email').toString()).to.equal(email);
 			expect(scenario.answerOf('/data/username').toString()).to.equal(username);
 			expect(scenario.answerOf('/data/phonenumber').toString()).to.equal(phoneNumber);

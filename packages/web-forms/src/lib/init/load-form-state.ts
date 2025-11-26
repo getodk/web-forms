@@ -19,6 +19,7 @@ import type {
 } from './form-state.ts';
 
 const DEVICE_ID_KEY = 'odk-deviceid';
+const DEVICE_ID_PREFIX = 'getodk.org:webforms:';
 
 export interface FormOptions {
 	readonly fetchFormAttachment: FetchFormAttachment;
@@ -97,16 +98,16 @@ const getDeviceId = () => {
 	if (id) {
 		return id;
 	}
-	const uuid = crypto.randomUUID();
-	localStorage.setItem(DEVICE_ID_KEY, uuid);
-	return uuid;
+	const deviceId = DEVICE_ID_PREFIX + crypto.randomUUID();
+	localStorage.setItem(DEVICE_ID_KEY, deviceId);
+	return deviceId;
 };
 
 const getFormInstanceConfig = (options: LoadFormStateOptions) => {
 	const preloadProperties = {
 		...options.preloadProperties,
 	};
-	preloadProperties.deviceid ??= getDeviceId();
+	preloadProperties.deviceID ??= getDeviceId();
 	return {
 		...ENGINE_FORM_INSTANCE_CONFIG,
 		preloadProperties,

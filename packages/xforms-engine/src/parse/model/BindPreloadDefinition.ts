@@ -97,13 +97,13 @@ export class BindPreloadDefinition<Type extends PreloadType> implements PreloadI
 		}
 		if (this.type === 'property') {
 			if (this.parameter === 'deviceid') {
-				return { type: 'literal', literal: properties.deviceid ?? '' };
+				return { type: 'literal', literal: properties.deviceID ?? '' };
 			}
 			if (this.parameter === 'email') {
 				return { type: 'literal', literal: properties.email ?? '' };
 			}
 			if (this.parameter === 'phonenumber') {
-				return { type: 'literal', literal: properties.phonenumber ?? '' };
+				return { type: 'literal', literal: properties.phoneNumber ?? '' };
 			}
 			if (this.parameter === 'username') {
 				return { type: 'literal', literal: properties.username ?? '' };
