@@ -14,6 +14,8 @@ import { nodeDefinitionMap } from './nodeDefinitionMap.ts';
 import { RootDefinition } from './RootDefinition.ts';
 import { SubmissionDefinition } from './SubmissionDefinition.ts';
 
+type XformsRevalidateListener = () => void;
+
 export class ModelDefinition {
 	readonly binds: ModelBindMap;
 	readonly actions: ModelActionMap;
@@ -22,6 +24,7 @@ export class ModelDefinition {
 	readonly instance: StaticDocument;
 	readonly itextTranslations: ItextTranslationsDefinition;
 	readonly itextChunks: Map<string, ChunkExpressionsByItextId>;
+	readonly listeners: XformsRevalidateListener[];
 
 	constructor(readonly form: XFormDefinition) {
 		const submission = new SubmissionDefinition(form.xformDOM);
@@ -35,6 +38,7 @@ export class ModelDefinition {
 		this.nodes = nodeDefinitionMap(this.root);
 		this.itextTranslations = ItextTranslationsDefinition.from(form.xformDOM);
 		this.itextChunks = generateItextChunks(form.xformDOM.itextTranslationElements);
+		this.listeners = [];
 	}
 
 	getNodeDefinition(nodeset: string): AnyNodeDefinition {
@@ -57,10 +61,12 @@ export class ModelDefinition {
 		return definition;
 	}
 
-	toJSON() {
-		const { form, ...rest } = this;
+	registerXformsRevalidateListener(listener: XformsRevalidateListener) {
+		this.listeners.push(listener);
+	}
 
-		return rest;
+	triggerXformsRevalidateListeners() {
+		this.listeners.forEach((listener: XformsRevalidateListener) => listener());
 	}
 
 	getTranslationChunks(
@@ -69,5 +75,11 @@ export class ModelDefinition {
 	): ReadonlyArray<TextChunkExpression<'string'>> {
 		const languageMap = this.itextChunks.get(activeLanguage.language);
 		return languageMap?.get(itextId) ?? [];
+	}
+
+	toJSON() {
+		const { form, ...rest } = this;
+
+		return rest;
 	}
 }

@@ -125,6 +125,7 @@ describe('`jr:preload`', () => {
 			expect(scenario.answerOf('/data/element').toString()).toEqual(''); // doesn't trigger until submission
 
 			const start = Temporal.Now.instant().epochNanoseconds;
+			await scenario.prepareWebFormsInstancePayload();
 			const xml = scenario.proposed_serializeInstance();
 			const end = Temporal.Now.instant().epochNanoseconds;
 			const timestampElement = /<element>(.*)<\/element>/g.exec(xml);

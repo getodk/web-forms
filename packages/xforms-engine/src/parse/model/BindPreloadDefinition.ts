@@ -1,7 +1,6 @@
 import { JAVAROSA_NAMESPACE_URI } from '@getodk/common/constants/xmlns.ts';
 import type { PartiallyKnownString } from '@getodk/common/types/string/PartiallyKnownString.ts';
 import type { PreloadProperties } from '../../client/index.ts';
-import { now, today } from '../../lib/date-format.ts';
 import type { BindElement } from './BindElement.ts';
 import { XFORM_EVENT, type XFormEvent } from './Event.ts';
 
@@ -90,10 +89,10 @@ export class BindPreloadDefinition<Type extends PreloadType> implements PreloadI
 			return { type: 'expression', expression: PRELOAD_UID_EXPRESSION };
 		}
 		if (this.type === 'timestamp' && this.parameter === 'start') {
-			return { type: 'literal', literal: now() };
+			return { type: 'expression', expression: 'now()' };
 		}
 		if (this.type === 'date' && this.parameter === 'today') {
-			return { type: 'literal', literal: today() };
+			return { type: 'expression', expression: 'today()' };
 		}
 		if (this.type === 'property') {
 			if (this.parameter === 'deviceid') {

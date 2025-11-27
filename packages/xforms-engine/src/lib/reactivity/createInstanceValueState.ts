@@ -24,8 +24,6 @@ const isAddingRepeatChild = (context: ValueContext) => {
 
 /**
  * Special case, does not correspond to any event.
- *
- * @see {@link shouldPreloadUID}
  */
 const isEditInitialLoad = (context: ValueContext) => {
 	return context.rootDocument.initializationMode === 'edit';
@@ -102,8 +100,7 @@ const guardDownstreamReadonlyWrites = (
  * - When an instance is first loaded ({@link isInstanceFirstLoad})
  * - When an instance is initially loaded for editing ({@link isEditInitialLoad})
  */
-// TODO rename this, something like: isLoading?
-const shouldPreloadUID = (context: ValueContext) => {
+const isLoading = (context: ValueContext) => {
 	return isInstanceFirstLoad(context) || isEditInitialLoad(context);
 };
 
@@ -123,14 +120,29 @@ const getPreloadValue = (
 	});
 };
 
-// TODO rename because it's now doing every preload
-const setPreloadUIDValue = (
+const postloadValue = (
 	context: ValueContext,
-	setValue: SimpleAtomicStateSetter<string>
-): void => {
-	const { preload } = context.definition.bind;
+	setValue: SimpleAtomicStateSetter<string>,
+	preload: AnyBindPreloadDefinition
+) => {
+	if (preload.event === XFORM_EVENT.xformsRevalidate) {
+		context.definition.model.registerXformsRevalidateListener(() => {
+			const calc = context.evaluator.evaluateString('now()');
+			const value = context.decodeInstanceValue(calc);
+			setValue(value);
+		});
+	}
+};
 
-	if (!preload || !shouldPreloadUID(context)) {
+const preloadValue = (context: ValueContext, setValue: SimpleAtomicStateSetter<string>): void => {
+	const { preload } = context.definition.bind;
+	if (!preload) {
+		return;
+	}
+
+	postloadValue(context, setValue, preload);
+
+	if (!isLoading(context)) {
 		return;
 	}
 
@@ -179,7 +191,7 @@ const bindToRepeatInstance = (
  * computations to the provided value setter, on initialization and any
  * subsequent reactive update.
  *
- * @see {@link setPreloadUIDValue} for important details about spec ordering of
+ * @see {@link preloadValue} for important details about spec ordering of
  * events and computations.
  */
 const createCalculation = (
@@ -272,7 +284,7 @@ export const createInstanceValueState = (context: ValueContext): InstanceValueSt
 
 		const [, setValue] = relevantValueState;
 
-		setPreloadUIDValue(context, setValue);
+		preloadValue(context, setValue);
 
 		const { calculate } = context.definition.bind;
 		if (calculate != null) {
