@@ -1186,6 +1186,7 @@ __metadata:
     ramda: "npm:^0.32.0"
     rimraf: "npm:^6.1.2"
     sass: "npm:^1.94.2"
+    typescript: "npm:~5.9.3"
     vite: "npm:^7.2.4"
     vite-plugin-css-injected-by-js: "npm:^3.5.2"
     vite-plugin-static-copy: "npm:^3.1.4"
@@ -1219,10 +1220,12 @@ __metadata:
     solid-js: "npm:^1.9.10"
     temporal-polyfill: "npm:^0.3.0"
     typedoc: "npm:^0.28.14"
+    typescript: "npm:~5.9.3"
     vite: "npm:^7.2.4"
     vite-plugin-dts: "npm:^4.5.4"
     vite-plugin-no-bundle: "npm:^4.0.0"
     vitest: "npm:^3.2.4"
+    web-tree-sitter: "npm:0.24.5"
   peerDependencies:
     solid-js: ^1.9.7
   peerDependenciesMeta:
@@ -1246,6 +1249,7 @@ __metadata:
     jsdom: "npm:^27.2.0"
     npm-run-all2: "npm:^8.0.4"
     temporal-polyfill: "npm:^0.3.0"
+    typescript: "npm:~5.9.3"
     vite: "npm:^7.2.4"
     vite-plugin-babel: "npm:^1.3.2"
     vite-plugin-dts: "npm:^4.5.4"
@@ -7448,6 +7452,7 @@ __metadata:
     typescript: "npm:~5.9.3"
     typescript-eslint: "npm:^8.48.0"
     vue: "npm:3.5.25"
+    vue-eslint-parser: "npm:^10.0.0"
     vue-tsc: "npm:^3.1.5"
   languageName: unknown
   linkType: soft
@@ -8726,7 +8731,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vue-eslint-parser@npm:^10.2.0":
+"vue-eslint-parser@npm:^10.0.0, vue-eslint-parser@npm:^10.2.0":
   version: 10.2.0
   resolution: "vue-eslint-parser@npm:10.2.0"
   dependencies:
