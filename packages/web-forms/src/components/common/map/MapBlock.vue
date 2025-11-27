@@ -240,11 +240,12 @@ const discardSavedFeature = () => {
 	top: var(--odk-map-spacing);
 	right: var(--odk-map-spacing);
 	z-index: var(--odk-z-index-form-floating);
-	gap: 4px;
+	gap: 8px;
 
 	button {
 		background: var(--odk-base-background-color);
-		padding: 8px;
+		height: 42px;
+		width: 42px;
 		border-radius: var(--odk-radius);
 		border: 1px solid var(--odk-border-color);
 		cursor: pointer;
@@ -266,22 +267,22 @@ const discardSavedFeature = () => {
 	right: var(--odk-map-spacing);
 	bottom: 35px;
 	display: flex;
+	gap: 9px;
 	flex-direction: column;
 	flex-wrap: nowrap;
 	align-items: center;
 	box-shadow: none;
-	background: var(--odk-base-background-color);
-	border-radius: var(--odk-radius);
+	background: none;
 	overflow: hidden;
-	border: 1px solid var(--odk-border-color);
 
 	button,
 	button:hover,
 	button:focus,
 	button:active {
-		height: 37px;
-		width: 36px;
-		border: none;
+		height: 42px;
+		width: 42px;
+		border: 1px solid var(--odk-border-color);
+		border-radius: var(--odk-radius);
 		background: var(--odk-base-background-color);
 		-webkit-tap-highlight-color: transparent;
 		font-size: 24px;
@@ -367,7 +368,7 @@ const discardSavedFeature = () => {
 		height: calc(100vh - var(--map-status-bar-min-height) - var(--map-label-min-height));
 
 		:deep(.ol-zoom) {
-			top: 165px;
+			top: 195px;
 			bottom: unset;
 		}
 	}
