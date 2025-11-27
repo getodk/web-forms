@@ -104,34 +104,17 @@ const isLoading = (context: ValueContext) => {
 	return isInstanceFirstLoad(context) || isEditInitialLoad(context);
 };
 
-const getPreloadValue = (
-	context: ValueContext,
-	preload: AnyBindPreloadDefinition
-): string | undefined => {
-	const preloadValue = preload.getValue(context.instanceConfig.preloadProperties);
-	if (!preloadValue) {
-		return;
-	}
-	if (preloadValue.type === 'literal') {
-		return preloadValue.literal;
-	}
-	return context.evaluator.evaluateString(preloadValue.expression, {
-		contextNode: context.contextNode,
-	});
-};
-
 const postloadValue = (
 	context: ValueContext,
 	setValue: SimpleAtomicStateSetter<string>,
 	preload: AnyBindPreloadDefinition
 ) => {
-	if (preload.event === XFORM_EVENT.xformsRevalidate) {
-		context.definition.model.registerXformsRevalidateListener(() => {
-			const calc = context.evaluator.evaluateString('now()');
-			const value = context.decodeInstanceValue(calc);
+	context.definition.model.registerXformsRevalidateListener(() => {
+		const value = preload.getValue(context);
+		if (value) {
 			setValue(value);
-		});
-	}
+		}
+	});
 };
 
 const preloadValue = (context: ValueContext, setValue: SimpleAtomicStateSetter<string>): void => {
@@ -140,15 +123,16 @@ const preloadValue = (context: ValueContext, setValue: SimpleAtomicStateSetter<s
 		return;
 	}
 
-	postloadValue(context, setValue, preload);
-
-	if (!isLoading(context)) {
+	if (preload.event === XFORM_EVENT.xformsRevalidate) {
+		postloadValue(context, setValue, preload);
 		return;
 	}
 
-	const value = getPreloadValue(context, preload);
-	if (value) {
-		setValue(value);
+	if (isLoading(context)) {
+		const value = preload.getValue(context);
+		if (value) {
+			setValue(value);
+		}
 	}
 };
 

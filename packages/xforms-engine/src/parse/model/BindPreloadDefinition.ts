@@ -1,6 +1,7 @@
 import { JAVAROSA_NAMESPACE_URI } from '@getodk/common/constants/xmlns.ts';
 import type { PartiallyKnownString } from '@getodk/common/types/string/PartiallyKnownString.ts';
-import type { PreloadProperties } from '../../client/index.ts';
+import type { AttributeContext } from '../../instance/internal-api/AttributeContext.ts';
+import type { InstanceValueContext } from '../../instance/internal-api/InstanceValueContext.ts';
 import type { BindElement } from './BindElement.ts';
 import { XFORM_EVENT, type XFormEvent } from './Event.ts';
 
@@ -84,28 +85,29 @@ export class BindPreloadDefinition<Type extends PreloadType> implements PreloadI
 	readonly parameter: PreloadParameter<Type>;
 	readonly event: XFormEvent;
 
-	getValue(properties: PreloadProperties): PreloadValue | undefined {
+	getValue(context: AttributeContext | InstanceValueContext): string | undefined {
 		if (this.type === 'uid') {
-			return { type: 'expression', expression: PRELOAD_UID_EXPRESSION };
+			return context.evaluator.evaluateString(PRELOAD_UID_EXPRESSION);
 		}
-		if (this.type === 'timestamp' && this.parameter === 'start') {
-			return { type: 'expression', expression: 'now()' };
+		if (this.type === 'timestamp') {
+			return context.evaluator.evaluateString('now()');
 		}
-		if (this.type === 'date' && this.parameter === 'today') {
-			return { type: 'expression', expression: 'today()' };
+		if (this.type === 'date') {
+			return context.evaluator.evaluateString('today()');
 		}
 		if (this.type === 'property') {
+			const properties = context.instanceConfig.preloadProperties;
 			if (this.parameter === 'deviceid') {
-				return { type: 'literal', literal: properties.deviceID ?? '' };
+				return properties.deviceID;
 			}
 			if (this.parameter === 'email') {
-				return { type: 'literal', literal: properties.email ?? '' };
+				return properties.email;
 			}
 			if (this.parameter === 'phonenumber') {
-				return { type: 'literal', literal: properties.phoneNumber ?? '' };
+				return properties.phoneNumber;
 			}
 			if (this.parameter === 'username') {
-				return { type: 'literal', literal: properties.username ?? '' };
+				return properties.username;
 			}
 		}
 		return;
@@ -120,17 +122,6 @@ export class BindPreloadDefinition<Type extends PreloadType> implements PreloadI
 				: XFORM_EVENT.odkInstanceFirstLoad;
 	}
 }
-
-interface LiteralPreloadValue {
-	type: 'literal';
-	literal: string;
-}
-interface ExpressionPreloadValue {
-	type: 'expression';
-	expression: string;
-}
-
-export type PreloadValue = ExpressionPreloadValue | LiteralPreloadValue;
 
 // prettier-ignore
 export type AnyBindPreloadDefinition =
