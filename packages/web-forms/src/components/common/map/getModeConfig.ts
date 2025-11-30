@@ -2,6 +2,7 @@ export const MODES = {
 	SELECT: 'select', // Used in Select one from map question type
 	LOCATION: 'location', // Used in Geopoint with "maps" appearance
 	PLACEMENT: 'placement', // Used in Geopoint with "placement-map" appearance
+	DRAW: 'draw', // Used in Geoshape and Geotrace question types
 } as const;
 export type Mode = (typeof MODES)[keyof typeof MODES];
 
@@ -18,6 +19,9 @@ interface ModeConfig {
 		canViewProperties: boolean;
 		canShowMapOverlay: boolean;
 		canShowMapOverlayOnError: boolean;
+		canUndoLastChange: boolean;
+		canDeleteDrawFeature: boolean;
+		canAutomaticallySave: boolean;
 	};
 }
 
@@ -36,6 +40,9 @@ export const getModeConfig = (mode: Mode): ModeConfig => {
 				canViewProperties: true,
 				canShowMapOverlay: false,
 				canShowMapOverlayOnError: false,
+				canUndoLastChange: false,
+				canDeleteDrawFeature: false,
+				canAutomaticallySave: false,
 			},
 		};
 	}
@@ -54,6 +61,9 @@ export const getModeConfig = (mode: Mode): ModeConfig => {
 				canViewProperties: false,
 				canShowMapOverlay: true,
 				canShowMapOverlayOnError: true,
+				canUndoLastChange: false,
+				canDeleteDrawFeature: false,
+				canAutomaticallySave: false,
 			},
 		};
 	}
@@ -72,6 +82,30 @@ export const getModeConfig = (mode: Mode): ModeConfig => {
 				canViewProperties: false,
 				canShowMapOverlay: true,
 				canShowMapOverlayOnError: false,
+				canUndoLastChange: false,
+				canDeleteDrawFeature: false,
+				canAutomaticallySave: false,
+			},
+		};
+	}
+
+	if (mode === MODES.DRAW) {
+		return {
+			interactions: {
+				select: false,
+				longPress: true,
+				drag: true,
+			},
+			capabilities: {
+				canSaveCurrentLocation: false,
+				canRemoveCurrentLocation: false,
+				canLoadMultiFeatures: false,
+				canViewProperties: false,
+				canShowMapOverlay: false,
+				canShowMapOverlayOnError: false,
+				canUndoLastChange: true,
+				canDeleteDrawFeature: true,
+				canAutomaticallySave: true,
 			},
 		};
 	}
@@ -90,6 +124,9 @@ export const getModeConfig = (mode: Mode): ModeConfig => {
 			canViewProperties: false,
 			canShowMapOverlay: false,
 			canShowMapOverlayOnError: false,
+			canUndoLastChange: false,
+			canDeleteDrawFeature: false,
+			canAutomaticallySave: false,
 		},
 	};
 };

@@ -18,6 +18,9 @@ describe('getModeConfig', () => {
 				canViewProperties: true,
 				canShowMapOverlay: false,
 				canShowMapOverlayOnError: false,
+				canUndoLastChange: false,
+				canDeleteDrawFeature: false,
+				canAutomaticallySave: false,
 			},
 		});
 	});
@@ -38,6 +41,9 @@ describe('getModeConfig', () => {
 				canViewProperties: false,
 				canShowMapOverlay: true,
 				canShowMapOverlayOnError: true,
+				canUndoLastChange: false,
+				canDeleteDrawFeature: false,
+				canAutomaticallySave: false,
 			},
 		});
 	});
@@ -58,6 +64,32 @@ describe('getModeConfig', () => {
 				canViewProperties: false,
 				canShowMapOverlay: true,
 				canShowMapOverlayOnError: false,
+				canUndoLastChange: false,
+				canDeleteDrawFeature: false,
+				canAutomaticallySave: false,
+			},
+		});
+	});
+
+	it('returns correct config for SHAPE mode', () => {
+		const config = getModeConfig(MODES.DRAW);
+
+		expect(config).toEqual({
+			interactions: {
+				select: false,
+				longPress: true,
+				drag: true,
+			},
+			capabilities: {
+				canSaveCurrentLocation: true,
+				canRemoveCurrentLocation: true,
+				canLoadMultiFeatures: false,
+				canViewProperties: false,
+				canShowMapOverlay: true,
+				canShowMapOverlayOnError: false,
+				canUndoLastChange: true,
+				canDeleteDrawFeature: true,
+				canAutomaticallySave: true,
 			},
 		});
 	});
@@ -79,6 +111,9 @@ describe('getModeConfig', () => {
 				canViewProperties: false,
 				canShowMapOverlay: false,
 				canShowMapOverlayOnError: false,
+				canUndoLastChange: false,
+				canDeleteDrawFeature: false,
+				canAutomaticallySave: false,
 			},
 		});
 	});

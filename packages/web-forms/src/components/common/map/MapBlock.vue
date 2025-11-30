@@ -89,34 +89,19 @@ const discardSavedFeature = () => {
 	mapHandler.discardSavedFeature();
 	emitSavedFeature();
 };
+
+const deleteDrawFeature = () => {
+
+}
+
+const undoLastChange = () => {
+
+}
 </script>
 
 <template>
 	<div class="map-block-component">
 		<div :class="{ 'map-container': true, 'map-full-screen': isFullScreen }">
-			<div class="control-bar">
-				<!-- TODO: translations -->
-				<button
-					:class="{ 'control-active': isFullScreen }"
-					title="Full Screen"
-					@click="isFullScreen = !isFullScreen"
-				>
-					<IconSVG name="mdiArrowExpandAll" size="sm" />
-				</button>
-				<!-- TODO: translations -->
-				<button
-					title="Zoom to fit all options"
-					:disabled="!mapHandler.canFitToAllFeatures()"
-					@click="mapHandler.fitToAllFeatures"
-				>
-					<IconSVG name="mdiFullscreen" />
-				</button>
-				<!-- TODO: translations -->
-				<button title="Zoom to current location" @click="mapHandler.watchCurrentLocation">
-					<IconSVG name="mdiCrosshairsGps" size="sm" />
-				</button>
-			</div>
-
 			<div ref="mapElement" class="map-block">
 				<div v-if="mapHandler.shouldShowMapOverlay()" class="map-overlay">
 					<Button outlined severity="contrast" @click="mapHandler.watchCurrentLocation">
@@ -124,6 +109,48 @@ const discardSavedFeature = () => {
 						<!-- TODO: translations -->
 						<span>Get location</span>
 					</Button>
+				</div>
+
+				<div class="control-bar">
+					<div class="control-bar-vertical">
+						<!-- TODO: translations -->
+						<button
+							:class="{ 'control-active': isFullScreen }"
+							title="Full Screen"
+							@click="isFullScreen = !isFullScreen"
+						>
+							<IconSVG name="mdiArrowExpandAll" size="sm" />
+						</button>
+						<!-- TODO: translations -->
+						<button
+							title="Zoom to fit all options"
+							:disabled="!mapHandler.canFitToAllFeatures()"
+							@click="mapHandler.fitToAllFeatures"
+						>
+							<IconSVG name="mdiFullscreen" />
+						</button>
+						<!-- TODO: translations -->
+						<button title="Zoom to current location" @click="mapHandler.watchCurrentLocation">
+							<IconSVG name="mdiCrosshairsGps" size="sm" />
+						</button>
+					</div>
+
+					<div v-if="!disabled" class="control-bar-horizontal">
+						<!-- TODO: translations -->
+						<button
+							title="Delete"
+							@click="deleteDrawFeature"
+						>
+							<IconSVG name="mdiTrashCanOutline" size="sm" />
+						</button>
+						<!-- TODO: translations -->
+						<button
+							title="Undo last change"
+							@click="undoLastChange"
+						>
+							<IconSVG name="mdiArrowULeftTop" size="sm" />
+						</button>
+					</div>
 				</div>
 
 				<Message v-if="!disabled && mapHandler.canLongPressAndDrag()" severity="contrast" closable size="small" class="map-message">
@@ -279,6 +306,21 @@ const discardSavedFeature = () => {
 
 	button {
 		@include map-control-button;
+	}
+}
+
+.control-bar.control-bar-horizontal {
+	flex-direction: row;
+	background: var(--odk-base-background-color);
+	border-radius: var(--odk-radius);
+	border: 1px solid var(--odk-border-color);
+	top: unset;
+	right: unset;
+	left: var(--odk-map-spacing);
+	bottom: 35px;
+
+	button {
+		border: none;
 	}
 }
 
