@@ -9,6 +9,7 @@ import type { Mode } from '@/components/common/map/getModeConfig.ts';
 import MapProperties from '@/components/common/map/MapProperties.vue';
 import MapStatusBar from '@/components/common/map/MapStatusBar.vue';
 import { STATES, useMapBlock } from '@/components/common/map/useMapBlock.ts';
+import type { DrawFeatureType } from '@/components/common/map/useMapInteractions.ts';
 import { QUESTION_HAS_ERROR } from '@/lib/constants/injection-keys.ts';
 import type { FeatureCollection, Feature } from 'geojson';
 import Button from 'primevue/button';
@@ -18,6 +19,7 @@ import Message from 'primevue/message';
 interface MapBlockProps {
 	featureCollection: FeatureCollection;
 	disabled: boolean;
+	drawFeatureType?: DrawFeatureType;
 	mode: Mode;
 	orderedExtraProps: Map<string, Array<[string, string]>>;
 	savedFeatureValue: Feature | undefined;
@@ -32,7 +34,10 @@ const showErrorStyle = inject<ComputedRef<boolean>>(
 	computed(() => false)
 );
 
-const mapHandler = useMapBlock(props.mode, { onFeaturePlacement: () => emitSavedFeature() });
+const mapHandler = useMapBlock(
+	{ mode: props.mode, drawFeatureType: props.drawFeatureType },
+	{ onFeaturePlacement: () => emitSavedFeature() }
+);
 
 onMounted(() => {
 	if (!mapElement.value || !mapHandler) {
@@ -90,13 +95,9 @@ const discardSavedFeature = () => {
 	emitSavedFeature();
 };
 
-const deleteDrawFeature = () => {
+const deleteDrawFeature = () => {};
 
-}
-
-const undoLastChange = () => {
-
-}
+const undoLastChange = () => {};
 </script>
 
 <template>
@@ -137,23 +138,23 @@ const undoLastChange = () => {
 
 					<div v-if="!disabled" class="control-bar-horizontal">
 						<!-- TODO: translations -->
-						<button
-							title="Delete"
-							@click="deleteDrawFeature"
-						>
-							<IconSVG name="mdiTrashCanOutline" size="sm" />
+						<button title="Delete" @click="deleteDrawFeature">
+							<IconSVG name="mdiTrashCanOutline" />
 						</button>
 						<!-- TODO: translations -->
-						<button
-							title="Undo last change"
-							@click="undoLastChange"
-						>
-							<IconSVG name="mdiArrowULeftTop" size="sm" />
+						<button title="Undo last change" @click="undoLastChange">
+							<IconSVG name="mdiArrowULeftTop" />
 						</button>
 					</div>
 				</div>
 
-				<Message v-if="!disabled && mapHandler.canLongPressAndDrag()" severity="contrast" closable size="small" class="map-message">
+				<Message
+					v-if="!disabled && mapHandler.canLongPressAndDrag()"
+					severity="contrast"
+					closable
+					size="small"
+					class="map-message"
+				>
 					<!-- TODO: translations -->
 					<span v-if="savedFeatureValue">Long press and drag move point</span>
 					<span v-else>Long press to place a point</span>
@@ -260,11 +261,9 @@ const undoLastChange = () => {
 	}
 }
 
-@mixin map-floating-control-bar {
+@mixin map-control-bar {
 	position: absolute;
-	right: var(--odk-map-spacing);
 	display: flex;
-	flex-direction: column;
 	flex-wrap: nowrap;
 	align-items: center;
 	box-shadow: none;
@@ -272,6 +271,12 @@ const undoLastChange = () => {
 	overflow: hidden;
 	gap: var(--odk-map-spacing);
 	z-index: var(--odk-z-index-form-floating);
+}
+
+@mixin map-control-bar-vertical {
+	@include map-control-bar;
+	right: var(--odk-map-spacing);
+	flex-direction: column;
 }
 
 @mixin map-control-button {
@@ -301,31 +306,36 @@ const undoLastChange = () => {
 }
 
 .control-bar {
-	@include map-floating-control-bar;
-	top: var(--odk-map-spacing);
-
 	button {
 		@include map-control-button;
 	}
-}
 
-.control-bar.control-bar-horizontal {
-	flex-direction: row;
-	background: var(--odk-base-background-color);
-	border-radius: var(--odk-radius);
-	border: 1px solid var(--odk-border-color);
-	top: unset;
-	right: unset;
-	left: var(--odk-map-spacing);
-	bottom: 35px;
+	.control-bar-vertical {
+		@include map-control-bar-vertical;
+		top: var(--odk-map-spacing);
+	}
 
-	button {
-		border: none;
+	.control-bar-horizontal {
+		@include map-control-bar;
+		flex-direction: row;
+		left: var(--odk-map-spacing);
+		bottom: 35px;
+		background: var(--odk-base-background-color);
+		border: 1px solid var(--odk-border-color);
+		border-radius: 10px;
+		gap: 4px;
+		padding: 7px;
+
+		button {
+			height: 48px;
+			width: 48px;
+			border: none;
+		}
 	}
 }
 
 .map-block-component :deep(.ol-zoom) {
-	@include map-floating-control-bar;
+	@include map-control-bar-vertical;
 	bottom: 35px;
 
 	button,

@@ -12,6 +12,7 @@ import {
 	type UseMapFeatures,
 } from '@/components/common/map/useMapFeatures.ts';
 import {
+	type DrawFeatureType,
 	useMapInteractions,
 	type UseMapInteractions,
 } from '@/components/common/map/useMapInteractions.ts';
@@ -21,15 +22,16 @@ import {
 	useMapViewControls,
 	type UseMapViewControls,
 } from '@/components/common/map/useMapViewControls.ts';
-import type { FeatureCollection, Feature as GeoJsonFeature, GeoJsonProperties } from 'geojson';
+import type { FeatureCollection, Feature as GeoJsonFeature } from 'geojson';
 import { Map, View } from 'ol';
 import { Attribution, Zoom } from 'ol/control';
+import type { Coordinate } from 'ol/coordinate';
 import Feature from 'ol/Feature';
-import { Point } from 'ol/geom';
+import { LineString, Point, Polygon } from 'ol/geom';
 import TileLayer from 'ol/layer/Tile';
 import VectorLayer from 'ol/layer/Vector';
 import WebGLVectorLayer from 'ol/layer/WebGLVector';
-import { toLonLat } from 'ol/proj';
+import { toLonLat, fromLonLat } from 'ol/proj';
 import { OSM } from 'ol/source';
 import VectorSource from 'ol/source/Vector';
 import { shallowRef, watch } from 'vue';
@@ -43,15 +45,25 @@ export const STATES = {
 } as const;
 
 const DEFAULT_VIEW_PROJECTION = 'EPSG:3857';
+
 export const ODK_VALUE_PROPERTY = 'odk_value';
 
-export function useMapBlock(mode: Mode, events: { onFeaturePlacement: () => void }) {
+interface MapBlockConfig {
+	mode: Mode;
+	drawFeatureType?: DrawFeatureType;
+}
+
+interface MapBlockEvents {
+	onFeaturePlacement: () => void;
+}
+
+export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 	let mapInstance: Map | undefined;
 	let mapInteractions: UseMapInteractions | undefined;
 	let mapViewControls: UseMapViewControls | undefined;
 	let mapFeatures: UseMapFeatures | undefined;
 
-	const currentMode = getModeConfig(mode);
+	const currentMode = getModeConfig(config.mode);
 	const currentState = shallowRef<(typeof STATES)[keyof typeof STATES]>(STATES.LOADING);
 	const errorMessage = shallowRef<{ title: string; message: string } | undefined>();
 
@@ -139,13 +151,8 @@ export function useMapBlock(mode: Mode, events: { onFeaturePlacement: () => void
 			return;
 		}
 
-		// TODO: extend to LineString and Polygon types
-		const { geometry, properties } = savedFeatureValue;
-		if (geometry.type === 'Point' && geometry.coordinates.length === 2) {
-			const [longitude, latitude] = geometry.coordinates as [number, number];
-			loadAndSaveSingleFeature(longitude, latitude, properties);
-			return;
-		}
+		const feature = mapFeatures?.createFeature(savedFeatureValue);
+		loadAndSaveSingleFeature(feature);
 	};
 
 	const setupMapInteractions = (isReadOnly: boolean) => {
@@ -170,21 +177,14 @@ export function useMapBlock(mode: Mode, events: { onFeaturePlacement: () => void
 		}
 
 		if (currentMode.interactions.longPress) {
-			mapInteractions.setupLongPressPoint(featuresSource, (feature) =>
+			mapInteractions.setupLongPressPoint(featuresSource, config.drawFeatureType, (feature) =>
 				handlePointPlacement(feature)
 			);
 		}
 	};
 
 	const handlePointPlacement = (feature: Feature) => {
-		const geometry = (feature as Feature<Point>).getGeometry();
-		const coordinates = geometry?.getCoordinates();
-		if (!coordinates || coordinates.length < 2) {
-			return;
-		}
-
-		const [longitude, latitude] = toLonLat(coordinates) as [number, number];
-		feature.set(ODK_VALUE_PROPERTY, formatODKValue(longitude, latitude));
+		feature.set(ODK_VALUE_PROPERTY, formatODKValue(feature));
 		mapFeatures?.saveFeature(feature);
 
 		if (events.onFeaturePlacement) {
@@ -203,17 +203,13 @@ export function useMapBlock(mode: Mode, events: { onFeaturePlacement: () => void
 		mapFeatures?.findAndSaveFeature(featuresSource, savedFeature, true);
 	};
 
-	const loadAndSaveSingleFeature = (
-		longitude: number,
-		latitude: number,
-		properties: GeoJsonProperties
-	) => {
-		if (!mapInstance || currentMode.capabilities.canLoadMultiFeatures) {
+	const loadAndSaveSingleFeature = (feature: Feature | undefined) => {
+		if (!mapInstance || currentMode.capabilities.canLoadMultiFeatures || !feature) {
 			return;
 		}
 
 		currentState.value = STATES.LOADING;
-		mapFeatures?.loadAndSaveSingleFeature(featuresSource, longitude, latitude, properties);
+		mapFeatures?.loadAndSaveSingleFeature(featuresSource, feature);
 		currentState.value = STATES.READY;
 	};
 
@@ -236,12 +232,21 @@ export function useMapBlock(mode: Mode, events: { onFeaturePlacement: () => void
 
 	const saveCurrentLocation = () => {
 		const location = mapViewControls?.getUserCurrentLocation();
-		if (currentMode.capabilities.canSaveCurrentLocation && location) {
-			loadAndSaveSingleFeature(location.longitude, location.latitude, {
-				[ODK_VALUE_PROPERTY]: formatODKValue(location.longitude, location.latitude),
-			});
+		if (!currentMode.capabilities.canSaveCurrentLocation || !location) {
 			return;
 		}
+
+		const coords = [location.longitude, location.latitude];
+		if (location.altitude != null) {
+			coords.push(location.altitude);
+		}
+
+		// TODO: accuracy is not part of the GeoJSON coordinates spec but is used by ODK. Adding it as a property for now? ODK_ACCURACY_PROPERTY = 'odk_accuracy'
+		const feature = new Feature({
+			geometry: new Point(fromLonLat(coords)),
+		});
+		feature.set(ODK_VALUE_PROPERTY, formatODKValue(feature));
+		loadAndSaveSingleFeature(feature);
 	};
 
 	const discardSavedFeature = () => {
@@ -252,7 +257,42 @@ export function useMapBlock(mode: Mode, events: { onFeaturePlacement: () => void
 		clearMap();
 	};
 
-	const formatODKValue = (longitude: number, latitude: number) => `${latitude} ${longitude}`;
+	const formatODKValue = (feature: Feature): string => {
+		const geometry = feature.getGeometry();
+		if (!geometry) {
+			return '';
+		}
+
+		// ToDo: should we use the accuracy property here?
+		const formatCoords = (coords: Coordinate, accuracy?: number) => {
+			const [longitude, latitude, altitude] = toLonLat(coords);
+			return [latitude, longitude, altitude, accuracy].filter((item) => item != null).join(' ');
+		};
+
+		const featureType = geometry.getType();
+		if (featureType === 'Point') {
+			const coordinates = (geometry as Point).getCoordinates();
+			return coordinates ? formatCoords(coordinates) : '';
+		}
+
+		let coordinates: Coordinate[] = [];
+		if (featureType === 'LineString') {
+			coordinates = (geometry as LineString).getCoordinates();
+		}
+
+		if (featureType === 'Polygon') {
+			const rings: Coordinate[][] = (geometry as Polygon).getCoordinates();
+			if (rings.length > 1) {
+				// eslint-disable-next-line no-console -- createFeatureCollectionAndProps doesn't produce multiple rings, and this feature auto-completes the polygon, so it shouldn't happen.
+				console.warn(
+					'Shape has holes, which are not supported in ODK Geoshape; using exterior ring only.'
+				);
+			}
+			coordinates = rings[0] ?? [];
+		}
+
+		return coordinates.map((coord) => formatCoords(coord)).join('; ');
+	};
 
 	const teardownMap = () => {
 		mapViewControls?.stopWatchingCurrentLocation();

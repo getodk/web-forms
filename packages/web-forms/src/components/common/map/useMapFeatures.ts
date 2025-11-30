@@ -1,17 +1,16 @@
 import { ODK_VALUE_PROPERTY } from '@/components/common/map/useMapBlock.ts';
 import type { UseMapViewControls } from '@/components/common/map/useMapViewControls.ts';
-import type { FeatureCollection, Feature as GeoJsonFeature, GeoJsonProperties } from 'geojson';
+import type { FeatureCollection, Feature as GeoJsonFeature } from 'geojson';
 import { Map } from 'ol';
 import { intersects } from 'ol/extent';
 import Feature from 'ol/Feature';
 import GeoJSON from 'ol/format/GeoJSON';
-import { Point } from 'ol/geom';
 import type WebGLVectorLayer from 'ol/layer/WebGLVector';
-import { fromLonLat } from 'ol/proj';
 import type VectorSource from 'ol/source/Vector';
 import { shallowRef, watch } from 'vue';
 
 export interface UseMapFeatures {
+	createFeature: (geoJsonFeature: GeoJsonFeature) => Feature | undefined;
 	findAndSaveFeature: (
 		source: VectorSource,
 		value: GeoJsonFeature | undefined,
@@ -20,12 +19,7 @@ export interface UseMapFeatures {
 	getSavedFeature: () => Feature | undefined;
 	getSelectedFeatureProperties: () => Record<string, string> | undefined;
 	isSavedFeatureSelected: () => boolean;
-	loadAndSaveSingleFeature: (
-		source: VectorSource,
-		longitude: number,
-		latitude: number,
-		properties: GeoJsonProperties
-	) => void;
+	loadAndSaveSingleFeature: (source: VectorSource, feature: Feature) => void;
 	loadFeatureCollection: (source: VectorSource, geoJSON: FeatureCollection) => void;
 	saveSelectedFeature: () => void;
 	selectFeature: (feature: Feature | undefined) => void;
@@ -45,18 +39,21 @@ export function useMapFeatures(
 	const selectedFeature = shallowRef<Feature | undefined>();
 	const savedFeature = shallowRef<Feature | undefined>();
 
-	const loadAndSaveSingleFeature = (
-		source: VectorSource,
-		longitude: number,
-		latitude: number,
-		properties: GeoJsonProperties
-	) => {
-		source.clear(true);
-
-		const feature = new Feature({
-			geometry: new Point(fromLonLat([longitude, latitude])),
-			...properties,
+	const createFeature = (geoJsonFeature: GeoJsonFeature): Feature | undefined => {
+		const feature: Feature | Feature[] = new GeoJSON().readFeature(geoJsonFeature, {
+			dataProjection: DEFAULT_GEOJSON_PROJECTION,
+			featureProjection: mapInstance.getView().getProjection(),
 		});
+
+		if (Array.isArray(feature)) {
+			return feature[0];
+		}
+
+		return feature;
+	};
+
+	const loadAndSaveSingleFeature = (source: VectorSource, feature: Feature) => {
+		source.clear(true);
 		source.addFeature(feature);
 		saveFeature(feature);
 		viewControls.fitToAllFeatures(source);
@@ -160,6 +157,7 @@ export function useMapFeatures(
 	);
 
 	return {
+		createFeature,
 		findAndSaveFeature,
 		getSavedFeature,
 		getSelectedFeatureProperties,

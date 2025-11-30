@@ -16,6 +16,7 @@ defineProps<InputGeoshapeProps>();
 		autocomplete if it's expected to be trace or something -->
 	<AsyncMap
 		:disabled="question.currentState.readonly"
+		draw-feature-type="shape"
 		:mode="MODES.DRAW"
 		:saved-feature-value="question.currentState.instanceValue"
 		@save="(value) => question.setValue(value ?? '')"

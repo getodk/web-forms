@@ -10,10 +10,20 @@ import type { TimerID } from '@getodk/common/types/timers.ts';
 import type VectorSource from 'ol/source/Vector';
 import { shallowRef } from 'vue';
 
+const DRAW_FEATURE_TYPES = {
+	SHAPE: 'shape',
+	TRACE: 'trace',
+} as const;
+export type DrawFeatureType = (typeof DRAW_FEATURE_TYPES)[keyof typeof DRAW_FEATURE_TYPES];
+
 export interface UseMapInteractions {
 	removeMapInteractions: () => void;
 	setupFeatureDrag: (layer: VectorLayer, onDrag: (feature: Feature) => void) => void;
-	setupLongPressPoint: (source: VectorSource, onLongPress: (feature: Feature) => void) => void;
+	setupLongPressPoint: (
+		source: VectorSource,
+		drawFeatureType: DrawFeatureType | undefined,
+		onLongPress: (feature: Feature) => void
+	) => void;
 	setupMapVisibilityObserver: (mapContainer: HTMLElement, onMapNotVisible: () => void) => void;
 	teardownMap: () => void;
 	toggleSelectEvent: (
@@ -90,7 +100,11 @@ export function useMapInteractions(mapInstance: Map): UseMapInteractions {
 		}
 	};
 
-	const setupLongPressPoint = (source: VectorSource, onLongPress: (feature: Feature) => void) => {
+	const setupLongPressPoint = (
+		source: VectorSource,
+		drawFeatureType: DrawFeatureType | undefined,
+		onLongPress: (feature: Feature) => void
+	) => {
 		if (pointerInteraction.value) {
 			return;
 		}
