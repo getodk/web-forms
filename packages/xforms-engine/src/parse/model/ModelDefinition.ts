@@ -24,7 +24,7 @@ export class ModelDefinition {
 	readonly instance: StaticDocument;
 	readonly itextTranslations: ItextTranslationsDefinition;
 	readonly itextChunks: Map<string, ChunkExpressionsByItextId>;
-	readonly listeners: XformsRevalidateListener[];
+	readonly xformsRevalidateListeners: Map<string, XformsRevalidateListener>;
 
 	constructor(readonly form: XFormDefinition) {
 		const submission = new SubmissionDefinition(form.xformDOM);
@@ -38,7 +38,7 @@ export class ModelDefinition {
 		this.nodes = nodeDefinitionMap(this.root);
 		this.itextTranslations = ItextTranslationsDefinition.from(form.xformDOM);
 		this.itextChunks = generateItextChunks(form.xformDOM.itextTranslationElements);
-		this.listeners = [];
+		this.xformsRevalidateListeners = new Map();
 	}
 
 	getNodeDefinition(nodeset: string): AnyNodeDefinition {
@@ -61,12 +61,12 @@ export class ModelDefinition {
 		return definition;
 	}
 
-	registerXformsRevalidateListener(listener: XformsRevalidateListener) {
-		this.listeners.push(listener);
+	registerXformsRevalidateListener(ref: string, listener: XformsRevalidateListener) {
+		this.xformsRevalidateListeners.set(ref, listener);
 	}
 
 	triggerXformsRevalidateListeners() {
-		this.listeners.forEach((listener: XformsRevalidateListener) => listener());
+		this.xformsRevalidateListeners.forEach((listener: XformsRevalidateListener) => listener());
 	}
 
 	getTranslationChunks(

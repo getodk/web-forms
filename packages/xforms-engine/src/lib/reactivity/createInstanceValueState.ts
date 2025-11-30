@@ -104,16 +104,25 @@ const isLoading = (context: ValueContext) => {
 	return isInstanceFirstLoad(context) || isEditInitialLoad(context);
 };
 
+const setValueIfPreloadDefined = (
+	context: ValueContext,
+	setValue: SimpleAtomicStateSetter<string>,
+	preload: AnyBindPreloadDefinition
+) => {
+	const value = preload.getValue(context);
+	if (value) {
+		setValue(value);
+	}
+};
+
 const postloadValue = (
 	context: ValueContext,
 	setValue: SimpleAtomicStateSetter<string>,
 	preload: AnyBindPreloadDefinition
 ) => {
-	context.definition.model.registerXformsRevalidateListener(() => {
-		const value = preload.getValue(context);
-		if (value) {
-			setValue(value);
-		}
+	const ref = context.contextReference();
+	context.definition.model.registerXformsRevalidateListener(ref, () => {
+		setValueIfPreloadDefined(context, setValue, preload);
 	});
 };
 
@@ -129,10 +138,7 @@ const preloadValue = (context: ValueContext, setValue: SimpleAtomicStateSetter<s
 	}
 
 	if (isLoading(context)) {
-		const value = preload.getValue(context);
-		if (value) {
-			setValue(value);
-		}
+		setValueIfPreloadDefined(context, setValue, preload);
 	}
 };
 
