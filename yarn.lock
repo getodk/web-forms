@@ -7250,7 +7250,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rimraf@npm:^6.1.2":
+"rimraf@npm:^6.0.1, rimraf@npm:^6.1.2":
   version: 6.1.2
   resolution: "rimraf@npm:6.1.2"
   dependencies:
