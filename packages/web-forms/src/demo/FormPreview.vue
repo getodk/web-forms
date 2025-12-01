@@ -89,6 +89,7 @@ const preloadProperties: PreloadProperties = {
 			:missing-resource-behavior="formPreviewState.missingResourceBehavior"
 			:submission-max-size="Infinity"
 			:preload-properties="preloadProperties"
+			:track-device="true"
 			@submit="handleSubmit"
 			@submit-chunked="handleSubmitChunked"
 		/>

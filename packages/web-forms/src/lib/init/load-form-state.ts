@@ -70,6 +70,7 @@ const resolvableFormInstanceInput = (options: EditInstanceOptions): ResolvableFo
 interface LoadFormStateOptions {
 	readonly form: FormOptions;
 	readonly editInstance?: EditInstanceOptions | null;
+	readonly trackDevice?: boolean;
 	readonly preloadProperties?: PreloadProperties;
 }
 
@@ -107,7 +108,9 @@ const getFormInstanceConfig = (options: LoadFormStateOptions) => {
 	const preloadProperties = {
 		...options.preloadProperties,
 	};
-	preloadProperties.deviceID ??= getDeviceId();
+	if (!preloadProperties.deviceID && options.trackDevice) {
+		preloadProperties.deviceID = getDeviceId();
+	}
 	return {
 		...ENGINE_FORM_INSTANCE_CONFIG,
 		preloadProperties,

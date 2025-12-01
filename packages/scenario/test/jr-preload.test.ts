@@ -9,6 +9,7 @@ import {
 	t,
 	title,
 } from '@getodk/common/test/fixtures/xform-dsl/index.ts';
+import type { PreloadProperties } from '@getodk/xforms-engine';
 import { Temporal } from 'temporal-polyfill';
 import { describe, expect, it } from 'vitest';
 import { Scenario } from '../src/jr/Scenario.ts';
@@ -144,13 +145,8 @@ describe('`jr:preload`', () => {
 	});
 
 	describe('property', () => {
-		it('bound from given properties', async () => {
-			const deviceID = '123456';
-			const email = 'my@email';
-			const username = 'mukesh';
-			const phoneNumber = '+15551234';
-
-			const scenario = await Scenario.init(
+		const init = async (preloadProperties: PreloadProperties) => {
+			return await Scenario.init(
 				'Properties',
 				html(
 					head(
@@ -176,20 +172,29 @@ describe('`jr:preload`', () => {
 					),
 					body()
 				),
-				{
-					preloadProperties: {
-						deviceID,
-						email,
-						username,
-						phoneNumber,
-					},
-				}
+				{ preloadProperties }
 			);
+		};
 
-			expect(scenario.answerOf('/data/deviceid').toString()).to.equal(deviceID);
-			expect(scenario.answerOf('/data/email').toString()).to.equal(email);
-			expect(scenario.answerOf('/data/username').toString()).to.equal(username);
-			expect(scenario.answerOf('/data/phonenumber').toString()).to.equal(phoneNumber);
+		it('does nothing if not given properties', async () => {
+			const scenario = await init({});
+			expect(scenario.answerOf('/data/deviceid').toString()).to.equal('');
+			expect(scenario.answerOf('/data/email').toString()).to.equal('');
+			expect(scenario.answerOf('/data/username').toString()).to.equal('');
+			expect(scenario.answerOf('/data/phonenumber').toString()).to.equal('');
+		});
+
+		it('bound from given properties', async () => {
+			const scenario = await init({
+				deviceID: '123456',
+				email: 'my@email',
+				username: 'mukesh',
+				phoneNumber: '+15551234',
+			});
+			expect(scenario.answerOf('/data/deviceid').toString()).to.equal('123456');
+			expect(scenario.answerOf('/data/email').toString()).to.equal('my@email');
+			expect(scenario.answerOf('/data/username').toString()).to.equal('mukesh');
+			expect(scenario.answerOf('/data/phonenumber').toString()).to.equal('+15551234');
 		});
 	});
 });

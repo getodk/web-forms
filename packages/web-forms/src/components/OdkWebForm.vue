@@ -37,6 +37,7 @@ const webFormsVersion = __WEB_FORMS_VERSION__;
 export interface OdkWebFormsProps {
 	readonly formXml: string;
 	readonly fetchFormAttachment: FetchFormAttachment;
+	readonly trackDevice?: boolean;
 	readonly preloadProperties?: PreloadProperties;
 	readonly missingResourceBehavior?: MissingResourceBehavior;
 
@@ -168,6 +169,7 @@ const init = async () => {
 		form: formOptions,
 		editInstance: props.editInstance ?? null,
 		preloadProperties: props.preloadProperties,
+		trackDevice: props.trackDevice,
 	});
 
 	if (state.value.instance?.mode === 'edit') {
