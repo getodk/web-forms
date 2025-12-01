@@ -7,6 +7,3 @@ export const XFORM_EVENT = {
 } as const;
 
 export type XFormEvent = (typeof XFORM_EVENT)[keyof typeof XFORM_EVENT];
-
-export const isKnownEvent = (event: XFormEvent): event is XFormEvent =>
-	Object.values(XFORM_EVENT).includes(event);

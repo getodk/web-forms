@@ -1,6 +1,6 @@
 import { isTextNode } from '@getodk/common/lib/dom/predicates.ts';
 import { ActionComputationExpression } from '../expression/ActionComputationExpression.ts';
-import { isKnownEvent, type XFormEvent } from './Event.ts';
+import { type XFormEvent, XFORM_EVENT } from './Event.ts';
 import type { ModelDefinition } from './ModelDefinition.ts';
 
 export class ActionDefinition {
@@ -30,9 +30,13 @@ export class ActionDefinition {
 		return "''";
 	}
 
+	static isKnownEvent = (event: XFormEvent): event is XFormEvent => {
+		return Object.values(XFORM_EVENT).includes(event);
+	};
+
 	static getEvents(element: Element): XFormEvent[] {
 		const events = element.getAttribute('event')?.split(' ') ?? [];
-		const unknownEvents = events.filter((event) => !isKnownEvent(event as XFormEvent));
+		const unknownEvents = events.filter((event) => !this.isKnownEvent(event as XFormEvent));
 		if (unknownEvents.length) {
 			throw new Error(
 				`An action was registered for unsupported events: ${unknownEvents.join(', ')}`
