@@ -1217,6 +1217,7 @@ __metadata:
     mdast-util-from-markdown: "npm:^2.0.2"
     npm-run-all2: "npm:^8.0.4"
     papaparse: "npm:^5.5.3"
+    rimraf: "npm:^6.0.1"
     solid-js: "npm:^1.9.10"
     temporal-polyfill: "npm:^0.3.0"
     typedoc: "npm:^0.28.14"
@@ -1248,6 +1249,7 @@ __metadata:
     crypto-js: "npm:^4.2.0"
     jsdom: "npm:^27.2.0"
     npm-run-all2: "npm:^8.0.4"
+    rimraf: "npm:^6.0.1"
     temporal-polyfill: "npm:^0.3.0"
     typescript: "npm:~5.9.3"
     vite: "npm:^7.2.4"
@@ -7248,7 +7250,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rimraf@npm:^6.1.2":
+"rimraf@npm:^6.0.1, rimraf@npm:^6.1.2":
   version: 6.1.2
   resolution: "rimraf@npm:6.1.2"
   dependencies:

@@ -33,7 +33,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  ##### Question types (basic functionality)<br/>🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜ 41\%
+  ##### Question types (basic functionality)<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜ 61\%
 
   </summary>
   <br/>
@@ -66,13 +66,13 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | rank                       |    ✅    |
 | csv-external               |    ✅    |
 | acknowledge                |    🚧    |
-| start                      |          |
-| end                        |          |
-| today                      |          |
-| deviceid                   |          |
-| username                   |          |
-| phonenumber                |          |
-| email                      |          |
+| start                      |    ✅    |
+| end                        |    ✅    |
+| today                      |    ✅    |
+| deviceid                   |    ✅    |
+| username                   |    ✅    |
+| phonenumber                |    ✅    |
+| email                      |    ✅    |
 | audit                      |          |
 
 </details>
