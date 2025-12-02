@@ -5,8 +5,6 @@
 ### Patch Changes
 
 - 0be7d7c: Upgrade dependencies
-- Updated dependencies [0be7d7c]
-- Updated dependencies [bac8412]
   - @getodk/common@0.11.0
 
 ## 0.9.0
