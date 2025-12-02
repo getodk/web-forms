@@ -1,7 +1,8 @@
 import { Map, MapBrowserEvent } from 'ol';
+import type { Coordinate } from 'ol/coordinate';
 import Feature from 'ol/Feature';
-import { Point } from 'ol/geom';
-import { Translate } from 'ol/interaction';
+import { Point, LineString, Polygon } from 'ol/geom';
+import { Modify, Translate } from 'ol/interaction';
 import PointerInteraction from 'ol/interaction/Pointer';
 import type VectorLayer from 'ol/layer/Vector';
 import WebGLVectorLayer from 'ol/layer/WebGLVector';
@@ -18,7 +19,11 @@ export type DrawFeatureType = (typeof DRAW_FEATURE_TYPES)[keyof typeof DRAW_FEAT
 
 export interface UseMapInteractions {
 	removeMapInteractions: () => void;
-	setupFeatureDrag: (layer: VectorLayer, onDrag: (feature: Feature) => void) => void;
+	setupFeatureDrag: (
+		layer: VectorLayer,
+		drawFeatureType: DrawFeatureType | undefined,
+		onDrag: (feature: Feature) => void
+	) => void;
 	setupLongPressPoint: (
 		source: VectorSource,
 		drawFeatureType: DrawFeatureType | undefined,
@@ -38,6 +43,7 @@ export function useMapInteractions(mapInstance: Map): UseMapInteractions {
 	const currentLocationObserver = shallowRef<IntersectionObserver | undefined>();
 	const pointerInteraction = shallowRef<PointerInteraction | undefined>();
 	const translateInteraction = shallowRef<Translate | undefined>();
+	const modifyInteraction = shallowRef<Modify | undefined>();
 
 	const setupMapVisibilityObserver = (mapContainer: HTMLElement, onMapNotVisible: () => void) => {
 		if ('IntersectionObserver' in window) {
@@ -100,6 +106,70 @@ export function useMapInteractions(mapInstance: Map): UseMapInteractions {
 		}
 	};
 
+	const addLongPressPoint = (source: VectorSource, coordinates: Coordinate): Feature => {
+		if (!source.isEmpty()) {
+			source.clear(true);
+		}
+
+		const feature = new Feature({ geometry: new Point(coordinates) });
+		source.addFeature(feature);
+		return feature;
+	};
+
+	const addLongPressTrace = (
+		source: VectorSource,
+		coordinates: Coordinate,
+		feature: Feature | undefined
+	) => {
+		if (!feature) {
+			const newFeature = new Feature({
+				geometry: new LineString([coordinates]),
+			});
+			source.addFeature(newFeature);
+			return newFeature;
+		}
+
+		const geometry = (feature as Feature<LineString>).getGeometry();
+		geometry?.appendCoordinate(coordinates);
+		return feature;
+	};
+
+	const addLongPressShape = (
+		source: VectorSource,
+		coordinates: Coordinate,
+		feature: Feature | undefined
+	) => {
+		if (!feature) {
+			const newFeature = new Feature({
+				geometry: new Polygon([[coordinates]]),
+			});
+			source.addFeature(newFeature);
+			return newFeature;
+		}
+
+		const geometry = (feature as Feature<Polygon>).getGeometry();
+		const ring = geometry?.getCoordinates()?.[0] ?? [];
+
+		if (ring.length < 3) {
+			ring.push(coordinates);
+		} else {
+			ring.splice(ring.length - 1, 0, coordinates);
+		}
+
+		const firstVertex = ring[0];
+		if (ring.length >= 3 && firstVertex && !isShapeClosed(ring)) {
+			// Autoclose if it's not closed yet.
+			ring.push([...firstVertex]);
+		}
+		geometry?.setCoordinates([ring]);
+	};
+
+	const isShapeClosed = (ring: Coordinate[]) => {
+		const first = ring[0];
+		const last = ring[ring.length - 1];
+		return first && last && first[0] === last[0] && first[1] === last[1];
+	};
+
 	const setupLongPressPoint = (
 		source: VectorSource,
 		drawFeatureType: DrawFeatureType | undefined,
@@ -126,13 +196,24 @@ export function useMapInteractions(mapInstance: Map): UseMapInteractions {
 						return false;
 					}
 
-					if (!source.isEmpty()) {
-						source.clear(true);
+					const coord = event.coordinate;
+					let feature = source.getFeatures()[0];
+
+					if (!drawFeatureType) {
+						feature = addLongPressPoint(source, coord);
 					}
 
-					const feature = new Feature({ geometry: new Point(event.coordinate) });
-					source.addFeature(feature);
-					onLongPress(feature);
+					if (drawFeatureType === DRAW_FEATURE_TYPES.TRACE) {
+						feature = addLongPressTrace(source, coord, feature);
+					}
+
+					if (drawFeatureType === DRAW_FEATURE_TYPES.SHAPE) {
+						feature = addLongPressShape(source, coord, feature);
+					}
+
+					if (feature) {
+						onLongPress(feature);
+					}
 				}, LONG_PRESS_TIME);
 				return false;
 			},
@@ -171,7 +252,23 @@ export function useMapInteractions(mapInstance: Map): UseMapInteractions {
 		}
 	};
 
-	const setupFeatureDrag = (layer: VectorLayer, onDrag: (feature: Feature) => void) => {
+	const setupFeatureDrag = (
+		layer: VectorLayer,
+		drawFeatureType: DrawFeatureType | undefined,
+		onDrag: (feature: Feature) => void
+	) => {
+		if (
+			drawFeatureType === DRAW_FEATURE_TYPES.SHAPE ||
+			drawFeatureType === DRAW_FEATURE_TYPES.TRACE
+		) {
+			setupVertexDrag(layer, onDrag);
+			return;
+		}
+
+		setupFeaturePointDrag(layer, onDrag);
+	};
+
+	const setupFeaturePointDrag = (layer: VectorLayer, onDrag: (feature: Feature) => void) => {
 		if (translateInteraction.value) {
 			return;
 		}
@@ -191,10 +288,35 @@ export function useMapInteractions(mapInstance: Map): UseMapInteractions {
 		mapInstance.addInteraction(translateInteraction.value);
 	};
 
+	const setupVertexDrag = (layer: VectorLayer, onDrag: (feature: Feature) => void) => {
+		if (modifyInteraction.value) {
+			return;
+		}
+
+		modifyInteraction.value = new Modify({ source: layer.getSource() as VectorSource });
+
+		modifyInteraction.value.on('modifystart', () => setCursor('grabbing'));
+
+		modifyInteraction.value.on('modifyend', (event) => {
+			setCursor('');
+			const feature = event.features.getArray()[0];
+			if (feature) {
+				onDrag(feature);
+			}
+		});
+
+		mapInstance.addInteraction(modifyInteraction.value);
+	};
+
 	const removeFeatureDrag = () => {
 		if (translateInteraction.value) {
 			mapInstance.removeInteraction(translateInteraction.value);
 			translateInteraction.value = undefined;
+		}
+
+		if (modifyInteraction.value) {
+			mapInstance.removeInteraction(modifyInteraction.value);
+			modifyInteraction.value = undefined;
 		}
 	};
 

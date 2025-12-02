@@ -171,7 +171,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 		}
 
 		if (currentMode.interactions.drag) {
-			mapInteractions.setupFeatureDrag(singleFeatureLayer, (feature) =>
+			mapInteractions.setupFeatureDrag(singleFeatureLayer, config.drawFeatureType, (feature) =>
 				handlePointPlacement(feature)
 			);
 		}
