@@ -1,5 +1,6 @@
-import { getModeConfig, type Mode } from '@/components/common/map/getModeConfig.ts';
+import { getModeConfig, type Mode, MODES } from '@/components/common/map/getModeConfig.ts';
 import {
+	getDrawStyles,
 	getSavedStyles,
 	getSelectedStyles,
 	getUnselectedStyles,
@@ -70,7 +71,10 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 	const featuresSource = new VectorSource();
 	const singleFeatureLayer = new VectorLayer({
 		source: featuresSource,
-		style: [...getSavedStyles(FEATURE_ID_PROPERTY, SAVED_ID_PROPERTY)],
+		style:
+			config.mode === MODES.DRAW
+				? getDrawStyles()
+				: getSavedStyles(FEATURE_ID_PROPERTY, SAVED_ID_PROPERTY),
 		updateWhileAnimating: true,
 	});
 	const multiFeatureLayer = new WebGLVectorLayer({

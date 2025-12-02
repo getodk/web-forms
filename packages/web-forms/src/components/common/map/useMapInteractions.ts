@@ -1,3 +1,4 @@
+import { getPhantomPointStyle } from '@/components/common/map/map-styles.ts';
 import { Map, MapBrowserEvent } from 'ol';
 import type { Coordinate } from 'ol/coordinate';
 import Feature from 'ol/Feature';
@@ -257,15 +258,12 @@ export function useMapInteractions(mapInstance: Map): UseMapInteractions {
 		drawFeatureType: DrawFeatureType | undefined,
 		onDrag: (feature: Feature) => void
 	) => {
-		if (
-			drawFeatureType === DRAW_FEATURE_TYPES.SHAPE ||
-			drawFeatureType === DRAW_FEATURE_TYPES.TRACE
-		) {
-			setupVertexDrag(layer, onDrag);
+		if (!drawFeatureType) {
+			setupFeaturePointDrag(layer, onDrag);
 			return;
 		}
 
-		setupFeaturePointDrag(layer, onDrag);
+		setupVertexDrag(layer, onDrag);
 	};
 
 	const setupFeaturePointDrag = (layer: VectorLayer, onDrag: (feature: Feature) => void) => {
@@ -293,7 +291,10 @@ export function useMapInteractions(mapInstance: Map): UseMapInteractions {
 			return;
 		}
 
-		modifyInteraction.value = new Modify({ source: layer.getSource() as VectorSource });
+		modifyInteraction.value = new Modify({
+			source: layer.getSource() as VectorSource,
+			style: getPhantomPointStyle(),
+		});
 
 		modifyInteraction.value.on('modifystart', () => setCursor('grabbing'));
 

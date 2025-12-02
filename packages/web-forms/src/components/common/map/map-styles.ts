@@ -1,5 +1,9 @@
+import { type LineString, MultiPoint, Point, type Polygon } from 'ol/geom';
+import { Fill, Stroke, Style } from 'ol/style';
+import CircleStyle from 'ol/style/Circle';
 import type { Rule } from 'ol/style/flat';
 import mapLocationIcon from '@/assets/images/map-location.svg';
+import type { StyleFunction } from 'ol/style/Style';
 
 const DEFAULT_STROKE_COLOR = '#3E9FCC';
 
@@ -16,10 +20,12 @@ const DEFAULT_POINT_STYLE = {
 	...ICON_ANCHOR,
 };
 
+const DEFAULT_POLYGON_FILL_COLOR = 'rgba(233, 248, 255, 0.8)';
+
 const DEFAULT_FEATURE_STYLE = {
 	'stroke-width': 4,
 	'stroke-color': DEFAULT_STROKE_COLOR,
-	'fill-color': 'rgba(233, 248, 255, 0.8)',
+	'fill-color': DEFAULT_POLYGON_FILL_COLOR,
 };
 
 const SCALE_POINT_STYLE = {
@@ -64,9 +70,21 @@ const GREEN_GLOW_FEATURE_STYLE = {
 };
 
 // Increases the clickable area of the Line feature.
+const LINE_HIT_TOLERANCE_COLOR = 'rgba( 255, 255, 255, 0.1)';
 const LINE_HIT_TOLERANCE = {
 	'stroke-width': OUTLINE_STROKE_WIDTH,
-	'stroke-color': 'rgba( 255, 255, 255, 0.1)',
+	'stroke-color': LINE_HIT_TOLERANCE_COLOR,
+};
+
+const DEFAULT_DRAW_LINE_COLOR = '#82C3E0';
+const DEFAULT_VERTEX_FILL_COLOR = '#FFFFFF';
+
+const getVertexStyle = (borderColor: string, fillColor: string, size = 8) => {
+	return new CircleStyle({
+		radius: size,
+		fill: new Fill({ color: fillColor }),
+		stroke: new Stroke({ color: borderColor, width: 2 }),
+	});
 };
 
 const makeFilter = (types: string[], additionalFilters: unknown[]) => {
@@ -134,4 +152,66 @@ export function getSavedStyles(featureIdProp: string, savedPropName: string): Ru
 			style: [GREEN_GLOW_FEATURE_STYLE, DEFAULT_FEATURE_STYLE, SCALE_FEATURE_STYLE],
 		},
 	];
+}
+
+export function getDrawStyles(): StyleFunction {
+	return (feature) => {
+		const geometry = feature.getGeometry();
+		if (!geometry) {
+			return [];
+		}
+
+		const isLineString = geometry.getType() === 'LineString';
+		const coords = isLineString
+			? [...(geometry as LineString).getCoordinates()]
+			: [...((geometry as Polygon).getCoordinates()[0] ?? [])];
+
+		const mainStyle = new Style({
+			stroke: new Stroke({ color: DEFAULT_DRAW_LINE_COLOR, width: 4 }),
+			fill: new Fill({ color: DEFAULT_POLYGON_FILL_COLOR }),
+		});
+
+		const hitStyle = new Style({
+			stroke: new Stroke({ color: LINE_HIT_TOLERANCE_COLOR, width: OUTLINE_STROKE_WIDTH }),
+		});
+
+		const unselectedVertex = new Style({
+			image: getVertexStyle(DEFAULT_DRAW_LINE_COLOR, DEFAULT_VERTEX_FILL_COLOR),
+			geometry: () => (coords.length > 1 ? new MultiPoint(coords.slice(0, -1)) : undefined),
+		});
+
+		const lastVertex = new Style({
+			image: getVertexStyle('#3488AF', DEFAULT_VERTEX_FILL_COLOR),
+			geometry: () => {
+				// LineString doesn’t auto-close; Polygon does.
+				// For Polygon, the user’s last added vertex is the second-to-last point.
+				const offset = isLineString ? 1 : 2;
+				if (!coords.length) {
+					return;
+				}
+
+				const firstCoordinate = coords[0];
+				if (coords.length === 1 && firstCoordinate) {
+					return new Point(firstCoordinate);
+				}
+
+				const lastAdded = coords.length === 2 ? coords[1] : coords[coords.length - offset];
+				if (lastAdded) {
+					return new Point(lastAdded);
+				}
+			},
+		});
+
+		const styles = [mainStyle];
+		if (isLineString) {
+			styles.push(hitStyle);
+		}
+		styles.push(unselectedVertex, lastVertex);
+
+		return styles;
+	};
+}
+
+export function getPhantomPointStyle(): Style {
+	return new Style({ image: getVertexStyle('#60B1D6', '#60B1D6', 4) });
 }

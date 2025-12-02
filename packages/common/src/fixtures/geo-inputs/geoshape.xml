@@ -50,8 +50,8 @@
       </itext>
       <instance>
         <data id="geoshape_test" version="202510311">
-          <select_to_disable/>
-          <select_to_show/>
+          <select_to_disable>no</select_to_disable>
+          <select_to_show>yes</select_to_show>
           <default_value/>
           <geo/>
           <meta>
