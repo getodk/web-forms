@@ -33,7 +33,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  ##### Question types (basic functionality)<br/>🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜ 41\%
+  ##### Question types (basic functionality)<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜ 61\%
 
   </summary>
   <br/>
@@ -66,13 +66,13 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | rank                       |    ✅    |
 | csv-external               |    ✅    |
 | acknowledge                |    🚧    |
-| start                      |          |
-| end                        |          |
-| today                      |          |
-| deviceid                   |          |
-| username                   |          |
-| phonenumber                |          |
-| email                      |          |
+| start                      |    ✅    |
+| end                        |    ✅    |
+| today                      |    ✅    |
+| deviceid                   |    ✅    |
+| username                   |    ✅    |
+| phonenumber                |    ✅    |
+| email                      |    ✅    |
 | audit                      |          |
 
 </details>
@@ -505,6 +505,7 @@ If you'd like to try the functionality available on `main`, see the preview [on 
 ### Release process
 
 1. Run `yarn changeset version` to generate changelog files and version bumps from the changeset files
+1. Run `yarn install` to update yarn.lock with the new versions
 1. Verify that the changelogs look good, commit changes, open a PR, merge the PR
-1. Push tags for each package in the format `package@x.x.x`. A Github action will publish the packages on NPM
+1. Push tags for each package in the format `@getodk/<package>@x.x.x`. A Github action will publish the packages on NPM
 1. Update dependencies to kick off the new release cycle. We do this so that dependency updates get verified implicitly during development.

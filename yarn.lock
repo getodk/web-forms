@@ -1118,7 +1118,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@getodk/common@npm:0.10.0, @getodk/common@workspace:packages/common":
+"@getodk/common@npm:0.11.0, @getodk/common@workspace:packages/common":
   version: 0.0.0-use.local
   resolution: "@getodk/common@workspace:packages/common"
   dependencies:
@@ -1134,7 +1134,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@getodk/scenario@workspace:packages/scenario"
   dependencies:
-    "@getodk/xforms-engine": "npm:0.15.0"
+    "@getodk/xforms-engine": "npm:0.16.0"
     "@js-joda/core": "npm:^5.6.5"
     "@vitest/browser": "npm:^3.2.4"
     jsdom: "npm:^27.2.0"
@@ -1146,7 +1146,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@getodk/tree-sitter-xpath@npm:0.2.1, @getodk/tree-sitter-xpath@workspace:packages/tree-sitter-xpath":
+"@getodk/tree-sitter-xpath@npm:0.2.2, @getodk/tree-sitter-xpath@workspace:packages/tree-sitter-xpath":
   version: 0.0.0-use.local
   resolution: "@getodk/tree-sitter-xpath@workspace:packages/tree-sitter-xpath"
   dependencies:
@@ -1169,7 +1169,7 @@ __metadata:
     "@faker-js/faker": "npm:^10.1.0"
     "@fontsource/hanken-grotesk": "npm:^5.2.8"
     "@fontsource/roboto": "npm:^5.2.9"
-    "@getodk/xforms-engine": "npm:0.15.0"
+    "@getodk/xforms-engine": "npm:0.16.0"
     "@mdi/js": "npm:^7.4.47"
     "@playwright/test": "npm:^1.57.0"
     "@primeuix/themes": "npm:1.0.3"
@@ -1200,13 +1200,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@getodk/xforms-engine@npm:0.15.0, @getodk/xforms-engine@workspace:packages/xforms-engine":
+"@getodk/xforms-engine@npm:0.16.0, @getodk/xforms-engine@workspace:packages/xforms-engine":
   version: 0.0.0-use.local
   resolution: "@getodk/xforms-engine@workspace:packages/xforms-engine"
   dependencies:
     "@babel/core": "npm:^7.28.5"
-    "@getodk/tree-sitter-xpath": "npm:0.2.1"
-    "@getodk/xpath": "npm:0.9.0"
+    "@getodk/tree-sitter-xpath": "npm:0.2.2"
+    "@getodk/xpath": "npm:0.9.1"
     "@playwright/test": "npm:^1.57.0"
     "@types/papaparse": "npm:^5.5.0"
     "@vitest/browser": "npm:^3.2.4"
@@ -1217,6 +1217,7 @@ __metadata:
     mdast-util-from-markdown: "npm:^2.0.2"
     npm-run-all2: "npm:^8.0.4"
     papaparse: "npm:^5.5.3"
+    rimraf: "npm:^6.0.1"
     solid-js: "npm:^1.9.10"
     temporal-polyfill: "npm:^0.3.0"
     typedoc: "npm:^0.28.14"
@@ -1234,13 +1235,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@getodk/xpath@npm:0.9.0, @getodk/xpath@workspace:packages/xpath":
+"@getodk/xpath@npm:0.9.1, @getodk/xpath@workspace:packages/xpath":
   version: 0.0.0-use.local
   resolution: "@getodk/xpath@workspace:packages/xpath"
   dependencies:
     "@babel/core": "npm:^7.28.5"
-    "@getodk/common": "npm:0.10.0"
-    "@getodk/tree-sitter-xpath": "npm:0.2.1"
+    "@getodk/common": "npm:0.11.0"
+    "@getodk/tree-sitter-xpath": "npm:0.2.2"
     "@playwright/test": "npm:^1.57.0"
     "@types/crypto-js": "npm:^4.2.2"
     "@vitest/browser": "npm:^3.2.4"
@@ -1248,6 +1249,7 @@ __metadata:
     crypto-js: "npm:^4.2.0"
     jsdom: "npm:^27.2.0"
     npm-run-all2: "npm:^8.0.4"
+    rimraf: "npm:^6.0.1"
     temporal-polyfill: "npm:^0.3.0"
     typescript: "npm:~5.9.3"
     vite: "npm:^7.2.4"
@@ -7248,7 +7250,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rimraf@npm:^6.1.2":
+"rimraf@npm:^6.0.1, rimraf@npm:^6.1.2":
   version: 6.1.2
   resolution: "rimraf@npm:6.1.2"
   dependencies:

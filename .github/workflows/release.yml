@@ -17,12 +17,18 @@ jobs:
         uses: actions/setup-node@v4
         with:
           registry-url: "https://registry.npmjs.org"
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
 
       - name: Cache Yarn dependencies
         uses: actions/cache@v4
         with:
           path: |
-            ~/.cache/yarn
+            ${{ steps.yarn-cache-dir-path.outputs.dir }}
             **/node_modules
           key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
           restore-keys: |
