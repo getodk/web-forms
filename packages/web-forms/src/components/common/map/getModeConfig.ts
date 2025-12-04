@@ -6,23 +6,26 @@ export const MODES = {
 } as const;
 export type Mode = (typeof MODES)[keyof typeof MODES];
 
+export interface ModeCapabilities {
+	canAutomaticallySave: boolean;
+	canDeleteDrawFeature: boolean;
+	canLoadMultiFeatures: boolean;
+	canRemoveCurrentLocation: boolean;
+	canSaveCurrentLocation: boolean;
+	canSelectVertices: boolean;
+	canShowMapOverlay: boolean;
+	canShowMapOverlayOnError: boolean;
+	canUndoLastChange: boolean;
+	canViewProperties: boolean;
+}
+
 interface ModeConfig {
 	interactions: {
 		select: boolean;
 		longPress: boolean;
 		drag: boolean;
 	};
-	capabilities: {
-		canSaveCurrentLocation: boolean;
-		canRemoveCurrentLocation: boolean;
-		canLoadMultiFeatures: boolean;
-		canViewProperties: boolean;
-		canShowMapOverlay: boolean;
-		canShowMapOverlayOnError: boolean;
-		canUndoLastChange: boolean;
-		canDeleteDrawFeature: boolean;
-		canAutomaticallySave: boolean;
-	};
+	capabilities: ModeCapabilities;
 }
 
 export const getModeConfig = (mode: Mode): ModeConfig => {
@@ -34,15 +37,16 @@ export const getModeConfig = (mode: Mode): ModeConfig => {
 				drag: false,
 			},
 			capabilities: {
-				canSaveCurrentLocation: false,
-				canRemoveCurrentLocation: false,
+				canAutomaticallySave: false,
+				canDeleteDrawFeature: false,
 				canLoadMultiFeatures: true,
-				canViewProperties: true,
+				canRemoveCurrentLocation: false,
+				canSaveCurrentLocation: false,
+				canSelectVertices: false,
 				canShowMapOverlay: false,
 				canShowMapOverlayOnError: false,
 				canUndoLastChange: false,
-				canDeleteDrawFeature: false,
-				canAutomaticallySave: false,
+				canViewProperties: true,
 			},
 		};
 	}
@@ -55,15 +59,16 @@ export const getModeConfig = (mode: Mode): ModeConfig => {
 				drag: false,
 			},
 			capabilities: {
-				canSaveCurrentLocation: true,
-				canRemoveCurrentLocation: true,
+				canAutomaticallySave: false,
+				canDeleteDrawFeature: false,
 				canLoadMultiFeatures: false,
-				canViewProperties: false,
+				canRemoveCurrentLocation: true,
+				canSaveCurrentLocation: true,
+				canSelectVertices: false,
 				canShowMapOverlay: true,
 				canShowMapOverlayOnError: true,
 				canUndoLastChange: false,
-				canDeleteDrawFeature: false,
-				canAutomaticallySave: false,
+				canViewProperties: false,
 			},
 		};
 	}
@@ -76,15 +81,16 @@ export const getModeConfig = (mode: Mode): ModeConfig => {
 				drag: true,
 			},
 			capabilities: {
-				canSaveCurrentLocation: true,
-				canRemoveCurrentLocation: true,
+				canAutomaticallySave: false,
+				canDeleteDrawFeature: false,
 				canLoadMultiFeatures: false,
-				canViewProperties: false,
+				canRemoveCurrentLocation: true,
+				canSaveCurrentLocation: true,
+				canSelectVertices: false,
 				canShowMapOverlay: true,
 				canShowMapOverlayOnError: false,
 				canUndoLastChange: false,
-				canDeleteDrawFeature: false,
-				canAutomaticallySave: false,
+				canViewProperties: false,
 			},
 		};
 	}
@@ -92,20 +98,21 @@ export const getModeConfig = (mode: Mode): ModeConfig => {
 	if (mode === MODES.DRAW) {
 		return {
 			interactions: {
-				select: false,
+				select: true,
 				longPress: true,
 				drag: true,
 			},
 			capabilities: {
-				canSaveCurrentLocation: false,
-				canRemoveCurrentLocation: false,
+				canAutomaticallySave: true,
+				canDeleteDrawFeature: true,
 				canLoadMultiFeatures: false,
-				canViewProperties: false,
+				canRemoveCurrentLocation: false,
+				canSaveCurrentLocation: false,
+				canSelectVertices: true,
 				canShowMapOverlay: false,
 				canShowMapOverlayOnError: false,
 				canUndoLastChange: true,
-				canDeleteDrawFeature: true,
-				canAutomaticallySave: true,
+				canViewProperties: false,
 			},
 		};
 	}
@@ -118,15 +125,16 @@ export const getModeConfig = (mode: Mode): ModeConfig => {
 			drag: false,
 		},
 		capabilities: {
-			canSaveCurrentLocation: false,
-			canRemoveCurrentLocation: false,
+			canAutomaticallySave: false,
+			canDeleteDrawFeature: false,
 			canLoadMultiFeatures: false,
-			canViewProperties: false,
+			canRemoveCurrentLocation: false,
+			canSaveCurrentLocation: false,
+			canSelectVertices: false,
 			canShowMapOverlay: false,
 			canShowMapOverlayOnError: false,
 			canUndoLastChange: false,
-			canDeleteDrawFeature: false,
-			canAutomaticallySave: false,
+			canViewProperties: false,
 		},
 	};
 };

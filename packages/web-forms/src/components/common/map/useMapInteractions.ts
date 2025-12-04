@@ -1,3 +1,4 @@
+import type { ModeCapabilities } from '@/components/common/map/getModeConfig.ts';
 import { getPhantomPointStyle } from '@/components/common/map/map-styles.ts';
 import { Map, MapBrowserEvent } from 'ol';
 import type { Coordinate } from 'ol/coordinate';
@@ -5,7 +6,7 @@ import Feature from 'ol/Feature';
 import { Point, LineString, Polygon } from 'ol/geom';
 import { Modify, Translate } from 'ol/interaction';
 import PointerInteraction from 'ol/interaction/Pointer';
-import type VectorLayer from 'ol/layer/Vector';
+import VectorLayer from 'ol/layer/Vector';
 import WebGLVectorLayer from 'ol/layer/WebGLVector';
 import type { Pixel } from 'ol/pixel';
 import type { TimerID } from '@getodk/common/types/timers.ts';
@@ -20,27 +21,23 @@ export type DrawFeatureType = (typeof DRAW_FEATURE_TYPES)[keyof typeof DRAW_FEAT
 
 export interface UseMapInteractions {
 	removeMapInteractions: () => void;
-	setupFeatureDrag: (
-		layer: VectorLayer,
-		drawFeatureType: DrawFeatureType | undefined,
-		onDrag: (feature: Feature) => void
-	) => void;
-	setupLongPressPoint: (
-		source: VectorSource,
-		drawFeatureType: DrawFeatureType | undefined,
-		onLongPress: (feature: Feature) => void
-	) => void;
+	setupFeatureDrag: (layer: VectorLayer, onDrag: (feature: Feature) => void) => void;
+	setupLongPressPoint: (source: VectorSource, onLongPress: (feature: Feature) => void) => void;
 	setupMapVisibilityObserver: (mapContainer: HTMLElement, onMapNotVisible: () => void) => void;
 	teardownMap: () => void;
 	toggleSelectEvent: (
 		bindClick: boolean,
-		onSelect?: (feature: Feature | undefined) => void
+		onSelect?: (feature: Feature | undefined, vertexIndex: number | undefined) => void
 	) => void;
 }
 
 const LONG_PRESS_TIME = 1000;
 
-export function useMapInteractions(mapInstance: Map): UseMapInteractions {
+export function useMapInteractions(
+	mapInstance: Map,
+	capabilities: ModeCapabilities,
+	drawFeatureType: DrawFeatureType | undefined
+): UseMapInteractions {
 	const currentLocationObserver = shallowRef<IntersectionObserver | undefined>();
 	const pointerInteraction = shallowRef<PointerInteraction | undefined>();
 	const translateInteraction = shallowRef<Translate | undefined>();
@@ -79,7 +76,7 @@ export function useMapInteractions(mapInstance: Map): UseMapInteractions {
 		setCursor(hit ? 'pointer' : '');
 	};
 
-	const onSelectInMap = (
+	const onSelectFeature = (
 		event: MapBrowserEvent,
 		onSelect?: (feature: Feature | undefined) => void
 	): void => {
@@ -93,11 +90,64 @@ export function useMapInteractions(mapInstance: Map): UseMapInteractions {
 		}
 	};
 
+	const getVertexIndex = (
+		feature: Feature<LineString | Polygon> | undefined,
+		vertexToSelect: Feature<Point> | undefined
+	) => {
+		const featureGeometry = feature?.getGeometry();
+		const vertexGeometry = vertexToSelect?.getGeometry();
+		if (!featureGeometry || !vertexGeometry) {
+			return;
+		}
+
+		const vertexCoords = vertexGeometry.getCoordinates();
+		const featureCoords =
+			featureGeometry instanceof Polygon
+				? featureGeometry.getCoordinates().flat()
+				: featureGeometry.getCoordinates();
+
+		const index = featureCoords.findIndex(
+			(coords) => coords[0] === vertexCoords[0] && coords[1] === vertexCoords[1]
+		);
+		return index === -1 ? undefined : index;
+	};
+
+	const onSelectFeatureOrVertex = (
+		event: MapBrowserEvent,
+		onSelect?: (feature: Feature | undefined, selectedVertexIndex: number | undefined) => void
+	): void => {
+		const hitFeatures = mapInstance.getFeaturesAtPixel(event.pixel, {
+			layerFilter: (layer) => layer instanceof VectorLayer,
+		});
+
+		const feature = hitFeatures?.find((item) => {
+			const geometry = item.getGeometry();
+			return geometry instanceof Polygon || geometry instanceof LineString;
+		}) as Feature<LineString | Polygon> | undefined;
+
+		const vertexToSelect = hitFeatures?.find((item) => {
+			return item.getGeometry() instanceof Point;
+		}) as Feature<Point> | undefined;
+
+		if (onSelect) {
+			onSelect(feature, getVertexIndex(feature, vertexToSelect));
+		}
+	};
+
 	const toggleSelectEvent = (
 		bindClick: boolean,
-		onSelect?: (feature: Feature | undefined) => void
+		onSelect?: (feature: Feature | undefined, vertexIndex?: number) => void
 	) => {
-		const onClick = (event: MapBrowserEvent) => onSelectInMap(event, onSelect);
+		const onClick = (event: MapBrowserEvent) => {
+			if (capabilities.canLoadMultiFeatures) {
+				onSelectFeature(event, onSelect);
+				return;
+			}
+			if (capabilities.canSelectVertices) {
+				onSelectFeatureOrVertex(event, onSelect);
+				return;
+			}
+		};
 		mapInstance.un('click', onClick);
 		mapInstance.un('pointermove', setCursorPointerForSelect);
 
@@ -107,7 +157,7 @@ export function useMapInteractions(mapInstance: Map): UseMapInteractions {
 		}
 	};
 
-	const addLongPressPoint = (source: VectorSource, coordinates: Coordinate): Feature => {
+	const addPoint = (source: VectorSource, coordinates: Coordinate): Feature => {
 		if (!source.isEmpty()) {
 			source.clear(true);
 		}
@@ -117,7 +167,7 @@ export function useMapInteractions(mapInstance: Map): UseMapInteractions {
 		return feature;
 	};
 
-	const addLongPressTrace = (
+	const addTraceVertex = (
 		source: VectorSource,
 		coordinates: Coordinate,
 		feature: Feature | undefined
@@ -135,7 +185,7 @@ export function useMapInteractions(mapInstance: Map): UseMapInteractions {
 		return feature;
 	};
 
-	const addLongPressShape = (
+	const addShapeVertex = (
 		source: VectorSource,
 		coordinates: Coordinate,
 		feature: Feature | undefined
@@ -171,11 +221,7 @@ export function useMapInteractions(mapInstance: Map): UseMapInteractions {
 		return first && last && first[0] === last[0] && first[1] === last[1];
 	};
 
-	const setupLongPressPoint = (
-		source: VectorSource,
-		drawFeatureType: DrawFeatureType | undefined,
-		onLongPress: (feature: Feature) => void
-	) => {
+	const setupLongPressPoint = (source: VectorSource, onLongPress: (feature: Feature) => void) => {
 		if (pointerInteraction.value) {
 			return;
 		}
@@ -201,15 +247,15 @@ export function useMapInteractions(mapInstance: Map): UseMapInteractions {
 					let feature = source.getFeatures()[0];
 
 					if (!drawFeatureType) {
-						feature = addLongPressPoint(source, coord);
+						feature = addPoint(source, coord);
 					}
 
 					if (drawFeatureType === DRAW_FEATURE_TYPES.TRACE) {
-						feature = addLongPressTrace(source, coord, feature);
+						feature = addTraceVertex(source, coord, feature);
 					}
 
 					if (drawFeatureType === DRAW_FEATURE_TYPES.SHAPE) {
-						feature = addLongPressShape(source, coord, feature);
+						feature = addShapeVertex(source, coord, feature);
 					}
 
 					if (feature) {
@@ -253,11 +299,7 @@ export function useMapInteractions(mapInstance: Map): UseMapInteractions {
 		}
 	};
 
-	const setupFeatureDrag = (
-		layer: VectorLayer,
-		drawFeatureType: DrawFeatureType | undefined,
-		onDrag: (feature: Feature) => void
-	) => {
+	const setupFeatureDrag = (layer: VectorLayer, onDrag: (feature: Feature) => void) => {
 		if (!drawFeatureType) {
 			setupFeaturePointDrag(layer, onDrag);
 			return;

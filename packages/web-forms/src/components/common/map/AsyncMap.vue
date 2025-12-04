@@ -86,7 +86,7 @@ onMounted(loadMap);
 		<component
 			:is="mapComponent"
 			v-else
-			:draw-feature-type = "drawFeatureType"
+			:draw-feature-type="drawFeatureType"
 			:feature-collection="featureCollectionAndProps.featureCollection"
 			:mode="mode"
 			:ordered-extra-props="featureCollectionAndProps.orderedExtraPropsMap"

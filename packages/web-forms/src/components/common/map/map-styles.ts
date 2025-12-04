@@ -154,13 +154,14 @@ export function getSavedStyles(featureIdProp: string, savedPropName: string): Ru
 	];
 }
 
-export function getDrawStyles(): StyleFunction {
+export function getDrawStyles(selectedVertexIndexProp: string): StyleFunction {
 	return (feature) => {
 		const geometry = feature.getGeometry();
 		if (!geometry) {
 			return [];
 		}
 
+		const vertexIndex: number | undefined = feature.get(selectedVertexIndexProp) as number;
 		const isLineString = geometry.getType() === 'LineString';
 		const coords = isLineString
 			? [...(geometry as LineString).getCoordinates()]
@@ -178,6 +179,16 @@ export function getDrawStyles(): StyleFunction {
 		const unselectedVertex = new Style({
 			image: getVertexStyle(DEFAULT_DRAW_LINE_COLOR, DEFAULT_VERTEX_FILL_COLOR),
 			geometry: () => (coords.length > 1 ? new MultiPoint(coords.slice(0, -1)) : undefined),
+		});
+
+		const selectedVertex = new Style({
+			image: getVertexStyle('#FFFFFF', '#60B1D6'),
+			geometry: () => {
+				const selectedCoords = coords[vertexIndex];
+				if (selectedCoords?.length) {
+					return new Point(selectedCoords);
+				}
+			},
 		});
 
 		const lastVertex = new Style({
@@ -206,7 +217,7 @@ export function getDrawStyles(): StyleFunction {
 		if (isLineString) {
 			styles.push(hitStyle);
 		}
-		styles.push(unselectedVertex, lastVertex);
+		styles.push(unselectedVertex, lastVertex, selectedVertex);
 
 		return styles;
 	};

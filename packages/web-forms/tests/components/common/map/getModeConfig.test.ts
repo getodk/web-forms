@@ -16,6 +16,7 @@ describe('getModeConfig', () => {
 				canRemoveCurrentLocation: false,
 				canLoadMultiFeatures: true,
 				canViewProperties: true,
+				canSelectVertices: false,
 				canShowMapOverlay: false,
 				canShowMapOverlayOnError: false,
 				canUndoLastChange: false,
@@ -39,6 +40,7 @@ describe('getModeConfig', () => {
 				canRemoveCurrentLocation: true,
 				canLoadMultiFeatures: false,
 				canViewProperties: false,
+				canSelectVertices: false,
 				canShowMapOverlay: true,
 				canShowMapOverlayOnError: true,
 				canUndoLastChange: false,
@@ -62,6 +64,7 @@ describe('getModeConfig', () => {
 				canRemoveCurrentLocation: true,
 				canLoadMultiFeatures: false,
 				canViewProperties: false,
+				canSelectVertices: false,
 				canShowMapOverlay: true,
 				canShowMapOverlayOnError: false,
 				canUndoLastChange: false,
@@ -71,21 +74,22 @@ describe('getModeConfig', () => {
 		});
 	});
 
-	it('returns correct config for SHAPE mode', () => {
+	it('returns correct config for DRAW mode', () => {
 		const config = getModeConfig(MODES.DRAW);
 
 		expect(config).toEqual({
 			interactions: {
-				select: false,
+				select: true,
 				longPress: true,
 				drag: true,
 			},
 			capabilities: {
-				canSaveCurrentLocation: true,
-				canRemoveCurrentLocation: true,
+				canSaveCurrentLocation: false,
+				canRemoveCurrentLocation: false,
 				canLoadMultiFeatures: false,
 				canViewProperties: false,
-				canShowMapOverlay: true,
+				canSelectVertices: true,
+				canShowMapOverlay: false,
 				canShowMapOverlayOnError: false,
 				canUndoLastChange: true,
 				canDeleteDrawFeature: true,
@@ -109,6 +113,7 @@ describe('getModeConfig', () => {
 				canRemoveCurrentLocation: false,
 				canLoadMultiFeatures: false,
 				canViewProperties: false,
+				canSelectVertices: false,
 				canShowMapOverlay: false,
 				canShowMapOverlayOnError: false,
 				canUndoLastChange: false,

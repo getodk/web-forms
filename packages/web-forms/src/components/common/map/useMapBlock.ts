@@ -9,6 +9,7 @@ import {
 	FEATURE_ID_PROPERTY,
 	SAVED_ID_PROPERTY,
 	SELECTED_ID_PROPERTY,
+	SELECTED_VERTEX_INDEX_PROPERTY,
 	useMapFeatures,
 	type UseMapFeatures,
 } from '@/components/common/map/useMapFeatures.ts';
@@ -73,7 +74,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 		source: featuresSource,
 		style:
 			config.mode === MODES.DRAW
-				? getDrawStyles()
+				? getDrawStyles(SELECTED_VERTEX_INDEX_PROPERTY)
 				: getSavedStyles(FEATURE_ID_PROPERTY, SAVED_ID_PROPERTY),
 		updateWhileAnimating: true,
 	});
@@ -119,7 +120,11 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 			controls: [new Zoom(), new Attribution({ collapsible: false })],
 		});
 
-		mapInteractions = useMapInteractions(mapInstance);
+		mapInteractions = useMapInteractions(
+			mapInstance,
+			currentMode.capabilities,
+			config.drawFeatureType
+		);
 		mapViewControls = useMapViewControls(mapInstance);
 		mapFeatures = useMapFeatures(mapInstance, mapViewControls, multiFeatureLayer);
 
@@ -171,17 +176,19 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 		}
 
 		if (currentMode.interactions.select) {
-			mapInteractions.toggleSelectEvent(true, (feature) => mapFeatures?.selectFeature(feature));
+			mapInteractions.toggleSelectEvent(true, (feature, vertexIndex) => {
+				mapFeatures?.selectFeature(feature, vertexIndex);
+			});
 		}
 
 		if (currentMode.interactions.drag) {
-			mapInteractions.setupFeatureDrag(singleFeatureLayer, config.drawFeatureType, (feature) =>
+			mapInteractions.setupFeatureDrag(singleFeatureLayer, (feature) =>
 				handlePointPlacement(feature)
 			);
 		}
 
 		if (currentMode.interactions.longPress) {
-			mapInteractions.setupLongPressPoint(featuresSource, config.drawFeatureType, (feature) =>
+			mapInteractions.setupLongPressPoint(featuresSource, (feature) =>
 				handlePointPlacement(feature)
 			);
 		}

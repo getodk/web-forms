@@ -22,12 +22,13 @@ export interface UseMapFeatures {
 	loadAndSaveSingleFeature: (source: VectorSource, feature: Feature) => void;
 	loadFeatureCollection: (source: VectorSource, geoJSON: FeatureCollection) => void;
 	saveSelectedFeature: () => void;
-	selectFeature: (feature: Feature | undefined) => void;
+	selectFeature: (feature: Feature | undefined, vertexIndex?: number) => void;
 	saveFeature: (feature: Feature | undefined) => void;
 }
 
 const DEFAULT_GEOJSON_PROJECTION = 'EPSG:4326';
 export const FEATURE_ID_PROPERTY = 'odk_feature_id';
+export const SELECTED_VERTEX_INDEX_PROPERTY = 'odk_selected_vertex_index';
 export const SAVED_ID_PROPERTY = 'savedId';
 export const SELECTED_ID_PROPERTY = 'selectedId';
 
@@ -75,7 +76,10 @@ export function useMapFeatures(
 		viewControls.fitToAllFeatures(source);
 	};
 
-	const selectFeature = (feature: Feature | undefined) => (selectedFeature.value = feature);
+	const selectFeature = (feature: Feature | undefined, vertexIndex?: number) => {
+		feature?.set(SELECTED_VERTEX_INDEX_PROPERTY, vertexIndex);
+		selectedFeature.value = feature;
+	};
 
 	const isSavedFeatureSelected = (): boolean => {
 		const featureId = savedFeature.value?.get(FEATURE_ID_PROPERTY) as string;
