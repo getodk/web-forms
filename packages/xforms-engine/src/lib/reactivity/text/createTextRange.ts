@@ -18,6 +18,22 @@ interface ChunksAndMedia {
 	mediaSources: MediaSources;
 }
 
+const getChunkExpressions = <Role extends TextRole>(
+	context: EvaluationContext,
+	definition: TextRangeDefinition<Role>
+): ReadonlyArray<TextChunkExpression<'string'>> => {
+	if (definition.chunks[0]?.source !== 'translation') {
+		// only translations have 'nodes' chunks
+		return definition.chunks as Array<TextChunkExpression<'string'>>;
+	}
+	const itextId = context.evaluator.evaluateString(definition.chunks[0].toString()!, {
+		contextNode: context.contextNode,
+	});
+	const lang = context.getActiveLanguage();
+	const elem = definition.form.model.getItextChunks(lang, itextId);
+	return elem ? generateChunksForTranslation(elem) : [];
+};
+
 /**
  * Creates a reactive accessor for text chunks and an optional image from text source expressions.
  * - Combines chunks from literal and computed sources into a single array.
@@ -30,44 +46,27 @@ interface ChunksAndMedia {
 const createTextChunks = <Role extends TextRole>(
 	context: EvaluationContext,
 	definition: TextRangeDefinition<Role>
-): Accessor<ChunksAndMedia> => {
-	return createMemo(() => {
-		const chunks: TextChunk[] = [];
-		const mediaSources: MediaSources = {};
-
-		let chunkExpressions: ReadonlyArray<TextChunkExpression<'string'>>;
-
-		if (definition.chunks[0]?.source === 'translation') {
-			const itextId = context.evaluator.evaluateString(definition.chunks[0].toString()!, {
-				contextNode: context.contextNode,
-			});
-			const lang = context.getActiveLanguage();
-			const elem = definition.form.model.getItextChunks(lang, itextId);
-			chunkExpressions = elem ? generateChunksForTranslation(elem) : [];
-		} else {
-			// only translations have 'nodes' chunks
-			chunkExpressions = definition.chunks as Array<TextChunkExpression<'string'>>;
+): ChunksAndMedia => {
+	const chunks: TextChunk[] = [];
+	const mediaSources: MediaSources = {};
+	const chunkExpressions = getChunkExpressions(context, definition);
+	chunkExpressions.forEach((chunkExpression) => {
+		if (chunkExpression.resourceType) {
+			mediaSources[chunkExpression.resourceType] = JRResourceURL.from(
+				chunkExpression.stringValue as JRResourceURLString
+			);
+			return;
 		}
 
-		chunkExpressions.forEach((chunkExpression) => {
-			if (chunkExpression.resourceType) {
-				mediaSources[chunkExpression.resourceType] = JRResourceURL.from(
-					chunkExpression.stringValue as JRResourceURLString
-				);
-				return;
-			}
+		if (chunkExpression.source === 'literal') {
+			chunks.push(new TextChunk(context, chunkExpression.source, chunkExpression.stringValue));
+			return;
+		}
 
-			if (chunkExpression.source === 'literal') {
-				chunks.push(new TextChunk(context, chunkExpression.source, chunkExpression.stringValue));
-				return;
-			}
-
-			const computed = createComputedExpression(context, chunkExpression)();
-			chunks.push(new TextChunk(context, chunkExpression.source, computed));
-		});
-
-		return { chunks, mediaSources };
+		const computed = createComputedExpression(context, chunkExpression)();
+		chunks.push(new TextChunk(context, chunkExpression.source, computed));
 	});
+	return { chunks, mediaSources };
 };
 
 type ComputedFormTextRange<Role extends TextRole> = Accessor<TextRange<Role, 'form'>>;
@@ -84,10 +83,8 @@ export const createTextRange = <Role extends TextRole>(
 	definition: TextRangeDefinition<Role>
 ): ComputedFormTextRange<Role> => {
 	return context.scope.runTask(() => {
-		const textChunks = createTextChunks(context, definition);
-
 		return createMemo(() => {
-			const chunks = textChunks();
+			const chunks = createTextChunks(context, definition);
 			return new TextRange('form', role, chunks.chunks, chunks.mediaSources);
 		});
 	});
