@@ -27,7 +27,7 @@ const generateChunksForValues = (valueElement: ChildNode): Array<TextChunkExpres
 		.filter((chunk) => chunk !== null);
 };
 
-const generateChunksForTranslation = (
+export const generateChunksForTranslation = (
 	textElement: Element
 ): Array<TextChunkExpression<'string'>> => {
 	return Array.from(textElement.childNodes).flatMap((valueElement) =>
@@ -35,21 +35,20 @@ const generateChunksForTranslation = (
 	);
 };
 
+export interface ChunkExpressionsByItextId extends Map<string, Element> {}
+
 const generateChunksForLanguage = (
 	translationElement: DOMItextTranslationElement
-): Map<string, ReadonlyArray<TextChunkExpression<'string'>>> => {
+): ChunkExpressionsByItextId => {
 	return new Map(
 		Array.from(translationElement.children).map((textElement) => {
 			const itextId = textElement.getAttribute('id');
-			return [itextId!, generateChunksForTranslation(textElement)] as const;
+			return [itextId!, textElement] as const;
 		})
 	);
 };
 
-export interface ChunkExpressionsByItextId
-	extends Map<string, ReadonlyArray<TextChunkExpression<'string'>>> {}
-
-export const generateItextChunks = (
+export const createTranslationMap = (
 	translationElements: readonly DOMItextTranslationElement[]
 ): Map<string, ChunkExpressionsByItextId> => {
 	return new Map(

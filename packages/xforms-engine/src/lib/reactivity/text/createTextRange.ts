@@ -9,6 +9,7 @@ import type { EvaluationContext } from '../../../instance/internal-api/Evaluatio
 import { TextChunk } from '../../../instance/text/TextChunk.ts';
 import { TextRange, type MediaSources } from '../../../instance/text/TextRange.ts';
 import { type TextChunkExpression } from '../../../parse/expression/TextChunkExpression.ts';
+import { generateChunksForTranslation } from '../../../parse/model/generateItextChunks.ts';
 import type { TextRangeDefinition } from '../../../parse/text/abstract/TextRangeDefinition.ts';
 import { createComputedExpression } from '../createComputedExpression.ts';
 
@@ -22,8 +23,8 @@ interface ChunksAndMedia {
  * - Combines chunks from literal and computed sources into a single array.
  * - Captures the first image found with a 'from="image"' attribute.
  *
- * @param context - The evaluation context for reactive XPath computations.
- * @param chunkExpressions - Array of text source expressions to process.
+ * @param context The evaluation context for reactive XPath computations.
+ * @param definition The definition for the text range which contains chunks to transform
  * @returns An accessor for an object with all chunks and the first image (if any).
  */
 const createTextChunks = <Role extends TextRole>(
@@ -40,10 +41,9 @@ const createTextChunks = <Role extends TextRole>(
 			const itextId = context.evaluator.evaluateString(definition.chunks[0].toString()!, {
 				contextNode: context.contextNode,
 			});
-			chunkExpressions = definition.form.model.getTranslationChunks(
-				itextId,
-				context.getActiveLanguage()
-			);
+			const lang = context.getActiveLanguage();
+			const elem = definition.form.model.getItextChunks(lang, itextId);
+			chunkExpressions = elem ? generateChunksForTranslation(elem) : [];
 		} else {
 			// only translations have 'nodes' chunks
 			chunkExpressions = definition.chunks as Array<TextChunkExpression<'string'>>;
@@ -77,8 +77,6 @@ type ComputedFormTextRange<Role extends TextRole> = Accessor<TextRange<Role, 'fo
  *
  * - The form's current language (e.g. `<label ref="jr:itext('text-id')" />`)
  * - Direct `<output>` references within the label's children
- *
- * @todo This does not yet handle itext translations **with** outputs!
  */
 export const createTextRange = <Role extends TextRole>(
 	context: EvaluationContext,

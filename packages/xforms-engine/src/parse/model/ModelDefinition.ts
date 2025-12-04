@@ -1,10 +1,9 @@
 import type { ActiveLanguage } from '../../client/FormLanguage.ts';
 import { ErrorProductionDesignPendingError } from '../../error/ErrorProductionDesignPendingError.ts';
 import type { StaticDocument } from '../../integration/xpath/static-dom/StaticDocument.ts';
-import { TextChunkExpression } from '../expression/TextChunkExpression.ts';
 import { parseStaticDocumentFromDOMSubtree } from '../shared/parseStaticDocumentFromDOMSubtree.ts';
 import type { XFormDefinition } from '../XFormDefinition.ts';
-import { generateItextChunks, type ChunkExpressionsByItextId } from './generateItextChunks.ts';
+import { createTranslationMap, type ChunkExpressionsByItextId } from './generateItextChunks.ts';
 import { ItextTranslationsDefinition } from './ItextTranslationsDefinition.ts';
 import { ModelActionMap } from './ModelActionMap.ts';
 import { ModelBindMap } from './ModelBindMap.ts';
@@ -37,7 +36,7 @@ export class ModelDefinition {
 		this.root = new RootDefinition(form, this, submission, form.body.classes);
 		this.nodes = nodeDefinitionMap(this.root);
 		this.itextTranslations = ItextTranslationsDefinition.from(form.xformDOM);
-		this.itextChunks = generateItextChunks(form.xformDOM.itextTranslationElements);
+		this.itextChunks = createTranslationMap(form.xformDOM.itextTranslationElements);
 		this.xformsRevalidateListeners = new Map();
 	}
 
@@ -69,12 +68,8 @@ export class ModelDefinition {
 		this.xformsRevalidateListeners.forEach((listener: XformsRevalidateListener) => listener());
 	}
 
-	getTranslationChunks(
-		itextId: string,
-		activeLanguage: ActiveLanguage
-	): ReadonlyArray<TextChunkExpression<'string'>> {
-		const languageMap = this.itextChunks.get(activeLanguage.language);
-		return languageMap?.get(itextId) ?? [];
+	getItextChunks(activeLanguage: ActiveLanguage, itextId: string): Element | undefined {
+		return this.itextChunks.get(activeLanguage.language)?.get(itextId);
 	}
 
 	toJSON() {
