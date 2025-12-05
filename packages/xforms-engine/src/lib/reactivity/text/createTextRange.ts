@@ -1,15 +1,17 @@
 import {
+	isResourceType,
 	JRResourceURL,
 	type JRResourceURLString,
+	type ResourceType,
 } from '@getodk/common/jr-resources/JRResourceURL.ts';
+import { isElementNode, isTextNode } from '@getodk/common/lib/dom/predicates.ts';
 import type { Accessor } from 'solid-js';
 import { createMemo } from 'solid-js';
 import type { TextRole } from '../../../client/TextRange.ts';
 import type { EvaluationContext } from '../../../instance/internal-api/EvaluationContext.ts';
 import { TextChunk } from '../../../instance/text/TextChunk.ts';
 import { TextRange, type MediaSources } from '../../../instance/text/TextRange.ts';
-import { type TextChunkExpression } from '../../../parse/expression/TextChunkExpression.ts';
-import { generateChunksForTranslation } from '../../../parse/model/generateItextChunks.ts';
+import { TextChunkExpression } from '../../../parse/expression/TextChunkExpression.ts';
 import type { TextRangeDefinition } from '../../../parse/text/abstract/TextRangeDefinition.ts';
 import { createComputedExpression } from '../createComputedExpression.ts';
 
@@ -17,6 +19,34 @@ interface ChunksAndMedia {
 	chunks: readonly TextChunk[];
 	mediaSources: MediaSources;
 }
+
+const generateChunk = (node: Node): TextChunkExpression<'string'> | null => {
+	if (isElementNode(node)) {
+		return TextChunkExpression.fromOutput(node);
+	}
+	if (isTextNode(node)) {
+		const formAttribute = node.parentElement!.getAttribute('form') as ResourceType;
+		if (isResourceType(formAttribute)) {
+			return TextChunkExpression.fromResource(node.data as JRResourceURLString, formAttribute);
+		}
+		return TextChunkExpression.fromLiteral(node.data);
+	}
+	return null;
+};
+
+const generateChunksForValues = (valueElement: ChildNode): Array<TextChunkExpression<'string'>> => {
+	return Array.from(valueElement.childNodes)
+		.map((node) => generateChunk(node))
+		.filter((chunk) => chunk !== null);
+};
+
+const generateChunksForTranslation = (
+	textElement: Element
+): Array<TextChunkExpression<'string'>> => {
+	return Array.from(textElement.childNodes).flatMap((valueElement) =>
+		generateChunksForValues(valueElement)
+	);
+};
 
 const getChunkExpressions = <Role extends TextRole>(
 	context: EvaluationContext,
