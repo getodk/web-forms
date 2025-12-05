@@ -3,7 +3,6 @@ import { ErrorProductionDesignPendingError } from '../../error/ErrorProductionDe
 import type { StaticDocument } from '../../integration/xpath/static-dom/StaticDocument.ts';
 import { parseStaticDocumentFromDOMSubtree } from '../shared/parseStaticDocumentFromDOMSubtree.ts';
 import type { XFormDefinition } from '../XFormDefinition.ts';
-import { createTranslationMap, type ChunkExpressionsByItextId } from './generateItextChunks.ts';
 import { ItextTranslationsDefinition } from './ItextTranslationsDefinition.ts';
 import { ModelActionMap } from './ModelActionMap.ts';
 import { ModelBindMap } from './ModelBindMap.ts';
@@ -12,6 +11,10 @@ import type { NodeDefinitionMap } from './nodeDefinitionMap.ts';
 import { nodeDefinitionMap } from './nodeDefinitionMap.ts';
 import { RootDefinition } from './RootDefinition.ts';
 import { SubmissionDefinition } from './SubmissionDefinition.ts';
+import {
+	TranslationDefinitionMap,
+	type ChunkExpressionsByItextId,
+} from './TranslationDefinitionMap.ts';
 
 type XformsRevalidateListener = () => void;
 
@@ -36,7 +39,7 @@ export class ModelDefinition {
 		this.root = new RootDefinition(form, this, submission, form.body.classes);
 		this.nodes = nodeDefinitionMap(this.root);
 		this.itextTranslations = ItextTranslationsDefinition.from(form.xformDOM);
-		this.itextChunks = createTranslationMap(form.xformDOM.itextTranslationElements);
+		this.itextChunks = new TranslationDefinitionMap(form.xformDOM.itextTranslationElements);
 		this.xformsRevalidateListeners = new Map();
 	}
 

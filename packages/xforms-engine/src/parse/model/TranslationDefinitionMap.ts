@@ -13,13 +13,13 @@ const generateChunksForLanguage = (
 	);
 };
 
-export const createTranslationMap = (
-	translationElements: readonly DOMItextTranslationElement[]
-): Map<string, ChunkExpressionsByItextId> => {
-	return new Map(
-		translationElements.map((translationElement) => {
-			const lang = translationElement.getAttribute('lang');
-			return [lang, generateChunksForLanguage(translationElement)] as const;
-		})
-	);
-};
+export class TranslationDefinitionMap extends Map<string, ChunkExpressionsByItextId> {
+	constructor(translationElements: readonly DOMItextTranslationElement[]) {
+		super(
+			translationElements.map((translationElement) => {
+				const lang = translationElement.getAttribute('lang');
+				return [lang, generateChunksForLanguage(translationElement)] as const;
+			})
+		);
+	}
+}
