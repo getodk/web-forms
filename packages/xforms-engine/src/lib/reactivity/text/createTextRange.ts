@@ -34,18 +34,19 @@ const generateChunk = (node: Node): TextChunkExpression<'string'> | null => {
 	return null;
 };
 
-const generateChunksForValues = (valueElement: ChildNode): Array<TextChunkExpression<'string'>> => {
-	return Array.from(valueElement.childNodes)
-		.map((node) => generateChunk(node))
-		.filter((chunk) => chunk !== null);
-};
-
 const generateChunksForTranslation = (
 	textElement: Element
 ): Array<TextChunkExpression<'string'>> => {
-	return Array.from(textElement.childNodes).flatMap((valueElement) =>
-		generateChunksForValues(valueElement)
-	);
+	const chunks = [];
+	for (const child of textElement.childNodes) {
+		for (const grandchild of child.childNodes) {
+			const chunk = generateChunk(grandchild);
+			if (chunk) {
+				chunks.push(chunk);
+			}
+		}
+	}
+	return chunks;
 };
 
 const getChunkExpressions = <Role extends TextRole>(
@@ -60,7 +61,7 @@ const getChunkExpressions = <Role extends TextRole>(
 		contextNode: context.contextNode,
 	});
 	const lang = context.getActiveLanguage();
-	const elem = definition.form.model.getItextChunks(lang, itextId);
+	const elem = definition.form.model.getItextElement(lang, itextId);
 	return elem ? generateChunksForTranslation(elem) : [];
 };
 

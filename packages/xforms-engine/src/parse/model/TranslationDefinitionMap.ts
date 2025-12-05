@@ -1,10 +1,8 @@
 import type { DOMItextTranslationElement } from '../XFormDOM.ts';
 
-export interface ChunkExpressionsByItextId extends Map<string, Element> {}
-
 const generateChunksForLanguage = (
 	translationElement: DOMItextTranslationElement
-): ChunkExpressionsByItextId => {
+): Map<string, Element> => {
 	return new Map(
 		Array.from(translationElement.children).map((textElement) => {
 			const itextId = textElement.getAttribute('id');
@@ -13,7 +11,7 @@ const generateChunksForLanguage = (
 	);
 };
 
-export class TranslationDefinitionMap extends Map<string, ChunkExpressionsByItextId> {
+export class TranslationDefinitionMap extends Map<string, Map<string, Element>> {
 	constructor(translationElements: readonly DOMItextTranslationElement[]) {
 		super(
 			translationElements.map((translationElement) => {
