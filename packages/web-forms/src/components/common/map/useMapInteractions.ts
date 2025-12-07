@@ -1,15 +1,19 @@
 import type { ModeCapabilities } from '@/components/common/map/getModeConfig.ts';
 import { getPhantomPointStyle } from '@/components/common/map/map-styles.ts';
+import {
+	addShapeVertex,
+	addTraceVertex,
+	getVertexIndex,
+} from '@/components/common/map/vertex-geometry.ts';
+import type { TimerID } from '@getodk/common/types/timers.ts';
 import { Map, MapBrowserEvent } from 'ol';
-import type { Coordinate } from 'ol/coordinate';
 import Feature from 'ol/Feature';
-import { Point, LineString, Polygon } from 'ol/geom';
+import { LineString, Point, Polygon } from 'ol/geom';
 import { Modify, Translate } from 'ol/interaction';
 import PointerInteraction from 'ol/interaction/Pointer';
 import VectorLayer from 'ol/layer/Vector';
 import WebGLVectorLayer from 'ol/layer/WebGLVector';
 import type { Pixel } from 'ol/pixel';
-import type { TimerID } from '@getodk/common/types/timers.ts';
 import type VectorSource from 'ol/source/Vector';
 import { shallowRef } from 'vue';
 
@@ -92,28 +96,6 @@ export function useMapInteractions(
 		}
 	};
 
-	const getVertexIndex = (
-		feature: Feature<LineString | Polygon> | undefined,
-		vertexToSelect: Feature<Point> | undefined
-	) => {
-		const featureGeometry = feature?.getGeometry();
-		const vertexGeometry = vertexToSelect?.getGeometry();
-		if (!featureGeometry || !vertexGeometry) {
-			return;
-		}
-
-		const vertexCoords = vertexGeometry.getCoordinates();
-		const featureCoords =
-			featureGeometry instanceof Polygon
-				? featureGeometry.getCoordinates().flat()
-				: featureGeometry.getCoordinates();
-
-		const index = featureCoords.findIndex(
-			(coords) => coords[0] === vertexCoords[0] && coords[1] === vertexCoords[1]
-		);
-		return index === -1 ? undefined : index;
-	};
-
 	const onSelectFeatureOrVertex = (
 		event: MapBrowserEvent,
 		onSelect?: (feature: Feature | undefined, selectedVertexIndex: number | undefined) => void
@@ -159,70 +141,6 @@ export function useMapInteractions(
 		}
 	};
 
-	const addPoint = (source: VectorSource, coordinates: Coordinate): Feature => {
-		if (!source.isEmpty()) {
-			source.clear(true);
-		}
-
-		const feature = new Feature({ geometry: new Point(coordinates) });
-		source.addFeature(feature);
-		return feature;
-	};
-
-	const addTraceVertex = (
-		source: VectorSource,
-		coordinates: Coordinate,
-		feature: Feature | undefined
-	) => {
-		if (!feature) {
-			const newFeature = new Feature({
-				geometry: new LineString([coordinates]),
-			});
-			source.addFeature(newFeature);
-			return newFeature;
-		}
-
-		const geometry = (feature as Feature<LineString>).getGeometry();
-		geometry?.appendCoordinate(coordinates);
-		return feature;
-	};
-
-	const addShapeVertex = (
-		source: VectorSource,
-		coordinates: Coordinate,
-		feature: Feature | undefined
-	) => {
-		if (!feature) {
-			const newFeature = new Feature({
-				geometry: new Polygon([[coordinates]]),
-			});
-			source.addFeature(newFeature);
-			return newFeature;
-		}
-
-		const geometry = (feature as Feature<Polygon>).getGeometry();
-		const ring = geometry?.getCoordinates()?.[0] ?? [];
-
-		if (ring.length < 3) {
-			ring.push(coordinates);
-		} else {
-			ring.splice(ring.length - 1, 0, coordinates);
-		}
-
-		const firstVertex = ring[0];
-		if (ring.length >= 3 && firstVertex && !isShapeClosed(ring)) {
-			// Autoclose if it's not closed yet.
-			ring.push([...firstVertex]);
-		}
-		geometry?.setCoordinates([ring]);
-	};
-
-	const isShapeClosed = (ring: Coordinate[]) => {
-		const first = ring[0];
-		const last = ring[ring.length - 1];
-		return first && last && first[0] === last[0] && first[1] === last[1];
-	};
-
 	const setupLongPressPoint = (source: VectorSource, onLongPress: (feature: Feature) => void) => {
 		if (pointerInteraction.value) {
 			return;
@@ -251,22 +169,28 @@ export function useMapInteractions(
 						return false;
 					}
 
-					const coord = event.coordinate;
 					let feature = source.getFeatures()[0];
+					const resolution = mapInstance.getView().getResolution() ?? 1;
 
 					if (!drawFeatureType) {
-						feature = addPoint(source, coord);
+						if (!source.isEmpty()) {
+							source.clear(true);
+						}
+						feature = new Feature({ geometry: new Point(event.coordinate) });
 					}
 
 					if (drawFeatureType === DRAW_FEATURE_TYPES.TRACE) {
-						feature = addTraceVertex(source, coord, feature);
+						feature = addTraceVertex(resolution, event.coordinate, feature, HIT_TOLERANCE);
 					}
 
 					if (drawFeatureType === DRAW_FEATURE_TYPES.SHAPE) {
-						feature = addShapeVertex(source, coord, feature);
+						feature = addShapeVertex(resolution, event.coordinate, feature, HIT_TOLERANCE);
 					}
 
 					if (feature) {
+						if (source.isEmpty()) {
+							source.addFeature(feature);
+						}
 						onLongPress(feature);
 					}
 
