@@ -181,7 +181,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 			});
 		}
 
-		if (currentMode.interactions.drag) {
+		if (currentMode.interactions.dragFeature) {
 			mapInteractions.setupFeatureDrag(singleFeatureLayer, (feature) =>
 				handlePointPlacement(feature)
 			);
@@ -191,6 +191,10 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 			mapInteractions.setupLongPressPoint(featuresSource, (feature) =>
 				handlePointPlacement(feature)
 			);
+
+			if (config.mode === MODES.DRAW) {
+				mapInteractions.setupPhantomMiddlePoint(featuresSource);
+			}
 		}
 	};
 
@@ -394,7 +398,8 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 		selectSavedFeature: () => mapFeatures?.selectFeature(mapFeatures?.getSavedFeature()),
 		unselectFeature: () => mapFeatures?.selectFeature(undefined),
 
-		canLongPressAndDrag: () => currentMode.interactions.longPress && currentMode.interactions.drag,
+		canLongPressAndDrag: () =>
+			currentMode.interactions.longPress && currentMode.interactions.dragFeature,
 		canViewProperties: () => currentMode.capabilities.canViewProperties,
 		shouldShowMapOverlay,
 	};

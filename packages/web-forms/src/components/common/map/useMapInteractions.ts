@@ -24,6 +24,7 @@ export interface UseMapInteractions {
 	setupFeatureDrag: (layer: VectorLayer, onDrag: (feature: Feature) => void) => void;
 	setupLongPressPoint: (source: VectorSource, onLongPress: (feature: Feature) => void) => void;
 	setupMapVisibilityObserver: (mapContainer: HTMLElement, onMapNotVisible: () => void) => void;
+	setupPhantomMiddlePoint: (source: VectorSource) => void;
 	teardownMap: () => void;
 	toggleSelectEvent: (
 		bindClick: boolean,
@@ -61,6 +62,7 @@ export function useMapInteractions(
 		toggleSelectEvent(false);
 		removeLongPressPoint();
 		removeFeatureDrag();
+		removePhantomMiddlePoint();
 	};
 
 	const setCursor = (cursor: string) => (mapInstance.getTargetElement().style.cursor = cursor);
@@ -226,9 +228,15 @@ export function useMapInteractions(
 			return;
 		}
 
-		let timer: TimerID | null = null;
+		let timer: TimerID | undefined;
 		let startPixel: Pixel | null = null;
-		const pixelTolerance = 5;
+		const HIT_TOLERANCE = 5;
+		const clearTimer = () => {
+			clearTimeout(timer);
+			timer = undefined;
+			startPixel = null;
+			setCursor('');
+		};
 
 		pointerInteraction.value = new PointerInteraction({
 			handleDownEvent: (event) => {
@@ -261,6 +269,8 @@ export function useMapInteractions(
 					if (feature) {
 						onLongPress(feature);
 					}
+
+					clearTimer();
 				}, LONG_PRESS_TIME);
 				return false;
 			},
@@ -273,19 +283,9 @@ export function useMapInteractions(
 				const [startX, startY] = startPixel as [number, number];
 				const distanceX = Math.abs(eventX - startX);
 				const distanceY = Math.abs(eventY - startY);
-				if (distanceX > pixelTolerance || distanceY > pixelTolerance) {
-					clearTimeout(timer);
-					timer = null;
-					startPixel = null;
-					setCursor('');
+				if (distanceX > HIT_TOLERANCE || distanceY > HIT_TOLERANCE) {
+					clearTimer();
 				}
-			},
-			handleUpEvent: () => {
-				setCursor('');
-				if (timer) {
-					clearTimeout(timer);
-				}
-				return false;
 			},
 		});
 
@@ -300,15 +300,6 @@ export function useMapInteractions(
 	};
 
 	const setupFeatureDrag = (layer: VectorLayer, onDrag: (feature: Feature) => void) => {
-		if (!drawFeatureType) {
-			setupFeaturePointDrag(layer, onDrag);
-			return;
-		}
-
-		setupVertexDrag(layer, onDrag);
-	};
-
-	const setupFeaturePointDrag = (layer: VectorLayer, onDrag: (feature: Feature) => void) => {
 		if (translateInteraction.value) {
 			return;
 		}
@@ -328,38 +319,31 @@ export function useMapInteractions(
 		mapInstance.addInteraction(translateInteraction.value);
 	};
 
-	const setupVertexDrag = (layer: VectorLayer, onDrag: (feature: Feature) => void) => {
+	const setupPhantomMiddlePoint = (source: VectorSource) => {
 		if (modifyInteraction.value) {
 			return;
 		}
 
 		modifyInteraction.value = new Modify({
-			source: layer.getSource() as VectorSource,
+			source: source,
 			style: getPhantomPointStyle(),
-		});
-
-		modifyInteraction.value.on('modifystart', () => setCursor('grabbing'));
-
-		modifyInteraction.value.on('modifyend', (event) => {
-			setCursor('');
-			const feature = event.features.getArray()[0];
-			if (feature) {
-				onDrag(feature);
-			}
+			insertVertexCondition: (event) => event.type === 'pointermove',
 		});
 
 		mapInstance.addInteraction(modifyInteraction.value);
+	};
+
+	const removePhantomMiddlePoint = () => {
+		if (modifyInteraction.value) {
+			mapInstance.removeInteraction(modifyInteraction.value);
+			modifyInteraction.value = undefined;
+		}
 	};
 
 	const removeFeatureDrag = () => {
 		if (translateInteraction.value) {
 			mapInstance.removeInteraction(translateInteraction.value);
 			translateInteraction.value = undefined;
-		}
-
-		if (modifyInteraction.value) {
-			mapInstance.removeInteraction(modifyInteraction.value);
-			modifyInteraction.value = undefined;
 		}
 	};
 
@@ -373,6 +357,7 @@ export function useMapInteractions(
 		setupFeatureDrag,
 		setupLongPressPoint,
 		setupMapVisibilityObserver,
+		setupPhantomMiddlePoint,
 		teardownMap,
 		toggleSelectEvent,
 	};

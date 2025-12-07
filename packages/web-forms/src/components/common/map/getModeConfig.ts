@@ -8,7 +8,7 @@ export type Mode = (typeof MODES)[keyof typeof MODES];
 
 export interface ModeCapabilities {
 	canAutomaticallySave: boolean;
-	canDeleteDrawFeature: boolean;
+	canDeleteFeature: boolean;
 	canLoadMultiFeatures: boolean;
 	canRemoveCurrentLocation: boolean;
 	canSaveCurrentLocation: boolean;
@@ -23,110 +23,22 @@ interface ModeConfig {
 	interactions: {
 		select: boolean;
 		longPress: boolean;
-		drag: boolean;
+		dragFeature: boolean;
 	};
 	capabilities: ModeCapabilities;
 }
 
 export const getModeConfig = (mode: Mode): ModeConfig => {
-	if (mode === MODES.SELECT) {
-		return {
-			interactions: {
-				select: true,
-				longPress: false,
-				drag: false,
-			},
-			capabilities: {
-				canAutomaticallySave: false,
-				canDeleteDrawFeature: false,
-				canLoadMultiFeatures: true,
-				canRemoveCurrentLocation: false,
-				canSaveCurrentLocation: false,
-				canSelectVertices: false,
-				canShowMapOverlay: false,
-				canShowMapOverlayOnError: false,
-				canUndoLastChange: false,
-				canViewProperties: true,
-			},
-		};
-	}
-
-	if (mode === MODES.LOCATION) {
-		return {
-			interactions: {
-				select: false,
-				longPress: false,
-				drag: false,
-			},
-			capabilities: {
-				canAutomaticallySave: false,
-				canDeleteDrawFeature: false,
-				canLoadMultiFeatures: false,
-				canRemoveCurrentLocation: true,
-				canSaveCurrentLocation: true,
-				canSelectVertices: false,
-				canShowMapOverlay: true,
-				canShowMapOverlayOnError: true,
-				canUndoLastChange: false,
-				canViewProperties: false,
-			},
-		};
-	}
-
-	if (mode === MODES.PLACEMENT) {
-		return {
-			interactions: {
-				select: false,
-				longPress: true,
-				drag: true,
-			},
-			capabilities: {
-				canAutomaticallySave: false,
-				canDeleteDrawFeature: false,
-				canLoadMultiFeatures: false,
-				canRemoveCurrentLocation: true,
-				canSaveCurrentLocation: true,
-				canSelectVertices: false,
-				canShowMapOverlay: true,
-				canShowMapOverlayOnError: false,
-				canUndoLastChange: false,
-				canViewProperties: false,
-			},
-		};
-	}
-
-	if (mode === MODES.DRAW) {
-		return {
-			interactions: {
-				select: true,
-				longPress: true,
-				drag: true,
-			},
-			capabilities: {
-				canAutomaticallySave: true,
-				canDeleteDrawFeature: true,
-				canLoadMultiFeatures: false,
-				canRemoveCurrentLocation: false,
-				canSaveCurrentLocation: false,
-				canSelectVertices: true,
-				canShowMapOverlay: false,
-				canShowMapOverlayOnError: false,
-				canUndoLastChange: true,
-				canViewProperties: false,
-			},
-		};
-	}
-
 	// Default, everything turned off.
-	return {
+	const defaultConfig = {
 		interactions: {
 			select: false,
 			longPress: false,
-			drag: false,
+			dragFeature: false,
 		},
 		capabilities: {
 			canAutomaticallySave: false,
-			canDeleteDrawFeature: false,
+			canDeleteFeature: false,
 			canLoadMultiFeatures: false,
 			canRemoveCurrentLocation: false,
 			canSaveCurrentLocation: false,
@@ -136,5 +48,67 @@ export const getModeConfig = (mode: Mode): ModeConfig => {
 			canUndoLastChange: false,
 			canViewProperties: false,
 		},
-	};
+	} as const;
+
+	if (mode === MODES.SELECT) {
+		return {
+			interactions: {
+				...defaultConfig.interactions,
+				select: true,
+			},
+			capabilities: {
+				...defaultConfig.capabilities,
+				canLoadMultiFeatures: true,
+				canViewProperties: true,
+			},
+		};
+	}
+
+	if (mode === MODES.LOCATION) {
+		return {
+			interactions: { ...defaultConfig.interactions },
+			capabilities: {
+				...defaultConfig.capabilities,
+				canRemoveCurrentLocation: true,
+				canSaveCurrentLocation: true,
+				canShowMapOverlay: true,
+				canShowMapOverlayOnError: true,
+			},
+		};
+	}
+
+	if (mode === MODES.PLACEMENT) {
+		return {
+			interactions: {
+				...defaultConfig.interactions,
+				longPress: true,
+				dragFeature: true,
+			},
+			capabilities: {
+				...defaultConfig.capabilities,
+				canRemoveCurrentLocation: true,
+				canSaveCurrentLocation: true,
+				canShowMapOverlay: true,
+			},
+		};
+	}
+
+	if (mode === MODES.DRAW) {
+		return {
+			interactions: {
+				...defaultConfig.interactions,
+				select: true,
+				longPress: true,
+			},
+			capabilities: {
+				...defaultConfig.capabilities,
+				canAutomaticallySave: true,
+				canDeleteFeature: true,
+				canSelectVertices: true,
+				canUndoLastChange: true,
+			},
+		};
+	}
+
+	return defaultConfig;
 };
