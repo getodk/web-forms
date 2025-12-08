@@ -2,7 +2,7 @@ import type { Coordinate } from 'ol/coordinate';
 import Feature from 'ol/Feature';
 import { Point, LineString, Polygon } from 'ol/geom';
 
-const getCoordinates = (geometry: LineString | Polygon) => {
+const getFlatCoordinates = (geometry: LineString | Polygon) => {
 	if (geometry instanceof LineString) {
 		return geometry.getCoordinates();
 	}
@@ -53,7 +53,7 @@ const getClosestSegmentAndIndex = (
 	geometry: LineString | Polygon,
 	point: Coordinate
 ): { segmentIndex: number; closest: Coordinate; squaredDist: number } => {
-	const coords: Coordinate[] = getCoordinates(geometry);
+	const coords: Coordinate[] = getFlatCoordinates(geometry);
 	let minSquaredDist = Infinity;
 	let bestIndex = -1;
 	let bestClosest: Coordinate = [];
@@ -103,7 +103,7 @@ export const addTraceVertex = (
 		return;
 	}
 
-	const coords = getCoordinates(geometry);
+	const coords = getFlatCoordinates(geometry);
 	const { segmentIndex, closest, squaredDist } = getClosestSegmentAndIndex(geometry, newVertex);
 	if (segmentIndex >= 0 && isOnLine(squaredDist, resolution, hitTolerance)) {
 		coords.splice(segmentIndex + 1, 0, closest);
@@ -132,7 +132,7 @@ export const addShapeVertex = (
 		return;
 	}
 
-	const ring = getCoordinates(geometry);
+	const ring = getFlatCoordinates(geometry);
 	if (ring.length < 3) {
 		ring.push(newVertex);
 	} else {
@@ -166,7 +166,26 @@ export const getVertexIndex = (
 	}
 
 	const vertexCoords = vertexGeometry.getCoordinates();
-	const featureCoords = getCoordinates(featureGeometry);
+	const featureCoords = getFlatCoordinates(featureGeometry);
 	const index = featureCoords.findIndex((coord) => isCoordsEqual(coord, vertexCoords));
 	return index === -1 ? undefined : index;
+};
+
+export const deleteVertexFromFeature = (
+	feature: Feature<LineString | Polygon> | undefined,
+	index: number
+) => {
+	const geometry = feature?.getGeometry();
+	if (!geometry) {
+		return;
+	}
+
+	const coordinates = getFlatCoordinates(geometry);
+	coordinates.splice(index, 1);
+
+	if (geometry instanceof LineString) {
+		geometry.setCoordinates(coordinates);
+		return;
+	}
+	geometry.setCoordinates([coordinates]);
 };

@@ -24,6 +24,7 @@ import {
 	useMapViewControls,
 	type UseMapViewControls,
 } from '@/components/common/map/useMapViewControls.ts';
+import { deleteVertexFromFeature } from '@/components/common/map/vertex-geometry.ts';
 import type { FeatureCollection, Feature as GeoJsonFeature } from 'geojson';
 import { Map, View } from 'ol';
 import { Attribution, Zoom } from 'ol/control';
@@ -193,23 +194,78 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 			);
 
 			if (config.mode === MODES.DRAW) {
-				mapInteractions.setupPhantomMiddlePoint(featuresSource);
+				mapInteractions.setupVertexDrag(featuresSource, (feature) => handlePointPlacement(feature));
 			}
 		}
 	};
 
-	const handlePointPlacement = (feature: Feature) => {
+	const updateAndSaveFeature = (feature: Feature) => {
 		feature.set(ODK_VALUE_PROPERTY, formatODKValue(feature));
 		mapFeatures?.saveFeature(feature);
+	};
 
+	const handlePointPlacement = (feature: Feature) => {
+		updateAndSaveFeature(feature);
 		if (events.onFeaturePlacement) {
 			events.onFeaturePlacement();
 		}
 	};
 
+	const deleteVertex = () => {
+		if (!canDeleteFeatureOrVertex()) {
+			return;
+		}
+
+		const feature = mapFeatures?.getSavedFeature();
+		const vertexIndex: number | undefined = feature?.get(SELECTED_VERTEX_INDEX_PROPERTY) as number;
+		if (!feature || vertexIndex === undefined) {
+			return;
+		}
+
+		mapInteractions?.savePreviousFeatureState(feature);
+		deleteVertexFromFeature(feature as Feature<LineString | Polygon>, vertexIndex);
+		updateAndSaveFeature(feature);
+	};
+
+	const deleteFeature = () => {
+		if (canDeleteFeatureOrVertex()) {
+			clearMap();
+			mapInteractions?.savePreviousFeatureState(null);
+		}
+	};
+
+	const confirmDeleteFeature = () => {
+		return !!mapFeatures?.getSavedFeature()?.get(SELECTED_VERTEX_INDEX_PROPERTY);
+	};
+
+	const canDeleteFeatureOrVertex = () => {
+		return (
+			currentMode.capabilities.canDeleteFeature && !currentMode.capabilities.canLoadMultiFeatures
+		);
+	};
+
+	const canUndoLastChange = () => {
+		return (
+			mapInteractions?.hasPreviousFeatureState() &&
+			currentMode.capabilities.canUndoLastChange &&
+			!currentMode.capabilities.canLoadMultiFeatures
+		);
+	};
+
+	const undoLastChange = () => {
+		if (canUndoLastChange()) {
+			clearMap();
+			const previousFeatureState = mapInteractions?.popPreviousFeatureState();
+			if (previousFeatureState) {
+				featuresSource.addFeature(previousFeatureState);
+				updateAndSaveFeature(previousFeatureState);
+			}
+		}
+	};
+
 	const clearMap = () => {
-		mapFeatures?.selectFeature(undefined);
-		mapFeatures?.saveFeature(undefined);
+		unselectFeature();
+		clearSavedFeature();
 		featuresSource.clear(true);
 	};
 
@@ -266,7 +322,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 
 	const discardSavedFeature = () => {
 		if (currentMode.capabilities.canLoadMultiFeatures) {
-			mapFeatures?.saveFeature(undefined);
+			clearSavedFeature();
 			return;
 		}
 		clearMap();
@@ -308,6 +364,10 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 
 		return coordinates.map((coord) => formatCoords(coord)).join('; ');
 	};
+
+	const unselectFeature = () => mapFeatures?.selectFeature(undefined);
+
+	const clearSavedFeature = () => mapFeatures?.saveFeature(undefined);
 
 	const teardownMap = () => {
 		mapViewControls?.stopWatchingCurrentLocation();
@@ -394,9 +454,16 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 			mapFeatures?.getSavedFeature()?.getProperties()?.[ODK_VALUE_PROPERTY] as string,
 		isSavedFeatureSelected: () => !!mapFeatures?.isSavedFeatureSelected(),
 
+		confirmDeleteFeature,
+		deleteFeature,
+		deleteVertex,
+		canDeleteFeatureOrVertex,
+		canUndoLastChange,
+		undoLastChange,
+
 		getSelectedFeatureProperties: () => mapFeatures?.getSelectedFeatureProperties(),
 		selectSavedFeature: () => mapFeatures?.selectFeature(mapFeatures?.getSavedFeature()),
-		unselectFeature: () => mapFeatures?.selectFeature(undefined),
+		unselectFeature,
 
 		canLongPressAndDrag: () =>
 			currentMode.interactions.longPress && currentMode.interactions.dragFeature,

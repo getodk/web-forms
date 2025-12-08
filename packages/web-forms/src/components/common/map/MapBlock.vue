@@ -9,10 +9,14 @@ import type { Mode } from '@/components/common/map/getModeConfig.ts';
 import MapProperties from '@/components/common/map/MapProperties.vue';
 import MapStatusBar from '@/components/common/map/MapStatusBar.vue';
 import { STATES, useMapBlock } from '@/components/common/map/useMapBlock.ts';
-import type { DrawFeatureType } from '@/components/common/map/useMapInteractions.ts';
+import {
+	DRAW_FEATURE_TYPES,
+	type DrawFeatureType,
+} from '@/components/common/map/useMapInteractions.ts';
 import { QUESTION_HAS_ERROR } from '@/lib/constants/injection-keys.ts';
 import type { FeatureCollection, Feature } from 'geojson';
 import Button from 'primevue/button';
+import Dialog from 'primevue/dialog';
 import { computed, type ComputedRef, inject, onMounted, onUnmounted, ref, watch } from 'vue';
 import Message from 'primevue/message';
 
@@ -29,6 +33,7 @@ const props = defineProps<MapBlockProps>();
 const emit = defineEmits(['save']);
 const mapElement = ref<HTMLElement | undefined>();
 const isFullScreen = ref(false);
+const confirmDeleteAction = ref(false);
 const showErrorStyle = inject<ComputedRef<boolean>>(
 	QUESTION_HAS_ERROR,
 	computed(() => false)
@@ -95,9 +100,25 @@ const discardSavedFeature = () => {
 	emitSavedFeature();
 };
 
-const deleteDrawFeature = () => {};
+const triggerDelete = () => {
+	if (!mapHandler.confirmDeleteFeature()) {
+		confirmDeleteAction.value = true;
+		return;
+	}
+	mapHandler.deleteVertex();
+	emitSavedFeature();
+};
 
-const undoLastChange = () => {};
+const deleteFeature = () => {
+	mapHandler.deleteFeature();
+	confirmDeleteAction.value = false;
+	emitSavedFeature();
+};
+
+const undoLastChange = () => {
+	mapHandler.undoLastChange();
+	emitSavedFeature();
+};
 </script>
 
 <template>
@@ -136,13 +157,13 @@ const undoLastChange = () => {};
 						</button>
 					</div>
 
-					<div v-if="!disabled" class="control-bar-horizontal">
+					<div v-if="!disabled && (mapHandler.canUndoLastChange() || mapHandler.canDeleteFeatureOrVertex())" class="control-bar-horizontal">
 						<!-- TODO: translations -->
-						<button title="Delete" @click="deleteDrawFeature">
+						<button title="Delete" @click="triggerDelete">
 							<IconSVG name="mdiTrashCanOutline" />
 						</button>
 						<!-- TODO: translations -->
-						<button title="Undo last change" @click="undoLastChange">
+						<button title="Undo last change" :disabled="!mapHandler.canUndoLastChange()" @click="undoLastChange">
 							<IconSVG name="mdiArrowULeftTop" />
 						</button>
 					</div>
@@ -195,6 +216,25 @@ const undoLastChange = () => {};
 			<span>{{ mapHandler.errorMessage.value.message }}</span>
 		</div>
 	</div>
+
+	<Dialog v-model:visible="confirmDeleteAction" modal class="map-block-dialog" :draggable="false">
+		<template #header>
+			<!-- TODO: translations -->
+			<strong v-if="drawFeatureType === DRAW_FEATURE_TYPES.SHAPE">Delete entire shape?</strong>
+			<strong v-if="drawFeatureType === DRAW_FEATURE_TYPES.TRACE">Delete entire trace?</strong>
+		</template>
+
+		<template #default>
+			<!-- TODO: translations -->
+			<p v-if="drawFeatureType === DRAW_FEATURE_TYPES.SHAPE">Are you sure you want to delete this entire shape and start over?</p>
+			<p v-if="drawFeatureType === DRAW_FEATURE_TYPES.TRACE">Are you sure you want to delete this entire trace and start over?</p>
+		</template>
+
+		<template #footer>
+			<!-- TODO: translations -->
+			<Button label="Delete" @click="deleteFeature()" />
+		</template>
+	</Dialog>
 </template>
 
 <style scoped lang="scss">
@@ -422,6 +462,24 @@ const undoLastChange = () => {};
 	.map-block-component :deep(.ol-zoom) {
 		right: var(--odk-map-spacing);
 		bottom: var(--odk-map-spacing);
+	}
+}
+</style>
+
+<style lang="scss">
+// Override PrimeVue dialog style that is outside scoped (rendered outside the component)
+.p-dialog.map-block-dialog {
+	background: var(--odk-base-background-color);
+	border-radius: var(--odk-radius);
+
+	.p-dialog-header {
+		padding: 15px 20px;
+		font-size: var(--odk-dialog-title-font-size);
+	}
+
+	.p-dialog-content p,
+	.p-dialog-footer button {
+		font-size: var(--odk-base-font-size);
 	}
 }
 </style>

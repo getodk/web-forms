@@ -6,7 +6,7 @@ import {
 	getVertexIndex,
 } from '@/components/common/map/vertex-geometry.ts';
 import type { TimerID } from '@getodk/common/types/timers.ts';
-import { Map, MapBrowserEvent } from 'ol';
+import { Collection, Map, MapBrowserEvent } from 'ol';
 import Feature from 'ol/Feature';
 import { LineString, Point, Polygon } from 'ol/geom';
 import { Modify, Translate } from 'ol/interaction';
@@ -17,18 +17,21 @@ import type { Pixel } from 'ol/pixel';
 import type VectorSource from 'ol/source/Vector';
 import { shallowRef } from 'vue';
 
-const DRAW_FEATURE_TYPES = {
+export const DRAW_FEATURE_TYPES = {
 	SHAPE: 'shape',
 	TRACE: 'trace',
 } as const;
 export type DrawFeatureType = (typeof DRAW_FEATURE_TYPES)[keyof typeof DRAW_FEATURE_TYPES];
 
 export interface UseMapInteractions {
+	hasPreviousFeatureState: () => boolean;
+	popPreviousFeatureState: () => Feature | null | undefined;
 	removeMapInteractions: () => void;
+	savePreviousFeatureState: (feature: Feature | null) => void;
 	setupFeatureDrag: (layer: VectorLayer, onDrag: (feature: Feature) => void) => void;
 	setupLongPressPoint: (source: VectorSource, onLongPress: (feature: Feature) => void) => void;
 	setupMapVisibilityObserver: (mapContainer: HTMLElement, onMapNotVisible: () => void) => void;
-	setupPhantomMiddlePoint: (source: VectorSource) => void;
+	setupVertexDrag: (source: VectorSource, onDrag: (feature: Feature) => void) => void;
 	teardownMap: () => void;
 	toggleSelectEvent: (
 		bindClick: boolean,
@@ -47,6 +50,7 @@ export function useMapInteractions(
 	const pointerInteraction = shallowRef<PointerInteraction | undefined>();
 	const translateInteraction = shallowRef<Translate | undefined>();
 	const modifyInteraction = shallowRef<Modify | undefined>();
+	const previousFeatureState = shallowRef<Feature | null | undefined>();
 
 	const setupMapVisibilityObserver = (mapContainer: HTMLElement, onMapNotVisible: () => void) => {
 		if ('IntersectionObserver' in window) {
@@ -169,31 +173,29 @@ export function useMapInteractions(
 						return false;
 					}
 
-					let feature = source.getFeatures()[0];
 					const resolution = mapInstance.getView().getResolution() ?? 1;
+					let feature = source.getFeatures()?.[0];
+					savePreviousFeatureState(feature ?? null);
 
-					if (!drawFeatureType) {
-						if (!source.isEmpty()) {
-							source.clear(true);
-						}
-						feature = new Feature({ geometry: new Point(event.coordinate) });
+					switch (drawFeatureType) {
+						case DRAW_FEATURE_TYPES.SHAPE:
+							feature = addShapeVertex(resolution, event.coordinate, feature, HIT_TOLERANCE)!;
+							break;
+						case DRAW_FEATURE_TYPES.TRACE:
+							feature = addTraceVertex(resolution, event.coordinate, feature, HIT_TOLERANCE)!;
+							break;
+						default:
+							if (!source.isEmpty()) {
+								source.clear(true);
+							}
+							feature = new Feature({ geometry: new Point(event.coordinate) });
+							break;
 					}
 
-					if (drawFeatureType === DRAW_FEATURE_TYPES.TRACE) {
-						feature = addTraceVertex(resolution, event.coordinate, feature, HIT_TOLERANCE);
+					if (source.isEmpty()) {
+						source.addFeature(feature);
 					}
-
-					if (drawFeatureType === DRAW_FEATURE_TYPES.SHAPE) {
-						feature = addShapeVertex(resolution, event.coordinate, feature, HIT_TOLERANCE);
-					}
-
-					if (feature) {
-						if (source.isEmpty()) {
-							source.addFeature(feature);
-						}
-						onLongPress(feature);
-					}
-
+					onLongPress(feature);
 					clearTimer();
 				}, LONG_PRESS_TIME);
 				return false;
@@ -223,27 +225,26 @@ export function useMapInteractions(
 		}
 	};
 
+	const onDragFeature = (features: Collection<Feature>, onDrag: (feature: Feature) => void) => {
+		setCursor('');
+		const feature = features.getArray()?.[0];
+		if (feature) {
+			onDrag(feature);
+		}
+	};
+
 	const setupFeatureDrag = (layer: VectorLayer, onDrag: (feature: Feature) => void) => {
 		if (translateInteraction.value) {
 			return;
 		}
 
 		translateInteraction.value = new Translate({ layers: [layer] });
-
 		translateInteraction.value.on('translating', () => setCursor('grab'));
-
-		translateInteraction.value.on('translateend', (event) => {
-			setCursor('');
-			const feature = event.features.getArray()[0];
-			if (feature) {
-				onDrag(feature);
-			}
-		});
-
+		translateInteraction.value.on('translateend', (event) => onDragFeature(event.features, onDrag));
 		mapInstance.addInteraction(translateInteraction.value);
 	};
 
-	const setupPhantomMiddlePoint = (source: VectorSource) => {
+	const setupVertexDrag = (source: VectorSource, onDrag: (feature: Feature) => void) => {
 		if (modifyInteraction.value) {
 			return;
 		}
@@ -254,6 +255,11 @@ export function useMapInteractions(
 			insertVertexCondition: (event) => event.type === 'pointermove',
 		});
 
+		modifyInteraction.value.on('modifystart', () => {
+			setCursor('grab');
+			savePreviousFeatureState(source.getFeatures()?.[0] ?? null);
+		});
+		modifyInteraction.value.on('modifyend', (event) => onDragFeature(event.features, onDrag));
 		mapInstance.addInteraction(modifyInteraction.value);
 	};
 
@@ -271,17 +277,34 @@ export function useMapInteractions(
 		}
 	};
 
+	const savePreviousFeatureState = (feature: Feature | null) => {
+		if (capabilities.canUndoLastChange) {
+			previousFeatureState.value = feature ? feature.clone() : null; // Null means the feature was deleted.
+		}
+	};
+
+	const popPreviousFeatureState = () => {
+		const feature = previousFeatureState.value;
+		previousFeatureState.value = undefined; // Undefined means no state to restore.
+		return feature;
+	};
+
+	const hasPreviousFeatureState = () => previousFeatureState.value !== undefined;
+
 	const teardownMap = () => {
 		currentLocationObserver.value?.disconnect();
 		removeMapInteractions();
 	};
 
 	return {
+		hasPreviousFeatureState,
+		popPreviousFeatureState,
 		removeMapInteractions,
+		savePreviousFeatureState,
 		setupFeatureDrag,
 		setupLongPressPoint,
 		setupMapVisibilityObserver,
-		setupPhantomMiddlePoint,
+		setupVertexDrag,
 		teardownMap,
 		toggleSelectEvent,
 	};
