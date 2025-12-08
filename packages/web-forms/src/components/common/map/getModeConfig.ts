@@ -12,7 +12,7 @@ export interface ModeCapabilities {
 	canLoadMultiFeatures: boolean;
 	canRemoveCurrentLocation: boolean;
 	canSaveCurrentLocation: boolean;
-	canSelectVertices: boolean;
+	canSelectFeatureOrVertex: boolean;
 	canShowMapOverlay: boolean;
 	canShowMapOverlayOnError: boolean;
 	canUndoLastChange: boolean;
@@ -42,7 +42,7 @@ export const getModeConfig = (mode: Mode): ModeConfig => {
 			canLoadMultiFeatures: false,
 			canRemoveCurrentLocation: false,
 			canSaveCurrentLocation: false,
-			canSelectVertices: false,
+			canSelectFeatureOrVertex: false,
 			canShowMapOverlay: false,
 			canShowMapOverlayOnError: false,
 			canUndoLastChange: false,
@@ -104,7 +104,7 @@ export const getModeConfig = (mode: Mode): ModeConfig => {
 				...defaultConfig.capabilities,
 				canAutomaticallySave: true,
 				canDeleteFeature: true,
-				canSelectVertices: true,
+				canSelectFeatureOrVertex: true,
 				canUndoLastChange: true,
 			},
 		};

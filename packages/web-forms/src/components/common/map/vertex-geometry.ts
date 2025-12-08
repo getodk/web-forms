@@ -2,7 +2,7 @@ import type { Coordinate } from 'ol/coordinate';
 import Feature from 'ol/Feature';
 import { Point, LineString, Polygon } from 'ol/geom';
 
-const getFlatCoordinates = (geometry: LineString | Polygon) => {
+export const getFlatCoordinates = (geometry: LineString | Polygon) => {
 	if (geometry instanceof LineString) {
 		return geometry.getCoordinates();
 	}

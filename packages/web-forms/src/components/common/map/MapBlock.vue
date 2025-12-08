@@ -101,7 +101,7 @@ const discardSavedFeature = () => {
 };
 
 const triggerDelete = () => {
-	if (!mapHandler.confirmDeleteFeature()) {
+	if (mapHandler.confirmDeleteFeature()) {
 		confirmDeleteAction.value = true;
 		return;
 	}

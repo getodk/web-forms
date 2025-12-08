@@ -7,6 +7,7 @@ import {
 } from '@/components/common/map/map-styles.ts';
 import {
 	FEATURE_ID_PROPERTY,
+	IS_SELECTED_PROPERTY,
 	SAVED_ID_PROPERTY,
 	SELECTED_ID_PROPERTY,
 	SELECTED_VERTEX_INDEX_PROPERTY,
@@ -75,7 +76,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 		source: featuresSource,
 		style:
 			config.mode === MODES.DRAW
-				? getDrawStyles(SELECTED_VERTEX_INDEX_PROPERTY)
+				? getDrawStyles(IS_SELECTED_PROPERTY, SELECTED_VERTEX_INDEX_PROPERTY)
 				: getSavedStyles(FEATURE_ID_PROPERTY, SAVED_ID_PROPERTY),
 		updateWhileAnimating: true,
 	});
@@ -121,13 +122,18 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 			controls: [new Zoom(), new Attribution({ collapsible: false })],
 		});
 
+		mapViewControls = useMapViewControls(mapInstance);
 		mapInteractions = useMapInteractions(
 			mapInstance,
 			currentMode.capabilities,
 			config.drawFeatureType
 		);
-		mapViewControls = useMapViewControls(mapInstance);
-		mapFeatures = useMapFeatures(mapInstance, mapViewControls, multiFeatureLayer);
+		mapFeatures = useMapFeatures(
+			mapInstance,
+			currentMode.capabilities,
+			mapViewControls,
+			multiFeatureLayer
+		);
 
 		initLayer(geoJSON, savedFeatureValue);
 		mapInteractions.setupMapVisibilityObserver(mapContainer, () =>
@@ -216,7 +222,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 			return;
 		}
 
-		const feature = mapFeatures?.getSavedFeature();
+		const feature = mapFeatures?.getSelectedFeature();
 		const vertexIndex: number | undefined = feature?.get(SELECTED_VERTEX_INDEX_PROPERTY) as number;
 		if (!feature || vertexIndex === undefined) {
 			return;
@@ -228,14 +234,15 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 	};
 
 	const deleteFeature = () => {
-		if (canDeleteFeatureOrVertex()) {
+		if (canDeleteFeatureOrVertex() && mapFeatures?.getSelectedFeature()) {
 			clearMap();
 			mapInteractions?.savePreviousFeatureState(null);
 		}
 	};
 
 	const confirmDeleteFeature = () => {
-		return !!mapFeatures?.getSavedFeature()?.get(SELECTED_VERTEX_INDEX_PROPERTY);
+		const feature = mapFeatures?.getSelectedFeature();
+		return feature && feature.get(SELECTED_VERTEX_INDEX_PROPERTY) === undefined;
 	};
 
 	const canDeleteFeatureOrVertex = () => {

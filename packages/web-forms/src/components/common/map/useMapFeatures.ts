@@ -1,3 +1,4 @@
+import type { ModeCapabilities } from '@/components/common/map/getModeConfig.ts';
 import { ODK_VALUE_PROPERTY } from '@/components/common/map/useMapBlock.ts';
 import type { UseMapViewControls } from '@/components/common/map/useMapViewControls.ts';
 import type { FeatureCollection, Feature as GeoJsonFeature } from 'geojson';
@@ -17,6 +18,7 @@ export interface UseMapFeatures {
 		forceCenter: boolean
 	) => void;
 	getSavedFeature: () => Feature | undefined;
+	getSelectedFeature: () => Feature | undefined;
 	getSelectedFeatureProperties: () => Record<string, string> | undefined;
 	isSavedFeatureSelected: () => boolean;
 	loadAndSaveSingleFeature: (source: VectorSource, feature: Feature) => void;
@@ -29,11 +31,13 @@ export interface UseMapFeatures {
 const DEFAULT_GEOJSON_PROJECTION = 'EPSG:4326';
 export const FEATURE_ID_PROPERTY = 'odk_feature_id';
 export const SELECTED_VERTEX_INDEX_PROPERTY = 'odk_selected_vertex_index';
-export const SAVED_ID_PROPERTY = 'savedId';
-export const SELECTED_ID_PROPERTY = 'selectedId';
+export const SAVED_ID_PROPERTY = 'odk_saved_id';
+export const SELECTED_ID_PROPERTY = 'odk_selected_id';
+export const IS_SELECTED_PROPERTY = 'odk_is_selected';
 
 export function useMapFeatures(
 	mapInstance: Map,
+	capabilities: ModeCapabilities,
 	viewControls: UseMapViewControls,
 	multiFeatureLayer: WebGLVectorLayer
 ): UseMapFeatures {
@@ -77,7 +81,11 @@ export function useMapFeatures(
 	};
 
 	const selectFeature = (feature: Feature | undefined, vertexIndex?: number) => {
-		feature?.set(SELECTED_VERTEX_INDEX_PROPERTY, vertexIndex);
+		if (capabilities.canSelectFeatureOrVertex) {
+			feature?.set(SELECTED_VERTEX_INDEX_PROPERTY, vertexIndex);
+			selectedFeature.value?.set(IS_SELECTED_PROPERTY, false);
+			feature?.set(IS_SELECTED_PROPERTY, true);
+		}
 		selectedFeature.value = feature;
 	};
 
@@ -136,6 +144,8 @@ export function useMapFeatures(
 
 	const saveFeature = (feature: Feature | undefined) => (savedFeature.value = feature);
 
+	const getSelectedFeature = (): Feature | undefined => selectedFeature.value;
+
 	const getSavedFeature = (): Feature | undefined => savedFeature.value;
 
 	const getSelectedFeatureProperties = () => selectedFeature.value?.getProperties();
@@ -144,7 +154,7 @@ export function useMapFeatures(
 		() => selectedFeature.value,
 		(newSelectedFeature) => {
 			updateFeaturesStyle(SELECTED_ID_PROPERTY, newSelectedFeature);
-			if (newSelectedFeature) {
+			if (newSelectedFeature && !capabilities.canSelectFeatureOrVertex) {
 				viewControls.centerFeatureLocation(newSelectedFeature);
 			}
 		}
@@ -164,6 +174,7 @@ export function useMapFeatures(
 		createFeature,
 		findAndSaveFeature,
 		getSavedFeature,
+		getSelectedFeature,
 		getSelectedFeatureProperties,
 		isSavedFeatureSelected,
 		loadAndSaveSingleFeature,

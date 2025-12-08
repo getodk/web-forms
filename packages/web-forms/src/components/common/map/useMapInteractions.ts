@@ -131,7 +131,7 @@ export function useMapInteractions(
 				onSelectFeature(event, onSelect);
 				return;
 			}
-			if (capabilities.canSelectVertices) {
+			if (capabilities.canSelectFeatureOrVertex) {
 				onSelectFeatureOrVertex(event, onSelect);
 				return;
 			}
@@ -153,7 +153,7 @@ export function useMapInteractions(
 		let timer: TimerID | undefined;
 		let startPixel: Pixel | null = null;
 		const HIT_TOLERANCE = 5;
-		const clearTimer = () => {
+		const clearLongPress = () => {
 			clearTimeout(timer);
 			timer = undefined;
 			startPixel = null;
@@ -165,11 +165,13 @@ export function useMapInteractions(
 				startPixel = event.pixel;
 				setCursor('pointer');
 				if (timer) {
-					clearTimeout(timer);
+					clearLongPress();
+					return false;
 				}
 
 				timer = setTimeout(() => {
 					if (!startPixel || !timer) {
+						clearLongPress();
 						return false;
 					}
 
@@ -196,13 +198,14 @@ export function useMapInteractions(
 						source.addFeature(feature);
 					}
 					onLongPress(feature);
-					clearTimer();
+					clearLongPress();
 				}, LONG_PRESS_TIME);
 				return false;
 			},
 			handleMoveEvent: (event) => {
 				if (!startPixel?.length || !timer || !event.pixel?.length) {
-					return;
+					clearLongPress();
+					return false;
 				}
 
 				const [eventX, eventY] = event.pixel as [number, number];
@@ -210,7 +213,7 @@ export function useMapInteractions(
 				const distanceX = Math.abs(eventX - startX);
 				const distanceY = Math.abs(eventY - startY);
 				if (distanceX > HIT_TOLERANCE || distanceY > HIT_TOLERANCE) {
-					clearTimer();
+					clearLongPress();
 				}
 			},
 		});

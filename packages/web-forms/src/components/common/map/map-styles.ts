@@ -1,11 +1,17 @@
-import { type LineString, MultiPoint, Point, type Polygon } from 'ol/geom';
+import { LineString, MultiPoint, Point, type Polygon } from 'ol/geom';
 import { Fill, Stroke, Style } from 'ol/style';
 import CircleStyle from 'ol/style/Circle';
 import type { Rule } from 'ol/style/flat';
 import mapLocationIcon from '@/assets/images/map-location.svg';
 import type { StyleFunction } from 'ol/style/Style';
+import { getFlatCoordinates } from '@/components/common/map/vertex-geometry.ts';
 
+const HIGHLIGHT_DRAW_COLOR = '#3488AF';
+const DEFAULT_DRAW_LINE_COLOR = '#82C3E0';
+const DEFAULT_VERTEX_FILL_COLOR = '#FFFFFF';
+const DEFAULT_POLYGON_FILL_COLOR = 'rgba(233, 248, 255, 0.8)';
 const DEFAULT_STROKE_COLOR = '#3E9FCC';
+const DEFAULT_STROKE_WIDTH = 4;
 
 const ICON_ANCHOR = {
 	'icon-anchor': [0.5, 0.95],
@@ -20,10 +26,8 @@ const DEFAULT_POINT_STYLE = {
 	...ICON_ANCHOR,
 };
 
-const DEFAULT_POLYGON_FILL_COLOR = 'rgba(233, 248, 255, 0.8)';
-
 const DEFAULT_FEATURE_STYLE = {
-	'stroke-width': 4,
+	'stroke-width': DEFAULT_STROKE_WIDTH,
 	'stroke-color': DEFAULT_STROKE_COLOR,
 	'fill-color': DEFAULT_POLYGON_FILL_COLOR,
 };
@@ -39,8 +43,7 @@ const SCALE_FEATURE_STYLE = {
 	'stroke-width': 6,
 };
 
-const OUTLINE_STROKE_WIDTH = 20;
-
+const DARKER_BLUE = '#60B1D6';
 const BLUE_GLOW_COLOR = 'rgba(148, 224, 237, 0.7)';
 
 const BLUE_GLOW_POINT_STYLE = {
@@ -49,6 +52,7 @@ const BLUE_GLOW_POINT_STYLE = {
 	'circle-displacement': [0, 22],
 };
 
+const OUTLINE_STROKE_WIDTH = 20;
 const BLUE_GLOW_FEATURE_STYLE = {
 	'stroke-width': OUTLINE_STROKE_WIDTH,
 	'stroke-color': BLUE_GLOW_COLOR,
@@ -56,7 +60,6 @@ const BLUE_GLOW_FEATURE_STYLE = {
 };
 
 const GREEN_GLOW_COLOR = 'rgba(34, 197, 94, 0.6)';
-
 const GREEN_GLOW_POINT_STYLE = {
 	'circle-radius': 30,
 	'circle-fill-color': GREEN_GLOW_COLOR,
@@ -75,9 +78,6 @@ const LINE_HIT_TOLERANCE = {
 	'stroke-width': OUTLINE_STROKE_WIDTH,
 	'stroke-color': LINE_HIT_TOLERANCE_COLOR,
 };
-
-const DEFAULT_DRAW_LINE_COLOR = '#82C3E0';
-const DEFAULT_VERTEX_FILL_COLOR = '#FFFFFF';
 
 const getVertexStyle = (borderColor: string, fillColor: string, size = 8) => {
 	return new CircleStyle({
@@ -154,36 +154,48 @@ export function getSavedStyles(featureIdProp: string, savedPropName: string): Ru
 	];
 }
 
-export function getDrawStyles(selectedVertexIndexProp: string): StyleFunction {
+export function getDrawStyles(
+	isFeatureSelectedProp: string,
+	selectedVertexIndexProp: string
+): StyleFunction {
 	return (feature) => {
-		const geometry = feature.getGeometry();
+		const geometry = feature?.getGeometry() as LineString | Polygon;
 		if (!geometry) {
 			return [];
 		}
 
-		const vertexIndex: number | undefined = feature.get(selectedVertexIndexProp) as number;
-		const isLineString = geometry.getType() === 'LineString';
-		const coords = isLineString
-			? [...(geometry as LineString).getCoordinates()]
-			: [...((geometry as Polygon).getCoordinates()[0] ?? [])];
+		const coords = getFlatCoordinates(geometry);
+		const isLineString = geometry instanceof LineString;
+		const isFeatureSelected = !!feature.get(isFeatureSelectedProp);
+		const vertexIndex = isFeatureSelected
+			? (feature.get(selectedVertexIndexProp) as number | undefined)
+			: undefined;
+		// Selected vertex has priority, so the feature is only highlighted if no vertex is selected.
+		const featureColor =
+			isFeatureSelected && vertexIndex === undefined
+				? HIGHLIGHT_DRAW_COLOR
+				: DEFAULT_DRAW_LINE_COLOR;
 
-		const mainStyle = new Style({
-			stroke: new Stroke({ color: DEFAULT_DRAW_LINE_COLOR, width: 4 }),
+		const featureStyle = new Style({
+			stroke: new Stroke({ color: featureColor, width: DEFAULT_STROKE_WIDTH }),
 			fill: new Fill({ color: DEFAULT_POLYGON_FILL_COLOR }),
 		});
 
-		const hitStyle = new Style({
+		const hitLineStyle = new Style({
 			stroke: new Stroke({ color: LINE_HIT_TOLERANCE_COLOR, width: OUTLINE_STROKE_WIDTH }),
 		});
 
 		const unselectedVertex = new Style({
-			image: getVertexStyle(DEFAULT_DRAW_LINE_COLOR, DEFAULT_VERTEX_FILL_COLOR),
+			image: getVertexStyle(featureColor, DEFAULT_VERTEX_FILL_COLOR),
 			geometry: () => (coords.length > 1 ? new MultiPoint(coords.slice(0, -1)) : undefined),
 		});
 
 		const selectedVertex = new Style({
-			image: getVertexStyle('#FFFFFF', '#60B1D6'),
+			image: getVertexStyle('#FFFFFF', DARKER_BLUE),
 			geometry: () => {
+				if (vertexIndex === undefined) {
+					return;
+				}
 				const selectedCoords = coords[vertexIndex];
 				if (selectedCoords?.length) {
 					return new Point(selectedCoords);
@@ -192,20 +204,15 @@ export function getDrawStyles(selectedVertexIndexProp: string): StyleFunction {
 		});
 
 		const lastVertex = new Style({
-			image: getVertexStyle('#3488AF', DEFAULT_VERTEX_FILL_COLOR),
+			image: getVertexStyle(HIGHLIGHT_DRAW_COLOR, DEFAULT_VERTEX_FILL_COLOR),
 			geometry: () => {
-				// LineString doesn’t auto-close; Polygon does.
-				// For Polygon, the user’s last added vertex is the second-to-last point.
-				const offset = isLineString ? 1 : 2;
-				if (!coords.length) {
-					return;
-				}
-
 				const firstCoordinate = coords[0];
 				if (coords.length === 1 && firstCoordinate) {
 					return new Point(firstCoordinate);
 				}
-
+				// LineString doesn’t auto-close; Polygon does.
+				// For Polygon, the user’s last added vertex is the second-to-last point.
+				const offset = isLineString ? 1 : 2;
 				const lastAdded = coords.length === 2 ? coords[1] : coords[coords.length - offset];
 				if (lastAdded) {
 					return new Point(lastAdded);
@@ -213,16 +220,16 @@ export function getDrawStyles(selectedVertexIndexProp: string): StyleFunction {
 			},
 		});
 
-		const styles = [mainStyle];
-		if (isLineString) {
-			styles.push(hitStyle);
-		}
-		styles.push(unselectedVertex, lastVertex, selectedVertex);
-
-		return styles;
+		return [
+			featureStyle,
+			...(isLineString ? [hitLineStyle] : []),
+			unselectedVertex,
+			lastVertex,
+			selectedVertex,
+		];
 	};
 }
 
 export function getPhantomPointStyle(): Style {
-	return new Style({ image: getVertexStyle('#60B1D6', '#60B1D6', 4) });
+	return new Style({ image: getVertexStyle(DARKER_BLUE, DARKER_BLUE, DEFAULT_STROKE_WIDTH) });
 }
