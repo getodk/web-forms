@@ -15,6 +15,7 @@ import {
 } from '@/components/common/map/useMapInteractions.ts';
 import { QUESTION_HAS_ERROR } from '@/lib/constants/injection-keys.ts';
 import type { FeatureCollection, Feature } from 'geojson';
+import FeatureOL from 'ol/Feature';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import { computed, type ComputedRef, inject, onMounted, onUnmounted, ref, watch } from 'vue';
@@ -34,6 +35,7 @@ const emit = defineEmits(['save']);
 const mapElement = ref<HTMLElement | undefined>();
 const isFullScreen = ref(false);
 const confirmDeleteAction = ref(false);
+const savedFeature = ref<FeatureOL | undefined>();
 const showErrorStyle = inject<ComputedRef<boolean>>(
 	QUESTION_HAS_ERROR,
 	computed(() => false)
@@ -82,6 +84,7 @@ const handleEscapeKey = (event: KeyboardEvent) => {
 };
 
 const emitSavedFeature = () => {
+	savedFeature.value = mapHandler.getSavedFeature();
 	emit('save', mapHandler.getSavedFeatureValue());
 };
 
@@ -157,13 +160,20 @@ const undoLastChange = () => {
 						</button>
 					</div>
 
-					<div v-if="!disabled && (mapHandler.canUndoLastChange() || mapHandler.canDeleteFeatureOrVertex())" class="control-bar-horizontal">
+					<div
+						v-if="!disabled && (mapHandler.canUndoLastChange() || mapHandler.canDeleteFeatureOrVertex())"
+						class="control-bar-horizontal"
+					>
 						<!-- TODO: translations -->
 						<button title="Delete" @click="triggerDelete">
 							<IconSVG name="mdiTrashCanOutline" />
 						</button>
 						<!-- TODO: translations -->
-						<button title="Undo last change" :disabled="!mapHandler.canUndoLastChange()" @click="undoLastChange">
+						<button
+							title="Undo last change"
+							:disabled="!mapHandler.canUndoLastChange()"
+							@click="undoLastChange"
+						>
 							<IconSVG name="mdiArrowULeftTop" />
 						</button>
 					</div>
@@ -183,7 +193,7 @@ const undoLastChange = () => {
 			</div>
 
 			<MapStatusBar
-				:is-feature-saved="mapHandler.isFeatureSaved()"
+				:saved-feature="savedFeature"
 				:is-capturing="mapHandler.currentState.value === STATES.CAPTURING"
 				class="map-status-bar-component"
 				:can-remove="!disabled && mapHandler.canRemoveCurrentLocation()"

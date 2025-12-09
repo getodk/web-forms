@@ -1,16 +1,44 @@
 <script setup lang="ts">
 import IconSVG from '@/components/common/IconSVG.vue';
+import { getFlatCoordinates } from '@/components/common/map/vertex-geometry.ts';
+import type Feature from 'ol/Feature';
+import { LineString, Point, Polygon } from 'ol/geom';
 import Button from 'primevue/button';
 import ProgressSpinner from 'primevue/progressspinner';
+import { computed } from 'vue';
 
-defineProps<{
-	isFeatureSaved: boolean;
+const props = defineProps<{
+	savedFeature: Feature | undefined;
 	isCapturing: boolean;
 	canRemove: boolean;
 	canSave: boolean;
 	canViewDetails: boolean;
 }>();
 const emit = defineEmits(['view-details', 'save', 'discard']);
+
+const savedFeatureStatus = computed<{ message: string; icon: string } | null>(() => {
+	const geometry = props.savedFeature?.getGeometry() as LineString | Point | Polygon | undefined;
+	// TODO: translations
+	if (geometry instanceof Point) {
+		return { message: 'Point saved', icon: 'mdiCheckCircle' };
+	}
+
+	const points = getFlatCoordinates(geometry).length;
+	if (points === 0) {
+		return null;
+	}
+
+	const message = points === 1 ? '1 point saved' : `${points} points saved`;
+	if (geometry instanceof LineString) {
+		return { message, icon: 'mdiVectorPolyline' };
+	}
+
+	if (geometry instanceof Polygon) {
+		return { message, icon: 'mdiVectorPolygon' };
+	}
+
+	return null;
+});
 </script>
 
 <template>
@@ -23,11 +51,10 @@ const emit = defineEmits(['view-details', 'save', 'discard']);
 			</div>
 		</div>
 
-		<div v-else-if="isFeatureSaved" class="map-status-container">
+		<div v-else-if="savedFeatureStatus" class="map-status-container">
 			<div class="map-status">
-				<IconSVG name="mdiCheckCircle" variant="success" />
-				<!-- TODO: translations -->
-				<span>Point saved</span>
+				<IconSVG :name="savedFeatureStatus.icon" variant="success" />
+				<span>{{ savedFeatureStatus.message }}</span>
 			</div>
 			<Button v-if="canRemove" outlined severity="contrast" @click="emit('discard')">
 				<span>–</span>

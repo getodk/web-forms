@@ -273,6 +273,7 @@ export function useMapInteractions(
 			source: source,
 			style: getPhantomPointStyle(),
 			insertVertexCondition: (event) => event.type === 'pointermove',
+			wrapX: false,
 		});
 
 		modifyInteraction.value.on('modifystart', () => {

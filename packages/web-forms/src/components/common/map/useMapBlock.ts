@@ -462,7 +462,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 				feature,
 				currentMode.capabilities.canViewProperties
 			),
-		isFeatureSaved: () => !!mapFeatures?.getSavedFeature(),
+		getSavedFeature: () => mapFeatures?.getSavedFeature()?.clone(),
 		getSavedFeatureValue: (): string | undefined =>
 			mapFeatures?.getSavedFeature()?.getProperties()?.[ODK_VALUE_PROPERTY] as string,
 		isSavedFeatureSelected: () => !!mapFeatures?.isSavedFeatureSelected(),

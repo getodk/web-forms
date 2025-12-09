@@ -30,6 +30,8 @@ import {
 	mdiTrashCanOutline,
 	mdiUnfoldMoreHorizontal,
 	mdiUpload,
+	mdiVectorPolygon,
+	mdiVectorPolyline,
 	mdiWeb,
 } from '@mdi/js';
 
@@ -64,6 +66,8 @@ const iconMap: Record<string, string> = {
 	mdiTrashCanOutline,
 	mdiUnfoldMoreHorizontal,
 	mdiUpload,
+	mdiVectorPolygon,
+	mdiVectorPolyline,
 	mdiWeb,
 };
 
