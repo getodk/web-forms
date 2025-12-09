@@ -165,7 +165,6 @@ export function getDrawStyles(
 			return [];
 		}
 
-		const isLineString = geometry instanceof LineString;
 		const isFeatureSelected = !!feature.get(isFeatureSelectedProp);
 		const vertexIndex = isFeatureSelected
 			? (feature.get(selectedVertexIndexProp) as number | undefined)
@@ -179,10 +178,6 @@ export function getDrawStyles(
 		const featureStyle = new Style({
 			stroke: new Stroke({ color: featureColor, width: DEFAULT_STROKE_WIDTH }),
 			fill: new Fill({ color: DEFAULT_POLYGON_FILL_COLOR }),
-		});
-
-		const hitLineStyle = new Style({
-			stroke: new Stroke({ color: LINE_HIT_TOLERANCE_COLOR, width: OUTLINE_STROKE_WIDTH }),
 		});
 
 		const unselectedVertex = new Style({
@@ -212,7 +207,7 @@ export function getDrawStyles(
 				}
 				// LineString doesn’t auto-close; Polygon does.
 				// For Polygon, the user’s last added vertex is the second-to-last point.
-				const offset = isLineString ? 1 : 2;
+				const offset = geometry instanceof LineString ? 1 : 2;
 				const lastAdded = coords.length === 2 ? coords[1] : coords[coords.length - offset];
 				if (lastAdded) {
 					return new Point(lastAdded);
@@ -222,7 +217,6 @@ export function getDrawStyles(
 
 		return [
 			featureStyle,
-			...(isLineString ? [hitLineStyle] : []),
 			unselectedVertex,
 			lastVertex,
 			selectedVertex,

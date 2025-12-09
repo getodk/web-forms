@@ -226,8 +226,12 @@ const undoLastChange = () => {
 
 		<template #default>
 			<!-- TODO: translations -->
-			<p v-if="drawFeatureType === DRAW_FEATURE_TYPES.SHAPE">Are you sure you want to delete this entire shape and start over?</p>
-			<p v-if="drawFeatureType === DRAW_FEATURE_TYPES.TRACE">Are you sure you want to delete this entire trace and start over?</p>
+			<p v-if="drawFeatureType === DRAW_FEATURE_TYPES.SHAPE">
+				Are you sure you want to delete this entire shape and start over?
+			</p>
+			<p v-if="drawFeatureType === DRAW_FEATURE_TYPES.TRACE">
+				Are you sure you want to delete this entire trace and start over?
+			</p>
 		</template>
 
 		<template #footer>

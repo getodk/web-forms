@@ -44,7 +44,7 @@ export interface UseMapInteractions {
 	) => void;
 }
 
-const LONG_PRESS_TIME = 1000;
+const LONG_PRESS_TIME = 1300;
 
 export function useMapInteractions(
 	mapInstance: Map,
@@ -111,12 +111,13 @@ export function useMapInteractions(
 	): void => {
 		const hitFeatures = mapInstance.getFeaturesAtPixel(event.pixel, {
 			layerFilter: (layer) => layer instanceof VectorLayer,
+			hitTolerance: 15,
 		});
 
 		const selectedFeature = hitFeatures?.find((item) => {
 			const geometry = item.getGeometry();
 			return geometry instanceof Polygon || geometry instanceof LineString;
-		}) as Feature<Polygon | LineString> | undefined;
+		}) as Feature<LineString | Polygon> | undefined;
 
 		if (!selectedFeature) {
 			onSelect?.(undefined, undefined);
@@ -129,8 +130,9 @@ export function useMapInteractions(
 			return;
 		}
 
-		const vertexToSelect = hitFeatures.find((item) => item.getGeometry() instanceof Point) as Feature<Point> | undefined;
-		onSelect?.(selectedFeature, getVertexIndex(selectedFeature, vertexToSelect));
+		const vertexToSelect = hitFeatures.find((item) => item.getGeometry() instanceof Point);
+		const index = getVertexIndex(selectedFeature, vertexToSelect as Feature<Point> | undefined);
+		onSelect?.(selectedFeature, index);
 	};
 
 	const toggleSelectEvent = (
@@ -226,6 +228,10 @@ export function useMapInteractions(
 				if (distanceX > HIT_TOLERANCE || distanceY > HIT_TOLERANCE) {
 					clearLongPress();
 				}
+			},
+			handleUpEvent: () => {
+				clearLongPress();
+				return false;
 			},
 		});
 
