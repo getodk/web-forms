@@ -7,6 +7,12 @@ import Button from 'primevue/button';
 import ProgressSpinner from 'primevue/progressspinner';
 import { computed } from 'vue';
 
+interface SavedFeatureStatus {
+	message: string;
+	icon: string;
+	highlight?: boolean;
+}
+
 const props = defineProps<{
 	savedFeature: Feature | undefined;
 	isCapturing: boolean;
@@ -16,11 +22,11 @@ const props = defineProps<{
 }>();
 const emit = defineEmits(['view-details', 'save', 'discard']);
 
-const savedFeatureStatus = computed<{ message: string; icon: string } | null>(() => {
+const savedFeatureStatus = computed<SavedFeatureStatus | null>(() => {
 	const geometry = props.savedFeature?.getGeometry() as LineString | Point | Polygon | undefined;
 	// TODO: translations
 	if (geometry instanceof Point) {
-		return { message: 'Point saved', icon: 'mdiCheckCircle' };
+		return { message: 'Point saved', icon: 'mdiCheckCircle', highlight: true };
 	}
 
 	const points = getFlatCoordinates(geometry).length;
@@ -53,7 +59,7 @@ const savedFeatureStatus = computed<{ message: string; icon: string } | null>(()
 
 		<div v-else-if="savedFeatureStatus" class="map-status-container">
 			<div class="map-status">
-				<IconSVG :name="savedFeatureStatus.icon" variant="success" />
+				<IconSVG :name="savedFeatureStatus.icon" :variant="savedFeatureStatus.highlight ? 'success' : 'base'" />
 				<span>{{ savedFeatureStatus.message }}</span>
 			</div>
 			<Button v-if="canRemove" outlined severity="contrast" @click="emit('discard')">

@@ -259,7 +259,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 
 	const canUndoLastChange = () => {
 		return (
-			mapInteractions?.hasPreviousFeatureState() &&
+			!!mapInteractions?.hasPreviousFeatureState() &&
 			currentMode.capabilities.canUndoLastChange &&
 			!currentMode.capabilities.canLoadMultiFeatures
 		);
@@ -447,7 +447,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 		updateFeatureCollection,
 		setupMapInteractions,
 
-		canFitToAllFeatures: () => !featuresSource.isEmpty(),
+		isMapEmpty: () => featuresSource.isEmpty(),
 		fitToAllFeatures: () => mapViewControls?.fitToAllFeatures(featuresSource),
 		watchCurrentLocation,
 		canSaveCurrentLocation,

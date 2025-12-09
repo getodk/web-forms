@@ -6,20 +6,18 @@
  */
 import IconSVG from '@/components/common/IconSVG.vue';
 import type { Mode } from '@/components/common/map/getModeConfig.ts';
+import MapConfirm from '@/components/common/map/MapConfirm.vue';
+import MapControls from '@/components/common/map/MapControls.vue';
 import MapProperties from '@/components/common/map/MapProperties.vue';
 import MapStatusBar from '@/components/common/map/MapStatusBar.vue';
 import { STATES, useMapBlock } from '@/components/common/map/useMapBlock.ts';
-import {
-	DRAW_FEATURE_TYPES,
-	type DrawFeatureType,
-} from '@/components/common/map/useMapInteractions.ts';
+import { type DrawFeatureType } from '@/components/common/map/useMapInteractions.ts';
 import { QUESTION_HAS_ERROR } from '@/lib/constants/injection-keys.ts';
-import type { FeatureCollection, Feature } from 'geojson';
+import type { Feature, FeatureCollection } from 'geojson';
 import FeatureOL from 'ol/Feature';
 import Button from 'primevue/button';
-import Dialog from 'primevue/dialog';
-import { computed, type ComputedRef, inject, onMounted, onUnmounted, ref, watch } from 'vue';
 import Message from 'primevue/message';
+import { computed, type ComputedRef, inject, onMounted, onUnmounted, ref, watch } from 'vue';
 
 interface MapBlockProps {
 	featureCollection: FeatureCollection;
@@ -53,6 +51,7 @@ onMounted(() => {
 
 	mapHandler.initMap(mapElement.value, props.featureCollection, props.savedFeatureValue);
 	mapHandler.setupMapInteractions(props.disabled);
+	getSavedFeature();
 	document.addEventListener('keydown', handleEscapeKey);
 });
 
@@ -69,13 +68,20 @@ watch(
 
 watch(
 	() => props.savedFeatureValue,
-	(newValue) => newValue && mapHandler.findAndSaveFeature(newValue)
+	(newValue) => {
+		if (newValue) {
+			mapHandler.findAndSaveFeature(newValue);
+			getSavedFeature();
+		}
+	}
 );
 
 watch(
 	() => props.disabled,
 	(newValue) => mapHandler.setupMapInteractions(newValue)
 );
+
+const getSavedFeature = () => (savedFeature.value = mapHandler.getSavedFeature());
 
 const handleEscapeKey = (event: KeyboardEvent) => {
 	if (event.key === 'Escape' && isFullScreen.value) {
@@ -84,7 +90,7 @@ const handleEscapeKey = (event: KeyboardEvent) => {
 };
 
 const emitSavedFeature = () => {
-	savedFeature.value = mapHandler.getSavedFeature();
+	getSavedFeature();
 	emit('save', mapHandler.getSavedFeatureValue());
 };
 
@@ -122,6 +128,12 @@ const undoLastChange = () => {
 	mapHandler.undoLastChange();
 	emitSavedFeature();
 };
+
+const showSecondaryControls = () => {
+	return (
+		!props.disabled && (mapHandler.canUndoLastChange() || mapHandler.canDeleteFeatureOrVertex())
+	);
+};
 </script>
 
 <template>
@@ -136,48 +148,18 @@ const undoLastChange = () => {
 					</Button>
 				</div>
 
-				<div class="control-bar">
-					<div class="control-bar-vertical">
-						<!-- TODO: translations -->
-						<button
-							:class="{ 'control-active': isFullScreen }"
-							title="Full Screen"
-							@click="isFullScreen = !isFullScreen"
-						>
-							<IconSVG name="mdiArrowExpandAll" size="sm" />
-						</button>
-						<!-- TODO: translations -->
-						<button
-							title="Zoom to fit all options"
-							:disabled="!mapHandler.canFitToAllFeatures()"
-							@click="mapHandler.fitToAllFeatures"
-						>
-							<IconSVG name="mdiFullscreen" />
-						</button>
-						<!-- TODO: translations -->
-						<button title="Zoom to current location" @click="mapHandler.watchCurrentLocation">
-							<IconSVG name="mdiCrosshairsGps" size="sm" />
-						</button>
-					</div>
-
-					<div
-						v-if="!disabled && (mapHandler.canUndoLastChange() || mapHandler.canDeleteFeatureOrVertex())"
-						class="control-bar-horizontal"
-					>
-						<!-- TODO: translations -->
-						<button title="Delete" @click="triggerDelete">
-							<IconSVG name="mdiTrashCanOutline" />
-						</button>
-						<!-- TODO: translations -->
-						<button
-							title="Undo last change"
-							:disabled="!mapHandler.canUndoLastChange()"
-							@click="undoLastChange"
-						>
-							<IconSVG name="mdiArrowULeftTop" />
-						</button>
-					</div>
-				</div>
+				<MapControls
+					:is-full-screen="isFullScreen"
+					:disable-fit-all-features="mapHandler.isMapEmpty()"
+					:disable-undo="!mapHandler.canUndoLastChange()"
+					:disable-delete="mapHandler.isMapEmpty()"
+					:show-secondary-controls="showSecondaryControls()"
+					@toggle-full-screen="isFullScreen = !isFullScreen"
+					@fit-all-features="mapHandler.fitToAllFeatures"
+					@watch-current-location="mapHandler.watchCurrentLocation"
+					@trigger-delete="triggerDelete"
+					@undo-last-change="undoLastChange"
+				/>
 
 				<Message
 					v-if="!disabled && mapHandler.canLongPressAndDrag()"
@@ -227,36 +209,16 @@ const undoLastChange = () => {
 		</div>
 	</div>
 
-	<Dialog v-model:visible="confirmDeleteAction" modal class="map-block-dialog" :draggable="false">
-		<template #header>
-			<!-- TODO: translations -->
-			<strong v-if="drawFeatureType === DRAW_FEATURE_TYPES.SHAPE">Delete entire shape?</strong>
-			<strong v-if="drawFeatureType === DRAW_FEATURE_TYPES.TRACE">Delete entire trace?</strong>
-		</template>
-
-		<template #default>
-			<!-- TODO: translations -->
-			<p v-if="drawFeatureType === DRAW_FEATURE_TYPES.SHAPE">
-				Are you sure you want to delete this entire shape and start over?
-			</p>
-			<p v-if="drawFeatureType === DRAW_FEATURE_TYPES.TRACE">
-				Are you sure you want to delete this entire trace and start over?
-			</p>
-		</template>
-
-		<template #footer>
-			<!-- TODO: translations -->
-			<Button label="Delete" @click="deleteFeature()" />
-		</template>
-	</Dialog>
+	<MapConfirm
+		v-model:visible="confirmDeleteAction"
+		:draw-feature-type="drawFeatureType"
+		@delete-feature="deleteFeature"
+	/>
 </template>
 
 <style scoped lang="scss">
 @use 'primeflex/core/_variables.scss' as pf;
-
-.map-block-component {
-	--odk-map-spacing: 8px;
-}
+@use '../../../assets/styles/map-block' as mb;
 
 .map-block-component {
 	position: relative;
@@ -315,88 +277,15 @@ const undoLastChange = () => {
 	}
 }
 
-@mixin map-control-bar {
-	position: absolute;
-	display: flex;
-	flex-wrap: nowrap;
-	align-items: center;
-	box-shadow: none;
-	background: none;
-	overflow: hidden;
-	gap: var(--odk-map-spacing);
-	z-index: var(--odk-z-index-form-floating);
-}
-
-@mixin map-control-bar-vertical {
-	@include map-control-bar;
-	right: var(--odk-map-spacing);
-	flex-direction: column;
-}
-
-@mixin map-control-button {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	height: 42px;
-	width: 42px;
-	border: 1px solid var(--odk-border-color);
-	border-radius: var(--odk-radius);
-	background: var(--odk-base-background-color);
-	font-size: 24px;
-	font-weight: 300;
-	color: var(--odk-text-color);
-	cursor: pointer;
-	-webkit-tap-highlight-color: transparent;
-
-	&:hover {
-		background: var(--odk-muted-background-color);
-		color: var(--odk-text-color);
-	}
-
-	&:disabled {
-		background: var(--odk-muted-background-color);
-		cursor: not-allowed;
-	}
-}
-
-.control-bar {
-	button {
-		@include map-control-button;
-	}
-
-	.control-bar-vertical {
-		@include map-control-bar-vertical;
-		top: var(--odk-map-spacing);
-	}
-
-	.control-bar-horizontal {
-		@include map-control-bar;
-		flex-direction: row;
-		left: var(--odk-map-spacing);
-		bottom: 35px;
-		background: var(--odk-base-background-color);
-		border: 1px solid var(--odk-border-color);
-		border-radius: 10px;
-		gap: 4px;
-		padding: 7px;
-
-		button {
-			height: 48px;
-			width: 48px;
-			border: none;
-		}
-	}
-}
-
 .map-block-component :deep(.ol-zoom) {
-	@include map-control-bar-vertical;
+	@include mb.map-control-bar-vertical;
 	bottom: 35px;
 
 	button,
 	button:hover,
 	button:focus,
 	button:active {
-		@include map-control-button;
+		@include mb.map-control-button;
 	}
 }
 
@@ -468,32 +357,9 @@ const undoLastChange = () => {
 		}
 	}
 
-	.control-bar {
-		top: var(--odk-map-spacing);
-		right: var(--odk-map-spacing);
-	}
-
 	.map-block-component :deep(.ol-zoom) {
-		right: var(--odk-map-spacing);
-		bottom: var(--odk-map-spacing);
-	}
-}
-</style>
-
-<style lang="scss">
-// Override PrimeVue dialog style that is outside scoped (rendered outside the component)
-.p-dialog.map-block-dialog {
-	background: var(--odk-base-background-color);
-	border-radius: var(--odk-radius);
-
-	.p-dialog-header {
-		padding: 15px 20px;
-		font-size: var(--odk-dialog-title-font-size);
-	}
-
-	.p-dialog-content p,
-	.p-dialog-footer button {
-		font-size: var(--odk-base-font-size);
+		right: var(--odk-map-controls-spacing);
+		bottom: var(--odk-map-controls-spacing);
 	}
 }
 </style>
