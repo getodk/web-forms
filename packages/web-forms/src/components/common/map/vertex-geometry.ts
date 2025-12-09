@@ -2,7 +2,11 @@ import type { Coordinate } from 'ol/coordinate';
 import Feature from 'ol/Feature';
 import { Point, LineString, Polygon } from 'ol/geom';
 
-export const getFlatCoordinates = (geometry: LineString | Polygon) => {
+export const getFlatCoordinates = (geometry: LineString | Polygon | undefined) => {
+	if (!geometry) {
+		return [];
+	}
+
 	if (geometry instanceof LineString) {
 		return geometry.getCoordinates();
 	}
@@ -50,10 +54,9 @@ const getClosestPointOnSegment = (
 };
 
 const getClosestSegmentAndIndex = (
-	geometry: LineString | Polygon,
+	coords: Coordinate[],
 	point: Coordinate
 ): { segmentIndex: number; closest: Coordinate; squaredDist: number } => {
-	const coords: Coordinate[] = getFlatCoordinates(geometry);
 	let minSquaredDist = Infinity;
 	let bestIndex = -1;
 	let bestClosest: Coordinate = [];
@@ -99,12 +102,12 @@ export const addTraceVertex = (
 	}
 
 	const geometry = (feature as Feature<LineString>).getGeometry();
-	if (!geometry) {
+	const coords = getFlatCoordinates(geometry);
+	if (!coords.length) {
 		return;
 	}
 
-	const coords = getFlatCoordinates(geometry);
-	const { segmentIndex, closest, squaredDist } = getClosestSegmentAndIndex(geometry, newVertex);
+	const { segmentIndex, closest, squaredDist } = getClosestSegmentAndIndex(coords, newVertex);
 	if (segmentIndex >= 0 && isOnLine(squaredDist, resolution, hitTolerance)) {
 		coords.splice(segmentIndex + 1, 0, closest);
 	} else {
@@ -128,15 +131,15 @@ export const addShapeVertex = (
 	}
 
 	const geometry = (feature as Feature<Polygon>).getGeometry();
-	if (!geometry) {
+	const ring = getFlatCoordinates(geometry);
+	if (!ring.length) {
 		return;
 	}
 
-	const ring = getFlatCoordinates(geometry);
 	if (ring.length < 3) {
 		ring.push(newVertex);
 	} else {
-		const { segmentIndex, closest, squaredDist } = getClosestSegmentAndIndex(geometry, newVertex);
+		const { segmentIndex, closest, squaredDist } = getClosestSegmentAndIndex(ring, newVertex);
 		if (segmentIndex >= 0 && isOnLine(squaredDist, resolution, hitTolerance)) {
 			ring.splice(segmentIndex + 1, 0, closest);
 		} else {
@@ -174,18 +177,34 @@ export const getVertexIndex = (
 export const deleteVertexFromFeature = (
 	feature: Feature<LineString | Polygon> | undefined,
 	index: number
-) => {
+): number => {
 	const geometry = feature?.getGeometry();
-	if (!geometry) {
-		return;
+	const coordinates = getFlatCoordinates(geometry);
+	if (index < 0 || index >= coordinates.length) {
+		return coordinates.length;
 	}
 
-	const coordinates = getFlatCoordinates(geometry);
-	coordinates.splice(index, 1);
+	const removedVertex = coordinates.splice(index, 1)?.[0];
 
 	if (geometry instanceof LineString) {
 		geometry.setCoordinates(coordinates);
-		return;
+	} else if (geometry instanceof Polygon) {
+		const last: Coordinate | undefined = coordinates[coordinates.length - 1];
+		// If the first vertex was deleted, remove the closing duplicate as well
+		if (index === 0 && isCoordsEqual(removedVertex, last)) {
+			coordinates.splice(-1, 1);
+		}
+
+		// Close the ring if valid and necessary
+		if (coordinates.length >= 3) {
+			const newFirst: Coordinate | undefined = coordinates[0];
+			const newLast: Coordinate | undefined = coordinates[coordinates.length - 1];
+			if (!isCoordsEqual(newFirst, newLast)) {
+				coordinates.push([...newFirst!]);
+			}
+		}
+		geometry.setCoordinates([coordinates]);
 	}
-	geometry.setCoordinates([coordinates]);
+
+	return coordinates.length;
 };

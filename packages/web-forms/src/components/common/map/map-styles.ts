@@ -160,11 +160,11 @@ export function getDrawStyles(
 ): StyleFunction {
 	return (feature) => {
 		const geometry = feature?.getGeometry() as LineString | Polygon;
-		if (!geometry) {
+		const coords = getFlatCoordinates(geometry);
+		if (!coords.length) {
 			return [];
 		}
 
-		const coords = getFlatCoordinates(geometry);
 		const isLineString = geometry instanceof LineString;
 		const isFeatureSelected = !!feature.get(isFeatureSelectedProp);
 		const vertexIndex = isFeatureSelected

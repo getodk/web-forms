@@ -222,21 +222,27 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 			return;
 		}
 
-		const feature = mapFeatures?.getSelectedFeature();
+		const feature = mapFeatures?.getSelectedFeature() as Feature<LineString | Polygon>;
 		const vertexIndex: number | undefined = feature?.get(SELECTED_VERTEX_INDEX_PROPERTY) as number;
 		if (!feature || vertexIndex === undefined) {
 			return;
 		}
 
 		mapInteractions?.savePreviousFeatureState(feature);
-		deleteVertexFromFeature(feature as Feature<LineString | Polygon>, vertexIndex);
-		updateAndSaveFeature(feature);
+		const coordsLeft = deleteVertexFromFeature(feature, vertexIndex);
+		if (coordsLeft > 0) {
+			updateAndSaveFeature(feature);
+			return;
+		}
+
+		clearMap();
 	};
 
 	const deleteFeature = () => {
-		if (canDeleteFeatureOrVertex() && mapFeatures?.getSelectedFeature()) {
+		const feature = mapFeatures?.getSelectedFeature();
+		if (canDeleteFeatureOrVertex() && feature) {
+			mapInteractions?.savePreviousFeatureState(feature);
 			clearMap();
-			mapInteractions?.savePreviousFeatureState(null);
 		}
 	};
 

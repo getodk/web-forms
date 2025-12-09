@@ -7,7 +7,6 @@ export const MODES = {
 export type Mode = (typeof MODES)[keyof typeof MODES];
 
 export interface ModeCapabilities {
-	canAutomaticallySave: boolean;
 	canDeleteFeature: boolean;
 	canLoadMultiFeatures: boolean;
 	canRemoveCurrentLocation: boolean;
@@ -37,7 +36,6 @@ export const getModeConfig = (mode: Mode): ModeConfig => {
 			dragFeature: false,
 		},
 		capabilities: {
-			canAutomaticallySave: false,
 			canDeleteFeature: false,
 			canLoadMultiFeatures: false,
 			canRemoveCurrentLocation: false,
@@ -102,7 +100,6 @@ export const getModeConfig = (mode: Mode): ModeConfig => {
 			},
 			capabilities: {
 				...defaultConfig.capabilities,
-				canAutomaticallySave: true,
 				canDeleteFeature: true,
 				canSelectFeatureOrVertex: true,
 				canUndoLastChange: true,

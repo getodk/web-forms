@@ -1,8 +1,13 @@
 import type { ModeCapabilities } from '@/components/common/map/getModeConfig.ts';
 import { getPhantomPointStyle } from '@/components/common/map/map-styles.ts';
 import {
+	IS_SELECTED_PROPERTY,
+	SELECTED_VERTEX_INDEX_PROPERTY,
+} from '@/components/common/map/useMapFeatures.ts';
+import {
 	addShapeVertex,
 	addTraceVertex,
+	getFlatCoordinates,
 	getVertexIndex,
 } from '@/components/common/map/vertex-geometry.ts';
 import type { TimerID } from '@getodk/common/types/timers.ts';
@@ -108,18 +113,24 @@ export function useMapInteractions(
 			layerFilter: (layer) => layer instanceof VectorLayer,
 		});
 
-		const feature = hitFeatures?.find((item) => {
+		const selectedFeature = hitFeatures?.find((item) => {
 			const geometry = item.getGeometry();
 			return geometry instanceof Polygon || geometry instanceof LineString;
-		}) as Feature<LineString | Polygon> | undefined;
+		}) as Feature<Polygon | LineString> | undefined;
 
-		const vertexToSelect = hitFeatures?.find((item) => {
-			return item.getGeometry() instanceof Point;
-		}) as Feature<Point> | undefined;
-
-		if (onSelect) {
-			onSelect(feature, getVertexIndex(feature, vertexToSelect));
+		if (!selectedFeature) {
+			onSelect?.(undefined, undefined);
+			return;
 		}
+
+		const coords = getFlatCoordinates(selectedFeature.getGeometry());
+		if (coords.length === 1) {
+			onSelect?.(selectedFeature, 0);
+			return;
+		}
+
+		const vertexToSelect = hitFeatures.find((item) => item.getGeometry() instanceof Point) as Feature<Point> | undefined;
+		onSelect?.(selectedFeature, getVertexIndex(selectedFeature, vertexToSelect));
 	};
 
 	const toggleSelectEvent = (
@@ -281,9 +292,18 @@ export function useMapInteractions(
 	};
 
 	const savePreviousFeatureState = (feature: Feature | null) => {
-		if (capabilities.canUndoLastChange) {
-			previousFeatureState.value = feature ? feature.clone() : null; // Null means the feature was deleted.
+		if (!capabilities.canUndoLastChange) {
+			return;
 		}
+
+		if (!feature) {
+			previousFeatureState.value = null;
+			return;
+		}
+
+		previousFeatureState.value = feature.clone();
+		previousFeatureState.value.unset(SELECTED_VERTEX_INDEX_PROPERTY);
+		previousFeatureState.value.unset(IS_SELECTED_PROPERTY);
 	};
 
 	const popPreviousFeatureState = () => {
