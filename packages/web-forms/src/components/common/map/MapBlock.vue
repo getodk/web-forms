@@ -14,6 +14,7 @@ import { STATES, useMapBlock } from '@/components/common/map/useMapBlock.ts';
 import { type DrawFeatureType } from '@/components/common/map/useMapInteractions.ts';
 import { QUESTION_HAS_ERROR } from '@/lib/constants/injection-keys.ts';
 import type { Feature, FeatureCollection } from 'geojson';
+import type { Coordinate } from 'ol/coordinate';
 import FeatureOL from 'ol/Feature';
 import Button from 'primevue/button';
 import Message from 'primevue/message';
@@ -34,6 +35,7 @@ const mapElement = ref<HTMLElement | undefined>();
 const isFullScreen = ref(false);
 const confirmDeleteAction = ref(false);
 const savedFeature = ref<FeatureOL | undefined>();
+const selectedVertex = ref<Coordinate | undefined>();
 const showErrorStyle = inject<ComputedRef<boolean>>(
 	QUESTION_HAS_ERROR,
 	computed(() => false)
@@ -41,7 +43,10 @@ const showErrorStyle = inject<ComputedRef<boolean>>(
 
 const mapHandler = useMapBlock(
 	{ mode: props.mode, drawFeatureType: props.drawFeatureType },
-	{ onFeaturePlacement: () => emitSavedFeature() }
+	{
+		onFeaturePlacement: () => emitSavedFeature(),
+		onVertexSelect: (vertex) => (selectedVertex.value = vertex),
+	}
 );
 
 onMounted(() => {
@@ -176,6 +181,7 @@ const showSecondaryControls = () => {
 
 			<MapStatusBar
 				:saved-feature="savedFeature"
+				:selected-vertex="selectedVertex"
 				:is-capturing="mapHandler.currentState.value === STATES.CAPTURING"
 				class="map-status-bar-component"
 				:can-remove="!disabled && mapHandler.canRemoveCurrentLocation()"

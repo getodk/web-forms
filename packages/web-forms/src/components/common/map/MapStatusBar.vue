@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import IconSVG from '@/components/common/IconSVG.vue';
 import { getFlatCoordinates } from '@/components/common/map/vertex-geometry.ts';
+import type { Coordinate } from 'ol/coordinate';
 import type Feature from 'ol/Feature';
 import { LineString, Point, Polygon } from 'ol/geom';
 import Button from 'primevue/button';
@@ -15,12 +16,29 @@ interface SavedFeatureStatus {
 
 const props = defineProps<{
 	savedFeature: Feature | undefined;
+	selectedVertex: Coordinate | undefined;
 	isCapturing: boolean;
 	canRemove: boolean;
 	canSave: boolean;
 	canViewDetails: boolean;
 }>();
 const emit = defineEmits(['view-details', 'save', 'discard']);
+
+const selectedVertexInfo = computed(() => {
+	if (!props.selectedVertex || props.selectedVertex.length < 2) {
+		return '';
+	}
+
+	const [longitude, latitude, altitude] = props.selectedVertex;
+	const parts = [`Longitude: ${longitude}`, `Latitude: ${latitude}`];
+
+	if (altitude !== undefined) {
+		parts.push(`Altitude: ${altitude} m`);
+	}
+
+	// ToDo: Is accuracy needed?
+	return parts.join(', ');
+});
 
 const savedFeatureStatus = computed<SavedFeatureStatus | null>(() => {
 	const geometry = props.savedFeature?.getGeometry() as LineString | Point | Polygon | undefined;
@@ -58,7 +76,11 @@ const savedFeatureStatus = computed<SavedFeatureStatus | null>(() => {
 		</div>
 
 		<div v-else-if="savedFeatureStatus" class="map-status-container">
-			<div class="map-status">
+			<div v-if="selectedVertexInfo.length" class="map-status">
+				<IconSVG name="mdiVectorPoint" />
+				<span>{{ selectedVertexInfo }}</span>
+			</div>
+			<div v-else class="map-status">
 				<IconSVG :name="savedFeatureStatus.icon" :variant="savedFeatureStatus.highlight ? 'success' : 'base'" />
 				<span>{{ savedFeatureStatus.message }}</span>
 			</div>

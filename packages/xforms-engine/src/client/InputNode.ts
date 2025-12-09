@@ -49,8 +49,8 @@ interface InputNodeOptionsByValueType {
 	readonly time: null;
 	readonly dateTime: null;
 	readonly geopoint: GeoInputNodeOptions;
-	readonly geotrace: GeoInputNodeOptions;
-	readonly geoshape: GeoInputNodeOptions;
+	readonly geotrace: null;
+	readonly geoshape: null;
 	readonly binary: null;
 	readonly barcode: null;
 	readonly intent: null;

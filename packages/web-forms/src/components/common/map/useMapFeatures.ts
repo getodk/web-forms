@@ -82,8 +82,8 @@ export function useMapFeatures(
 
 	const selectFeature = (feature: Feature | undefined, vertexIndex?: number) => {
 		if (capabilities.canSelectFeatureOrVertex) {
-			feature?.set(SELECTED_VERTEX_INDEX_PROPERTY, vertexIndex);
 			selectedFeature.value?.set(IS_SELECTED_PROPERTY, false);
+			feature?.set(SELECTED_VERTEX_INDEX_PROPERTY, vertexIndex);
 			feature?.set(IS_SELECTED_PROPERTY, true);
 		}
 		selectedFeature.value = feature;

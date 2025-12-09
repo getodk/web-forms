@@ -25,7 +25,10 @@ import {
 	useMapViewControls,
 	type UseMapViewControls,
 } from '@/components/common/map/useMapViewControls.ts';
-import { deleteVertexFromFeature } from '@/components/common/map/vertex-geometry.ts';
+import {
+	deleteVertexFromFeature,
+	getVertexByIndex,
+} from '@/components/common/map/vertex-geometry.ts';
 import type { FeatureCollection, Feature as GeoJsonFeature } from 'geojson';
 import { Map, View } from 'ol';
 import { Attribution, Zoom } from 'ol/control';
@@ -59,6 +62,7 @@ interface MapBlockConfig {
 
 interface MapBlockEvents {
 	onFeaturePlacement: () => void;
+	onVertexSelect: (vertex: Coordinate) => void;
 }
 
 export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
@@ -185,6 +189,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 		if (currentMode.interactions.select) {
 			mapInteractions.toggleSelectEvent(true, (feature, vertexIndex) => {
 				mapFeatures?.selectFeature(feature, vertexIndex);
+				events.onVertexSelect(getVertexByIndex(feature, vertexIndex));
 			});
 		}
 

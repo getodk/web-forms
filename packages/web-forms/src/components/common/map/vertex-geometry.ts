@@ -174,6 +174,18 @@ export const getVertexIndex = (
 	return index === -1 ? undefined : index;
 };
 
+export const getVertexByIndex = (
+	feature: Feature | undefined,
+	index: number | undefined
+): Coordinate => {
+	if (!feature || index === undefined) {
+		return [];
+	}
+	const geometry = feature.getGeometry() as LineString | Polygon;
+	const coordinates = getFlatCoordinates(geometry);
+	return coordinates[index] ?? [];
+};
+
 export const deleteVertexFromFeature = (
 	feature: Feature<LineString | Polygon> | undefined,
 	index: number
