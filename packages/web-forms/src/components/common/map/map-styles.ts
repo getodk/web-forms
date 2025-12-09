@@ -215,12 +215,7 @@ export function getDrawStyles(
 			},
 		});
 
-		return [
-			featureStyle,
-			unselectedVertex,
-			lastVertex,
-			selectedVertex,
-		];
+		return [featureStyle, unselectedVertex, lastVertex, selectedVertex];
 	};
 }
 
