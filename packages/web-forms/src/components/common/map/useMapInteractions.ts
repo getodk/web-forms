@@ -88,7 +88,7 @@ export function useMapInteractions(
 		const hit = mapInstance.hasFeatureAtPixel(event.pixel, {
 			layerFilter: (layer) => layer instanceof WebGLVectorLayer,
 		});
-		setCursor(hit ? 'pointer' : '');
+		setCursor(hit ? 'pointer' : 'default');
 	};
 
 	const onSelectFeature = (
@@ -158,6 +158,8 @@ export function useMapInteractions(
 		}
 	};
 
+	const preventContextMenu = (e: Event) => e.preventDefault();
+
 	const setupLongPressPoint = (source: VectorSource, onLongPress: (feature: Feature) => void) => {
 		if (pointerInteraction.value) {
 			return;
@@ -170,17 +172,16 @@ export function useMapInteractions(
 			clearTimeout(timer);
 			timer = undefined;
 			startPixel = null;
-			setCursor('');
 		};
 
 		pointerInteraction.value = new PointerInteraction({
 			handleDownEvent: (event) => {
-				startPixel = event.pixel;
-				setCursor('pointer');
 				if (timer) {
 					clearLongPress();
 					return false;
 				}
+				startPixel = event.pixel;
+				setCursor('pointer');
 
 				timer = setTimeout(() => {
 					if (!startPixel || !timer) {
@@ -227,6 +228,7 @@ export function useMapInteractions(
 				const distanceY = Math.abs(eventY - startY);
 				if (distanceX > HIT_TOLERANCE || distanceY > HIT_TOLERANCE) {
 					clearLongPress();
+					return false;
 				}
 			},
 			handleUpEvent: () => {
@@ -236,6 +238,7 @@ export function useMapInteractions(
 		});
 
 		mapInstance.addInteraction(pointerInteraction.value);
+		mapInstance.getViewport().addEventListener('contextmenu', preventContextMenu);
 	};
 
 	const removeLongPressPoint = () => {
@@ -246,7 +249,7 @@ export function useMapInteractions(
 	};
 
 	const onDragFeature = (features: Collection<Feature>, onDrag: (feature: Feature) => void) => {
-		setCursor('');
+		setCursor('default');
 		const feature = features.getArray()?.[0];
 		if (feature) {
 			onDrag(feature);
@@ -324,6 +327,7 @@ export function useMapInteractions(
 	const teardownMap = () => {
 		currentLocationObserver.value?.disconnect();
 		removeMapInteractions();
+		mapInstance.getViewport().removeEventListener('contextmenu', preventContextMenu);
 	};
 
 	return {

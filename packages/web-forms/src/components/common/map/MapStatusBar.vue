@@ -4,6 +4,7 @@ import { getFlatCoordinates } from '@/components/common/map/vertex-geometry.ts';
 import type { Coordinate } from 'ol/coordinate';
 import type Feature from 'ol/Feature';
 import { LineString, Point, Polygon } from 'ol/geom';
+import { toLonLat } from 'ol/proj';
 import Button from 'primevue/button';
 import ProgressSpinner from 'primevue/progressspinner';
 import { computed } from 'vue';
@@ -29,7 +30,7 @@ const selectedVertexInfo = computed(() => {
 		return '';
 	}
 
-	const [longitude, latitude, altitude] = props.selectedVertex;
+	const [longitude, latitude, altitude] = toLonLat(props.selectedVertex);
 	const parts = [`Longitude: ${longitude}`, `Latitude: ${latitude}`];
 
 	if (altitude !== undefined) {
