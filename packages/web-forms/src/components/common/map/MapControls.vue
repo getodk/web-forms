@@ -81,7 +81,7 @@ const emit = defineEmits([
 		@include mb.map-control-bar;
 		flex-direction: row;
 		left: var(--odk-map-controls-spacing);
-		bottom: 35px;
+		bottom: var(--odk-map-controls-spacing);
 		background: var(--odk-base-background-color);
 		border: 1px solid var(--odk-border-color);
 		border-radius: 10px;

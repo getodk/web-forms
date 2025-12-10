@@ -96,7 +96,7 @@ const savedStatus = computed<StatusDetails | null>(() => {
 
 		<div v-else-if="savedStatus" class="map-status-container">
 			<div v-if="selectedVertexInfo.length" class="map-status">
-				<span>{{ selectedVertexInfo }}</span>
+				<span class="vertex-status">{{ selectedVertexInfo }}</span>
 			</div>
 			<div v-else class="map-status">
 				<IconSVG
@@ -170,5 +170,17 @@ const savedStatus = computed<StatusDetails | null>(() => {
 .map-status-spinner {
 	width: 20px;
 	height: 20px;
+}
+
+.vertex-status {
+	&:before {
+		content: '';
+		display: inline-block;
+		height: 17px;
+		width: 17px;
+		border: 2px solid var(--p-surface-900);
+		vertical-align: middle;
+		margin-right: 13px;
+	}
 }
 </style>

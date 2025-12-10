@@ -44,7 +44,6 @@ const SCALE_FEATURE_STYLE = {
 	'stroke-width': 6,
 };
 
-const DARKER_BLUE = '#60B1D6';
 const BLUE_GLOW_COLOR = 'rgba(148, 224, 237, 0.7)';
 
 const BLUE_GLOW_POINT_STYLE = {
@@ -171,7 +170,7 @@ const createUnselectedVertexDrawStyle = (featureColor: string, coords: Coordinat
 
 const createSelectedVertexDrawStyle = (vertexIndex: number | undefined, coords: Coordinate[]) => {
 	return new Style({
-		image: getVertexStyle('#FFFFFF', DARKER_BLUE),
+		image: getVertexStyle('#FFFFFF', HIGHLIGHT_DRAW_COLOR),
 		geometry: () => {
 			if (vertexIndex === undefined) {
 				return;
@@ -236,5 +235,7 @@ export function getDrawStyles(
 }
 
 export function getPhantomPointStyle(): Style {
-	return new Style({ image: getVertexStyle(DARKER_BLUE, DARKER_BLUE, DEFAULT_STROKE_WIDTH) });
+	return new Style({
+		image: getVertexStyle(HIGHLIGHT_DRAW_COLOR, HIGHLIGHT_DRAW_COLOR, DEFAULT_STROKE_WIDTH),
+	});
 }
