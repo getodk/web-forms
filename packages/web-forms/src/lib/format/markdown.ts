@@ -1,8 +1,8 @@
 import type {
-  AnchorMarkdownNode,
-  HtmlMarkdownNode,
-  ParentMarkdownNode,
-  StyledMarkdownNode
+	AnchorMarkdownNode,
+	HtmlMarkdownNode,
+	ParentMarkdownNode,
+	StyledMarkdownNode,
 } from '@getodk/xforms-engine';
 import DOMPurify from 'dompurify';
 import type { StyleValue } from 'vue';
