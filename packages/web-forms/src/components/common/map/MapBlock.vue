@@ -56,7 +56,7 @@ onMounted(() => {
 
 	mapHandler.initMap(mapElement.value, props.featureCollection, props.savedFeatureValue);
 	mapHandler.setupMapInteractions(props.disabled);
-	getSavedFeature();
+	refreshSavedFeature();
 	document.addEventListener('keydown', handleEscapeKey);
 });
 
@@ -67,7 +67,10 @@ onUnmounted(() => {
 
 watch(
 	() => props.featureCollection,
-	(newData) => mapHandler.updateFeatureCollection(newData, props.savedFeatureValue),
+	(newData) => {
+		mapHandler.updateFeatureCollection(newData, props.savedFeatureValue);
+		emitSavedFeature();
+	},
 	{ deep: true }
 );
 
@@ -76,7 +79,7 @@ watch(
 	(newValue) => {
 		if (newValue) {
 			mapHandler.findAndSaveFeature(newValue);
-			getSavedFeature();
+			refreshSavedFeature();
 		}
 	}
 );
@@ -86,7 +89,7 @@ watch(
 	(newValue) => mapHandler.setupMapInteractions(newValue)
 );
 
-const getSavedFeature = () => (savedFeature.value = mapHandler.getSavedFeature());
+const refreshSavedFeature = () => (savedFeature.value = mapHandler.getSavedFeature());
 
 const handleEscapeKey = (event: KeyboardEvent) => {
 	if (event.key === 'Escape' && isFullScreen.value) {
@@ -95,7 +98,7 @@ const handleEscapeKey = (event: KeyboardEvent) => {
 };
 
 const emitSavedFeature = () => {
-	getSavedFeature();
+	refreshSavedFeature();
 	emit('save', mapHandler.getSavedFeatureValue());
 };
 
@@ -178,6 +181,7 @@ const showSecondaryControls = () => {
 			</div>
 
 			<MapStatusBar
+				:draw-feature-type="drawFeatureType"
 				:saved-feature="savedFeature"
 				:selected-vertex="selectedVertex"
 				:is-capturing="mapHandler.currentState.value === STATES.CAPTURING"

@@ -196,7 +196,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 				handlePointPlacement(feature)
 			);
 
-			if (config.mode === MODES.DRAW) {
+			if (currentMode.interactions.dragFeatureAndVertex) {
 				mapInteractions.setupVertexDrag(featuresSource, (feature) => handlePointPlacement(feature));
 			}
 		}
@@ -366,7 +366,8 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 	};
 
 	const canLongPressAndDrag = () => {
-		return currentMode.interactions.longPress && currentMode.interactions.dragFeature;
+		const { longPress, dragFeature, dragFeatureAndVertex } = currentMode.interactions;
+		return longPress && (dragFeature || dragFeatureAndVertex);
 	};
 
 	const watchCurrentLocation = () => {
