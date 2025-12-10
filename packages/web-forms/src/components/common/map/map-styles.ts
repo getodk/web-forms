@@ -1,3 +1,4 @@
+import type { Coordinate } from 'ol/coordinate';
 import { LineString, MultiPoint, Point, type Polygon } from 'ol/geom';
 import { Fill, Stroke, Style } from 'ol/style';
 import CircleStyle from 'ol/style/Circle';
@@ -154,6 +155,52 @@ export function getSavedStyles(featureIdProp: string, savedPropName: string): Ru
 	];
 }
 
+const createFeatureDrawStyle = (featureColor: string) => {
+	return new Style({
+		stroke: new Stroke({ color: featureColor, width: DEFAULT_STROKE_WIDTH }),
+		fill: new Fill({ color: DEFAULT_POLYGON_FILL_COLOR }),
+	});
+};
+
+const createUnselectedVertexDrawStyle = (featureColor: string, coords: Coordinate[]) => {
+	return new Style({
+		image: getVertexStyle(featureColor, DEFAULT_VERTEX_FILL_COLOR),
+		geometry: () => (coords.length > 1 ? new MultiPoint(coords.slice(0, -1)) : undefined),
+	});
+};
+
+const createSelectedVertexDrawStyle = (vertexIndex: number | undefined, coords: Coordinate[]) => {
+	return new Style({
+		image: getVertexStyle('#FFFFFF', DARKER_BLUE),
+		geometry: () => {
+			if (vertexIndex === undefined) {
+				return;
+			}
+			const selectedCoords = coords[vertexIndex];
+			if (selectedCoords?.length) {
+				return new Point(selectedCoords);
+			}
+		},
+	});
+};
+
+const createLastVertexDrawStyle = (offset: number, coords: Coordinate[]) => {
+	return new Style({
+		image: getVertexStyle(HIGHLIGHT_DRAW_COLOR, DEFAULT_VERTEX_FILL_COLOR),
+		geometry: () => {
+			const firstCoordinate = coords[0];
+			if (coords.length === 1 && firstCoordinate) {
+				return new Point(firstCoordinate);
+			}
+
+			const lastAdded = coords.length === 2 ? coords[1] : coords[coords.length - offset];
+			if (lastAdded) {
+				return new Point(lastAdded);
+			}
+		},
+	});
+};
+
 export function getDrawStyles(
 	isFeatureSelectedProp: string,
 	selectedVertexIndexProp: string
@@ -175,47 +222,16 @@ export function getDrawStyles(
 				? HIGHLIGHT_DRAW_COLOR
 				: DEFAULT_DRAW_LINE_COLOR;
 
-		const featureStyle = new Style({
-			stroke: new Stroke({ color: featureColor, width: DEFAULT_STROKE_WIDTH }),
-			fill: new Fill({ color: DEFAULT_POLYGON_FILL_COLOR }),
-		});
+		// LineString doesn’t auto-close; Polygon does.
+		// For Polygon, the user’s last added vertex is the second-to-last point.
+		const offset = geometry instanceof LineString ? 1 : 2;
 
-		const unselectedVertex = new Style({
-			image: getVertexStyle(featureColor, DEFAULT_VERTEX_FILL_COLOR),
-			geometry: () => (coords.length > 1 ? new MultiPoint(coords.slice(0, -1)) : undefined),
-		});
-
-		const selectedVertex = new Style({
-			image: getVertexStyle('#FFFFFF', DARKER_BLUE),
-			geometry: () => {
-				if (vertexIndex === undefined) {
-					return;
-				}
-				const selectedCoords = coords[vertexIndex];
-				if (selectedCoords?.length) {
-					return new Point(selectedCoords);
-				}
-			},
-		});
-
-		const lastVertex = new Style({
-			image: getVertexStyle(HIGHLIGHT_DRAW_COLOR, DEFAULT_VERTEX_FILL_COLOR),
-			geometry: () => {
-				const firstCoordinate = coords[0];
-				if (coords.length === 1 && firstCoordinate) {
-					return new Point(firstCoordinate);
-				}
-				// LineString doesn’t auto-close; Polygon does.
-				// For Polygon, the user’s last added vertex is the second-to-last point.
-				const offset = geometry instanceof LineString ? 1 : 2;
-				const lastAdded = coords.length === 2 ? coords[1] : coords[coords.length - offset];
-				if (lastAdded) {
-					return new Point(lastAdded);
-				}
-			},
-		});
-
-		return [featureStyle, unselectedVertex, lastVertex, selectedVertex];
+		return [
+			createFeatureDrawStyle(featureColor),
+			createUnselectedVertexDrawStyle(featureColor, coords),
+			createLastVertexDrawStyle(offset, coords),
+			createSelectedVertexDrawStyle(vertexIndex, coords),
+		];
 	};
 }
 

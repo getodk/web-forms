@@ -135,9 +135,7 @@ const undoLastChange = () => {
 };
 
 const showSecondaryControls = () => {
-	return (
-		!props.disabled && (mapHandler.canUndoLastChange() || mapHandler.canDeleteFeatureOrVertex())
-	);
+	return !props.disabled && (mapHandler.canUndoChange() || mapHandler.canDeleteFeatureOrVertex());
 };
 </script>
 
@@ -156,7 +154,7 @@ const showSecondaryControls = () => {
 				<MapControls
 					:is-full-screen="isFullScreen"
 					:disable-fit-all-features="mapHandler.isMapEmpty()"
-					:disable-undo="!mapHandler.canUndoLastChange()"
+					:disable-undo="!mapHandler.canUndoChange()"
 					:disable-delete="mapHandler.isMapEmpty()"
 					:show-secondary-controls="showSecondaryControls()"
 					@toggle-full-screen="isFullScreen = !isFullScreen"

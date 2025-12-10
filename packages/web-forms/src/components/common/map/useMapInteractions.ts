@@ -12,6 +12,7 @@ import {
 } from '@/components/common/map/vertex-geometry.ts';
 import type { TimerID } from '@getodk/common/types/timers.ts';
 import { Collection, Map, MapBrowserEvent } from 'ol';
+import type { Coordinate } from 'ol/coordinate';
 import Feature from 'ol/Feature';
 import { LineString, Point, Polygon } from 'ol/geom';
 import { Modify, Translate } from 'ol/interaction';
@@ -45,6 +46,7 @@ export interface UseMapInteractions {
 }
 
 const LONG_PRESS_TIME = 1300;
+const LONG_PRESS_HIT_TOLERANCE = 10;
 
 export function useMapInteractions(
 	mapInstance: Map,
@@ -158,6 +160,49 @@ export function useMapInteractions(
 		}
 	};
 
+	const addVertexOnLongPress = (
+		source: VectorSource,
+		coordinate: Coordinate,
+		onLongPress: (feature: Feature) => void
+	) => {
+		const resolution = mapInstance.getView().getResolution() ?? 1;
+		let feature = source.getFeatures()?.[0];
+		savePreviousFeatureState(feature ?? null);
+
+		switch (drawFeatureType) {
+			case DRAW_FEATURE_TYPES.SHAPE:
+				feature = addShapeVertex(resolution, coordinate, feature, LONG_PRESS_HIT_TOLERANCE)!;
+				break;
+			case DRAW_FEATURE_TYPES.TRACE:
+				feature = addTraceVertex(resolution, coordinate, feature, LONG_PRESS_HIT_TOLERANCE)!;
+				break;
+			default:
+				if (!source.isEmpty()) {
+					source.clear(true);
+				}
+				feature = new Feature({ geometry: new Point(coordinate) });
+				break;
+		}
+
+		if (source.isEmpty()) {
+			source.addFeature(feature);
+		}
+		onLongPress(feature);
+	};
+
+	const isPressInHitTolerance = (pixel: number[] | undefined, startPixel: Pixel | null) => {
+		if (!startPixel?.length || !pixel || pixel.length < 2) {
+			return false;
+		}
+
+		const [eventX, eventY] = pixel as [number, number];
+		const [startX, startY] = startPixel as [number, number];
+		const distanceX = Math.abs(eventX - startX);
+		const distanceY = Math.abs(eventY - startY);
+
+		return distanceX <= LONG_PRESS_HIT_TOLERANCE && distanceY <= LONG_PRESS_HIT_TOLERANCE;
+	};
+
 	const preventContextMenu = (e: Event) => e.preventDefault();
 
 	const setupLongPressPoint = (source: VectorSource, onLongPress: (feature: Feature) => void) => {
@@ -167,7 +212,6 @@ export function useMapInteractions(
 
 		let timer: TimerID | undefined;
 		let startPixel: Pixel | null = null;
-		const HIT_TOLERANCE = 5;
 		const clearLongPress = () => {
 			clearTimeout(timer);
 			timer = undefined;
@@ -180,53 +224,18 @@ export function useMapInteractions(
 					clearLongPress();
 					return false;
 				}
+
 				startPixel = event.pixel;
 				setCursor('pointer');
-
 				timer = setTimeout(() => {
-					if (!startPixel || !timer) {
-						clearLongPress();
-						return false;
-					}
-
-					const resolution = mapInstance.getView().getResolution() ?? 1;
-					let feature = source.getFeatures()?.[0];
-					savePreviousFeatureState(feature ?? null);
-
-					switch (drawFeatureType) {
-						case DRAW_FEATURE_TYPES.SHAPE:
-							feature = addShapeVertex(resolution, event.coordinate, feature, HIT_TOLERANCE)!;
-							break;
-						case DRAW_FEATURE_TYPES.TRACE:
-							feature = addTraceVertex(resolution, event.coordinate, feature, HIT_TOLERANCE)!;
-							break;
-						default:
-							if (!source.isEmpty()) {
-								source.clear(true);
-							}
-							feature = new Feature({ geometry: new Point(event.coordinate) });
-							break;
-					}
-
-					if (source.isEmpty()) {
-						source.addFeature(feature);
-					}
-					onLongPress(feature);
+					addVertexOnLongPress(source, event.coordinate, onLongPress);
 					clearLongPress();
 				}, LONG_PRESS_TIME);
+
 				return false;
 			},
 			handleMoveEvent: (event) => {
-				if (!startPixel?.length || !timer || !event.pixel?.length) {
-					clearLongPress();
-					return false;
-				}
-
-				const [eventX, eventY] = event.pixel as [number, number];
-				const [startX, startY] = startPixel as [number, number];
-				const distanceX = Math.abs(eventX - startX);
-				const distanceY = Math.abs(eventY - startY);
-				if (distanceX > HIT_TOLERANCE || distanceY > HIT_TOLERANCE) {
+				if (!timer || !isPressInHitTolerance(event.pixel, startPixel)) {
 					clearLongPress();
 					return false;
 				}

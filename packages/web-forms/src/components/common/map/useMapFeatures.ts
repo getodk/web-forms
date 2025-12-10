@@ -18,6 +18,7 @@ export interface UseMapFeatures {
 		forceCenter: boolean
 	) => void;
 	getSavedFeature: () => Feature | undefined;
+	getSavedFeatureValue: () => string;
 	getSelectedFeature: () => Feature | undefined;
 	getSelectedFeatureProperties: () => Record<string, string> | undefined;
 	isSavedFeatureSelected: () => boolean;
@@ -148,6 +149,10 @@ export function useMapFeatures(
 
 	const getSavedFeature = (): Feature | undefined => savedFeature.value;
 
+	const getSavedFeatureValue = () => {
+		return (getSavedFeature()?.getProperties()?.[ODK_VALUE_PROPERTY] as string) ?? '';
+	};
+
 	const getSelectedFeatureProperties = () => selectedFeature.value?.getProperties();
 
 	watch(
@@ -174,6 +179,7 @@ export function useMapFeatures(
 		createFeature,
 		findAndSaveFeature,
 		getSavedFeature,
+		getSavedFeatureValue,
 		getSelectedFeature,
 		getSelectedFeatureProperties,
 		isSavedFeatureSelected,

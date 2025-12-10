@@ -78,7 +78,6 @@ const savedFeatureStatus = computed<SavedFeatureStatus | null>(() => {
 
 		<div v-else-if="savedFeatureStatus" class="map-status-container">
 			<div v-if="selectedVertexInfo.length" class="map-status">
-				<IconSVG name="mdiVectorPoint" />
 				<span>{{ selectedVertexInfo }}</span>
 			</div>
 			<div v-else class="map-status">

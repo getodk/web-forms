@@ -1,4 +1,5 @@
 import { getModeConfig, type Mode, MODES } from '@/components/common/map/getModeConfig.ts';
+import { formatODKValue, isWebGLAvailable } from '@/components/common/map/map-helpers.ts';
 import {
 	getDrawStyles,
 	getSavedStyles,
@@ -38,7 +39,7 @@ import { LineString, Point, Polygon } from 'ol/geom';
 import TileLayer from 'ol/layer/Tile';
 import VectorLayer from 'ol/layer/Vector';
 import WebGLVectorLayer from 'ol/layer/WebGLVector';
-import { toLonLat, fromLonLat } from 'ol/proj';
+import { fromLonLat } from 'ol/proj';
 import { OSM } from 'ol/source';
 import VectorSource from 'ol/source/Vector';
 import { shallowRef, watch } from 'vue';
@@ -146,15 +147,6 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 		currentState.value = STATES.READY;
 	};
 
-	const isWebGLAvailable = () => {
-		try {
-			const canvas = document.createElement('canvas');
-			return !!(window.WebGLRenderingContext && canvas.getContext('webgl'));
-		} catch {
-			return false;
-		}
-	};
-
 	const initLayer = (geoJSON: FeatureCollection, savedFeatureValue: GeoJsonFeature | undefined) => {
 		if (!mapInstance) {
 			return;
@@ -257,21 +249,18 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 	};
 
 	const canDeleteFeatureOrVertex = () => {
-		return (
-			currentMode.capabilities.canDeleteFeature && !currentMode.capabilities.canLoadMultiFeatures
-		);
+		const { canDeleteFeature, canLoadMultiFeatures } = currentMode.capabilities;
+		return canDeleteFeature && !canLoadMultiFeatures;
 	};
 
-	const canUndoLastChange = () => {
-		return (
-			!!mapInteractions?.hasPreviousFeatureState() &&
-			currentMode.capabilities.canUndoLastChange &&
-			!currentMode.capabilities.canLoadMultiFeatures
-		);
+	const canUndoChange = () => {
+		const { canUndoLastChange, canLoadMultiFeatures } = currentMode.capabilities;
+		const hasState = !!mapInteractions?.hasPreviousFeatureState();
+		return hasState && canUndoLastChange && !canLoadMultiFeatures;
 	};
 
 	const undoLastChange = () => {
-		if (canUndoLastChange()) {
+		if (canUndoChange()) {
 			clearMap();
 			const previousFeatureState = mapInteractions?.popPreviousFeatureState();
 			if (previousFeatureState) {
@@ -346,43 +335,6 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 		clearMap();
 	};
 
-	const formatODKValue = (feature: Feature): string => {
-		const geometry = feature.getGeometry();
-		if (!geometry) {
-			return '';
-		}
-
-		// ToDo: should we use the accuracy property here?
-		const formatCoords = (coords: Coordinate, accuracy?: number) => {
-			const [longitude, latitude, altitude] = toLonLat(coords);
-			return [latitude, longitude, altitude, accuracy].filter((item) => item != null).join(' ');
-		};
-
-		const featureType = geometry.getType();
-		if (featureType === 'Point') {
-			const coordinates = (geometry as Point).getCoordinates();
-			return coordinates ? formatCoords(coordinates) : '';
-		}
-
-		let coordinates: Coordinate[] = [];
-		if (featureType === 'LineString') {
-			coordinates = (geometry as LineString).getCoordinates();
-		}
-
-		if (featureType === 'Polygon') {
-			const rings: Coordinate[][] = (geometry as Polygon).getCoordinates();
-			if (rings.length > 1) {
-				// eslint-disable-next-line no-console -- createFeatureCollectionAndProps doesn't produce multiple rings, and this feature auto-completes the polygon, so it shouldn't happen.
-				console.warn(
-					'Shape has holes, which are not supported in ODK Geoshape; using exterior ring only.'
-				);
-			}
-			coordinates = rings[0] ?? [];
-		}
-
-		return coordinates.map((coord) => formatCoords(coord)).join('; ');
-	};
-
 	const unselectFeature = () => mapFeatures?.selectFeature(undefined);
 
 	const clearSavedFeature = () => mapFeatures?.saveFeature(undefined);
@@ -393,29 +345,28 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 	};
 
 	const shouldShowMapOverlay = () => {
-		const hasNoRelevantFeature =
-			!mapViewControls?.hasCurrentLocationFeature() && !mapFeatures?.getSavedFeature();
+		const { canShowMapOverlayOnError, canShowMapOverlay } = currentMode.capabilities;
+		const hasLocationFeature = mapViewControls?.hasCurrentLocationFeature();
+		const hasNoRelevantFeature = !hasLocationFeature && !mapFeatures?.getSavedFeature();
 
 		if (currentState.value === STATES.ERROR) {
-			return currentMode.capabilities.canShowMapOverlayOnError && hasNoRelevantFeature;
+			return canShowMapOverlayOnError && hasNoRelevantFeature;
 		}
 
-		return (
-			currentState.value === STATES.READY &&
-			currentMode.capabilities.canShowMapOverlay &&
-			hasNoRelevantFeature
-		);
+		return currentState.value === STATES.READY && canShowMapOverlay && hasNoRelevantFeature;
 	};
 
 	const canSaveCurrentLocation = () => {
-		return (
-			currentMode.capabilities.canSaveCurrentLocation &&
-			!!mapViewControls?.hasCurrentLocationFeature()
-		);
+		const hasLocationFeature = !!mapViewControls?.hasCurrentLocationFeature();
+		return currentMode.capabilities.canSaveCurrentLocation && hasLocationFeature;
 	};
 
 	const canRemoveCurrentLocation = () => {
 		return currentMode.capabilities.canRemoveCurrentLocation && !!mapFeatures?.getSavedFeature();
+	};
+
+	const canLongPressAndDrag = () => {
+		return currentMode.interactions.longPress && currentMode.interactions.dragFeature;
 	};
 
 	const watchCurrentLocation = () => {
@@ -432,6 +383,14 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 						'Grant location permission in the browser settings and make sure location is turned on.',
 				};
 			}
+		);
+	};
+
+	const findAndSaveFeature = (feature: GeoJsonFeature) => {
+		return mapFeatures?.findAndSaveFeature(
+			featuresSource,
+			feature,
+			currentMode.capabilities.canViewProperties
 		);
 	};
 
@@ -461,30 +420,23 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 		discardSavedFeature,
 		saveSelectedFeature: () => mapFeatures?.saveSelectedFeature(),
 		saveCurrentLocation,
-		findAndSaveFeature: (feature: GeoJsonFeature) =>
-			mapFeatures?.findAndSaveFeature(
-				featuresSource,
-				feature,
-				currentMode.capabilities.canViewProperties
-			),
+		findAndSaveFeature,
 		getSavedFeature: () => mapFeatures?.getSavedFeature()?.clone(),
-		getSavedFeatureValue: (): string | undefined =>
-			mapFeatures?.getSavedFeature()?.getProperties()?.[ODK_VALUE_PROPERTY] as string,
+		getSavedFeatureValue: () => mapFeatures?.getSavedFeatureValue(),
 		isSavedFeatureSelected: () => !!mapFeatures?.isSavedFeatureSelected(),
 
 		confirmDeleteFeature,
 		deleteFeature,
 		deleteVertex,
 		canDeleteFeatureOrVertex,
-		canUndoLastChange,
+		canUndoChange,
 		undoLastChange,
 
 		getSelectedFeatureProperties: () => mapFeatures?.getSelectedFeatureProperties(),
 		selectSavedFeature: () => mapFeatures?.selectFeature(mapFeatures?.getSavedFeature()),
 		unselectFeature,
 
-		canLongPressAndDrag: () =>
-			currentMode.interactions.longPress && currentMode.interactions.dragFeature,
+		canLongPressAndDrag,
 		canViewProperties: () => currentMode.capabilities.canViewProperties,
 		shouldShowMapOverlay,
 	};
