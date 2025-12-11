@@ -173,6 +173,9 @@ const savedStatus = computed<StatusDetails | null>(() => {
 }
 
 .vertex-status {
+	display: flex;
+	align-items: center;
+
 	&:before {
 		content: '';
 		display: inline-block;
@@ -181,6 +184,7 @@ const savedStatus = computed<StatusDetails | null>(() => {
 		border: 2px solid var(--p-surface-900);
 		vertical-align: middle;
 		margin-right: 13px;
+		flex-shrink: 0;
 	}
 }
 </style>

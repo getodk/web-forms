@@ -44,6 +44,7 @@ const emit = defineEmits(['update:visible', 'deleteFeature']);
 .p-dialog.map-block-dialog {
 	background: var(--odk-base-background-color);
 	border-radius: var(--odk-radius);
+	margin: 0 24px;
 
 	.p-dialog-header {
 		padding: 15px 20px;

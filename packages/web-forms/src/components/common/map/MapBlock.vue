@@ -49,6 +49,10 @@ const mapHandler = useMapBlock(
 	}
 );
 
+const showSecondaryControls = computed(() => {
+	return !props.disabled && (mapHandler.canUndoChange() || mapHandler.canDeleteFeatureOrVertex());
+});
+
 onMounted(() => {
 	if (!mapElement.value || !mapHandler) {
 		return;
@@ -136,10 +140,6 @@ const undoLastChange = () => {
 	mapHandler.undoLastChange();
 	emitSavedFeature();
 };
-
-const showSecondaryControls = () => {
-	return !props.disabled && (mapHandler.canUndoChange() || mapHandler.canDeleteFeatureOrVertex());
-};
 </script>
 
 <template>
@@ -159,7 +159,7 @@ const showSecondaryControls = () => {
 					:disable-fit-all-features="mapHandler.isMapEmpty()"
 					:disable-undo="!mapHandler.canUndoChange()"
 					:disable-delete="mapHandler.isMapEmpty()"
-					:show-secondary-controls="showSecondaryControls()"
+					:show-secondary-controls="showSecondaryControls"
 					@toggle-full-screen="isFullScreen = !isFullScreen"
 					@fit-all-features="mapHandler.fitToAllFeatures"
 					@watch-current-location="mapHandler.watchCurrentLocation"
@@ -172,7 +172,7 @@ const showSecondaryControls = () => {
 					severity="contrast"
 					closable
 					size="small"
-					class="map-message"
+					:class="{ 'map-message': true, 'above-secondary-controls': showSecondaryControls }"
 				>
 					<!-- TODO: translations -->
 					<span v-if="savedFeatureValue">Long press and drag move point</span>
@@ -341,10 +341,10 @@ const showSecondaryControls = () => {
 
 .map-message {
 	width: max-content;
-	max-width: 90%;
+	max-width: calc(100% - (var(--odk-map-controls-spacing) * 2));
 	position: absolute;
 	z-index: var(--odk-z-index-form-floating);
-	bottom: 0;
+	bottom: -11px;
 	left: 50%;
 	transform: translate(-50%, -50%);
 }
@@ -368,6 +368,10 @@ const showSecondaryControls = () => {
 	.map-block-component :deep(.ol-zoom) {
 		right: var(--odk-map-controls-spacing);
 		bottom: var(--odk-map-controls-spacing);
+	}
+
+	.map-message.above-secondary-controls {
+		bottom: 61px;
 	}
 }
 </style>

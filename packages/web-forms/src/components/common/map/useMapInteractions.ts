@@ -45,7 +45,7 @@ export interface UseMapInteractions {
 	) => void;
 }
 
-const LONG_PRESS_TIME = 1300;
+const LONG_PRESS_TIME = 1000;
 const LONG_PRESS_HIT_TOLERANCE = 10;
 
 export function useMapInteractions(
