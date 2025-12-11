@@ -44,6 +44,8 @@ type LocationPointTuple =
 	| readonly [latitude: Latitude, longitude: Longitude, altitude: Altitude]
 	| readonly [latitude: Latitude, longitude: Longitude];
 
+export const SEPARATOR = ';';
+
 const DEGREES_MAX = {
 	latitude: 90,
 	longitude: 180,
@@ -113,7 +115,8 @@ export class Geolocation {
 	}
 
 	static parseString(value: string): LocationPoint | null {
-		if (value.trim() === '') {
+		value = value.trim();
+		if (value === '') {
 			return null;
 		}
 
@@ -148,5 +151,19 @@ export class Geolocation {
 		return (
 			firstPoint?.latitude === lastPoint?.latitude && firstPoint?.longitude === lastPoint?.longitude
 		);
+	}
+
+	static getSegments(value: string): string[] | null {
+		if (value.trim() === '') {
+			return null;
+		}
+
+		const parts = value.split(SEPARATOR);
+		// Handles trailing semicolon, which is valid and common in ODK.
+		if (parts[parts.length - 1]?.trim() === '') {
+			parts.pop();
+		}
+
+		return parts;
 	}
 }

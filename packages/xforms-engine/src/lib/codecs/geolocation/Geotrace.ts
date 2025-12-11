@@ -1,6 +1,4 @@
-import { Geolocation, type LocationPoint } from './Geolocation.ts';
-
-const SEPARATOR = ';';
+import { Geolocation, type LocationPoint, SEPARATOR } from './Geolocation.ts';
 
 export type GeotraceRuntimeValue = LocationPoint[] | null;
 
@@ -8,13 +6,12 @@ export type GeotraceInputValue = GeotraceRuntimeValue | string;
 
 export class Geotrace extends Geolocation {
 	static parseStringToGeotrace(value: string): GeotraceRuntimeValue {
-		if (value.trim() === '') {
+		const parts = Geolocation.getSegments(value);
+		if (parts === null) {
 			return null;
 		}
 
-		const points = value
-			.split(SEPARATOR)
-			.map((point) => Geolocation.parseString(point)) as LocationPoint[];
+		const points = parts.map((point) => Geolocation.parseString(point)) as LocationPoint[];
 		if (points.some((p) => p === null) || points.length < 2 || Geolocation.isClosedShape(points)) {
 			return null;
 		}
