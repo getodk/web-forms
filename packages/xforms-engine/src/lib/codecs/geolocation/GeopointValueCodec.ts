@@ -8,11 +8,11 @@ export class GeopointValueCodec extends ValueCodec<
 > {
 	constructor() {
 		const encodeValue: CodecEncoder<GeopointInputValue> = (value) => {
-			return Geopoint.toCoordinatesString(value);
+			return Geopoint.parseGeopointToString(value);
 		};
 
 		const decodeValue: CodecDecoder<GeopointRuntimeValue> = (value: string) => {
-			return Geopoint.parseString(value);
+			return Geopoint.parseStringToGeopoint(value);
 		};
 
 		super('geopoint', encodeValue, decodeValue);

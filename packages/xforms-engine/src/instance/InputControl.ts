@@ -40,7 +40,7 @@ const stringInputNodeOptions = (control: InputControlDefinition): InputNodeOptio
 
 const geoInputNodeOptions = (
 	control: InputControlDefinition
-): InputNodeOptions<'geopoint' | 'geoshape' | 'geotrace'> => ({
+): InputNodeOptions<'geopoint'> => ({
 	accuracyThreshold: control.accuracyThreshold,
 	unacceptableAccuracyThreshold: control.unacceptableAccuracyThreshold,
 });
@@ -62,8 +62,8 @@ const nodeOptionsFactoryByType: NodeOptionsFactoryByType = {
 	time: () => null,
 	dateTime: () => null,
 	geopoint: geoInputNodeOptions,
-	geotrace: geoInputNodeOptions,
-	geoshape: geoInputNodeOptions,
+	geotrace: () => null,
+	geoshape: () => null,
 	binary: () => null,
 	barcode: () => null,
 	intent: () => null,

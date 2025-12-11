@@ -1,8 +1,3 @@
-/**
- * This abstract class defines the minimal behavior for a default geopoint.
- * It can be expanded later to support units (e.g., degrees or meters),
- * which would also serve as documentation to clarify what each value represents.
- */
 abstract class SemanticValue<Semantic extends string, Value extends number | null> {
 	abstract readonly semantic: Semantic;
 
@@ -25,26 +20,21 @@ class Accuracy<Value extends number | null = number> extends SemanticValue<'accu
 	readonly semantic = 'accuracy';
 }
 
-export interface GeopointValue {
+export interface LocationPoint {
 	readonly latitude: number;
 	readonly longitude: number;
 	readonly altitude: number | null;
 	readonly accuracy: number | null;
 }
 
-export type GeopointRuntimeValue = GeopointValue | null;
-
-// TODO: Add support for GeoJSONValue
-export type GeopointInputValue = GeopointRuntimeValue | string;
-
-interface GeopointInternalValue {
+interface GeolocationInternalValue {
 	readonly latitude: Latitude;
 	readonly longitude: Longitude;
 	readonly altitude: Altitude<null> | Altitude<number>;
 	readonly accuracy: Accuracy<null> | Accuracy<number>;
 }
 
-type GeopointTuple =
+type LocationPointTuple =
 	| readonly [
 			latitude: Latitude,
 			longitude: Longitude,
@@ -61,10 +51,10 @@ const DEGREES_MAX = {
 
 type CoordinateType = keyof typeof DEGREES_MAX;
 
-export class Geopoint {
-	private readonly internalValue: GeopointInternalValue;
+export class Geolocation {
+	private readonly internalValue: GeolocationInternalValue;
 
-	constructor(coordinates: GeopointValue) {
+	constructor(coordinates: LocationPoint) {
 		const { latitude, longitude, altitude, accuracy } = coordinates;
 
 		this.internalValue = {
@@ -75,7 +65,7 @@ export class Geopoint {
 		};
 	}
 
-	getTuple(): GeopointTuple {
+	getTuple(): LocationPointTuple {
 		const { latitude, longitude, altitude, accuracy } = this.internalValue;
 
 		if (accuracy.value != null) {
@@ -89,12 +79,12 @@ export class Geopoint {
 		return [latitude, longitude];
 	}
 
-	getRuntimeValue(): GeopointRuntimeValue {
+	getRuntimeValue(): LocationPoint | null {
 		const { latitude, longitude, altitude, accuracy } = this.internalValue;
 		const isLatitude = this.isValidDegrees('latitude', latitude.value);
 		const isLongitude = this.isValidDegrees('longitude', longitude.value);
 
-		if (!isLatitude || !isLongitude || Geopoint.isNullLocation(latitude.value, longitude.value)) {
+		if (!isLatitude || !isLongitude || Geolocation.isNullLocation(latitude.value, longitude.value)) {
 			return null;
 		}
 
@@ -118,7 +108,7 @@ export class Geopoint {
 		return latitude === 0 && longitude === 0;
 	}
 
-	static parseString(value: string): GeopointRuntimeValue {
+	static parseString(value: string): LocationPoint | null {
 		if (value.trim() === '') {
 			return null;
 		}
@@ -132,12 +122,12 @@ export class Geopoint {
 		return new this({ latitude, longitude, altitude, accuracy }).getRuntimeValue();
 	}
 
-	static toCoordinatesString(value: GeopointInputValue): string {
-		const decodedValue = typeof value === 'string' ? Geopoint.parseString(value) : value;
+	static toCoordinatesString(value: LocationPoint | string | null): string {
+		const decodedValue = typeof value === 'string' ? Geolocation.parseString(value) : value;
 
 		if (
 			decodedValue == null ||
-			Geopoint.isNullLocation(decodedValue.latitude, decodedValue.longitude)
+			Geolocation.isNullLocation(decodedValue.latitude, decodedValue.longitude)
 		) {
 			return '';
 		}
@@ -146,5 +136,11 @@ export class Geopoint {
 			.getTuple()
 			.map((item) => item.value ?? 0)
 			.join(' ');
+	}
+
+	static isClosedShape(points: LocationPoint[]) {
+		const firstPoint = points[0];
+		const lastPoint = points[points.length - 1];
+		return firstPoint?.latitude === lastPoint?.latitude && firstPoint?.longitude === lastPoint?.longitude;
 	}
 }
