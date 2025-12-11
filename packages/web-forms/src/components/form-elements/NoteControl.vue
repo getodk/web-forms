@@ -45,6 +45,8 @@ const value = computed<NoteRenderableValue>(() => {
 		case 'int':
 		case 'decimal':
 		case 'geopoint':
+		case 'geotrace':
+		case 'geoshape':
 			return question.currentState.value;
 
 		case 'date':
@@ -53,8 +55,6 @@ const value = computed<NoteRenderableValue>(() => {
 		case 'boolean':
 		case 'time':
 		case 'dateTime':
-		case 'geotrace':
-		case 'geoshape':
 		case 'binary':
 		case 'barcode':
 		case 'intent':

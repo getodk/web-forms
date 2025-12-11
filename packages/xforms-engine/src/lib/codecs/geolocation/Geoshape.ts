@@ -1,7 +1,4 @@
-import {
-	Geolocation,
-	type LocationPoint,
-} from './Geolocation.ts';
+import { Geolocation, type LocationPoint } from './Geolocation.ts';
 
 const SEPARATOR = ';';
 
@@ -15,7 +12,9 @@ export class Geoshape extends Geolocation {
 			return null;
 		}
 
-		const points = value.split(SEPARATOR).map((point) => (Geolocation.parseString(point))) as LocationPoint[];
+		const points = value
+			.split(SEPARATOR)
+			.map((point) => Geolocation.parseString(point)) as LocationPoint[];
 		if (points.some((p) => p === null) || points.length < 3 || !Geolocation.isClosedShape(points)) {
 			return null;
 		}
@@ -24,12 +23,13 @@ export class Geoshape extends Geolocation {
 	}
 
 	static parseGeoshapeString(points: GeoshapeInputValue): string {
-		const decodedPoints = typeof points === 'string' ? Geoshape.parseStringToGeoshape(points) : points;
+		const decodedPoints =
+			typeof points === 'string' ? Geoshape.parseStringToGeoshape(points) : points;
 		if (!decodedPoints) {
 			return '';
 		}
 
-		const segments = decodedPoints.map((point) => (Geolocation.toCoordinatesString(point)));
+		const segments = decodedPoints.map((point) => Geolocation.toCoordinatesString(point));
 		if (segments.some((s) => !s.length)) {
 			return '';
 		}

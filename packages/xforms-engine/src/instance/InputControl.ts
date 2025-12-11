@@ -38,9 +38,7 @@ const stringInputNodeOptions = (control: InputControlDefinition): InputNodeOptio
 	rows: control.rows,
 });
 
-const geoInputNodeOptions = (
-	control: InputControlDefinition
-): InputNodeOptions<'geopoint'> => ({
+const geoInputNodeOptions = (control: InputControlDefinition): InputNodeOptions<'geopoint'> => ({
 	accuracyThreshold: control.accuracyThreshold,
 	unacceptableAccuracyThreshold: control.unacceptableAccuracyThreshold,
 });

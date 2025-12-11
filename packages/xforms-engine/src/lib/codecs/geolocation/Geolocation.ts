@@ -84,7 +84,11 @@ export class Geolocation {
 		const isLatitude = this.isValidDegrees('latitude', latitude.value);
 		const isLongitude = this.isValidDegrees('longitude', longitude.value);
 
-		if (!isLatitude || !isLongitude || Geolocation.isNullLocation(latitude.value, longitude.value)) {
+		if (
+			!isLatitude ||
+			!isLongitude ||
+			Geolocation.isNullLocation(latitude.value, longitude.value)
+		) {
 			return null;
 		}
 
@@ -141,6 +145,8 @@ export class Geolocation {
 	static isClosedShape(points: LocationPoint[]) {
 		const firstPoint = points[0];
 		const lastPoint = points[points.length - 1];
-		return firstPoint?.latitude === lastPoint?.latitude && firstPoint?.longitude === lastPoint?.longitude;
+		return (
+			firstPoint?.latitude === lastPoint?.latitude && firstPoint?.longitude === lastPoint?.longitude
+		);
 	}
 }

@@ -1,7 +1,4 @@
-import {
-	Geolocation,
-	type LocationPoint,
-} from './Geolocation.ts';
+import { Geolocation, type LocationPoint } from './Geolocation.ts';
 
 export type GeopointRuntimeValue = LocationPoint | null;
 
