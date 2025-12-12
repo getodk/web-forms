@@ -13,7 +13,7 @@ test.describe('Geopoint Question Type', () => {
 
 			const previewPage = new PreviewPage(page);
 			await previewPage.goToDevPage();
-			await previewPage.openDevDemoForm('geopoint', 'geopoint.xml', 'Geopoint');
+			await previewPage.openDevDemoForm('geolocation', 'geopoint.xml', 'Geopoint');
 		});
 
 		test('captures good-accuracy location', async ({ context }) => {
