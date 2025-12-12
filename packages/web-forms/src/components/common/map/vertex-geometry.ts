@@ -204,7 +204,7 @@ export const deleteVertexFromFeature = (
 		const last: Coordinate | undefined = coordinates[coordinates.length - 1];
 		// If the first vertex was deleted, remove the closing duplicate as well
 		if (index === 0 && isCoordsEqual(removedVertex, last)) {
-			coordinates.splice(-1, 1);
+			coordinates.pop();
 		}
 
 		// Close the ring if valid and necessary
