@@ -45,8 +45,9 @@ export interface UseMapInteractions {
 	) => void;
 }
 
-const LONG_PRESS_TIME = 1000;
-const LONG_PRESS_HIT_TOLERANCE = 10;
+const LONG_PRESS_TIME = 1300;
+const LONG_PRESS_HIT_TOLERANCE = 20;
+const SELECT_HIT_TOLERANCE = 15;
 
 export function useMapInteractions(
 	mapInstance: Map,
@@ -113,7 +114,7 @@ export function useMapInteractions(
 	): void => {
 		const hitFeatures = mapInstance.getFeaturesAtPixel(event.pixel, {
 			layerFilter: (layer) => layer instanceof VectorLayer,
-			hitTolerance: 15,
+			hitTolerance: SELECT_HIT_TOLERANCE,
 		});
 
 		const selectedFeature = hitFeatures?.find((item) => {
@@ -222,7 +223,7 @@ export function useMapInteractions(
 			handleDownEvent: (event) => {
 				if (timer) {
 					clearLongPress();
-					return false;
+					return true;
 				}
 
 				startPixel = event.pixel;
@@ -237,12 +238,12 @@ export function useMapInteractions(
 			handleMoveEvent: (event) => {
 				if (!timer || !isPressInHitTolerance(event.pixel, startPixel)) {
 					clearLongPress();
-					return false;
+					return;
 				}
 			},
 			handleUpEvent: () => {
 				clearLongPress();
-				return false;
+				return true;
 			},
 		});
 
@@ -284,6 +285,7 @@ export function useMapInteractions(
 		modifyInteraction.value = new Modify({
 			source: source,
 			style: getPhantomPointStyle(),
+			pixelTolerance: SELECT_HIT_TOLERANCE,
 			insertVertexCondition: (event) => event.type === 'pointermove',
 			wrapX: false,
 		});
