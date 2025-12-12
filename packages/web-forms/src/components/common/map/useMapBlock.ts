@@ -319,9 +319,12 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 			coords.push(location.altitude);
 		}
 
-		// TODO: accuracy is not part of the GeoJSON coordinates spec but is used by ODK. Adding it as a property for now? ODK_ACCURACY_PROPERTY = 'odk_accuracy'
+		if (location.accuracy != null) {
+			coords.push(location.accuracy);
+		}
+
 		const feature = new Feature({
-			geometry: new Point(fromLonLat(coords)),
+			geometry: new Point(fromLonLat(coords), 'XYZM'),
 		});
 		feature.set(ODK_VALUE_PROPERTY, formatODKValue(feature));
 		loadAndSaveSingleFeature(feature);

@@ -5,6 +5,7 @@ import {
 	type DrawFeatureType,
 } from '@/components/common/map/useMapInteractions.ts';
 import { getFlatCoordinates } from '@/components/common/map/vertex-geometry.ts';
+import { truncateDecimals } from '@/lib/format/truncate-decimals.ts';
 import type { Coordinate } from 'ol/coordinate';
 import type Feature from 'ol/Feature';
 import { LineString, Point, Polygon } from 'ol/geom';
@@ -48,12 +49,15 @@ const selectedVertexInfo = computed(() => {
 		return '';
 	}
 
-	// ToDo: Is accuracy needed?
-	const [longitude, latitude, altitude] = toLonLat(props.selectedVertex);
+	const [longitude, latitude, altitude, accuracy] = toLonLat(props.selectedVertex);
 	const parts = [`Longitude: ${longitude}`, `Latitude: ${latitude}`];
 
-	if (altitude !== undefined) {
+	if (altitude != null) {
 		parts.push(`Altitude: ${altitude} m`);
+	}
+
+	if (accuracy != null) {
+		parts.push(`Accuracy: ${truncateDecimals(accuracy, { decimals: 3 })}`);
 	}
 
 	return parts.join(', ');
