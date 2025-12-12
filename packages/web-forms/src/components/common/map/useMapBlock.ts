@@ -390,7 +390,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 		);
 	};
 
-	const findAndSaveFeature = (feature: GeoJsonFeature) => {
+	const findAndSaveFeature = (feature: GeoJsonFeature | undefined) => {
 		return mapFeatures?.findAndSaveFeature(
 			featuresSource,
 			feature,

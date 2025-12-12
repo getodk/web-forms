@@ -196,25 +196,25 @@ export const deleteVertexFromFeature = (
 		return coordinates.length;
 	}
 
-	const removedVertex = coordinates.splice(index, 1)?.[0];
+	coordinates.splice(index, 1);
 
 	if (geometry instanceof LineString) {
 		geometry.setCoordinates(coordinates);
 	} else if (geometry instanceof Polygon) {
-		const last: Coordinate | undefined = coordinates[coordinates.length - 1];
-		// If the first vertex was deleted, remove the closing duplicate as well
-		if (index === 0 && isCoordsEqual(removedVertex, last)) {
+		// To simplify the many possible cases, we'll just remove the last closing point
+		// and let it reevaluate if it needs to close the polygon.
+		const isClosed = isCoordsEqual(coordinates[0], coordinates[coordinates.length - 1]);
+		if (coordinates.length > 1 && isClosed) {
 			coordinates.pop();
 		}
 
-		// Close the ring if valid and necessary
-		if (coordinates.length >= 3) {
-			const newFirst: Coordinate | undefined = coordinates[0];
-			const newLast: Coordinate | undefined = coordinates[coordinates.length - 1];
-			if (!isCoordsEqual(newFirst, newLast)) {
+		if (coordinates.length >= 2) {
+			const newFirst = coordinates[0];
+			if (!isCoordsEqual(newFirst, coordinates[coordinates.length - 1])) {
 				coordinates.push([...newFirst!]);
 			}
 		}
+
 		geometry.setCoordinates([coordinates]);
 	}
 

@@ -110,6 +110,7 @@ export function useMapFeatures(
 		forceCenter = false
 	): void => {
 		if (!value || source.isEmpty()) {
+			saveFeature(undefined);
 			return;
 		}
 

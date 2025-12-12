@@ -15,7 +15,6 @@ import { type DrawFeatureType } from '@/components/common/map/useMapInteractions
 import { QUESTION_HAS_ERROR } from '@/lib/constants/injection-keys.ts';
 import type { Feature, FeatureCollection } from 'geojson';
 import type { Coordinate } from 'ol/coordinate';
-import FeatureOL from 'ol/Feature';
 import Button from 'primevue/button';
 import Message from 'primevue/message';
 import { computed, type ComputedRef, inject, onMounted, onUnmounted, ref, watch } from 'vue';
@@ -34,7 +33,6 @@ const emit = defineEmits(['save']);
 const mapElement = ref<HTMLElement | undefined>();
 const isFullScreen = ref(false);
 const confirmDeleteAction = ref(false);
-const savedFeature = ref<FeatureOL | undefined>();
 const selectedVertex = ref<Coordinate | undefined>();
 const showErrorStyle = inject<ComputedRef<boolean>>(
 	QUESTION_HAS_ERROR,
@@ -60,7 +58,6 @@ onMounted(() => {
 
 	mapHandler.initMap(mapElement.value, props.featureCollection, props.savedFeatureValue);
 	mapHandler.setupMapInteractions(props.disabled);
-	refreshSavedFeature();
 	document.addEventListener('keydown', handleEscapeKey);
 });
 
@@ -81,10 +78,7 @@ watch(
 watch(
 	() => props.savedFeatureValue,
 	(newValue) => {
-		if (newValue) {
-			mapHandler.findAndSaveFeature(newValue);
-			refreshSavedFeature();
-		}
+		mapHandler.findAndSaveFeature(newValue);
 	}
 );
 
@@ -93,8 +87,6 @@ watch(
 	(newValue) => mapHandler.setupMapInteractions(newValue)
 );
 
-const refreshSavedFeature = () => (savedFeature.value = mapHandler.getSavedFeature());
-
 const handleEscapeKey = (event: KeyboardEvent) => {
 	if (event.key === 'Escape' && isFullScreen.value) {
 		isFullScreen.value = false;
@@ -102,8 +94,7 @@ const handleEscapeKey = (event: KeyboardEvent) => {
 };
 
 const emitSavedFeature = () => {
-	refreshSavedFeature();
-	emit('save', mapHandler.getSavedFeatureValue());
+	emit('save', mapHandler.getSavedFeatureValue() ?? '');
 };
 
 const saveSelection = () => {
@@ -182,7 +173,7 @@ const undoLastChange = () => {
 
 			<MapStatusBar
 				:draw-feature-type="drawFeatureType"
-				:saved-feature="savedFeature"
+				:saved-feature-value="savedFeatureValue"
 				:selected-vertex="selectedVertex"
 				:is-capturing="mapHandler.currentState.value === STATES.CAPTURING"
 				class="map-status-bar-component"
