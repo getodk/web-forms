@@ -243,8 +243,13 @@ export function useMapViewControls(mapInstance: Map): UseMapViewControls {
 				return;
 			}
 
-			const parsedCoords = fromLonLat([newLocation.longitude, newLocation.latitude]);
-			userCurrentLocationFeature.value = new Feature({ geometry: new Point(parsedCoords) });
+			const parsedCoords = fromLonLat([
+				newLocation.longitude,
+				newLocation.latitude,
+				newLocation.altitude ?? 0,
+				newLocation.accuracy,
+			]);
+			userCurrentLocationFeature.value = new Feature({ geometry: new Point(parsedCoords, 'XYZM') });
 			currentLocationSource.addFeature(userCurrentLocationFeature.value);
 
 			if (canCenterView) {
