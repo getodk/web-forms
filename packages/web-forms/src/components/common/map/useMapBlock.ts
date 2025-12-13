@@ -273,7 +273,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 	const clearMap = () => {
 		unselectFeature();
 		clearSavedFeature();
-		featuresSource.clear(true);
+		featuresSource.clear();
 	};
 
 	const updateFeatureCollection = (features: FeatureCollection, savedFeature?: GeoJsonFeature) => {

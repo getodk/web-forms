@@ -211,44 +211,44 @@ export function useMapInteractions(
 			return;
 		}
 
+		const viewport = mapInstance.getViewport();
 		let timer: TimerID | undefined;
 		let startPixel: Pixel | null = null;
-		const clearLongPress = () => {
+		const upListener = () => clearAndRemoveListeners();
+		const moveListener = (moveEvent: MapBrowserEvent) => {
+			if (!startPixel || !isPressInHitTolerance(moveEvent.pixel, startPixel)) {
+				clearAndRemoveListeners();
+			}
+		};
+		const clearAndRemoveListeners = () => {
 			clearTimeout(timer);
 			timer = undefined;
 			startPixel = null;
+			mapInstance.un('pointermove', moveListener);
+			viewport.removeEventListener('pointerup', upListener);
 		};
 
 		pointerInteraction.value = new PointerInteraction({
 			handleDownEvent: (event) => {
 				if (timer) {
-					clearLongPress();
-					return true;
+					clearAndRemoveListeners();
+					return false;
 				}
-
 				startPixel = event.pixel;
 				setCursor('pointer');
-				timer = setTimeout(() => {
-					addVertexOnLongPress(source, event.coordinate, onLongPress);
-					clearLongPress();
-				}, LONG_PRESS_TIME);
+				mapInstance.on('pointermove', moveListener);
+				viewport.addEventListener('pointerup', upListener);
 
+				timer = setTimeout(() => {
+					clearAndRemoveListeners();
+					addVertexOnLongPress(source, event.coordinate, onLongPress);
+				}, LONG_PRESS_TIME);
 				return false;
-			},
-			handleMoveEvent: (event) => {
-				if (!timer || !isPressInHitTolerance(event.pixel, startPixel)) {
-					clearLongPress();
-					return;
-				}
-			},
-			handleUpEvent: () => {
-				clearLongPress();
-				return true;
 			},
 		});
 
 		mapInstance.addInteraction(pointerInteraction.value);
-		mapInstance.getViewport().addEventListener('contextmenu', preventContextMenu);
+		viewport.addEventListener('contextmenu', preventContextMenu);
 	};
 
 	const removeLongPressPoint = () => {
