@@ -186,37 +186,43 @@ export const getVertexByIndex = (
 	return coordinates[index] ?? [];
 };
 
+const deleteVertexFromLine = (coords: Coordinate[], index: number) => {
+	coords.splice(index, 1);
+	return coords;
+};
+
+const deleteVertexFromPolygon = (coords: Coordinate[], index: number) => {
+	// To simplify the many possible cases, we'll just remove the last closing point
+	// and let it reevaluate if it needs to close the polygon.
+	const isClosed = isCoordsEqual(coords[0], coords[coords.length - 1]);
+	if (isClosed) {
+		index = index === coords.length - 1 ? 0 : index;
+		coords.pop();
+	}
+
+	coords.splice(index, 1);
+	const newFirst = coords[0];
+	if (coords.length > 2 && !isCoordsEqual(newFirst, coords[coords.length - 1])) {
+		coords.push([...newFirst!]);
+	}
+
+	return [coords];
+};
+
 export const deleteVertexFromFeature = (
 	feature: Feature<LineString | Polygon> | undefined,
 	index: number
 ): number => {
 	const geometry = feature?.getGeometry();
-	const coordinates = getFlatCoordinates(geometry);
-	if (index < 0 || index >= coordinates.length) {
-		return coordinates.length;
+	const coords = getFlatCoordinates(geometry);
+
+	if (geometry && index >= 0 && index < coords.length) {
+		const updatedCoords =
+			geometry instanceof LineString
+				? deleteVertexFromLine(coords, index)
+				: deleteVertexFromPolygon(coords, index);
+		geometry.setCoordinates(updatedCoords as Coordinate[] & Coordinate[][]);
 	}
 
-	coordinates.splice(index, 1);
-
-	if (geometry instanceof LineString) {
-		geometry.setCoordinates(coordinates);
-	} else if (geometry instanceof Polygon) {
-		// To simplify the many possible cases, we'll just remove the last closing point
-		// and let it reevaluate if it needs to close the polygon.
-		const isClosed = isCoordsEqual(coordinates[0], coordinates[coordinates.length - 1]);
-		if (coordinates.length > 1 && isClosed) {
-			coordinates.pop();
-		}
-
-		if (coordinates.length >= 2) {
-			const newFirst = coordinates[0];
-			if (!isCoordsEqual(newFirst, coordinates[coordinates.length - 1])) {
-				coordinates.push([...newFirst!]);
-			}
-		}
-
-		geometry.setCoordinates([coordinates]);
-	}
-
-	return coordinates.length;
+	return coords.length;
 };
