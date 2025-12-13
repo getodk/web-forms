@@ -67,8 +67,9 @@ const selectedVertexInfo = computed(() => {
 
 const savedStatus = computed<StatusDetails | null>(() => {
 	const geometry = props.savedFeatureValue?.geometry as LineString | Point | Polygon | undefined;
+	const isShape = props.drawFeatureType === DRAW_FEATURE_TYPES.SHAPE;
 	const coords = geometry?.coordinates ?? [];
-	const count = Array.isArray(coords[0]) ? coords[0].length : coords.length;
+	const count = isShape && Array.isArray(coords[0]) ? coords[0].length : coords.length;
 	if (count === 0) {
 		return null;
 	}
@@ -79,7 +80,7 @@ const savedStatus = computed<StatusDetails | null>(() => {
 		return { message, icon: LINE_ICON };
 	}
 
-	if (props.drawFeatureType === DRAW_FEATURE_TYPES.SHAPE) {
+	if (isShape) {
 		return { message, icon: POLYGON_ICON };
 	}
 
