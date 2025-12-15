@@ -15,20 +15,22 @@ export const getFlatCoordinates = (geometry: LineString | Polygon | undefined) =
 };
 
 const getDeltaBetweenPoints = (pointA: number[], pointB: number[]) => {
-	const isDefined = (c: number) => c != null;
-	const pairA = pointA.filter(isDefined) as [number, number];
-	const pairB = pointB.filter(isDefined) as [number, number];
-	if (pairA.length < 2 || pairB.length < 2) {
+	const isDefined = (point: number[]) => point.length > 1 && point[0] != null && point[1] != null;
+	if (!isDefined(pointA) || !isDefined(pointB)) {
 		return { deltaX: 0, deltaY: 0 };
 	}
 
-	const [ax, ay] = pairA;
-	const [bx, by] = pairB;
+	const [ax, ay] = pointA as [number, number];
+	const [bx, by] = pointB as [number, number];
 	return { deltaX: ax - bx, deltaY: ay - by };
 };
 
+/**
+ * Computes the squared Euclidean distance between two points using the Pythagorean theorem.
+ */
 const getDistanceBetweenPoints = (deltaX: number, deltaY: number) => {
-	return deltaX * deltaX + deltaY * deltaY;
+	// prettier-ignore
+	return (deltaX ** 2) + (deltaY ** 2);
 };
 
 const getClosestPointOnSegment = (
@@ -86,7 +88,7 @@ const isCoordsEqual = (coordA: Coordinate | undefined, coordB: Coordinate | unde
 
 const isOnLine = (squaredDist: number, resolution: number, hitTolerance: number) => {
 	const tolerance = resolution * hitTolerance;
-	return squaredDist <= tolerance * tolerance;
+	return squaredDist <= tolerance ** 2;
 };
 
 export const addTraceVertex = (
