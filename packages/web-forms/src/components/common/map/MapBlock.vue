@@ -149,7 +149,7 @@ const undoLastChange = () => {
 					:is-full-screen="isFullScreen"
 					:disable-fit-all-features="mapHandler.isMapEmpty()"
 					:disable-undo="!mapHandler.canUndoChange()"
-					:disable-delete="mapHandler.isMapEmpty()"
+					:disable-delete="!mapHandler.isFeatureSelected()"
 					:show-secondary-controls="showSecondaryControls"
 					@toggle-full-screen="isFullScreen = !isFullScreen"
 					@fit-all-features="mapHandler.fitToAllFeatures"
@@ -166,7 +166,7 @@ const undoLastChange = () => {
 					:class="{ 'map-message': true, 'above-secondary-controls': showSecondaryControls }"
 				>
 					<!-- TODO: translations -->
-					<span v-if="savedFeatureValue">Long press and drag move point</span>
+					<span v-if="savedFeatureValue">Press and drag to move a point</span>
 					<span v-else>Long press to place a point</span>
 				</Message>
 			</div>

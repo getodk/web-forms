@@ -1,4 +1,4 @@
-import { Geolocation, type LocationPoint, SEPARATOR } from './Geolocation.ts';
+import { Geolocation, type LocationPoint, SEGMENT_SEPARATOR } from './Geolocation.ts';
 
 export type GeoshapeRuntimeValue = LocationPoint[] | null;
 
@@ -31,6 +31,6 @@ export class Geoshape extends Geolocation {
 			return '';
 		}
 
-		return segments.join(SEPARATOR);
+		return segments.join(SEGMENT_SEPARATOR);
 	}
 }

@@ -21,6 +21,7 @@ import {
 	type UseMapInteractions,
 } from '@/components/common/map/useMapInteractions.ts';
 import {
+	COORDINATE_LAYOUT_XYZM,
 	DEFAULT_VIEW_CENTER,
 	MIN_ZOOM,
 	useMapViewControls,
@@ -324,7 +325,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 		}
 
 		const feature = new Feature({
-			geometry: new Point(fromLonLat(coords), 'XYZM'),
+			geometry: new Point(fromLonLat(coords), COORDINATE_LAYOUT_XYZM),
 		});
 		feature.set(ODK_VALUE_PROPERTY, formatODKValue(feature));
 		loadAndSaveSingleFeature(feature);
@@ -436,6 +437,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 		canUndoChange,
 		undoLastChange,
 
+		isFeatureSelected: () => !!mapFeatures?.getSelectedFeature(),
 		getSelectedFeatureProperties: () => mapFeatures?.getSelectedFeatureProperties(),
 		selectSavedFeature: () => mapFeatures?.selectFeature(mapFeatures?.getSavedFeature()),
 		unselectFeature,

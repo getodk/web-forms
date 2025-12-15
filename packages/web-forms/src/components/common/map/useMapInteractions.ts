@@ -41,7 +41,7 @@ export interface UseMapInteractions {
 	teardownMap: () => void;
 	toggleSelectEvent: (
 		bindClick: boolean,
-		onSelect?: (feature: Feature | undefined, vertexIndex: number | undefined) => void
+		onSelect: (feature: Feature | undefined, vertexIndex: number | undefined) => void
 	) => void;
 }
 
@@ -96,7 +96,7 @@ export function useMapInteractions(
 
 	const onSelectFeature = (
 		event: MapBrowserEvent,
-		onSelect?: (feature: Feature | undefined) => void
+		onSelect: (feature: Feature | undefined) => void
 	): void => {
 		const hitFeatures = mapInstance.getFeaturesAtPixel(event.pixel, {
 			layerFilter: (layer) => layer instanceof WebGLVectorLayer,
@@ -110,7 +110,7 @@ export function useMapInteractions(
 
 	const onSelectFeatureOrVertex = (
 		event: MapBrowserEvent,
-		onSelect?: (feature: Feature | undefined, selectedVertexIndex: number | undefined) => void
+		onSelect: (feature: Feature | undefined, selectedVertexIndex: number | undefined) => void
 	): void => {
 		const hitFeatures = mapInstance.getFeaturesAtPixel(event.pixel, {
 			layerFilter: (layer) => layer instanceof VectorLayer,
@@ -142,6 +142,10 @@ export function useMapInteractions(
 		bindClick: boolean,
 		onSelect?: (feature: Feature | undefined, vertexIndex?: number) => void
 	) => {
+		if (!onSelect) {
+			return;
+		}
+
 		const onClick = (event: MapBrowserEvent) => {
 			if (capabilities.canLoadMultiFeatures) {
 				onSelectFeature(event, onSelect);
@@ -161,34 +165,41 @@ export function useMapInteractions(
 		}
 	};
 
+	const resolveFeatureForLongPress = (
+		coordinate: Coordinate,
+		resolution: number,
+		feature: Feature | undefined
+	) => {
+		if (drawFeatureType === DRAW_FEATURE_TYPES.SHAPE) {
+			return addShapeVertex(resolution, coordinate, feature, LONG_PRESS_HIT_TOLERANCE);
+		}
+
+		if (drawFeatureType === DRAW_FEATURE_TYPES.TRACE) {
+			return addTraceVertex(resolution, coordinate, feature, LONG_PRESS_HIT_TOLERANCE);
+		}
+
+		return new Feature({ geometry: new Point(coordinate) });
+	};
+
 	const addVertexOnLongPress = (
 		source: VectorSource,
 		coordinate: Coordinate,
 		onLongPress: (feature: Feature) => void
 	) => {
 		const resolution = mapInstance.getView().getResolution() ?? 1;
-		let feature = source.getFeatures()?.[0];
+		const feature = source.getFeatures()?.[0];
 		savePreviousFeatureState(feature ?? null);
+		const updatedFeature = resolveFeatureForLongPress(coordinate, resolution, feature)!;
 
-		switch (drawFeatureType) {
-			case DRAW_FEATURE_TYPES.SHAPE:
-				feature = addShapeVertex(resolution, coordinate, feature, LONG_PRESS_HIT_TOLERANCE)!;
-				break;
-			case DRAW_FEATURE_TYPES.TRACE:
-				feature = addTraceVertex(resolution, coordinate, feature, LONG_PRESS_HIT_TOLERANCE)!;
-				break;
-			default:
-				if (!source.isEmpty()) {
-					source.clear(true);
-				}
-				feature = new Feature({ geometry: new Point(coordinate) });
-				break;
+		if (!drawFeatureType && !source.isEmpty()) {
+			source.clear(true);
 		}
 
 		if (source.isEmpty()) {
-			source.addFeature(feature);
+			source.addFeature(updatedFeature);
 		}
-		onLongPress(feature);
+
+		onLongPress(updatedFeature);
 	};
 
 	const isPressInHitTolerance = (pixel: number[] | undefined, startPixel: Pixel | null) => {

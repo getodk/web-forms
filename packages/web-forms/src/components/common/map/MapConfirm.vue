@@ -19,7 +19,7 @@ const emit = defineEmits(['update:visible', 'deleteFeature']);
 		<template #header>
 			<!-- TODO: translations -->
 			<strong v-if="drawFeatureType === DRAW_FEATURE_TYPES.SHAPE">Delete entire shape?</strong>
-			<strong v-if="drawFeatureType === DRAW_FEATURE_TYPES.TRACE">Delete entire trace?</strong>
+			<strong v-else>Delete entire trace?</strong>
 		</template>
 
 		<template #default>
@@ -27,7 +27,7 @@ const emit = defineEmits(['update:visible', 'deleteFeature']);
 			<p v-if="drawFeatureType === DRAW_FEATURE_TYPES.SHAPE">
 				Are you sure you want to delete this entire shape and start over?
 			</p>
-			<p v-if="drawFeatureType === DRAW_FEATURE_TYPES.TRACE">
+			<p v-else>
 				Are you sure you want to delete this entire trace and start over?
 			</p>
 		</template>

@@ -44,7 +44,7 @@ type LocationPointTuple =
 	| readonly [latitude: Latitude, longitude: Longitude, altitude: Altitude]
 	| readonly [latitude: Latitude, longitude: Longitude];
 
-export const SEPARATOR = ';';
+export const SEGMENT_SEPARATOR = ';';
 
 const DEGREES_MAX = {
 	latitude: 90,
@@ -158,7 +158,7 @@ export class Geolocation {
 			return null;
 		}
 
-		const parts = value.split(SEPARATOR);
+		const parts = value.split(SEGMENT_SEPARATOR);
 		// Handles trailing semicolon, which is valid and common in ODK.
 		if (parts[parts.length - 1]?.trim() === '') {
 			parts.pop();
