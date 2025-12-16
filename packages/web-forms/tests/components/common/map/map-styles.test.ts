@@ -195,7 +195,7 @@ describe('Map Styles', () => {
 	it('returns the phantom point style', () => {
 		const style = getPhantomPointStyle();
 		expect(style).toBeInstanceOf(Style);
-		const image = style.getImage() as CircleStyle;
+		const image = style?.getImage() as CircleStyle;
 		expect(image).toBeInstanceOf(CircleStyle);
 		expect(image.getRadius()).toBe(4);
 		expect(image.getFill()?.getColor()).toBe('#3488AF');

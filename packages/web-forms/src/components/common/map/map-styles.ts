@@ -234,13 +234,14 @@ export function getDrawStyles(
 	};
 }
 
-export function getPhantomPointStyle(): Style {
-	// Empty style on touch devices to suppress phantom visibility
-	if (window.matchMedia?.('(hover: none)')?.matches) {
-		return new Style({});
+export function getPhantomPointStyle(): Style | undefined {
+	const vertex = getVertexStyle(HIGHLIGHT_DRAW_COLOR, HIGHLIGHT_DRAW_COLOR, DEFAULT_STROKE_WIDTH);
+
+	// Make it transparent on touch devices to suppress phantom visibility
+	const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+	if (isTouchDevice) {
+		vertex.setOpacity(0);
 	}
 
-	return new Style({
-		image: getVertexStyle(HIGHLIGHT_DRAW_COLOR, HIGHLIGHT_DRAW_COLOR, DEFAULT_STROKE_WIDTH),
-	});
+	return new Style({ image: vertex });
 }
