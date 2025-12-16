@@ -6,12 +6,22 @@ import {
 	type DecimalRuntimeValue,
 	DecimalValueCodec,
 } from './DecimalValueCodec.ts';
-import type { GeopointInputValue, GeopointRuntimeValue } from './geolocation/Geopoint.ts';
-import { GeopointValueCodec } from './geolocation/GeopointValueCodec.ts';
-import type { GeoshapeInputValue, GeoshapeRuntimeValue } from './geolocation/Geoshape.ts';
-import { GeoshapeValueCodec } from './geolocation/GeoshapeValueCodec.ts';
-import type { GeotraceInputValue, GeotraceRuntimeValue } from './geolocation/Geotrace.ts';
-import { GeotraceValueCodec } from './geolocation/GeotraceValueCodec.ts';
+import { createGeolocationValueCodec } from './geolocation/createGeolocationValueCodec.ts';
+import {
+	Geopoint,
+	type GeopointInputValue,
+	type GeopointRuntimeValue,
+} from './geolocation/Geopoint.ts';
+import {
+	Geoshape,
+	type GeoshapeInputValue,
+	type GeoshapeRuntimeValue,
+} from './geolocation/Geoshape.ts';
+import {
+	Geotrace,
+	type GeotraceInputValue,
+	type GeotraceRuntimeValue,
+} from './geolocation/Geotrace.ts';
 import { type IntInputValue, type IntRuntimeValue, IntValueCodec } from './IntValueCodec.ts';
 import { StringValueCodec } from './StringValueCodec.ts';
 import type { ValueCodec } from './ValueCodec.ts';
@@ -72,12 +82,24 @@ export const sharedValueCodecs: SharedValueCodecs = {
 	date: new DateValueCodec(),
 	time: new ValueTypePlaceholderCodec('time'),
 	dateTime: new ValueTypePlaceholderCodec('dateTime'),
-	geopoint: new GeopointValueCodec(),
-	geotrace: new GeotraceValueCodec(),
-	geoshape: new GeoshapeValueCodec(),
 	binary: new ValueTypePlaceholderCodec('binary'),
 	barcode: new ValueTypePlaceholderCodec('barcode'),
 	intent: new ValueTypePlaceholderCodec('intent'),
+	geopoint: createGeolocationValueCodec<'geopoint', GeopointRuntimeValue, GeopointInputValue>(
+		'geopoint',
+		(value) => Geopoint.parseGeopointToString(value),
+		(value) => Geopoint.parseStringToGeopoint(value)
+	),
+	geotrace: createGeolocationValueCodec<'geotrace', GeotraceRuntimeValue, GeotraceInputValue>(
+		'geotrace',
+		(value) => Geotrace.parseGeotraceString(value),
+		(value) => Geotrace.parseStringToGeotrace(value)
+	),
+	geoshape: createGeolocationValueCodec<'geoshape', GeoshapeRuntimeValue, GeoshapeInputValue>(
+		'geoshape',
+		(value) => Geoshape.parseGeoshapeString(value),
+		(value) => Geoshape.parseStringToGeoshape(value)
+	),
 };
 
 export const getSharedValueCodec = <V extends ValueType>(valueType: V): SharedValueCodec<V> => {
