@@ -235,6 +235,11 @@ export function getDrawStyles(
 }
 
 export function getPhantomPointStyle(): Style {
+	// Empty style on touch devices to suppress phantom visibility
+	if (window.matchMedia('(hover: none)').matches) {
+		return new Style({});
+	}
+
 	return new Style({
 		image: getVertexStyle(HIGHLIGHT_DRAW_COLOR, HIGHLIGHT_DRAW_COLOR, DEFAULT_STROKE_WIDTH),
 	});
