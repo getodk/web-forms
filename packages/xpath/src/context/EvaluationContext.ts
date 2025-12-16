@@ -14,7 +14,6 @@ import type { Context } from './Context.ts';
 export interface EvaluationContextOptions<T extends XPathNode> {
 	readonly rootNode: AdapterParentNode<T> | null;
 	readonly functions: FunctionLibraryCollection;
-	readonly namespaceResolver: XPathNSResolver | null;
 	readonly timeZone: Temporal.TimeZoneLike;
 }
 
@@ -49,8 +48,6 @@ export class EvaluationContext<T extends XPathNode> implements Context<T> {
 
 		this.domProvider = domProvider;
 
-		const { namespaceResolver } = options;
-
 		const rootNode = options.rootNode ?? domProvider.getContainingDocument(contextNode);
 		const contextDocument = domProvider.getContainingDocument(rootNode);
 
@@ -59,12 +56,7 @@ export class EvaluationContext<T extends XPathNode> implements Context<T> {
 		this.contextNodes = new Set([contextNode]);
 		this.rootNode = rootNode;
 		this.functions = options.functions ?? evaluator.functions;
-		this.namespaceResolver = NamespaceResolver.from(
-			domProvider,
-			contextDocument,
-			contextDocument,
-			namespaceResolver
-		);
+		this.namespaceResolver = NamespaceResolver.from(domProvider, contextDocument, contextDocument);
 		this.timeZone = options.timeZone ?? evaluator.timeZone;
 	}
 

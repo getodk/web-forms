@@ -98,29 +98,22 @@ export class Evaluator<T extends XPathNode> {
 	/**
 	 * @package - exposed for testing
 	 */
-	getEvaluationContext(
-		contextNode: T | UnwrapAdapterNode<T>,
-		namespaceResolver: Extract<T, XPathNSResolver> | XPathNSResolver | null
-	): EvaluationContext<T> {
+	getEvaluationContext(contextNode: T | UnwrapAdapterNode<T>): EvaluationContext<T> {
 		const contextOptions = {
 			rootNode: this.rootNode,
-			namespaceResolver,
 		};
-
 		this.domProvider.assertXPathNode(contextNode);
-
 		return new EvaluationContext(this, contextNode, contextOptions);
 	}
 
 	evaluate(
 		expression: string,
 		contextNode: T | UnwrapAdapterNode<T>,
-		namespaceResolver: XPathNSResolver | null,
 		resultType: XPathEvaluationResultType | null
 	): XPathEvaluationResult<T> {
 		const tree = this.parser.parse(expression, this.parseOptions);
 		const expr = createExpression(tree.rootNode);
-		const evaluationContext = this.getEvaluationContext(contextNode, namespaceResolver);
+		const evaluationContext = this.getEvaluationContext(contextNode);
 		const results = expr.evaluate(evaluationContext);
 
 		return toXPathEvaluationResult(
@@ -145,22 +138,20 @@ export class Evaluator<T extends XPathNode> {
 	evaluateBoolean(expression: string, options: EvaluatorConvenienceMethodOptions<T> = {}): boolean {
 		const contextNode = this.getContextNode(options);
 
-		return this.evaluate(expression, contextNode, null, XPATH_EVALUATION_RESULT.BOOLEAN_TYPE)
+		return this.evaluate(expression, contextNode, XPATH_EVALUATION_RESULT.BOOLEAN_TYPE)
 			.booleanValue;
 	}
 
 	evaluateNumber(expression: string, options: EvaluatorConvenienceMethodOptions<T> = {}): number {
 		const contextNode = this.getContextNode(options);
 
-		return this.evaluate(expression, contextNode, null, XPATH_EVALUATION_RESULT.NUMBER_TYPE)
-			.numberValue;
+		return this.evaluate(expression, contextNode, XPATH_EVALUATION_RESULT.NUMBER_TYPE).numberValue;
 	}
 
 	evaluateString(expression: string, options: EvaluatorConvenienceMethodOptions<T> = {}): string {
 		const contextNode = this.getContextNode(options);
 
-		return this.evaluate(expression, contextNode, null, XPATH_EVALUATION_RESULT.STRING_TYPE)
-			.stringValue;
+		return this.evaluate(expression, contextNode, XPATH_EVALUATION_RESULT.STRING_TYPE).stringValue;
 	}
 
 	evaluateNode<U extends T | UnwrapAdapterNode<T> = T, AssertExists extends boolean = false>(
@@ -173,7 +164,6 @@ export class Evaluator<T extends XPathNode> {
 		const node = this.evaluate(
 			expression,
 			contextNode,
-			null,
 			XPATH_EVALUATION_RESULT.FIRST_ORDERED_NODE_TYPE
 		).singleNodeValue as U | null;
 
@@ -216,7 +206,6 @@ export class Evaluator<T extends XPathNode> {
 		const snapshotResult = this.evaluate(
 			expression,
 			contextNode,
-			null,
 			XPATH_EVALUATION_RESULT.ORDERED_NODE_SNAPSHOT_TYPE
 		);
 		const { snapshotLength } = snapshotResult;
