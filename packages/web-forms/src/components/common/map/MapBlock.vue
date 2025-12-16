@@ -232,6 +232,10 @@ const undoLastChange = () => {
 	border: 1px solid var(--odk-border-color);
 	border-radius: var(--odk-radius);
 	overflow: hidden;
+	// Fixes iPhone select issues on map
+	-webkit-user-select: none;
+	user-select: none;
+	-webkit-touch-callout: none;
 
 	.map-block {
 		position: relative;
