@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import IconSVG from '@/components/common/IconSVG.vue';
-import type { Feature, Point, LineString, Polygon } from 'geojson';
 import {
 	DRAW_FEATURE_TYPES,
 	type DrawFeatureType,
 } from '@/components/common/map/useMapInteractions.ts';
+import { isCoordsEqual } from '@/components/common/map/vertex-geometry.ts';
 import { truncateDecimals } from '@/lib/format/truncate-decimals.ts';
+import type { Feature, LineString, Point, Polygon, Position } from 'geojson';
 import type { Coordinate } from 'ol/coordinate';
 import { toLonLat } from 'ol/proj';
 import Button from 'primevue/button';
@@ -65,11 +66,31 @@ const selectedVertexInfo = computed(() => {
 	return parts.join(', ');
 });
 
+const countPoints = (coords: Position | Position[] | Position[][] | undefined = []) => {
+	const isPoint = !props.drawFeatureType && coords?.length;
+	if (isPoint) {
+		return 1;
+	}
+
+	if (props.drawFeatureType === DRAW_FEATURE_TYPES.TRACE) {
+		return coords.length;
+	}
+
+	const ring = coords[0];
+	if (
+		props.drawFeatureType === DRAW_FEATURE_TYPES.SHAPE &&
+		Array.isArray(ring) &&
+		isCoordsEqual(ring[0] as [number, number], ring[ring.length - 1] as [number, number])
+	) {
+		return ring.length - 1;
+	}
+
+	return 0;
+};
+
 const savedStatus = computed<StatusDetails | null>(() => {
 	const geometry = props.savedFeatureValue?.geometry as LineString | Point | Polygon | undefined;
-	const isShape = props.drawFeatureType === DRAW_FEATURE_TYPES.SHAPE;
-	const coords = geometry?.coordinates ?? [];
-	const count = isShape && Array.isArray(coords[0]) ? coords[0].length : coords.length;
+	const count = countPoints(geometry?.coordinates);
 	if (count === 0) {
 		return null;
 	}
@@ -80,7 +101,7 @@ const savedStatus = computed<StatusDetails | null>(() => {
 		return { message, icon: LINE_ICON };
 	}
 
-	if (isShape) {
+	if (props.drawFeatureType === DRAW_FEATURE_TYPES.SHAPE) {
 		return { message, icon: POLYGON_ICON };
 	}
 

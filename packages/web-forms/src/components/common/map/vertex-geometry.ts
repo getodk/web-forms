@@ -82,7 +82,7 @@ const getClosestSegmentAndIndex = (
 	return { segmentIndex: bestIndex, closest: bestClosest, squaredDist: minSquaredDist };
 };
 
-const isCoordsEqual = (coordA: Coordinate | undefined, coordB: Coordinate | undefined) => {
+export const isCoordsEqual = (coordA: Coordinate | undefined, coordB: Coordinate | undefined) => {
 	return coordA && coordB && coordA[0] === coordB[0] && coordA[1] === coordB[1];
 };
 
