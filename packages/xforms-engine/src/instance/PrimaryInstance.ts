@@ -1,4 +1,4 @@
-import { XPathNodeKindKey } from '@getodk/xpath';
+import { clearCache, XPathNodeKindKey } from '@getodk/xpath';
 import type { Accessor } from 'solid-js';
 import { createSignal } from 'solid-js';
 import type { FormInstanceInitializationMode } from '../client/form/FormInstance.ts';
@@ -163,6 +163,8 @@ export class PrimaryInstance<
 		const { instance: modelInstance } = model;
 		const activeInstance = initialState?.document ?? modelInstance;
 		const definition = model.getRootDefinition(activeInstance);
+
+		clearCache();
 
 		super(config, null, activeInstance, definition, {
 			scope,

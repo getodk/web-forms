@@ -44,7 +44,7 @@ export {
 	XML_NAMESPACE_URI,
 	XML_PREFIX,
 	XMLNS_NAMESPACE_URI,
-	XMLNS_PREFIX,
+	XMLNS_PREFIX
 };
 
 export interface StaticNamespaces<
@@ -102,7 +102,14 @@ export const staticNamespaces = new StaticNamespaces('xf', XFORMS_NAMESPACE_URI,
 	[XMLNS_PREFIX]: XMLNS_NAMESPACE_URI,
 });
 
-const namespaceURIs = new UpsertableMap<string | null, string | null>();
+const namespaceURIs = new UpsertableMap<
+	XPathNSResolver,
+	UpsertableMap<string | null, string | null>
+>();
+
+export const clearCache = () => {
+	namespaceURIs.clear();
+}
 
 type XPathNSResolverFunction = (prefix: string | null) => string | null;
 
@@ -111,23 +118,51 @@ interface XPathNSResolverObject {
 }
 
 export class NamespaceResolver<T extends XPathNode> implements XPathNSResolverObject {
+	private static isInstance<T extends XPathNode>(
+		rootNode: AdapterParentNode<T> | UnwrapAdapterNode<AdapterParentNode<T>>,
+		value: unknown
+	): value is NamespaceResolver<T> {
+		return value instanceof NamespaceResolver && value.rootNode === rootNode;
+	}
+
 	static from<T extends XPathNode>(
 		domProvider: XPathDOMProvider<T>,
 		rootNode: AdapterParentNode<T> | UnwrapAdapterNode<AdapterParentNode<T>>,
-		referenceNode?: T | UnwrapAdapterNode<T> | null
+		referenceNode?: T | UnwrapAdapterNode<T> | null,
+		contextResolver?: XPathNSResolver | null
 	): NamespaceResolver<T> {
+		if (this.isInstance(rootNode, contextResolver)) {
+			return contextResolver;
+		}
+
 		return new this(
 			domProvider,
 			rootNode as AdapterParentNode<T>,
-			(referenceNode ?? null) as T | null
+			(referenceNode ?? null) as T | null,
+			contextResolver
 		);
 	}
+
+	protected readonly contextResolver: XPathNSResolverFunction;
 
 	private constructor(
 		protected readonly domProvider: XPathDOMProvider<T>,
 		protected readonly rootNode: AdapterParentNode<T>,
-		protected readonly referenceNode?: T | null
-	) {}
+		protected readonly referenceNode?: T | null,
+		contextResolver?: XPathNSResolver | null
+	) {
+		const contextResolverNode = referenceNode ?? rootNode;
+
+		if (contextResolver == null) {
+			this.contextResolver = (prefix) => {
+				return domProvider.resolveNamespaceURI(contextResolverNode, prefix);
+			};
+		} else if (typeof contextResolver === 'function') {
+			this.contextResolver = contextResolver;
+		} else {
+			this.contextResolver = (prefix) => contextResolver.lookupNamespaceURI(prefix);
+		}
+	}
 
 	/**
 	 * Note: while it is likely consistent with the **spec** to resolve a `null`
@@ -138,14 +173,10 @@ export class NamespaceResolver<T extends XPathNode> implements XPathNSResolverOb
 	 * more **obvious** behavior.
 	 */
 	lookupNamespaceURI(prefix: string | null) {
-		return namespaceURIs.upsert(
-			prefix,
-			() => this.contextResolver(prefix) ?? staticNamespaces.get(prefix) ?? null
-		);
-	}
-
-	contextResolver(prefix: string | null) {
-		const contextResolverNode = this.referenceNode ?? this.rootNode;
-		return this.domProvider.resolveNamespaceURI(contextResolverNode, prefix);
+		return namespaceURIs
+			.upsert(this.contextResolver, () => new UpsertableMap())
+			.upsert(prefix, () => {
+				return this.contextResolver(prefix) ?? staticNamespaces.get(prefix) ?? null;
+			});
 	}
 }
