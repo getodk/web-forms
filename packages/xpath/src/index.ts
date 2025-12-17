@@ -56,16 +56,16 @@ export { XFORMS_KNOWN_ATTRIBUTE, XFORMS_LOCAL_NAME } from './xforms/XFormsElemen
 export type {
 	XFormsItextTranslationElement,
 	XFormsItextTranslationLanguage,
-	XFormsItextTranslationMap
+	XFormsItextTranslationMap,
 } from './xforms/XFormsItextTranslations.ts';
 export type {
 	XFormsSecondaryInstanceElement,
-	XFormsSecondaryInstanceMap
+	XFormsSecondaryInstanceMap,
 } from './xforms/XFormsSecondaryInstances.ts';
 export { XFormsXPathEvaluator } from './xforms/XFormsXPathEvaluator.ts';
 export type {
 	XFormsXPathEvaluatorOptions,
-	XFormsXPathRootNode
+	XFormsXPathRootNode,
 } from './xforms/XFormsXPathEvaluator.ts';
 
 export type { XPathChoiceNode } from './adapter/interface/XPathChoiceNode.ts';

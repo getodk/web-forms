@@ -44,7 +44,7 @@ export {
 	XML_NAMESPACE_URI,
 	XML_PREFIX,
 	XMLNS_NAMESPACE_URI,
-	XMLNS_PREFIX
+	XMLNS_PREFIX,
 };
 
 export interface StaticNamespaces<
@@ -109,7 +109,7 @@ const namespaceURIs = new UpsertableMap<
 
 export const clearCache = () => {
 	namespaceURIs.clear();
-}
+};
 
 type XPathNSResolverFunction = (prefix: string | null) => string | null;
 

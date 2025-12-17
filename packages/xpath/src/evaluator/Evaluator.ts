@@ -60,7 +60,7 @@ type EvaluatedNode<
 
 export const clearCache = () => {
 	nrClearCache();
-}
+};
 
 export class Evaluator<T extends XPathNode> {
 	readonly domProvider: XPathDOMProvider<T>;
