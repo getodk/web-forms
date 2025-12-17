@@ -84,6 +84,7 @@ interface PrimaryInstanceStateSpec {
 
 interface PrimaryInstanceStateInputByMode {
 	readonly create: null;
+	readonly reset: null;
 	readonly edit: InitialInstanceState;
 	readonly restore: InitialInstanceState;
 }

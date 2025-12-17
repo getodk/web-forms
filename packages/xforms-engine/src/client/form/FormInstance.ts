@@ -13,6 +13,9 @@ import type { InstantiableLoadFormResult, LoadFormResult } from './LoadFormResul
  */
 export type FormInstanceCreateMode = 'create';
 
+// TODO docs
+export type FormInstanceResetMode = 'reset';
+
 /**
  * Represents an instance restored from previously filled state, as represented
  * in an {@link InstancePayload}. Clients may serialize and persist an instance
@@ -92,6 +95,7 @@ export type FormInstanceEditMode = 'edit';
 export type FormInstanceInitializationMode =
 	| FormInstanceCreateMode
 	| FormInstanceEditMode
+	| FormInstanceResetMode
 	| FormInstanceRestoreMode;
 
 /**
