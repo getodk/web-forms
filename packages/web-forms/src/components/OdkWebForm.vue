@@ -23,6 +23,7 @@ import type { ObjectURL } from '@getodk/common/lib/web-compat/url.ts';
 import type {
 	ChunkedInstancePayload,
 	FetchFormAttachment,
+	GeolocationProvider, GeopointInputValue,
 	MissingResourceBehavior,
 	MonolithicInstancePayload,
 	PreloadProperties,
@@ -158,6 +159,16 @@ const emit = defineEmits<OdkWebFormEmits>();
 const formOptions = readonly<FormOptions>({
 	fetchFormAttachment: props.fetchFormAttachment,
 	missingResourceBehavior: props.missingResourceBehavior,
+	geolocationProvider: {
+		getLocation: (): Promise<GeopointInputValue> => {
+			return new Promise((resolve) => {
+				setTimeout(
+					() => resolve({ latitude: 37.7749, longitude: -122.4194, altitude: 0, accuracy: 0 }),
+					10 * 1000
+				);
+			});
+		},
+	},
 });
 provide(FORM_OPTIONS, formOptions);
 provide(FORM_IMAGE_CACHE, new Map<JRResourceURLString, ObjectURL>());
@@ -235,10 +246,7 @@ watchEffect(() => {
 	/>
 
 	<template v-if="state.status === 'FORM_STATE_FAILURE'">
-		<FormLoadFailureDialog
-			severity="error"
-			:error="state.error"
-		/>
+		<FormLoadFailureDialog severity="error" :error="state.error" />
 	</template>
 
 	<div
@@ -249,7 +257,13 @@ watchEffect(() => {
 		<div class="form-wrapper">
 			<div v-if="showValidationError" class="error-banner-placeholder" />
 			<!-- Closable error message to clear the view and avoid overlap with other elements -->
-			<Message v-if="showValidationError" severity="error" class="form-error-message" :closable="true" @close="floatingErrorActive = false">
+			<Message
+				v-if="showValidationError"
+				severity="error"
+				class="form-error-message"
+				:closable="true"
+				@close="floatingErrorActive = false"
+			>
 				<IconSVG name="mdiAlertCircleOutline" variant="error" />
 				<span>{{ validationErrorMessage }}</span>
 			</Message>
@@ -274,7 +288,7 @@ watchEffect(() => {
 		<div class="powered-by-wrapper">
 			<a class="anchor" href="https://getodk.org" target="_blank">
 				<span class="caption">Powered by</span>
-				<img class="logo" src="../assets/images/odk-logo.svg" alt="ODK">
+				<img class="logo" src="../assets/images/odk-logo.svg" alt="ODK" />
 			</a>
 			<div class="version">
 				{{ webFormsVersion }}

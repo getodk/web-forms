@@ -12,6 +12,7 @@ import { DefaultEvaluator } from '@getodk/xpath';
 
 interface DOMBindElement extends KnownAttributeLocalNamedElement<'bind', 'nodeset'> {}
 interface DOMSetValueElement extends KnownAttributeLocalNamedElement<'setvalue', 'event'> {}
+interface DOMSetGeopointElement extends KnownAttributeLocalNamedElement<'odk:setgeopoint', 'event'> {}
 
 const getMetaElement = (primaryInstanceRoot: Element): Element | null => {
 	for (const child of primaryInstanceRoot.children) {
@@ -338,6 +339,7 @@ export class XFormDOM {
 	readonly model: Element;
 	readonly binds: readonly DOMBindElement[];
 	readonly setValues: readonly DOMSetValueElement[];
+	readonly setGeopoints: readonly DOMSetGeopointElement[];
 	readonly primaryInstance: Element;
 	readonly primaryInstanceRoot: Element;
 
@@ -372,6 +374,12 @@ export class XFormDOM {
 		);
 		const setValues: readonly DOMSetValueElement[] = evaluator.evaluateNodes<DOMSetValueElement>(
 			'./xf:setvalue[@event]',
+			{
+				contextNode: model,
+			}
+		);
+		const setGeopoints: readonly DOMSetGeopointElement[] = evaluator.evaluateNodes<DOMSetGeopointElement>(
+			'./odk:setgeopoint[@event]',
 			{
 				contextNode: model,
 			}
@@ -426,6 +434,7 @@ export class XFormDOM {
 		this.model = model;
 		this.binds = binds;
 		this.setValues = setValues;
+		this.setGeopoints = setGeopoints;
 		this.primaryInstance = primaryInstance;
 		this.primaryInstanceRoot = primaryInstanceRoot;
 		this.itextTranslationElements = itextTranslationElements;

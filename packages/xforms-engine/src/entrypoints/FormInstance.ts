@@ -42,6 +42,7 @@ export class FormInstance<Mode extends FormInstanceInitializationMode>
 			clientStateFactory: instanceConfig.stateFactory ?? identity,
 			computeAttachmentName: instanceConfig.instanceAttachments?.fileNameFactory ?? (() => null),
 			preloadProperties: instanceConfig.preloadProperties ?? {},
+			geolocationProvider: instanceConfig.geolocationProvider ?? null,
 		};
 		const primaryInstanceOptions: PrimaryInstanceOptions<Mode> = {
 			...options.instanceOptions,

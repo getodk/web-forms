@@ -1,3 +1,4 @@
+import type { GeopointInputValue } from '../../lib/codecs/Geopoint/Geopoint.ts';
 import type { InstanceAttachmentsConfig } from '../attachments/InstanceAttachmentsConfig.ts';
 import type { OpaqueReactiveObjectFactory } from '../OpaqueReactiveObjectFactory.ts';
 
@@ -14,6 +15,10 @@ export interface PreloadProperties {
 	readonly email?: string;
 	readonly username?: string;
 	readonly phoneNumber?: string;
+}
+
+export interface GeolocationProvider {
+	getLocation(): Promise<GeopointInputValue>;
 }
 
 export interface FormInstanceConfig {
@@ -35,4 +40,6 @@ export interface FormInstanceConfig {
 	readonly instanceAttachments?: InstanceAttachmentsConfig;
 
 	readonly preloadProperties?: PreloadProperties;
+
+	readonly geolocationProvider?: GeolocationProvider;
 }

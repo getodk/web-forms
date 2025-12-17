@@ -86,14 +86,7 @@ describe('SetGeopointActionTest.java', () => {
 	});
 
 	describe('when instance is loaded', () => {
-		/**
-		 * **PORTING NOTES**
-		 *
-		 * - Rephrase?
-		 *
-		 * - Fails: no support for this (or any) action/event
-		 */
-		it.fails('[sets the location?] location is set at target', async () => {
+		it('[sets the location?] location is set at target', async () => {
 			const scenario = await Scenario.init(r('setgeopoint-action-instance-load.xml'));
 
 			expect(scenario.answerOf('/data/location')).toEqualAnswer(EXPECTED_STUB_ANSWER);
@@ -101,16 +94,7 @@ describe('SetGeopointActionTest.java', () => {
 	});
 
 	describe('when trigger node is updated', () => {
-		/**
-		 * **PORTING NOTES**
-		 *
-		 * - Rephrase?
-		 *
-		 * - A strange new assertion syntax appears. Anyway, it's an answer/null check, and the comment suggests it's a safe assumption that it can follow the typical conversion from `nullValue()` -> blank/empty string check.
-		 *
-		 * - Fails pending feature support
-		 */
-		it.fails('[sets the location?] location is set at target', async () => {
+		it('[sets the location?] location is set at target', async () => {
 			const scenario = await Scenario.init(r('setgeopoint-action-value-changed.xml'));
 
 			// The test form has no default value at /data/location, and

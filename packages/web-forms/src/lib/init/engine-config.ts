@@ -61,6 +61,7 @@ const getPreloadProperties = (options: GetFormInstanceConfigOptions) => {
 };
 
 export const getFormInstanceConfig = (options: GetFormInstanceConfigOptions) => {
+	console.log('getFormInstanceConfig', options);
 	return {
 		stateFactory: reactive,
 		instanceAttachments: INSTANCE_ATTACHMENTS_CONFIG,

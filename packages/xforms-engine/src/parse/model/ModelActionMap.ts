@@ -14,16 +14,27 @@ export class ModelActionMap extends Map<string, ActionDefinition> {
 	}
 
 	protected constructor(model: ModelDefinition) {
-		super(
-			model.form.xformDOM.setValues.map((setValueElement) => {
+		const entries: Array<[string, ActionDefinition]> = [];
+		entries.push(
+			...model.form.xformDOM.setValues.map((setValueElement) => {
 				const action = new ActionDefinition(model, setValueElement);
 				if (action.events.includes(XFORM_EVENT.odkNewRepeat)) {
 					throw new Error('Model contains "setvalue" element with "odk-new-repeat" event');
 				}
 				const key = ModelActionMap.getKey(action.ref);
-				return [key, action];
+				return [key, action] as [string, ActionDefinition];
 			})
 		);
+
+		entries.push(
+			...model.form.xformDOM.setGeopoints.map((setGeopointElement) => {
+				const action = new ActionDefinition(model, setGeopointElement);
+				const key = ModelActionMap.getKey(action.ref);
+				return [key, action] as [string, ActionDefinition];
+			})
+		);
+
+		super(entries);
 	}
 
 	override get(ref: string): ActionDefinition | undefined {

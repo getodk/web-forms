@@ -63,7 +63,7 @@ export class RootDefinition extends NodeDefinition<'root'> {
 			return;
 		}
 		for (const child of bodyElement.element.children) {
-			if (child.nodeName === 'setvalue') {
+			if (child.nodeName === 'setvalue' || child.nodeName === 'odk:setgeopoint') {
 				const action = new ActionDefinition(this.model, child, source);
 				this.model.actions.add(action);
 			}
