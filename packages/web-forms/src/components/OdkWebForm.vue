@@ -23,7 +23,6 @@ import type { ObjectURL } from '@getodk/common/lib/web-compat/url.ts';
 import type {
 	ChunkedInstancePayload,
 	FetchFormAttachment,
-	GeolocationProvider, GeopointInputValue,
 	MissingResourceBehavior,
 	MonolithicInstancePayload,
 	PreloadProperties,
@@ -160,12 +159,9 @@ const formOptions = readonly<FormOptions>({
 	fetchFormAttachment: props.fetchFormAttachment,
 	missingResourceBehavior: props.missingResourceBehavior,
 	geolocationProvider: {
-		getLocation: (): Promise<GeopointInputValue> => {
+		getLocation: (): Promise<string> => {
 			return new Promise((resolve) => {
-				setTimeout(
-					() => resolve({ latitude: 37.7749, longitude: -122.4194, altitude: 0, accuracy: 0 }),
-					10 * 1000
-				);
+				setTimeout(() => resolve('37.7749, -122.4194, 0, 0'), 10 * 1000);
 			});
 		},
 	},

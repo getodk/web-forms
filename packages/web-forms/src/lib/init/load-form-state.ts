@@ -103,9 +103,6 @@ export const loadFormState = async (
 		return failure(FormInitializationError.fromError(form.error));
 	}
 
-	console.log('After form load', form, options, options.form);
-	const geoLocation = await options.form.geolocationProvider?.getLocation();
-	console.log('After resolving geoLocation', geoLocation);
 	const config = getFormInstanceConfig(options);
 
 	if (options.editInstance == null) {

@@ -121,6 +121,7 @@ export class PrimaryInstance<
 	readonly initializationMode: FormInstanceInitializationMode;
 	readonly model: ModelDefinition;
 	readonly attachments: InstanceAttachmentsState;
+	protected backgroundGeopoint: Promise<string> | null = null; // TODO use the one from geolocation once it's merged
 
 	// InstanceNode
 	protected readonly state: SharedNodeState<PrimaryInstanceStateSpec>;
@@ -169,6 +170,7 @@ export class PrimaryInstance<
 			computeReference: () => PRIMARY_INSTANCE_REFERENCE,
 		});
 
+		this.backgroundGeopoint = config.geolocationProvider?.getLocation() ?? null;	// todo only if setgeopoint is in the form
 		this.initializationMode = mode;
 		this.model = model;
 		this.attachments = new InstanceAttachmentsState(initialState?.attachments);
@@ -285,5 +287,9 @@ export class PrimaryInstance<
 		});
 
 		return Promise.resolve(result);
+	}
+
+	getBackgroundGeopoint() {
+		return this.backgroundGeopoint;
 	}
 }

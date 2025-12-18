@@ -191,7 +191,7 @@ const createCalculation = (
 ): void => {
 	const calculate = createComputedExpression(context, computation);
 	createComputed(() => {
-		if (context.isAttached() && context.isRelevant()) {
+		if (context.isRelevant()) {
 			const calculated = calculate();
 			const value = context.decodeInstanceValue(calculated);
 			setRelevantValue(value);
@@ -283,7 +283,16 @@ export const createInstanceValueState = (context: ValueContext): InstanceValueSt
 
 		const action = context.definition.model.actions.get(context.contextReference());
 		if (action) {
-			registerAction(context, setValue, action);
+			if (action.element.nodeName === 'odk:setgeopoint') {
+				context.parent.rootDocument.getBackgroundGeopoint()?.then((value: string) => {
+					if (value) {
+						action.buildComputation(`"${value}"`);
+						registerAction(context, setValue, action);
+					}
+				});
+			} else {
+				registerAction(context, setValue, action);
+			}
 		}
 
 		return guardDownstreamReadonlyWrites(context, relevantValueState);

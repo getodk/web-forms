@@ -1,3 +1,4 @@
+import type { FormOptions } from '@/lib/init/load-form-state.ts';
 import type {
 	EditFormInstance,
 	InstanceAttachmentsConfig,
@@ -10,6 +11,7 @@ const DEVICE_ID_KEY = 'odk-deviceid';
 const DEVICE_ID_PREFIX = 'getodk.org:webforms:';
 
 interface GetFormInstanceConfigOptions {
+	readonly form: FormOptions;
 	readonly trackDevice?: boolean;
 	readonly preloadProperties?: PreloadProperties;
 }
@@ -61,10 +63,10 @@ const getPreloadProperties = (options: GetFormInstanceConfigOptions) => {
 };
 
 export const getFormInstanceConfig = (options: GetFormInstanceConfigOptions) => {
-	console.log('getFormInstanceConfig', options);
 	return {
 		stateFactory: reactive,
 		instanceAttachments: INSTANCE_ATTACHMENTS_CONFIG,
 		preloadProperties: getPreloadProperties(options),
+		geolocationProvider: options.form.geolocationProvider,
 	};
 };

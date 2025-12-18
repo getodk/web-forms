@@ -1,4 +1,3 @@
-import type { GeopointInputValue } from '../../lib/codecs/Geopoint/Geopoint.ts';
 import type { InstanceAttachmentsConfig } from '../attachments/InstanceAttachmentsConfig.ts';
 import type { OpaqueReactiveObjectFactory } from '../OpaqueReactiveObjectFactory.ts';
 
@@ -18,7 +17,7 @@ export interface PreloadProperties {
 }
 
 export interface GeolocationProvider {
-	getLocation(): Promise<GeopointInputValue>;
+	getLocation(): Promise<string>;
 }
 
 export interface FormInstanceConfig {

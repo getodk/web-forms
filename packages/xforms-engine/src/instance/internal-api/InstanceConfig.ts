@@ -16,5 +16,5 @@ export interface InstanceConfig {
 
 	readonly preloadProperties: PreloadProperties;
 
-	readonly geolocationProvider: GeolocationProvider | null;
+	readonly geolocationProvider: GeolocationProvider | undefined;
 }
