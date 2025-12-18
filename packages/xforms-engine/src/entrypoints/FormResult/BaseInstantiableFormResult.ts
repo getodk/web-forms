@@ -67,12 +67,12 @@ export abstract class BaseInstantiableFormResult<
 			this.assertInstantiable();
 
 			instanceOptions.scope.dispose();
-			const scope = createPotentiallyClientOwnedReactiveScope();
-			const resetInstanceOptions: BasePrimaryInstanceOptions = { ...instanceOptions, scope };
+			instanceOptions.scope = createPotentiallyClientOwnedReactiveScope();
+			// const resetInstanceOptions: BasePrimaryInstanceOptions = { ...instanceOptions, scope };
 
 			return new FormInstance(this, {
 				mode: 'reset',
-				instanceOptions: resetInstanceOptions,
+				instanceOptions: instanceOptions,
 				initialState: null,
 				instanceConfig,
 			});

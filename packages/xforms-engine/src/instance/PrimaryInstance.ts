@@ -93,7 +93,7 @@ export type PrimaryInstanceInitialState<Mode extends FormInstanceInitializationM
 	PrimaryInstanceStateInputByMode[Mode];
 
 export interface BasePrimaryInstanceOptions {
-	readonly scope: ReactiveScope;
+	scope: ReactiveScope;
 	readonly model: ModelDefinition;
 	readonly secondaryInstances: SecondaryInstancesDefinition;
 }

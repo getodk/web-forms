@@ -4,7 +4,6 @@ import type { FormInstanceConfig } from './FormInstanceConfig.ts';
 import type { LoadForm } from './LoadForm.ts';
 import type { LoadFormResult } from './LoadFormResult.ts';
 
-// TODO need a better name
 export type ResettedFormInstance = FormInstance<FormInstanceResetMode>;
 
 /**
