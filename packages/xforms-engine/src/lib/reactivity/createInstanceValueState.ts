@@ -29,10 +29,6 @@ const isEditInitialLoad = (context: ValueContext) => {
 	return context.rootDocument.initializationMode === 'edit';
 };
 
-const isResetInitialLoad = (context: ValueContext) => {
-	return context.rootDocument.initializationMode === 'reset';
-};
-
 const getInitialValue = (context: ValueContext): string => {
 	const sourceNode = context.instanceNode ?? context.definition.template;
 
@@ -105,7 +101,7 @@ const guardDownstreamReadonlyWrites = (
  * - When an instance is initially loaded for editing ({@link isEditInitialLoad})
  */
 const isLoading = (context: ValueContext) => {
-	return isInstanceFirstLoad(context) || isEditInitialLoad(context) || isResetInitialLoad(context);
+	return isInstanceFirstLoad(context) || isEditInitialLoad(context);
 };
 
 const setValueIfPreloadDefined = (

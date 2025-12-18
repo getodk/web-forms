@@ -14,19 +14,6 @@ import type { InstantiableLoadFormResult, LoadFormResult } from './LoadFormResul
 export type FormInstanceCreateMode = 'create';
 
 /**
- * Represents an instance which has been submitted and is being reset so the same
- * form can be submitted again.
- *
- * A reset created instance is populated with default values and state defined
- * by the form.
- *
- * Computations are performed on initialization as specified by
- * {@link https://getodk.github.io/xforms-spec/ | ODK XForms}, as the instance's
- * {@link https://getodk.github.io/xforms-spec/#event:odk-instance-first-load | first load}.
- */
-export type FormInstanceResetMode = 'reset';
-
-/**
  * Represents an instance restored from previously filled state, as represented
  * in an {@link InstancePayload}. Clients may serialize and persist an instance
  * payload as appropriate for their use cases, and can restore the instance with
@@ -105,7 +92,6 @@ export type FormInstanceEditMode = 'edit';
 export type FormInstanceInitializationMode =
 	| FormInstanceCreateMode
 	| FormInstanceEditMode
-	| FormInstanceResetMode
 	| FormInstanceRestoreMode;
 
 /**

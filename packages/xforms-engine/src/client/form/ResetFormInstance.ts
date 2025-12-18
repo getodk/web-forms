@@ -1,10 +1,8 @@
 import type { RootNode } from '../RootNode.ts';
-import type { FormInstance, FormInstanceResetMode } from './FormInstance.ts';
+import type { CreatedFormInstance } from './CreateFormInstance.ts';
 import type { FormInstanceConfig } from './FormInstanceConfig.ts';
 import type { LoadForm } from './LoadForm.ts';
 import type { LoadFormResult } from './LoadFormResult.ts';
-
-export type ResettedFormInstance = FormInstance<FormInstanceResetMode>;
 
 /**
  * @todo This is fallible! Client-facing interfaces will need to account for
@@ -16,4 +14,4 @@ export type ResettedFormInstance = FormInstance<FormInstanceResetMode>;
  * such, explicit interface-level documentation of fallibility is deferred here,
  * on {@link RootNode} itself, and into any of its sub-interfaces.
  */
-export type ResetFormInstance = (config?: FormInstanceConfig) => ResettedFormInstance;
+export type ResetFormInstance = (config?: FormInstanceConfig) => CreatedFormInstance;

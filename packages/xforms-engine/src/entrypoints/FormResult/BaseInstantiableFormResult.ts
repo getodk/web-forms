@@ -64,18 +64,9 @@ export abstract class BaseInstantiableFormResult<
 		};
 
 		this.resetInstance = (instanceConfig: FormInstanceConfig = {}) => {
-			this.assertInstantiable();
-
 			instanceOptions.scope.dispose();
 			instanceOptions.scope = createPotentiallyClientOwnedReactiveScope();
-			// const resetInstanceOptions: BasePrimaryInstanceOptions = { ...instanceOptions, scope };
-
-			return new FormInstance(this, {
-				mode: 'reset',
-				instanceOptions: instanceOptions,
-				initialState: null,
-				instanceConfig,
-			});
+			return this.createInstance(instanceConfig);
 		};
 
 		this.editInstance = async (

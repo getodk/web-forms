@@ -348,6 +348,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 		mapViewControls = undefined;
 		mapInteractions?.teardownMap();
 		mapInteractions = undefined;
+		mapFeatures = undefined;
 
 		iconImageCache.clear();
 		if (mapInstance) {
