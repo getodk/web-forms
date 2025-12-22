@@ -138,7 +138,7 @@ export const distance = new NumberFunction(
 const calculateIsPointInGPSPolygon = (point: Geopoint, polygon: Geotrace) => {
 	const testx = point.longitude; // x maps to longitude
 	const testy = point.latitude; // y maps to latitude
-	let c = false;
+	let result = false;
 	for (let i = 1; i < polygon.geopoints.length; i++) {
 		// geoshapes already duplicate the first point to last, so unlike the original algorithm there is no need to wrap j
 		const p1 = polygon.geopoints[i - 1]; // this is effectively j in the original algorithm
@@ -146,16 +146,16 @@ const calculateIsPointInGPSPolygon = (point: Geopoint, polygon: Geotrace) => {
 		if (!p1 || !p2) {
 			return false;
 		}
+		const { latitude: p1Lat, longitude: p1long } = p1;
+		const { latitude: p2Lat, longitude: p2long } = p2;
 		if (
-			p2.latitude > testy != p1.latitude > testy &&
-			testx <
-				((p1.longitude - p2.longitude) * (testy - p2.latitude)) / (p1.latitude - p2.latitude) +
-					p2.longitude
+			p2Lat > testy != p1Lat > testy &&
+			testx < ((p1long - p2long) * (testy - p2Lat)) / (p1Lat - p2Lat) + p2long
 		) {
-			c = !c;
+			result = !result;
 		}
 	}
-	return c;
+	return result;
 };
 
 const validateGeoshape = (shape: Geotrace) => {
