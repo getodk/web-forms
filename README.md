@@ -2,7 +2,7 @@
 
 With ODK Web Forms, you can define forms with powerful logic using the spreadsheet-based [XLSForm standard](https://docs.getodk.org/xlsform/). Use [our Vue-based frontend](/packages/web-forms/) or build your own user experience around [the engine](/packages/xforms-engine/)!
 
-You can try a preview [on the ODK website](https://getodk.org/web-forms-preview/). This gets updated nightly to reflect `main`.
+You can try a preview [on the ODK website](https://getodk.org/web-forms-preview/), which is updated nightly to reflect `main`. The packages are also available [on npm](https://www.npmjs.com/search?q=getodk).
 
 > [!IMPORTANT]
 > ODK Web Forms is currently pre-release. We don't yet guarantee that its interfaces are stable and it is missing many features that are available in XLSForm form definitions.
@@ -23,6 +23,8 @@ Here are some of our high-level priorities to get to a production-ready state:
 - Implement all types and appearances defined in [XLSForm](https://xlsform.org/en/ref-table/)
 - Define a thoughtful interface for host applications that balances ease of use and flexibility
 
+We welcome discussion about the project [on the ODK forum](https://forum.getodk.org/)! The forum is generally the preferred place for questions, issue reports, and feature requests unless you have information to add to an existing issue.
+
 ### Feature matrix
 
 This section is auto generated. Please update `feature-matrix.json` and then run `yarn feature-matrix` from the repository's root to update it.
@@ -33,7 +35,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  ##### Question types (basic functionality)<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜ 64\%
+  ##### Question types (basic functionality)<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜ 61\%
 
   </summary>
   <br/>
@@ -52,7 +54,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | geopoint                   |    ✅    |
 | geotrace                   |          |
 | geoshape                   |          |
-| start-geopoint             |    ✅    |
+| start-geopoint             |          |
 | range                      |    ✅    |
 | image                      |    ✅    |
 | barcode                    |          |
@@ -350,8 +352,6 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 
 <!-- /autogen: feature-matrix -->
 
-We welcome discussion about the project [on the ODK forum](https://forum.getodk.org/)! The forum is generally the preferred place for questions, issue reports, and feature requests unless you have information to add to an existing issue.
-
 ## Q&A
 
 ### Why not evolve [Enketo](https://github.com/enketo/enketo/)?
@@ -413,7 +413,8 @@ Thank you for contributing! Follow these guidelines for smooth collaboration.
 
 ### Requirements
 
-We use [Volta](https://volta.sh/) to ensure consistent `node` and `yarn` versions. Published packages are available [on NPM](https://www.npmjs.com/search?q=getodk).
+- [Volta](https://volta.sh/) to ensure consistent `node` and `yarn` versions.
+- [docker](https://www.docker.com/) to build the `tree-sitter-xpath` package.
 
 ### Running locally
 
@@ -458,7 +459,7 @@ yarn test
 
 ### Commit message
 
-Consider using [Conventional Commits](https://www.conventionalcommits.org/):
+Use [Conventional Commits](https://www.conventionalcommits.org/):
 
 ```
 <type>(<issue>): <description>
