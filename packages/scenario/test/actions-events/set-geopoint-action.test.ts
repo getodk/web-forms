@@ -24,7 +24,7 @@ describe('odk:setgeopoint action', () => {
 		},
 	};
 
-	it('does not set invalid point when coordinates are wrong', async () => {
+	it('should not set invalid point when coordinates are wrong', async () => {
 		const scenario = await Scenario.init(
 			'Invalid coords',
 			html(
@@ -43,7 +43,7 @@ describe('odk:setgeopoint action', () => {
 		expect(scenario.answerOf('/data/destination').getValue()).toBe('');
 	});
 
-	it('does not set invalid point when incorrect text provided', async () => {
+	it('should not set invalid point when incorrect text provided', async () => {
 		const scenario = await Scenario.init(
 			'Invalid text',
 			html(
@@ -57,6 +57,25 @@ describe('odk:setgeopoint action', () => {
 				body(input('/data/source'), setgeopoint('odk-instance-first-load', '/data/destination'))
 			),
 			{ geolocationProvider: { getLocation: () => Promise.resolve('abcd') } }
+		);
+
+		expect(scenario.answerOf('/data/destination').getValue()).toBe('');
+	});
+
+	it('should not set point when incorrect event provided', async () => {
+		const scenario = await Scenario.init(
+			'Invalid event',
+			html(
+				head(
+					title('Invalid event'),
+					model(
+						mainInstance(t('data id="invalid-event"', t('source'), t('destination'))),
+						bind('/data/destination').type('string')
+					)
+				),
+				body(input('/data/source'), setgeopoint('odk-some-random-event', '/data/destination'))
+			),
+			geolocationProvider
 		);
 
 		expect(scenario.answerOf('/data/destination').getValue()).toBe('');
