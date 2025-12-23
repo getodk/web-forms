@@ -47,8 +47,8 @@ export class ActionDefinition {
 
 	readonly ref: string;
 	readonly events: XFormEvent[];
+	readonly computation: ActionComputationExpression<'string'>;
 	readonly source: string | undefined;
-	protected computation: ActionComputationExpression<'string'> | null = null;
 
 	constructor(
 		model: ModelDefinition,
@@ -63,12 +63,8 @@ export class ActionDefinition {
 		}
 		this.ref = ref;
 		this.events = ActionDefinition.getEvents(element);
-		this.source = source;
 		const value = ActionDefinition.getValue(element);
-		this.buildComputation(value);
-	}
-
-	buildComputation(value: string) {
 		this.computation = new ActionComputationExpression('string', value);
+		this.source = source;
 	}
 }

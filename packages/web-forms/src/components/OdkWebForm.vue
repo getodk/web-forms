@@ -161,7 +161,7 @@ const formOptions = readonly<FormOptions>({
 	geolocationProvider: {
 		getLocation: (): Promise<string> => {
 			return new Promise((resolve) => {
-				setTimeout(() => resolve('37.7749, -122.4194, 0, 0'), 10 * 1000);
+				setTimeout(() => resolve('38.295 21.7567 110 5'), 10 * 1000);
 			});
 		},
 	},
@@ -284,7 +284,7 @@ watchEffect(() => {
 		<div class="powered-by-wrapper">
 			<a class="anchor" href="https://getodk.org" target="_blank">
 				<span class="caption">Powered by</span>
-				<img class="logo" src="../assets/images/odk-logo.svg" alt="ODK" />
+				<img class="logo" src="../assets/images/odk-logo.svg" alt="ODK">
 			</a>
 			<div class="version">
 				{{ webFormsVersion }}

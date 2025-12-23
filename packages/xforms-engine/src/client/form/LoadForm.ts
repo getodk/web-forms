@@ -1,5 +1,4 @@
 import type { loadForm } from '../../entrypoints/loadForm.ts';
-import type { GeolocationProvider } from '../../instance/PrimaryInstance.ts';
 import type { MissingResourceBehavior } from '../constants.ts';
 import type { FetchFormAttachment, FetchResource } from '../resources.ts';
 import type { FormResource } from './FormResource.ts';
@@ -79,8 +78,6 @@ export interface LoadFormOptions {
 	 * @default MissingResourceBehaviorDefault
 	 */
 	readonly missingResourceBehavior?: MissingResourceBehavior;
-
-	readonly geolocationProvider?: GeolocationProvider;
 }
 
 /**

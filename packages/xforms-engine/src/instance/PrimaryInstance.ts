@@ -1,6 +1,7 @@
 import { clearCache, XPathNodeKindKey } from '@getodk/xpath';
 import type { Accessor } from 'solid-js';
 import { createSignal } from 'solid-js';
+import type { GeolocationProvider } from '../client';
 import type { FormInstanceInitializationMode } from '../client/form/FormInstance.ts';
 import type { ActiveLanguage, FormLanguage, FormLanguages } from '../client/FormLanguage.ts';
 import type { FormNodeID } from '../client/identity.ts';
@@ -108,6 +109,8 @@ export interface PrimaryInstanceOptions<Mode extends FormInstanceInitializationM
 	readonly initialState: PrimaryInstanceInitialState<Mode>;
 }
 
+export type BackgroundGeopoint = Promise<string>;
+
 export class PrimaryInstance<
 		Mode extends FormInstanceInitializationMode = FormInstanceInitializationMode,
 	>
@@ -122,7 +125,7 @@ export class PrimaryInstance<
 	readonly initializationMode: FormInstanceInitializationMode;
 	readonly model: ModelDefinition;
 	readonly attachments: InstanceAttachmentsState;
-	protected backgroundGeopoint: Promise<string> | null = null; // TODO use the one from geolocation once it's merged
+	protected backgroundGeopoint: BackgroundGeopoint | null = null;
 
 	// InstanceNode
 	protected readonly state: SharedNodeState<PrimaryInstanceStateSpec>;
@@ -135,6 +138,7 @@ export class PrimaryInstance<
 	readonly hasNonRelevantAncestor = () => false;
 	readonly isRelevant = () => true;
 
+	private geolocationProvider: GeolocationProvider | undefined;
 	// TranslationContext (support)
 	private readonly setActiveLanguage: SimpleAtomicStateSetter<FormLanguage>;
 
@@ -173,11 +177,11 @@ export class PrimaryInstance<
 			computeReference: () => PRIMARY_INSTANCE_REFERENCE,
 		});
 
-		this.backgroundGeopoint = config.geolocationProvider?.getLocation() ?? null;	// todo only if setgeopoint is in the form
 		this.initializationMode = mode;
 		this.model = model;
 		this.attachments = new InstanceAttachmentsState(initialState?.attachments);
 		this.instanceNode = activeInstance;
+		this.geolocationProvider = config.geolocationProvider;
 
 		const [isAttached, setIsAttached] = createSignal(false);
 
@@ -293,6 +297,7 @@ export class PrimaryInstance<
 	}
 
 	getBackgroundGeopoint() {
+		this.backgroundGeopoint ??= this.geolocationProvider?.getLocation() ?? Promise.resolve('');
 		return this.backgroundGeopoint;
 	}
 }

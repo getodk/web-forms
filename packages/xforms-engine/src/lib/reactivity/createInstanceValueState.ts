@@ -7,6 +7,8 @@ import type { BindComputationExpression } from '../../parse/expression/BindCompu
 import { ActionDefinition } from '../../parse/model/ActionDefinition.ts';
 import type { AnyBindPreloadDefinition } from '../../parse/model/BindPreloadDefinition.ts';
 import { XFORM_EVENT } from '../../parse/model/Event.ts';
+import { SET_GEOPOINT_LOCAL_NAME } from '../../parse/XFormDOM.ts';
+import { sharedValueCodecs } from '../codecs/getSharedValueCodec.ts';
 import { createComputedExpression } from './createComputedExpression.ts';
 import type { SimpleAtomicState, SimpleAtomicStateSetter } from './types.ts';
 
@@ -191,7 +193,7 @@ const createCalculation = (
 ): void => {
 	const calculate = createComputedExpression(context, computation);
 	createComputed(() => {
-		if (context.isRelevant()) {
+		if (context.isAttached() && context.isRelevant()) {
 			const calculated = calculate();
 			const value = context.decodeInstanceValue(calculated);
 			setRelevantValue(value);
@@ -228,28 +230,65 @@ const createValueChangedCalculation = (
 	});
 };
 
-const registerAction = (
+const setBackgroundGeopointValue = (
+	context: ValueContext,
+	setValue: SimpleAtomicStateSetter<string>
+) => {
+	// eslint-disable-next-line @typescript-eslint/no-floating-promises -- we don't want to block
+	context.rootDocument.getBackgroundGeopoint()?.then((point) => {
+		// Allow the codec to manage all geolocation validation.
+		// It decodes and encodes the value, and setValue expects a string.
+		const value = sharedValueCodecs.geopoint.encodeValue(point);
+		setValue(value);
+	});
+};
+
+const performActionComputation = (
+	context: ValueContext,
+	setValue: SimpleAtomicStateSetter<string>,
+	action: ActionDefinition,
+	type: 'geopoint' | 'standard' | 'valueChanged'
+) => {
+	if (type === 'standard') {
+		createCalculation(context, setValue, action.computation);
+		return;
+	}
+
+	if (type === 'geopoint') {
+		setBackgroundGeopointValue(context, setValue);
+		return;
+	}
+
+	if (type === 'valueChanged') {
+		createValueChangedCalculation(context, setValue, action);
+		return;
+	}
+};
+
+const dispatchAction = (
 	context: ValueContext,
 	setValue: SimpleAtomicStateSetter<string>,
 	action: ActionDefinition
 ) => {
+	const isGeopoint = action.element.nodeName === SET_GEOPOINT_LOCAL_NAME;
+
 	if (action.events.includes(XFORM_EVENT.odkInstanceFirstLoad)) {
 		if (isInstanceFirstLoad(context)) {
-			createCalculation(context, setValue, action.computation);
+			performActionComputation(context, setValue, action, isGeopoint ? 'geopoint' : 'standard');
 		}
 	}
 	if (action.events.includes(XFORM_EVENT.odkInstanceLoad)) {
 		if (!isAddingRepeatChild(context)) {
-			createCalculation(context, setValue, action.computation);
+			performActionComputation(context, setValue, action, isGeopoint ? 'geopoint' : 'standard');
 		}
 	}
 	if (action.events.includes(XFORM_EVENT.odkNewRepeat)) {
 		if (isAddingRepeatChild(context)) {
-			createCalculation(context, setValue, action.computation);
+			performActionComputation(context, setValue, action, isGeopoint ? 'geopoint' : 'standard');
 		}
 	}
 	if (action.events.includes(XFORM_EVENT.xformsValueChanged)) {
-		createValueChangedCalculation(context, setValue, action);
+		performActionComputation(context, setValue, action, isGeopoint ? 'geopoint' : 'valueChanged');
 	}
 };
 
@@ -283,16 +322,7 @@ export const createInstanceValueState = (context: ValueContext): InstanceValueSt
 
 		const action = context.definition.model.actions.get(context.contextReference());
 		if (action) {
-			if (action.element.nodeName === 'odk:setgeopoint') {
-				context.parent.rootDocument.getBackgroundGeopoint()?.then((value: string) => {
-					if (value) {
-						action.buildComputation(`"${value}"`);
-						registerAction(context, setValue, action);
-					}
-				});
-			} else {
-				registerAction(context, setValue, action);
-			}
+			dispatchAction(context, setValue, action);
 		}
 
 		return guardDownstreamReadonlyWrites(context, relevantValueState);
