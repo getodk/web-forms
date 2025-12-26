@@ -169,8 +169,8 @@ const emit = defineEmits<OdkWebFormEmits>();
 const getLocation = async (): Promise<string> => {
 	let point = '';
 	try {
-		point = await geolocationService.getBestGeopoint();
 		geolocationErrorMessage.value = '';
+		point = await geolocationService.getBestGeopoint();
 	} catch {
 		// TODO: translations
 		geolocationErrorMessage.value =
@@ -233,8 +233,8 @@ const validationErrorMessage = computed(() => {
 
 	// TODO: translations
 	if (violationLength === 0) return '';
-	else if (violationLength === 1) return '1 question with error';
-	else return `${violationLength} questions with errors`;
+	else if (violationLength === 1) return '1 question with error.';
+	else return `${violationLength} questions with errors.`;
 });
 
 watchEffect(() => {
@@ -289,8 +289,10 @@ onUnmounted(() => {
 				@close="floatingErrorActive = false"
 			>
 				<IconSVG name="mdiAlertCircleOutline" variant="error" />
-				<span v-if="validationErrorMessage?.length">{{ validationErrorMessage }}</span>
-				<span v-if="geolocationErrorMessage?.length">{{ geolocationErrorMessage }}</span>
+				<span class="form-error-text-wrap">
+					<span v-if="validationErrorMessage?.length">{{ validationErrorMessage }}</span>
+					<span v-if="geolocationErrorMessage?.length">{{ geolocationErrorMessage }}</span>
+				</span>
 			</Message>
 
 			<FormHeader :form="state.root" />
@@ -385,6 +387,11 @@ onUnmounted(() => {
 
 			.odk-icon {
 				margin-right: 10px;
+			}
+
+			.form-error-text-wrap {
+				display: flex;
+				flex-direction: column;
 			}
 		}
 	}

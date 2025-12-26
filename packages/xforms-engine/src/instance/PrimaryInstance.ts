@@ -296,8 +296,21 @@ export class PrimaryInstance<
 		return Promise.resolve(result);
 	}
 
-	getBackgroundGeopoint() {
-		this.backgroundGeopoint ??= this.geolocationProvider?.getLocation() ?? Promise.resolve('');
-		return this.backgroundGeopoint;
+	async getBackgroundGeopoint() {
+		if (this.backgroundGeopoint != null) {
+			return await this.backgroundGeopoint;
+		}
+
+		try {
+			this.backgroundGeopoint = this.geolocationProvider?.getLocation() ?? Promise.resolve('');
+			const result = await this.backgroundGeopoint;
+			if (!result.length) {
+				this.backgroundGeopoint = null;
+			}
+			return result;
+		} catch {
+			this.backgroundGeopoint = null;
+			return '';
+		}
 	}
 }
