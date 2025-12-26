@@ -7,6 +7,8 @@ import type { BindComputationExpression } from '../../parse/expression/BindCompu
 import { ActionDefinition } from '../../parse/model/ActionDefinition.ts';
 import type { AnyBindPreloadDefinition } from '../../parse/model/BindPreloadDefinition.ts';
 import { XFORM_EVENT } from '../../parse/model/Event.ts';
+import { SET_GEOPOINT_LOCAL_NAME } from '../../parse/XFormDOM.ts';
+import { sharedValueCodecs } from '../codecs/getSharedValueCodec.ts';
 import { createComputedExpression } from './createComputedExpression.ts';
 import type { SimpleAtomicState, SimpleAtomicStateSetter } from './types.ts';
 
@@ -202,7 +204,8 @@ const createCalculation = (
 const createValueChangedCalculation = (
 	context: ValueContext,
 	setRelevantValue: SimpleAtomicStateSetter<string>,
-	action: ActionDefinition
+	action: ActionDefinition,
+	resolvedActionValue?: string
 ): void => {
 	const { source, ref } = bindToRepeatInstance(context, action);
 	if (!source) {
@@ -215,41 +218,77 @@ const createValueChangedCalculation = (
 	createComputed(() => {
 		if (context.isAttached() && context.isRelevant()) {
 			const valueSource = calculateValueSource();
-			if (previous !== valueSource) {
-				// only update if value has changed
-				if (referencesCurrentNode(context, ref)) {
+			if (previous !== valueSource && referencesCurrentNode(context, ref)) {
+				// Only update if value has changed
+				let value = resolvedActionValue;
+				if (!value?.length) {
 					const calc = context.evaluator.evaluateString(action.computation.expression, context);
-					const value = context.decodeInstanceValue(calc);
-					setRelevantValue(value);
+					value = context.decodeInstanceValue(calc);
 				}
+				setRelevantValue(value);
 			}
 			previous = valueSource;
 		}
 	});
 };
 
-const registerAction = (
+const setGeopointValue = (context: ValueContext, callback: (value: string) => void) => {
+	// eslint-disable-next-line @typescript-eslint/no-floating-promises -- we don't want to block
+	context.rootDocument.getBackgroundGeopoint()?.then((point) => {
+		// Allow the codec to manage all geolocation validation.
+		// It decodes and encodes the value, and setValue expects a string.
+		callback(sharedValueCodecs.geopoint.encodeValue(point));
+	});
+};
+
+const performActionComputation = (
+	context: ValueContext,
+	setValue: SimpleAtomicStateSetter<string>,
+	action: ActionDefinition
+) => {
+	if (action.element.nodeName === SET_GEOPOINT_LOCAL_NAME) {
+		setGeopointValue(context, (point) => setValue(point));
+		return;
+	}
+	createCalculation(context, setValue, action.computation);
+};
+
+const performActionOnValueChange = (
+	context: ValueContext,
+	setValue: SimpleAtomicStateSetter<string>,
+	action: ActionDefinition
+) => {
+	if (action.element.nodeName === SET_GEOPOINT_LOCAL_NAME) {
+		setGeopointValue(context, (point) => {
+			createValueChangedCalculation(context, setValue, action, point);
+		});
+		return;
+	}
+	createValueChangedCalculation(context, setValue, action);
+};
+
+const dispatchAction = (
 	context: ValueContext,
 	setValue: SimpleAtomicStateSetter<string>,
 	action: ActionDefinition
 ) => {
 	if (action.events.includes(XFORM_EVENT.odkInstanceFirstLoad)) {
 		if (isInstanceFirstLoad(context)) {
-			createCalculation(context, setValue, action.computation);
+			performActionComputation(context, setValue, action);
 		}
 	}
 	if (action.events.includes(XFORM_EVENT.odkInstanceLoad)) {
 		if (!isAddingRepeatChild(context)) {
-			createCalculation(context, setValue, action.computation);
+			performActionComputation(context, setValue, action);
 		}
 	}
 	if (action.events.includes(XFORM_EVENT.odkNewRepeat)) {
 		if (isAddingRepeatChild(context)) {
-			createCalculation(context, setValue, action.computation);
+			performActionComputation(context, setValue, action);
 		}
 	}
 	if (action.events.includes(XFORM_EVENT.xformsValueChanged)) {
-		createValueChangedCalculation(context, setValue, action);
+		performActionOnValueChange(context, setValue, action);
 	}
 };
 
@@ -283,7 +322,7 @@ export const createInstanceValueState = (context: ValueContext): InstanceValueSt
 
 		const action = context.definition.model.actions.get(context.contextReference());
 		if (action) {
-			registerAction(context, setValue, action);
+			dispatchAction(context, setValue, action);
 		}
 
 		return guardDownstreamReadonlyWrites(context, relevantValueState);
