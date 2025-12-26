@@ -204,7 +204,8 @@ const createCalculation = (
 const createValueChangedCalculation = (
 	context: ValueContext,
 	setRelevantValue: SimpleAtomicStateSetter<string>,
-	action: ActionDefinition
+	action: ActionDefinition,
+	resolvedActionValue?: string,
 ): void => {
 	const { source, ref } = bindToRepeatInstance(context, action);
 	if (!source) {
@@ -217,29 +218,26 @@ const createValueChangedCalculation = (
 	createComputed(() => {
 		if (context.isAttached() && context.isRelevant()) {
 			const valueSource = calculateValueSource();
-			if (previous !== valueSource) {
-				// only update if value has changed
-				if (referencesCurrentNode(context, ref)) {
+			if (previous !== valueSource && referencesCurrentNode(context, ref)) {
+				// Only update if value has changed
+				let value = resolvedActionValue;
+				if (!value?.length) {
 					const calc = context.evaluator.evaluateString(action.computation.expression, context);
-					const value = context.decodeInstanceValue(calc);
-					setRelevantValue(value);
+					value = context.decodeInstanceValue(calc);
 				}
+				setRelevantValue(value);
 			}
 			previous = valueSource;
 		}
 	});
 };
 
-const setBackgroundGeopointValue = (
-	context: ValueContext,
-	setValue: SimpleAtomicStateSetter<string>
-) => {
+const setGeopointValue = (context: ValueContext, callback: (value: string) => void) => {
 	// eslint-disable-next-line @typescript-eslint/no-floating-promises -- we don't want to block
 	context.rootDocument.getBackgroundGeopoint()?.then((point) => {
 		// Allow the codec to manage all geolocation validation.
 		// It decodes and encodes the value, and setValue expects a string.
-		const value = sharedValueCodecs.geopoint.encodeValue(point);
-		setValue(value);
+		callback(sharedValueCodecs.geopoint.encodeValue(point));
 	});
 };
 
@@ -247,22 +245,24 @@ const performActionComputation = (
 	context: ValueContext,
 	setValue: SimpleAtomicStateSetter<string>,
 	action: ActionDefinition,
-	type: 'geopoint' | 'standard' | 'valueChanged'
 ) => {
-	if (type === 'standard') {
-		createCalculation(context, setValue, action.computation);
+	if (action.element.nodeName === SET_GEOPOINT_LOCAL_NAME) {
+		setGeopointValue(context, (point) => setValue(point));
 		return;
 	}
+	createCalculation(context, setValue, action.computation);
+};
 
-	if (type === 'geopoint') {
-		setBackgroundGeopointValue(context, setValue);
+const performActionOnValueChange = (
+	context: ValueContext,
+	setValue: SimpleAtomicStateSetter<string>,
+	action: ActionDefinition,
+) => {
+	if (action.element.nodeName === SET_GEOPOINT_LOCAL_NAME) {
+		setGeopointValue(context, (point) => createValueChangedCalculation(context, setValue, action, point));
 		return;
 	}
-
-	if (type === 'valueChanged') {
-		createValueChangedCalculation(context, setValue, action);
-		return;
-	}
+	createValueChangedCalculation(context, setValue, action);
 };
 
 const dispatchAction = (
@@ -270,25 +270,23 @@ const dispatchAction = (
 	setValue: SimpleAtomicStateSetter<string>,
 	action: ActionDefinition
 ) => {
-	const isGeopoint = action.element.nodeName === SET_GEOPOINT_LOCAL_NAME;
-
 	if (action.events.includes(XFORM_EVENT.odkInstanceFirstLoad)) {
 		if (isInstanceFirstLoad(context)) {
-			performActionComputation(context, setValue, action, isGeopoint ? 'geopoint' : 'standard');
+			performActionComputation(context, setValue, action);
 		}
 	}
 	if (action.events.includes(XFORM_EVENT.odkInstanceLoad)) {
 		if (!isAddingRepeatChild(context)) {
-			performActionComputation(context, setValue, action, isGeopoint ? 'geopoint' : 'standard');
+			performActionComputation(context, setValue, action);
 		}
 	}
 	if (action.events.includes(XFORM_EVENT.odkNewRepeat)) {
 		if (isAddingRepeatChild(context)) {
-			performActionComputation(context, setValue, action, isGeopoint ? 'geopoint' : 'standard');
+			performActionComputation(context, setValue, action);
 		}
 	}
 	if (action.events.includes(XFORM_EVENT.xformsValueChanged)) {
-		performActionComputation(context, setValue, action, isGeopoint ? 'geopoint' : 'valueChanged');
+		performActionOnValueChange(context, setValue, action);
 	}
 };
 
