@@ -205,7 +205,7 @@ const createValueChangedCalculation = (
 	context: ValueContext,
 	setRelevantValue: SimpleAtomicStateSetter<string>,
 	action: ActionDefinition,
-	resolvedActionValue?: string,
+	resolvedActionValue?: string
 ): void => {
 	const { source, ref } = bindToRepeatInstance(context, action);
 	if (!source) {
@@ -244,7 +244,7 @@ const setGeopointValue = (context: ValueContext, callback: (value: string) => vo
 const performActionComputation = (
 	context: ValueContext,
 	setValue: SimpleAtomicStateSetter<string>,
-	action: ActionDefinition,
+	action: ActionDefinition
 ) => {
 	if (action.element.nodeName === SET_GEOPOINT_LOCAL_NAME) {
 		setGeopointValue(context, (point) => setValue(point));
@@ -256,10 +256,12 @@ const performActionComputation = (
 const performActionOnValueChange = (
 	context: ValueContext,
 	setValue: SimpleAtomicStateSetter<string>,
-	action: ActionDefinition,
+	action: ActionDefinition
 ) => {
 	if (action.element.nodeName === SET_GEOPOINT_LOCAL_NAME) {
-		setGeopointValue(context, (point) => createValueChangedCalculation(context, setValue, action, point));
+		setGeopointValue(context, (point) => {
+			createValueChangedCalculation(context, setValue, action, point);
+		});
 		return;
 	}
 	createValueChangedCalculation(context, setValue, action);
