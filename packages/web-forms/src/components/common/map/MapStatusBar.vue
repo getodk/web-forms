@@ -27,9 +27,10 @@ const props = defineProps<{
 	canRemove: boolean;
 	canSave: boolean;
 	canViewDetails: boolean;
+	canOpenAdvancedPanel: boolean;
 }>();
 
-const emit = defineEmits(['view-details', 'save', 'discard']);
+const emit = defineEmits(['discard', 'open-advanced-panel', 'save', 'view-details']);
 
 const LINE_ICON = 'mdiVectorPolyline';
 const POLYGON_ICON = 'mdiVectorPolygon';
@@ -138,6 +139,11 @@ const savedStatus = computed<StatusDetails | null>(() => {
 				<!-- TODO: translations -->
 				<span>View details</span>
 			</Button>
+			<Button v-if="canOpenAdvancedPanel" class="advanced-button" :disabled="!selectedVertexInfo.length" outlined severity="contrast" @click="emit('open-advanced-panel')">
+				<IconSVG name="mdiCogOutline" />
+				<!-- TODO: translations -->
+				<span>Advanced</span>
+			</Button>
 		</div>
 
 		<div v-else class="map-status-container">
@@ -157,6 +163,8 @@ const savedStatus = computed<StatusDetails | null>(() => {
 </template>
 
 <style scoped lang="scss">
+@use 'primeflex/core/_variables.scss' as pf;
+
 .map-status-bar,
 .map-status-container,
 .map-status {
@@ -188,10 +196,20 @@ const savedStatus = computed<StatusDetails | null>(() => {
 	&:hover {
 		background: var(--odk-muted-background-color);
 	}
+
+	&:disabled {
+		cursor: not-allowed;
+	}
 }
 
 .map-status-spinner {
 	width: 20px;
 	height: 20px;
+}
+
+@media screen and (max-width: #{pf.$sm}) {
+	.advanced-button span {
+		display: none;
+	}
 }
 </style>

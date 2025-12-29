@@ -6,6 +6,7 @@
  */
 import IconSVG from '@/components/common/IconSVG.vue';
 import type { Mode } from '@/components/common/map/getModeConfig.ts';
+import MapAdvancedPanel from '@/components/common/map/MapAdvancedPanel.vue';
 import MapConfirm from '@/components/common/map/MapConfirm.vue';
 import MapControls from '@/components/common/map/MapControls.vue';
 import MapProperties from '@/components/common/map/MapProperties.vue';
@@ -32,6 +33,7 @@ const props = defineProps<MapBlockProps>();
 const emit = defineEmits(['save']);
 const mapElement = ref<HTMLElement | undefined>();
 const isFullScreen = ref(false);
+const isAdvancedPanelOpen = ref(false);
 const confirmDeleteAction = ref(false);
 const selectedVertex = ref<Coordinate | undefined>();
 const showErrorStyle = inject<ComputedRef<boolean>>(
@@ -43,7 +45,12 @@ const mapHandler = useMapBlock(
 	{ mode: props.mode, drawFeatureType: props.drawFeatureType },
 	{
 		onFeaturePlacement: () => emitSavedFeature(),
-		onVertexSelect: (vertex) => (selectedVertex.value = vertex),
+		onVertexSelect: (vertex) => {
+			selectedVertex.value = vertex;
+			if (!selectedVertex.value?.length) {
+				isAdvancedPanelOpen.value = false;
+			}
+		},
 	}
 );
 
@@ -172,18 +179,22 @@ const undoLastChange = () => {
 			</div>
 
 			<MapStatusBar
-				:draw-feature-type="drawFeatureType"
-				:saved-feature-value="savedFeatureValue"
-				:selected-vertex="selectedVertex"
-				:is-capturing="mapHandler.currentState.value === STATES.CAPTURING"
-				class="map-status-bar-component"
+				:can-open-advanced-panel="true"
 				:can-remove="!disabled && mapHandler.canRemoveCurrentLocation()"
 				:can-save="!disabled && mapHandler.canSaveCurrentLocation()"
 				:can-view-details="mapHandler.canViewProperties()"
+				:draw-feature-type="drawFeatureType"
+				:is-capturing="mapHandler.currentState.value === STATES.CAPTURING"
+				:saved-feature-value="savedFeatureValue"
+				:selected-vertex="selectedVertex"
+				class="map-status-bar-component"
 				@discard="discardSavedFeature"
 				@save="saveCurrentLocation"
 				@view-details="mapHandler.selectSavedFeature"
+				@open-advanced-panel="isAdvancedPanelOpen = !isAdvancedPanelOpen"
 			/>
+
+			<MapAdvancedPanel :is-open="isAdvancedPanelOpen" :selected-vertex="selectedVertex" />
 
 			<MapProperties
 				v-if="mapHandler.canViewProperties()"

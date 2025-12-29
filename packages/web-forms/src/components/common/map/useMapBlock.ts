@@ -64,7 +64,7 @@ interface MapBlockConfig {
 
 interface MapBlockEvents {
 	onFeaturePlacement: () => void;
-	onVertexSelect: (vertex: Coordinate) => void;
+	onVertexSelect: (vertex: Coordinate | undefined) => void;
 }
 
 export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
@@ -206,6 +206,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 	const updateAndSaveFeature = (feature: Feature) => {
 		feature.set(ODK_VALUE_PROPERTY, formatODKValue(feature));
 		mapFeatures?.saveFeature(feature);
+		unselectFeature();
 	};
 
 	const handlePointPlacement = (feature: Feature) => {
@@ -339,7 +340,10 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 		clearMap();
 	};
 
-	const unselectFeature = () => mapFeatures?.selectFeature(undefined);
+	const unselectFeature = () => {
+		mapFeatures?.selectFeature(undefined);
+		events.onVertexSelect(undefined);
+	};
 
 	const clearSavedFeature = () => mapFeatures?.saveFeature(undefined);
 
