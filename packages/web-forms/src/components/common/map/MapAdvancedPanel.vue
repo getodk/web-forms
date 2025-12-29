@@ -9,7 +9,7 @@ const props = defineProps<{
 	selectedVertex: Coordinate | undefined;
 }>();
 
-const emit = defineEmits(['open-paste-dialog', 'update-vertex']);
+const emit = defineEmits(['open-paste-dialog', 'save']);
 
 const accuracy = ref<number | undefined>();
 const latitude = ref<number | undefined>();
@@ -52,7 +52,7 @@ const updateVertex = () => {
 		newVertex.push(accuracy.value);
 	}
 
-	emit('update-vertex', fromLonLat(newVertex));
+	emit('save', fromLonLat(newVertex));
 };
 </script>
 

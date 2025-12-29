@@ -141,7 +141,11 @@ const undoLastChange = () => {
 	emitSavedFeature();
 };
 
-const updateCoords = () => {
+const updateFeatureCoords = () => {
+	// todo
+};
+
+const updateVertexCoords = () => {
 	// todo
 };
 </script>
@@ -200,7 +204,12 @@ const updateCoords = () => {
 				@open-advanced-panel="isAdvancedPanelOpen = !isAdvancedPanelOpen"
 			/>
 
-			<MapAdvancedPanel :is-open="isAdvancedPanelOpen" :selected-vertex="selectedVertex" @open-paste-dialog="isUpdateCoordsDialogOpen = true" />
+			<MapAdvancedPanel
+				:is-open="isAdvancedPanelOpen"
+				:selected-vertex="selectedVertex"
+				@open-paste-dialog="isUpdateCoordsDialogOpen = true"
+				@save="updateVertexCoords"
+			/>
 
 			<MapProperties
 				v-if="mapHandler.canViewProperties()"
@@ -234,7 +243,7 @@ const updateCoords = () => {
 	<MapUpdateCoordsDialog
 		v-model:visible="isUpdateCoordsDialogOpen"
 		:draw-feature-type="drawFeatureType"
-		@save="updateCoords"
+		@save="updateFeatureCoords"
 	/>
 </template>
 
