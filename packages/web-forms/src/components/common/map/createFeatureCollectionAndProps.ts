@@ -25,7 +25,9 @@ export interface Feature {
 	properties: Record<string, string>;
 }
 
-const getGeoJSONCoordinates = (geometry: string): [Coordinates, ...Coordinates[]] | undefined => {
+export const getGeoJSONCoordinates = (
+	geometry: string
+): [Coordinates, ...Coordinates[]] | undefined => {
 	const coordinates: Coordinates[] = [];
 	for (const coord of geometry.split(';')) {
 		const [lat, lon] = coord.trim().split(/\s+/).map(Number);

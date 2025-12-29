@@ -7,10 +7,11 @@
 import IconSVG from '@/components/common/IconSVG.vue';
 import type { Mode } from '@/components/common/map/getModeConfig.ts';
 import MapAdvancedPanel from '@/components/common/map/MapAdvancedPanel.vue';
-import MapConfirm from '@/components/common/map/MapConfirm.vue';
+import MapConfirmDialog from '@/components/common/map/MapConfirmDialog.vue';
 import MapControls from '@/components/common/map/MapControls.vue';
 import MapProperties from '@/components/common/map/MapProperties.vue';
 import MapStatusBar from '@/components/common/map/MapStatusBar.vue';
+import MapUpdateCoordsDialog from '@/components/common/map/MapUpdateCoordsDialog.vue';
 import { STATES, useMapBlock } from '@/components/common/map/useMapBlock.ts';
 import { type DrawFeatureType } from '@/components/common/map/useMapInteractions.ts';
 import { QUESTION_HAS_ERROR } from '@/lib/constants/injection-keys.ts';
@@ -35,6 +36,7 @@ const mapElement = ref<HTMLElement | undefined>();
 const isFullScreen = ref(false);
 const isAdvancedPanelOpen = ref(false);
 const confirmDeleteAction = ref(false);
+const isUpdateCoordsDialogOpen = ref(false);
 const selectedVertex = ref<Coordinate | undefined>();
 const showErrorStyle = inject<ComputedRef<boolean>>(
 	QUESTION_HAS_ERROR,
@@ -138,6 +140,10 @@ const undoLastChange = () => {
 	mapHandler.undoLastChange();
 	emitSavedFeature();
 };
+
+const updateCoords = () => {
+	// todo
+};
 </script>
 
 <template>
@@ -194,7 +200,7 @@ const undoLastChange = () => {
 				@open-advanced-panel="isAdvancedPanelOpen = !isAdvancedPanelOpen"
 			/>
 
-			<MapAdvancedPanel :is-open="isAdvancedPanelOpen" :selected-vertex="selectedVertex" />
+			<MapAdvancedPanel :is-open="isAdvancedPanelOpen" :selected-vertex="selectedVertex" @open-paste-dialog="isUpdateCoordsDialogOpen = true" />
 
 			<MapProperties
 				v-if="mapHandler.canViewProperties()"
@@ -219,10 +225,16 @@ const undoLastChange = () => {
 		</div>
 	</div>
 
-	<MapConfirm
+	<MapConfirmDialog
 		v-model:visible="confirmDeleteAction"
 		:draw-feature-type="drawFeatureType"
 		@delete-feature="deleteFeature"
+	/>
+
+	<MapUpdateCoordsDialog
+		v-model:visible="isUpdateCoordsDialogOpen"
+		:draw-feature-type="drawFeatureType"
+		@save="updateCoords"
 	/>
 </template>
 

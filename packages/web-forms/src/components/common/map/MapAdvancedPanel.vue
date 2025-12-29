@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import IconSVG from '@/components/common/IconSVG.vue';
 import { fromLonLat, toLonLat } from 'ol/proj';
-import InputText from 'primevue/inputtext';
-import Button from 'primevue/button';
-import Dialog from 'primevue/dialog';
 import { ref, watch } from 'vue';
 import type { Coordinate } from 'ol/coordinate';
 
@@ -12,9 +9,8 @@ const props = defineProps<{
 	selectedVertex: Coordinate | undefined;
 }>();
 
-const emit = defineEmits(['update-feature', 'update-vertex']);
+const emit = defineEmits(['open-paste-dialog', 'update-vertex']);
 
-const isDialogOpen = ref(false);
 const accuracy = ref<number | undefined>();
 const latitude = ref<number | undefined>();
 const altitude = ref<number | undefined>();
@@ -34,16 +30,6 @@ watch(
 	},
 	{ deep: true }
 );
-
-const updateFeature = () => {
-	// todo extract content from input file or input text from dialog component
-	// If it's geojson file get the coordinates
-	// if it's csv file get the coordinates
-	// if a file was provided, it should clear the value from the input text.
-	// if a value was provided to the input text, it should clear the value from the file input.
-	const featureCoords = [];
-	emit('update-feature', featureCoords);
-};
 
 const updateVertex = () => {
 	const [originalLong, originalLat] = props.selectedVertex ?? [];
@@ -76,64 +62,28 @@ const updateVertex = () => {
 			<div class="fields-container">
 				<div class="field-set">
 					<label for="longitude">Longitude</label>
-					<input id="longitude" v-model="longitude" type="number" @change="updateVertex" />
+					<input id="longitude" v-model="longitude" type="number" @change="updateVertex">
 				</div>
 				<div class="field-set">
 					<label for="latitude">Latitude</label>
-					<input id="latitude" v-model="latitude" type="number" @change="updateVertex" />
+					<input id="latitude" v-model="latitude" type="number" @change="updateVertex">
 				</div>
 				<div class="field-set">
 					<label for="altitude">Altitude</label>
-					<input id="altitude" v-model="altitude" type="number" @change="updateVertex" />
+					<input id="altitude" v-model="altitude" type="number" @change="updateVertex">
 				</div>
 				<div class="field-set">
 					<label for="accuracy">Accuracy</label>
-					<input id="accuracy" v-model="accuracy" type="number" @change="updateVertex" />
+					<input id="accuracy" v-model="accuracy" type="number" @change="updateVertex">
 				</div>
 			</div>
 
-			<a class="paste-location" @click="isDialogOpen = true">
+			<a class="paste-location" @click="emit('open-paste-dialog')">
 				<IconSVG name="mdiFileOutline" size="sm" />
 				<strong>Paste location data</strong>
 			</a>
 		</div>
 	</transition>
-
-	<Dialog
-		:visible="isDialogOpen"
-		modal
-		class="map-paste-dialog"
-		:draggable="false"
-		@update:visible="(value) => (isDialogOpen = value)"
-	>
-		<template #header>
-			<!-- TODO: translations -->
-			<strong>Paste or upload location data</strong>
-		</template>
-
-		<template #default>
-			<!-- TODO: translations -->
-			<div class="dialog-field-container">
-				<label for="new-location-input">Paste the new value in ODK format</label>
-				<InputText id="new-location-input" />
-			</div>
-
-			<div class="dialog-field-container">
-				<!-- TODO: translations -->
-				<label for="upload-location-file">Or upload a GeoJSON or a CSV file</label>
-				<Button id="upload-location-file" outlined severity="contrast" @click="">
-					<IconSVG name="mdiUpload" />
-					<!-- TODO: translations -->
-					<span>Upload file</span>
-				</Button>
-			</div>
-		</template>
-
-		<template #footer>
-			<!-- TODO: translations -->
-			<Button label="Save" @click="updateFeature" />
-		</template>
-	</Dialog>
 </template>
 
 <style scoped lang="scss">
@@ -230,46 +180,5 @@ const updateVertex = () => {
 .panel-leave-from {
 	max-height: 300px;
 	opacity: 1;
-}
-</style>
-
-<style lang="scss">
-// Override PrimeVue dialog style that is outside scoped (rendered outside the component)
-.p-dialog.map-paste-dialog {
-	background: var(--odk-base-background-color);
-	border-radius: var(--odk-radius);
-	margin: 0 24px;
-
-	.p-dialog-header {
-		padding: 15px 20px;
-		font-size: var(--odk-dialog-title-font-size);
-	}
-
-	.p-dialog-content {
-		display: flex;
-		flex-direction: column;
-		gap: 35px;
-	}
-
-	.dialog-field-container {
-		display: flex;
-		flex-direction: column;
-		align-items: flex-start;
-		gap: 10px;
-	}
-
-	#new-location-input {
-		width: 100%;
-	}
-
-	.p-dialog-content p,
-	.p-dialog-footer button {
-		font-size: var(--odk-base-font-size);
-	}
-
-	button.p-button-secondary:focus-visible {
-		outline: none;
-		outline-offset: unset;
-	}
 }
 </style>
