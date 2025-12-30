@@ -228,3 +228,18 @@ export const deleteVertexFromFeature = (
 
 	return coords.length;
 };
+
+export const updateVertexCoordinate = (
+	feature: Feature<LineString | Polygon> | undefined,
+	index: number,
+	newCoordinates: Coordinate
+) => {
+	const geometry = feature?.getGeometry();
+	const coords = getFlatCoordinates(geometry);
+
+	if (geometry && index >= 0 && index < coords.length) {
+		coords[index] = newCoordinates;
+		const updatedCoords = geometry instanceof LineString ? coords : [coords];
+		geometry.setCoordinates(updatedCoords as Coordinate[] & Coordinate[][]);
+	}
+};

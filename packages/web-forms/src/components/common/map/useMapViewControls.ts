@@ -1,3 +1,4 @@
+import { toGeoJsonCoordinateArray } from '@/components/common/map/map-helpers.ts';
 import { Map, type View } from 'ol';
 import type { Coordinate } from 'ol/coordinate';
 import { easeOut } from 'ol/easing';
@@ -244,12 +245,13 @@ export function useMapViewControls(mapInstance: Map): UseMapViewControls {
 				return;
 			}
 
-			const parsedCoords = fromLonLat([
+			const coords = toGeoJsonCoordinateArray(
 				newLocation.longitude,
 				newLocation.latitude,
-				newLocation.altitude ?? 0,
-				newLocation.accuracy,
-			]);
+				newLocation.altitude,
+				newLocation.accuracy
+			);
+			const parsedCoords = fromLonLat(coords);
 			userCurrentLocationFeature.value = new Feature({
 				geometry: new Point(parsedCoords, COORDINATE_LAYOUT_XYZM),
 			});

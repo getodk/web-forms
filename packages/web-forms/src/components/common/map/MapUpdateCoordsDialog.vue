@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { getGeoJSONCoordinates } from '@/components/common/map/createFeatureCollectionAndProps.ts';
-import type { DrawFeatureType } from '@/components/common/map/useMapInteractions.ts';
+import {
+	DRAW_FEATURE_TYPES,
+	type DrawFeatureType,
+} from '@/components/common/map/useMapInteractions.ts';
+import { isCoordsEqual } from '@/components/common/map/vertex-geometry.ts';
 import type { FeatureCollection, LineString, Point, Polygon } from 'geojson';
+import { fromLonLat } from 'ol/proj';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
@@ -9,7 +14,7 @@ import IconSVG from '@/components/common/IconSVG.vue';
 import { ref, computed, watch } from 'vue';
 import type { Coordinate } from 'ol/coordinate';
 
-defineProps<{
+const props = defineProps<{
 	visible: boolean;
 	drawFeatureType?: DrawFeatureType;
 }>();
@@ -42,6 +47,7 @@ const parseFileCoordinates = async (file: File): Promise<Coordinate[] | undefine
 	try {
 		const text = await file.text();
 		if (!text.trim()) {
+			// TODO: translations
 			error.value = 'File is empty.';
 			return;
 		}
@@ -54,9 +60,10 @@ const parseFileCoordinates = async (file: File): Promise<Coordinate[] | undefine
 		if (fileName.endsWith('.csv')) {
 			return parseCSVGeometry(text);
 		}
-
+		// TODO: translations
 		error.value = 'Unsupported file type. Please upload a .csv or .geojson file.';
 	} catch {
+		// TODO: translations
 		error.value = 'Failed to parse file. Ensure it is valid CSV or GeoJSON.';
 	}
 };
@@ -97,6 +104,26 @@ const parsePastedValue = () => {
 	return getGeoJSONCoordinates(value);
 };
 
+const isExpectedFeatureType = (coords: Coordinate | Coordinate[] | Coordinate[][]) => {
+	const isPoint = !props.drawFeatureType && !Array.isArray(coords[0]) && coords.length > 2;
+	if (isPoint) {
+		return true;
+	}
+
+	const hasRing = Array.isArray(coords[0]) && Array.isArray(coords[0][0]);
+	const flatCoords = (hasRing ? coords[0] : coords) as Coordinate[];
+	if (!flatCoords?.length) {
+		return false;
+	}
+
+	const isClosed = isCoordsEqual(flatCoords[0], flatCoords[flatCoords.length - 1]);
+	if (props.drawFeatureType === DRAW_FEATURE_TYPES.TRACE && !isClosed && flatCoords.length >= 2) {
+		return true;
+	}
+
+	return props.drawFeatureType === DRAW_FEATURE_TYPES.SHAPE && isClosed && flatCoords.length >= 3;
+};
+
 const save = async () => {
 	error.value = null;
 	let coordinates: Coordinate[] | undefined;
@@ -107,7 +134,15 @@ const save = async () => {
 	}
 
 	if (!coordinates?.length) {
+		// TODO: translations
 		error.value ??= 'No valid coordinates found.';
+		return;
+	}
+
+	coordinates = coordinates.map((coord) => fromLonLat(coord));
+	if (!isExpectedFeatureType(coordinates)) {
+		// TODO: translations
+		error.value ??= 'Incorrect geometry type.';
 		return;
 	}
 
@@ -149,19 +184,23 @@ watch(pasteValue, (newVal) => {
 		@update:visible="emit('update:visible', $event)"
 	>
 		<template #header>
+			<!-- TODO: translations -->
 			<strong>Paste or upload location data</strong>
 		</template>
 
 		<template #default>
 			<div class="dialog-field-container">
+				<!-- TODO: translations -->
 				<label for="paste-input">Paste the new value in ODK format</label>
 				<InputText id="paste-input" v-model="pasteValue" />
 			</div>
 
 			<div class="dialog-field-container">
+				<!-- TODO: translations -->
 				<label>Or upload a GeoJSON or a CSV file</label>
 				<Button outlined severity="contrast" @click="openFileChooser">
 					<IconSVG name="mdiUpload" />
+					<!-- TODO: translations -->
 					<span>Upload file</span>
 				</Button>
 
@@ -170,11 +209,12 @@ watch(pasteValue, (newVal) => {
 					type="file"
 					accept=".geojson,.csv,application/json,text/csv"
 					@change="selectFile"
-				>
+				/>
 			</div>
 		</template>
 
 		<template #footer>
+			<p v-if="error?.length" class="coords-error-message">{{ error }}</p>
 			<Button label="Save" :disabled="!selectedFile && !hasPastedValue" @click="save" />
 		</template>
 	</Dialog>
@@ -200,6 +240,11 @@ watch(pasteValue, (newVal) => {
 		width: 100%;
 		padding: 9px;
 	}
+}
+
+.coords-error-message {
+	color: var(--odk-error-text-color);
+	margin-bottom: 10px;
 }
 </style>
 

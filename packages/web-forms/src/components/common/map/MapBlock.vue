@@ -141,12 +141,14 @@ const undoLastChange = () => {
 	emitSavedFeature();
 };
 
-const updateFeatureCoords = () => {
-	// todo
+const updateFeatureCoords = (newCoords: Coordinate[] & Coordinate[][]) => {
+	mapHandler.updateFeatureCoordinates(newCoords);
+	emitSavedFeature();
 };
 
-const updateVertexCoords = () => {
-	// todo
+const updateVertexCoords = (newCoords: Coordinate) => {
+	mapHandler.updateVertexCoords(newCoords);
+	emitSavedFeature();
 };
 </script>
 

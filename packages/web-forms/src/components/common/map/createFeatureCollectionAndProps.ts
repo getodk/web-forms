@@ -1,3 +1,4 @@
+import { toGeoJsonCoordinateArray } from '@/components/common/map/map-helpers.ts';
 import type { SelectItem } from '@getodk/xforms-engine';
 
 const PROPERTY_PREFIX = 'odk_'; // Avoids conflicts with OpenLayers (for example, geometry).
@@ -30,11 +31,13 @@ export const getGeoJSONCoordinates = (
 ): [Coordinates, ...Coordinates[]] | undefined => {
 	const coordinates: Coordinates[] = [];
 	for (const coord of geometry.split(';')) {
-		const [lat, lon] = coord.trim().split(/\s+/).map(Number);
+		const [lat, lon, alt, acc] = coord.trim().split(/\s+/).map(Number);
 
 		const isNullLocation = lat === 0 && lon === 0;
 		const isValidLatitude = lat != null && !Number.isNaN(lat) && Math.abs(lat) <= 90;
 		const isValidLongitude = lon != null && !Number.isNaN(lon) && Math.abs(lon) <= 180;
+		const isAltitudeProvided = alt != null && !Number.isNaN(alt);
+		const isAccuracyProvided = acc != null && !Number.isNaN(acc);
 
 		if (isNullLocation || !isValidLatitude || !isValidLongitude) {
 			// eslint-disable-next-line no-console -- Skip silently to match Collect behaviour.
@@ -42,13 +45,19 @@ export const getGeoJSONCoordinates = (
 			return;
 		}
 
-		coordinates.push([lon, lat]);
+		const parsedCoords = toGeoJsonCoordinateArray(
+			lon,
+			lat,
+			isAltitudeProvided ? alt : undefined,
+			isAccuracyProvided ? acc : undefined
+		) as Coordinates;
+		coordinates.push(parsedCoords);
 	}
 
 	return coordinates.length ? (coordinates as [Coordinates, ...Coordinates[]]) : undefined;
 };
 
-const getGeoJSONGeometry = (coords: [Coordinates, ...Coordinates[]]): Geometry => {
+export const getGeoJSONGeometry = (coords: [Coordinates, ...Coordinates[]]): Geometry => {
 	if (coords.length === 1) {
 		return { type: 'Point', coordinates: coords[0] };
 	}

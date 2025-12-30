@@ -1,5 +1,9 @@
 import { getModeConfig, type Mode, MODES } from '@/components/common/map/getModeConfig.ts';
-import { formatODKValue, isWebGLAvailable } from '@/components/common/map/map-helpers.ts';
+import {
+	formatODKValue,
+	isWebGLAvailable,
+	toGeoJsonCoordinateArray,
+} from '@/components/common/map/map-helpers.ts';
 import {
 	getDrawStyles,
 	getSavedStyles,
@@ -30,6 +34,7 @@ import {
 import {
 	deleteVertexFromFeature,
 	getVertexByIndex,
+	updateVertexCoordinate,
 } from '@/components/common/map/vertex-geometry.ts';
 import type { FeatureCollection, Feature as GeoJsonFeature } from 'geojson';
 import { Map, View } from 'ol';
@@ -206,7 +211,9 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 	const updateAndSaveFeature = (feature: Feature) => {
 		feature.set(ODK_VALUE_PROPERTY, formatODKValue(feature));
 		mapFeatures?.saveFeature(feature);
-		unselectFeature();
+		// Refresh selected vertex.
+		const vertexIndex = feature.get(SELECTED_VERTEX_INDEX_PROPERTY) as number | undefined;
+		events.onVertexSelect(getVertexByIndex(feature, vertexIndex));
 	};
 
 	const handlePointPlacement = (feature: Feature) => {
@@ -231,6 +238,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 		const coordsLeft = deleteVertexFromFeature(feature, vertexIndex);
 		if (coordsLeft > 0) {
 			updateAndSaveFeature(feature);
+			unselectFeature();
 			return;
 		}
 
@@ -268,6 +276,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 			if (previousFeatureState) {
 				featuresSource.addFeature(previousFeatureState);
 				updateAndSaveFeature(previousFeatureState);
+				unselectFeature();
 			}
 		}
 	};
@@ -281,6 +290,41 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 	const updateFeatureCollection = (features: FeatureCollection, savedFeature?: GeoJsonFeature) => {
 		loadFeatureCollection(features);
 		mapFeatures?.findAndSaveFeature(featuresSource, savedFeature, true);
+	};
+
+	const updateVertexCoords = (newCoords: Coordinate) => {
+		/*if (!newCoords.length || !canUpdateVertexCoordinates()) {
+			return;
+		}*/
+
+		const feature = mapFeatures?.getSelectedFeature() as Feature<LineString | Polygon>;
+		const vertexIndex = feature?.get(SELECTED_VERTEX_INDEX_PROPERTY) as number;
+		if (vertexIndex === undefined) {
+			return;
+		}
+
+		mapInteractions?.savePreviousFeatureState(feature);
+		updateVertexCoordinate(feature, vertexIndex, newCoords);
+		updateAndSaveFeature(feature);
+		mapViewControls?.fitToAllFeatures(featuresSource);
+	};
+
+	const updateFeatureCoordinates = (newCoords: Coordinate[] & Coordinate[][]) => {
+		/*if (!newCoords.length || !canUpdateFeatureCoordinates()) {
+			return;
+		}*/
+
+		const feature = mapFeatures?.getSelectedFeature() as Feature<LineString | Point | Polygon>;
+		const geometry = feature?.getGeometry();
+		if (!geometry) {
+			return;
+		}
+
+		mapInteractions?.savePreviousFeatureState(feature);
+		geometry.setCoordinates(newCoords);
+		updateAndSaveFeature(feature);
+		unselectFeature();
+		mapViewControls?.fitToAllFeatures(featuresSource);
 	};
 
 	const loadAndSaveSingleFeature = (feature: Feature | undefined) => {
@@ -316,14 +360,12 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 			return;
 		}
 
-		const coords = [location.longitude, location.latitude];
-		if (location.altitude != null) {
-			coords.push(location.altitude);
-		}
-
-		if (location.accuracy != null) {
-			coords.push(location.accuracy);
-		}
+		const coords = toGeoJsonCoordinateArray(
+			location.longitude,
+			location.latitude,
+			location.altitude,
+			location.accuracy
+		);
 
 		const feature = new Feature({
 			geometry: new Point(fromLonLat(coords), COORDINATE_LAYOUT_XYZM),
@@ -445,6 +487,8 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 		initMap,
 		teardownMap,
 		updateFeatureCollection,
+		updateVertexCoords,
+		updateFeatureCoordinates,
 		setupMapInteractions,
 
 		isMapEmpty: () => featuresSource.isEmpty(),

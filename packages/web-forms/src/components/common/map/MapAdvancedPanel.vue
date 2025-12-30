@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import IconSVG from '@/components/common/IconSVG.vue';
+import { toGeoJsonCoordinateArray } from '@/components/common/map/map-helpers.ts';
 import { fromLonLat, toLonLat } from 'ol/proj';
 import { ref, watch } from 'vue';
 import type { Coordinate } from 'ol/coordinate';
@@ -32,26 +33,19 @@ watch(
 );
 
 const updateVertex = () => {
-	const [originalLong, originalLat] = props.selectedVertex ?? [];
-	if (!longitude.value) {
-		longitude.value = originalLong;
+	const [originalLong, originalLat] = toLonLat(props.selectedVertex ?? []);
+	const long = longitude.value ?? originalLong;
+	const lat = latitude.value ?? originalLat;
+	if (long === undefined || lat === undefined) {
 		return;
 	}
 
-	if (!latitude.value) {
-		latitude.value = originalLat;
-		return;
-	}
-
-	const newVertex = [longitude.value, latitude.value];
-	if (altitude.value != null) {
-		newVertex.push(altitude.value);
-	}
-
-	if (accuracy.value != null) {
-		newVertex.push(accuracy.value);
-	}
-
+	const newVertex = toGeoJsonCoordinateArray(
+		long,
+		lat,
+		altitude.value,
+		accuracy.value
+	) as Coordinate;
 	emit('save', fromLonLat(newVertex));
 };
 </script>
