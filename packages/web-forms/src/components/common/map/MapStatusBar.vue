@@ -28,6 +28,7 @@ const props = defineProps<{
 	canSave: boolean;
 	canViewDetails: boolean;
 	canOpenAdvancedPanel: boolean;
+	canEnableAdvancedPanel: boolean;
 }>();
 
 const emit = defineEmits(['discard', 'open-advanced-panel', 'save', 'view-details']);
@@ -129,21 +130,23 @@ const savedStatus = computed<StatusDetails | null>(() => {
 				<IconSVG :name="savedStatus.icon" :variant="savedStatus.highlight ? 'success' : 'base'" />
 				<span>{{ savedStatus.message }}</span>
 			</div>
-			<Button v-if="canRemove" outlined severity="contrast" @click="emit('discard')">
-				<span>–</span>
-				<!-- TODO: translations -->
-				<span class="mobile-only">Remove</span>
-				<span class="desktop-only">Remove point</span>
-			</Button>
-			<Button v-if="canViewDetails" outlined severity="contrast" @click="emit('view-details')">
-				<!-- TODO: translations -->
-				<span>View details</span>
-			</Button>
-			<Button v-if="canOpenAdvancedPanel" class="advanced-button" :disabled="!selectedVertexInfo.length" outlined severity="contrast" @click="emit('open-advanced-panel')">
-				<IconSVG name="mdiCogOutline" />
-				<!-- TODO: translations -->
-				<span>Advanced</span>
-			</Button>
+			<div class="map-status-buttons">
+				<Button v-if="canRemove" outlined severity="contrast" @click="emit('discard')">
+					<span>–</span>
+					<!-- TODO: translations -->
+					<span class="mobile-only">Remove</span>
+					<span class="desktop-only">Remove point</span>
+				</Button>
+				<Button v-if="canViewDetails" outlined severity="contrast" @click="emit('view-details')">
+					<!-- TODO: translations -->
+					<span>View details</span>
+				</Button>
+				<Button v-if="canOpenAdvancedPanel" class="advanced-button" :disabled="!canEnableAdvancedPanel" outlined severity="contrast" @click="emit('open-advanced-panel')">
+					<IconSVG name="mdiCogOutline" />
+					<!-- TODO: translations -->
+					<span>Advanced</span>
+				</Button>
+			</div>
 		</div>
 
 		<div v-else class="map-status-container">
@@ -205,6 +208,11 @@ const savedStatus = computed<StatusDetails | null>(() => {
 .map-status-spinner {
 	width: 20px;
 	height: 20px;
+}
+
+.map-status-buttons {
+	display: flex;
+	gap: var(--odk-map-controls-spacing);
 }
 
 @media screen and (max-width: #{pf.$sm}) {

@@ -297,7 +297,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 			return;
 		}*/
 
-		const feature = mapFeatures?.getSelectedFeature() as Feature<LineString | Polygon>;
+		const feature = mapFeatures?.getSavedFeature() as Feature<LineString | Polygon>;
 		const vertexIndex = feature?.get(SELECTED_VERTEX_INDEX_PROPERTY) as number;
 		if (vertexIndex === undefined) {
 			return;
@@ -309,19 +309,20 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 		mapViewControls?.fitToAllFeatures(featuresSource);
 	};
 
-	const updateFeatureCoordinates = (newCoords: Coordinate[] & Coordinate[][]) => {
+	const updateFeatureCoordinates = (newCoords: Coordinate | Coordinate[] | Coordinate[][]) => {
 		/*if (!newCoords.length || !canUpdateFeatureCoordinates()) {
 			return;
 		}*/
 
-		const feature = mapFeatures?.getSelectedFeature() as Feature<LineString | Point | Polygon>;
+		const feature = mapFeatures?.getSavedFeature() as Feature<LineString | Point | Polygon>;
 		const geometry = feature?.getGeometry();
 		if (!geometry) {
 			return;
 		}
 
 		mapInteractions?.savePreviousFeatureState(feature);
-		geometry.setCoordinates(newCoords);
+		// Technically setCoordinates supports Coordinate | Coordinate[] | Coordinate[][]. Typing is being stricter than it should be.
+		geometry.setCoordinates(newCoords as never[], COORDINATE_LAYOUT_XYZM);
 		updateAndSaveFeature(feature);
 		unselectFeature();
 		mapViewControls?.fitToAllFeatures(featuresSource);

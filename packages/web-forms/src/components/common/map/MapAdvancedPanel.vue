@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import IconSVG from '@/components/common/IconSVG.vue';
 import { toGeoJsonCoordinateArray } from '@/components/common/map/map-helpers.ts';
-import { fromLonLat, toLonLat } from 'ol/proj';
+import { fromLonLat } from 'ol/proj';
 import { ref, watch } from 'vue';
 import type { Coordinate } from 'ol/coordinate';
 
 const props = defineProps<{
 	isOpen: boolean;
-	selectedVertex: Coordinate | undefined;
+	coordinates: Coordinate | undefined;
 }>();
 
 const emit = defineEmits(['open-paste-dialog', 'save']);
@@ -18,10 +18,10 @@ const altitude = ref<number | undefined>();
 const longitude = ref<number | undefined>();
 
 watch(
-	() => props.selectedVertex,
+	() => props.coordinates,
 	(newVal) => {
 		if (newVal) {
-			[longitude.value, latitude.value, altitude.value, accuracy.value] = toLonLat(newVal);
+			[longitude.value, latitude.value, altitude.value, accuracy.value] = newVal;
 			return;
 		}
 		accuracy.value = undefined;
@@ -29,11 +29,15 @@ watch(
 		altitude.value = undefined;
 		longitude.value = undefined;
 	},
-	{ deep: true }
+	{ immediate: true }
 );
 
 const updateVertex = () => {
-	const [originalLong, originalLat] = toLonLat(props.selectedVertex ?? []);
+	if (!props.coordinates?.length) {
+		return;
+	}
+
+	const [originalLong, originalLat] = props.coordinates;
 	const long = longitude.value ?? originalLong;
 	const lat = latitude.value ?? originalLat;
 	if (long === undefined || lat === undefined) {

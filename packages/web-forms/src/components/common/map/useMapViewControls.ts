@@ -2,7 +2,7 @@ import { toGeoJsonCoordinateArray } from '@/components/common/map/map-helpers.ts
 import { Map, type View } from 'ol';
 import type { Coordinate } from 'ol/coordinate';
 import { easeOut } from 'ol/easing';
-import { getCenter } from 'ol/extent';
+import { getCenter, isEmpty as isExtendEmpty } from 'ol/extent';
 import Feature from 'ol/Feature';
 import { Point } from 'ol/geom';
 import VectorLayer from 'ol/layer/Vector';
@@ -69,7 +69,7 @@ export function useMapViewControls(mapInstance: Map): UseMapViewControls {
 		}
 
 		const extent = source.getExtent();
-		if (!extent?.length) {
+		if (isExtendEmpty(extent)) {
 			return;
 		}
 

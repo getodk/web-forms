@@ -15,8 +15,9 @@ import MapUpdateCoordsDialog from '@/components/common/map/MapUpdateCoordsDialog
 import { STATES, useMapBlock } from '@/components/common/map/useMapBlock.ts';
 import { type DrawFeatureType } from '@/components/common/map/useMapInteractions.ts';
 import { QUESTION_HAS_ERROR } from '@/lib/constants/injection-keys.ts';
-import type { Feature, FeatureCollection } from 'geojson';
+import type { Feature, FeatureCollection, Point as PointGeoJSON } from 'geojson';
 import type { Coordinate } from 'ol/coordinate';
+import { toLonLat } from 'ol/proj';
 import Button from 'primevue/button';
 import Message from 'primevue/message';
 import { computed, type ComputedRef, inject, onMounted, onUnmounted, ref, watch } from 'vue';
@@ -55,6 +56,20 @@ const mapHandler = useMapBlock(
 		},
 	}
 );
+
+const advancedPanelCoords = computed<Coordinate | undefined>(() => {
+	// if !can-open-advanced-panel return
+	if (props.drawFeatureType && selectedVertex.value) {
+		return toLonLat(selectedVertex.value);
+	}
+
+	const geometry = props.savedFeatureValue?.geometry as PointGeoJSON | undefined;
+	if (geometry) {
+		return geometry.coordinates;
+	}
+
+	return undefined;
+});
 
 const showSecondaryControls = computed(() => {
 	return !props.disabled && (mapHandler.canUndoChange() || mapHandler.canDeleteFeatureOrVertex());
@@ -141,14 +156,19 @@ const undoLastChange = () => {
 	emitSavedFeature();
 };
 
-const updateFeatureCoords = (newCoords: Coordinate[] & Coordinate[][]) => {
+const updateFeatureCoords = (newCoords: Coordinate | Coordinate[] | Coordinate[][]) => {
 	mapHandler.updateFeatureCoordinates(newCoords);
 	emitSavedFeature();
 };
 
-const updateVertexCoords = (newCoords: Coordinate) => {
-	mapHandler.updateVertexCoords(newCoords);
-	emitSavedFeature();
+const saveAdvancedPanelCoords = (newCoords: Coordinate) => {
+	if (props.drawFeatureType) {
+		mapHandler.updateVertexCoords(newCoords);
+		emitSavedFeature();
+		return;
+	}
+
+	updateFeatureCoords(newCoords);
 };
 </script>
 
@@ -191,6 +211,7 @@ const updateVertexCoords = (newCoords: Coordinate) => {
 			</div>
 
 			<MapStatusBar
+				:can-enable-advanced-panel="!!advancedPanelCoords"
 				:can-open-advanced-panel="true"
 				:can-remove="!disabled && mapHandler.canRemoveCurrentLocation()"
 				:can-save="!disabled && mapHandler.canSaveCurrentLocation()"
@@ -208,9 +229,9 @@ const updateVertexCoords = (newCoords: Coordinate) => {
 
 			<MapAdvancedPanel
 				:is-open="isAdvancedPanelOpen"
-				:selected-vertex="selectedVertex"
+				:coordinates="advancedPanelCoords"
 				@open-paste-dialog="isUpdateCoordsDialogOpen = true"
-				@save="updateVertexCoords"
+				@save="saveAdvancedPanelCoords"
 			/>
 
 			<MapProperties

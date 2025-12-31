@@ -26,9 +26,7 @@ export interface Feature {
 	properties: Record<string, string>;
 }
 
-export const getGeoJSONCoordinates = (
-	geometry: string
-): [Coordinates, ...Coordinates[]] | undefined => {
+const getGeoJSONCoordinates = (geometry: string): [Coordinates, ...Coordinates[]] | undefined => {
 	const coordinates: Coordinates[] = [];
 	for (const coord of geometry.split(';')) {
 		const [lat, lon, alt, acc] = coord.trim().split(/\s+/).map(Number);
@@ -57,7 +55,7 @@ export const getGeoJSONCoordinates = (
 	return coordinates.length ? (coordinates as [Coordinates, ...Coordinates[]]) : undefined;
 };
 
-export const getGeoJSONGeometry = (coords: [Coordinates, ...Coordinates[]]): Geometry => {
+const getGeoJSONGeometry = (coords: [Coordinates, ...Coordinates[]]): Geometry => {
 	if (coords.length === 1) {
 		return { type: 'Point', coordinates: coords[0] };
 	}
@@ -70,6 +68,14 @@ export const getGeoJSONGeometry = (coords: [Coordinates, ...Coordinates[]]): Geo
 	}
 
 	return { type: 'LineString', coordinates: coords };
+};
+
+export const createGeoJSONGeometry = (value: string): Geometry | undefined => {
+	const coords = getGeoJSONCoordinates(value);
+	if (!coords) {
+		return;
+	}
+	return getGeoJSONGeometry(coords);
 };
 
 const normalizeODKFeature = (odkFeature: SelectItem | string) => {

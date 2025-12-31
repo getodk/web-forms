@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { getGeoJSONCoordinates } from '@/components/common/map/createFeatureCollectionAndProps.ts';
+import { createGeoJSONGeometry } from '@/components/common/map/createFeatureCollectionAndProps.ts';
 import {
 	DRAW_FEATURE_TYPES,
 	type DrawFeatureType,
 } from '@/components/common/map/useMapInteractions.ts';
 import { isCoordsEqual } from '@/components/common/map/vertex-geometry.ts';
-import type { FeatureCollection, LineString, Point, Polygon } from 'geojson';
+import type { FeatureCollection, Geometry, LineString, Point, Polygon } from 'geojson';
 import { fromLonLat } from 'ol/proj';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
@@ -43,7 +43,7 @@ const selectFile = (event: Event) => {
 	error.value = null;
 };
 
-const parseFileCoordinates = async (file: File): Promise<Coordinate[] | undefined> => {
+const parseFileCoordinates = async (file: File): Promise<Geometry | undefined> => {
 	try {
 		const text = await file.text();
 		if (!text.trim()) {
@@ -68,17 +68,12 @@ const parseFileCoordinates = async (file: File): Promise<Coordinate[] | undefine
 	}
 };
 
-const parseGeoJSONCoordinates = (text: string): Coordinate[] | undefined => {
+const parseGeoJSONCoordinates = (text: string): Geometry | undefined => {
 	const geojson = JSON.parse(text) as FeatureCollection<LineString | Point | Polygon>;
-	const coords = geojson?.features?.[0]?.geometry?.coordinates as Coordinate[] | undefined;
-	if (!Array.isArray(coords)) {
-		return;
-	}
-
-	return coords;
+	return geojson?.features?.[0]?.geometry;
 };
 
-const parseCSVGeometry = (text: string): Coordinate[] | undefined => {
+const parseCSVGeometry = (text: string): Geometry | undefined => {
 	const lines = text.split(/\r?\n/).filter((line) => line.trim().length > 0);
 	if (lines.length < 2) {
 		return;
@@ -92,7 +87,7 @@ const parseCSVGeometry = (text: string): Coordinate[] | undefined => {
 
 	const firstDataRow = lines[1]?.split(',') ?? [];
 	const geometryValue = firstDataRow[geometryIndex]?.trim() ?? '';
-	return getGeoJSONCoordinates(geometryValue);
+	return createGeoJSONGeometry(geometryValue) as Geometry | undefined;
 };
 
 const parsePastedValue = () => {
@@ -101,58 +96,69 @@ const parsePastedValue = () => {
 		return;
 	}
 
-	return getGeoJSONCoordinates(value);
+	return createGeoJSONGeometry(value) as Geometry | undefined;
 };
 
-const isExpectedFeatureType = (coords: Coordinate | Coordinate[] | Coordinate[][]) => {
-	const isPoint = !props.drawFeatureType && !Array.isArray(coords[0]) && coords.length > 2;
-	if (isPoint) {
-		return true;
+const getValidCoordinates = (geometry: LineString | Point | Polygon | undefined) => {
+	if (!geometry?.coordinates) {
+		return;
+	}
+
+	const coords = geometry.coordinates as Coordinate | Coordinate[] | Coordinate[][];
+	if (geometry.type === 'Point' && !props.drawFeatureType && !Array.isArray(coords[0])) {
+		return fromLonLat(coords as Coordinate);
 	}
 
 	const hasRing = Array.isArray(coords[0]) && Array.isArray(coords[0][0]);
-	const flatCoords = (hasRing ? coords[0] : coords) as Coordinate[];
+	let flatCoords = (hasRing ? coords[0] : coords) as Coordinate[];
 	if (!flatCoords?.length) {
-		return false;
+		return;
 	}
 
+	flatCoords = flatCoords.map((c) => fromLonLat(c));
 	const isClosed = isCoordsEqual(flatCoords[0], flatCoords[flatCoords.length - 1]);
-	if (props.drawFeatureType === DRAW_FEATURE_TYPES.TRACE && !isClosed && flatCoords.length >= 2) {
-		return true;
+	if (
+		geometry.type === 'LineString' &&
+		props.drawFeatureType === DRAW_FEATURE_TYPES.TRACE &&
+		!isClosed &&
+		flatCoords.length >= 2
+	) {
+		return flatCoords;
 	}
 
-	return props.drawFeatureType === DRAW_FEATURE_TYPES.SHAPE && isClosed && flatCoords.length >= 3;
+	if (
+		geometry.type === 'Polygon' &&
+		props.drawFeatureType === DRAW_FEATURE_TYPES.SHAPE &&
+		isClosed &&
+		flatCoords.length >= 3
+	) {
+		return [flatCoords];
+	}
 };
 
 const save = async () => {
 	error.value = null;
-	let coordinates: Coordinate[] | undefined;
+	let geometry;
 	if (selectedFile.value) {
-		coordinates = await parseFileCoordinates(selectedFile.value);
+		geometry = await parseFileCoordinates(selectedFile.value);
 	} else if (hasPastedValue.value) {
-		coordinates = parsePastedValue();
+		geometry = parsePastedValue();
 	}
 
+	const coordinates = getValidCoordinates(geometry as LineString | Point | Polygon | undefined);
 	if (!coordinates?.length) {
-		// TODO: translations
-		error.value ??= 'No valid coordinates found.';
-		return;
-	}
-
-	coordinates = coordinates.map((coord) => fromLonLat(coord));
-	if (!isExpectedFeatureType(coordinates)) {
 		// TODO: translations
 		error.value ??= 'Incorrect geometry type.';
 		return;
 	}
 
-	emit('save', coordinates);
 	close();
+	emit('save', coordinates);
 };
 
 const close = () => {
-	emit('update:visible', false);
 	reset();
+	emit('update:visible', false);
 };
 
 const reset = () => {
@@ -182,6 +188,7 @@ watch(pasteValue, (newVal) => {
 		class="map-paste-dialog"
 		:draggable="false"
 		@update:visible="emit('update:visible', $event)"
+		@after-hide="reset"
 	>
 		<template #header>
 			<!-- TODO: translations -->
@@ -198,6 +205,8 @@ watch(pasteValue, (newVal) => {
 			<div class="dialog-field-container">
 				<!-- TODO: translations -->
 				<label>Or upload a GeoJSON or a CSV file</label>
+				<!-- TODO: translations -->
+				<span v-if="selectedFile"><i>File uploaded</i></span>
 				<Button outlined severity="contrast" @click="openFileChooser">
 					<IconSVG name="mdiUpload" />
 					<!-- TODO: translations -->
@@ -209,12 +218,14 @@ watch(pasteValue, (newVal) => {
 					type="file"
 					accept=".geojson,.csv,application/json,text/csv"
 					@change="selectFile"
-				/>
+				>
 			</div>
 		</template>
 
 		<template #footer>
-			<p v-if="error?.length" class="coords-error-message">{{ error }}</p>
+			<p v-if="error?.length" class="coords-error-message">
+				{{ error }}
+			</p>
 			<Button label="Save" :disabled="!selectedFile && !hasPastedValue" @click="save" />
 		</template>
 	</Dialog>
@@ -243,6 +254,7 @@ watch(pasteValue, (newVal) => {
 }
 
 .coords-error-message {
+	display: block;
 	color: var(--odk-error-text-color);
 	margin-bottom: 10px;
 }
