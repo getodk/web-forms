@@ -1,18 +1,17 @@
 <script setup lang="ts">
-import { createGeoJSONGeometry } from '@/components/common/map/geojson-parsers.ts';
 import {
-	DRAW_FEATURE_TYPES,
-	type DrawFeatureType,
-} from '@/components/common/map/useMapInteractions.ts';
-import { isCoordsEqual } from '@/components/common/map/vertex-geometry.ts';
-import type { FeatureCollection, Geometry, LineString, Point, Polygon } from 'geojson';
-import { fromLonLat } from 'ol/proj';
+	createGeoJSONGeometry,
+	parseSingleFeatureFromCSV,
+	parseSingleFeatureFromGeoJSON,
+} from '@/components/common/map/geojson-parsers.ts';
+import { getValidCoordinates } from '@/components/common/map/map-helpers.ts';
+import { type DrawFeatureType } from '@/components/common/map/useMapInteractions.ts';
+import type { Geometry, LineString, Point, Polygon } from 'geojson';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import IconSVG from '@/components/common/IconSVG.vue';
 import { ref, computed, watch } from 'vue';
-import type { Coordinate } from 'ol/coordinate';
 
 const props = defineProps<{
 	visible: boolean;
@@ -54,11 +53,11 @@ const parseFileCoordinates = async (file: File): Promise<Geometry | undefined> =
 
 		const fileName = file.name.toLowerCase();
 		if (fileName.endsWith('.geojson')) {
-			return parseGeoJSONCoordinates(text);
+			return parseSingleFeatureFromGeoJSON(text);
 		}
 
 		if (fileName.endsWith('.csv')) {
-			return parseCSVGeometry(text);
+			return parseSingleFeatureFromCSV(text);
 		}
 		// TODO: translations
 		error.value = 'Unsupported file type. Please upload a .csv or .geojson file.';
@@ -68,72 +67,13 @@ const parseFileCoordinates = async (file: File): Promise<Geometry | undefined> =
 	}
 };
 
-const parseGeoJSONCoordinates = (text: string): Geometry | undefined => {
-	const geojson = JSON.parse(text) as FeatureCollection<LineString | Point | Polygon>;
-	return geojson?.features?.[0]?.geometry;
-};
-
-const parseCSVGeometry = (text: string): Geometry | undefined => {
-	const lines = text.split(/\r?\n/).filter((line) => line.trim().length > 0);
-	if (lines.length < 2) {
-		return;
-	}
-
-	const header = lines[0]?.split(',') ?? [];
-	const geometryIndex = header.findIndex((col) => col.trim().toLowerCase() === 'geometry');
-	if (geometryIndex === -1) {
-		return;
-	}
-
-	const firstDataRow = lines[1]?.split(',') ?? [];
-	const geometryValue = firstDataRow[geometryIndex]?.trim() ?? '';
-	return createGeoJSONGeometry(geometryValue) as Geometry | undefined;
-};
-
 const parsePastedValue = () => {
 	const value = pasteValue.value.trim();
 	if (!value.length) {
 		return;
 	}
 
-	return createGeoJSONGeometry(value) as Geometry | undefined;
-};
-
-const getValidCoordinates = (geometry: LineString | Point | Polygon | undefined) => {
-	if (!geometry?.coordinates) {
-		return;
-	}
-
-	const coords = geometry.coordinates as Coordinate | Coordinate[] | Coordinate[][];
-	if (geometry.type === 'Point' && !props.drawFeatureType && !Array.isArray(coords[0])) {
-		return fromLonLat(coords as Coordinate);
-	}
-
-	const hasRing = Array.isArray(coords[0]) && Array.isArray(coords[0][0]);
-	let flatCoords = (hasRing ? coords[0] : coords) as Coordinate[];
-	if (!flatCoords?.length) {
-		return;
-	}
-
-	flatCoords = flatCoords.map((c) => fromLonLat(c));
-	const isClosed = isCoordsEqual(flatCoords[0], flatCoords[flatCoords.length - 1]);
-	if (
-		geometry.type === 'LineString' &&
-		props.drawFeatureType === DRAW_FEATURE_TYPES.TRACE &&
-		!isClosed &&
-		flatCoords.length >= 2
-	) {
-		return flatCoords;
-	}
-
-	if (
-		geometry.type === 'Polygon' &&
-		props.drawFeatureType === DRAW_FEATURE_TYPES.SHAPE &&
-		isClosed &&
-		flatCoords.length >= 3
-	) {
-		return [flatCoords];
-	}
+	return createGeoJSONGeometry(value);
 };
 
 const save = async () => {
@@ -145,7 +85,13 @@ const save = async () => {
 		geometry = parsePastedValue();
 	}
 
-	const coordinates = getValidCoordinates(geometry as LineString | Point | Polygon | undefined);
+	const coordinates = getValidCoordinates(
+		geometry as LineString | Point | Polygon | undefined,
+		props.drawFeatureType
+	);
+	if (!coordinates?.length) {
+		return;
+	}
 	if (!coordinates?.length) {
 		// TODO: translations
 		error.value ??= 'Incorrect geometry type.';

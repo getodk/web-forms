@@ -1,8 +1,17 @@
-import { getFlatCoordinates } from '@/components/common/map/vertex-geometry.ts';
+import {
+	DRAW_FEATURE_TYPES,
+	type DrawFeatureType,
+} from '@/components/common/map/useMapInteractions.ts';
+import { getFlatCoordinates, isCoordsEqual } from '@/components/common/map/vertex-geometry.ts';
 import type { Coordinate } from 'ol/coordinate';
 import type Feature from 'ol/Feature';
 import type { LineString, Point, Polygon } from 'ol/geom';
-import { toLonLat } from 'ol/proj';
+import { fromLonLat, toLonLat } from 'ol/proj';
+import type {
+	LineString as LineStringGeoJSON,
+	Point as PointGeoJSON,
+	Polygon as PolygonGeoJSON,
+} from 'geojson';
 
 // Latitude is first for ODK and longitude is second.
 export const toODKCoordinateArray = (
@@ -47,5 +56,45 @@ export const isWebGLAvailable = () => {
 		return !!(window.WebGLRenderingContext && canvas.getContext('webgl'));
 	} catch {
 		return false;
+	}
+};
+
+export const getValidCoordinates = (
+	geometry: LineStringGeoJSON | PointGeoJSON | PolygonGeoJSON | undefined,
+	drawFeatureType: DrawFeatureType | undefined
+) => {
+	if (!geometry?.coordinates?.length) {
+		return;
+	}
+
+	const coords = geometry.coordinates as Coordinate | Coordinate[] | Coordinate[][];
+	if (geometry.type === 'Point' && !drawFeatureType && !Array.isArray(coords[0])) {
+		return fromLonLat(coords as Coordinate);
+	}
+
+	const hasRing = Array.isArray(coords[0]) && Array.isArray(coords[0][0]);
+	let flatCoords = (hasRing ? coords[0] : coords) as Coordinate[];
+	if (!flatCoords?.length) {
+		return;
+	}
+
+	flatCoords = flatCoords.map((c) => fromLonLat(c));
+	const isClosed = isCoordsEqual(flatCoords[0], flatCoords[flatCoords.length - 1]);
+	if (
+		geometry.type === 'LineString' &&
+		drawFeatureType === DRAW_FEATURE_TYPES.TRACE &&
+		!isClosed &&
+		flatCoords.length >= 2
+	) {
+		return flatCoords;
+	}
+
+	if (
+		geometry.type === 'Polygon' &&
+		drawFeatureType === DRAW_FEATURE_TYPES.SHAPE &&
+		isClosed &&
+		flatCoords.length >= 3
+	) {
+		return [flatCoords];
 	}
 };

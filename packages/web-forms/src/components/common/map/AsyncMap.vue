@@ -4,14 +4,12 @@
  * This prevents unnecessary bloat in the main application bundle, reducing initial load times and improving performance.
  * Use dynamic imports instead (e.g., `await import(importPath)`) for lazy-loading these dependencies only when required.
  */
+import { createFeatureCollectionAndProps } from '@/components/common/map/geojson-parsers.ts';
+import type { Mode } from '@/components/common/map/getModeConfig.ts';
 import type { SelectItem } from '@getodk/xforms-engine';
+import type { Feature } from 'geojson';
 import ProgressSpinner from 'primevue/progressspinner';
 import { computed, type DefineComponent, onMounted, shallowRef } from 'vue';
-import type { Mode } from '@/components/common/map/getModeConfig.ts';
-import {
-	createFeatureCollectionAndProps,
-	type Feature,
-} from '@/components/common/map/geojson-parsers.ts';
 
 type DrawFeatureType = 'shape' | 'trace';
 
@@ -76,9 +74,7 @@ onMounted(loadMap);
 	<div class="async-map-container">
 		<div v-if="currentState === STATES.ERROR" class="map-error">
 			<!-- TODO: translations -->
-			<p class="map-error-message">
-				Unable to load map
-			</p>
+			<p class="map-error-message">Unable to load map</p>
 		</div>
 
 		<ProgressSpinner v-else-if="currentState === STATES.LOADING" class="map-spinner" />

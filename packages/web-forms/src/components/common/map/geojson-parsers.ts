@@ -5,6 +5,7 @@
  * This file is for GeoJSON logic, which should not use OpenLayers types directly.
  */
 import type { SelectItem } from '@getodk/xforms-engine';
+import type { Feature, FeatureCollection, Geometry, LineString, Point, Polygon } from 'geojson';
 
 const PROPERTY_PREFIX = 'odk_'; // Avoids conflicts with OpenLayers (for example, geometry).
 
@@ -19,17 +20,6 @@ const RESERVED_MAP_PROPERTIES = [
 ];
 
 type Coordinates = [longitude: number, latitude: number];
-
-interface Geometry {
-	type: 'LineString' | 'Point' | 'Polygon';
-	coordinates: Coordinates | Coordinates[] | Coordinates[][];
-}
-
-export interface Feature {
-	type: 'Feature';
-	geometry: Geometry;
-	properties: Record<string, string>;
-}
 
 // Longitude is first for GeoJSON and latitude is second.
 export const toGeoJsonCoordinateArray = (
@@ -166,4 +156,32 @@ export const createFeatureCollectionAndProps = (
 		featureCollection: { type: 'FeatureCollection', features },
 		orderedExtraPropsMap,
 	};
+};
+
+export const parseSingleFeatureFromGeoJSON = (text: string): Geometry | undefined => {
+	try {
+		const geojson = JSON.parse(text) as FeatureCollection<LineString | Point | Polygon>;
+		return geojson?.features?.[0]?.geometry as Geometry | undefined;
+	} catch {
+		// eslint-disable-next-line no-console -- Skip silently to match createFeatureCollectionAndProps
+		console.warn(`Invalid GeoJSON: ${text}`);
+		return;
+	}
+};
+
+export const parseSingleFeatureFromCSV = (text: string): Geometry | undefined => {
+	const lines = text.split(/\r?\n/).filter((line) => line.trim().length > 0);
+	if (lines.length < 2) {
+		return;
+	}
+
+	const header = lines[0]?.split(',') ?? [];
+	const geometryIndex = header.findIndex((col) => col.trim().toLowerCase() === 'geometry');
+	if (geometryIndex === -1) {
+		return;
+	}
+
+	const firstDataRow = lines[1]?.split(',') ?? [];
+	const geometryValue = firstDataRow[geometryIndex]?.trim() ?? '';
+	return createGeoJSONGeometry(geometryValue);
 };

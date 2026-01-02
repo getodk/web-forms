@@ -1,4 +1,9 @@
-import { formatODKValue, toODKCoordinateArray } from '@/components/common/map/map-helpers.ts';
+import {
+	formatODKValue,
+	getValidCoordinates,
+	toODKCoordinateArray,
+} from '@/components/common/map/map-helpers.ts';
+import { DRAW_FEATURE_TYPES } from '@/components/common/map/useMapInteractions.ts';
 import { COORDINATE_LAYOUT_XYZM } from '@/components/common/map/useMapViewControls.ts';
 import Feature from 'ol/Feature';
 import { LineString, Point, Polygon } from 'ol/geom';
@@ -84,6 +89,106 @@ describe('Map Helpers', () => {
 		it('returns coordinates with altitude and accuracy', () => {
 			const result = toODKCoordinateArray(2.2945, 48.8584, 170, 5);
 			expect(result).toEqual([48.8584, 2.2945, 170, 5]);
+		});
+	});
+
+	describe('getValidCoordinates', () => {
+		it('returns undefined for invalid geometry', () => {
+			expect(getValidCoordinates(undefined, undefined)).toBeUndefined();
+			// @ts-expect-error - skip type check for testing purposes
+			expect(getValidCoordinates({ type: 'Point' }, undefined)).toBeUndefined();
+			expect(getValidCoordinates({ type: 'Point', coordinates: [] }, undefined)).toBeUndefined();
+		});
+
+		it('returns projected coordinates for a valid Point', () => {
+			const geometry = { type: 'Point', coordinates: [2.2945, 48.8584] };
+			// @ts-expect-error - skip type check for testing purposes
+			expect(getValidCoordinates(geometry, undefined)).toEqual(fromLonLat([2.2945, 48.8584]));
+		});
+
+		it('returns projected coordinates for a valid LineString', () => {
+			const geometry = {
+				type: 'LineString',
+				coordinates: [
+					[2.2945, 48.8584],
+					[2.3522, 48.8606],
+				],
+			};
+			const expected = [fromLonLat([2.2945, 48.8584]), fromLonLat([2.3522, 48.8606])];
+			// @ts-expect-error - skip type check for testing purposes
+			expect(getValidCoordinates(geometry, DRAW_FEATURE_TYPES.TRACE)).toEqual(expected);
+		});
+
+		it('returns undefined for LineString with length < 2', () => {
+			const geometry = { type: 'LineString', coordinates: [[2.2945, 48.8584]] };
+			// @ts-expect-error - skip type check for testing purposes
+			expect(getValidCoordinates(geometry, DRAW_FEATURE_TYPES.TRACE)).toBeUndefined();
+		});
+
+		it('returns undefined for closed LineString', () => {
+			const geometry = {
+				type: 'LineString',
+				coordinates: [
+					[2.2945, 48.8584],
+					[2.3522, 48.8606],
+					[2.2945, 48.8584],
+				],
+			};
+			// @ts-expect-error - skip type check for testing purposes
+			expect(getValidCoordinates(geometry, DRAW_FEATURE_TYPES.TRACE)).toBeUndefined();
+		});
+
+		it('returns projected coordinates for a valid Polygon', () => {
+			const geometry = {
+				type: 'Polygon',
+				coordinates: [
+					[
+						[2.2945, 48.8584],
+						[2.3522, 48.8606],
+						[2.3324, 48.8572],
+						[2.2945, 48.8584],
+					],
+				],
+			};
+			const expected = [
+				[
+					fromLonLat([2.2945, 48.8584]),
+					fromLonLat([2.3522, 48.8606]),
+					fromLonLat([2.3324, 48.8572]),
+					fromLonLat([2.2945, 48.8584]),
+				],
+			];
+			// @ts-expect-error - skip type check for testing purposes
+			expect(getValidCoordinates(geometry, DRAW_FEATURE_TYPES.SHAPE)).toEqual(expected);
+		});
+
+		it('returns undefined for Polygon with length < 3', () => {
+			const geometry = {
+				type: 'Polygon',
+				coordinates: [
+					[
+						[2.2945, 48.8584],
+						[2.2945, 48.8584],
+					],
+				],
+			};
+			// @ts-expect-error - skip type check for testing purposes
+			expect(getValidCoordinates(geometry, DRAW_FEATURE_TYPES.SHAPE)).toBeUndefined();
+		});
+
+		it('returns undefined for open Polygon', () => {
+			const geometry = {
+				type: 'Polygon',
+				coordinates: [
+					[
+						[2.2945, 48.8584],
+						[2.3522, 48.8606],
+						[2.3324, 48.8572],
+					],
+				],
+			};
+			// @ts-expect-error - skip type check for testing purposes
+			expect(getValidCoordinates(geometry, DRAW_FEATURE_TYPES.SHAPE)).toBeUndefined();
 		});
 	});
 });
