@@ -1,4 +1,4 @@
-import { toGeoJsonCoordinateArray } from '@/components/common/map/map-helpers.ts';
+import { toGeoJsonCoordinateArray } from '@/components/common/map/geojson-parsers.ts';
 import { Map, type View } from 'ol';
 import type { Coordinate } from 'ol/coordinate';
 import { easeOut } from 'ol/easing';

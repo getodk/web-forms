@@ -1,9 +1,6 @@
+import { toGeoJsonCoordinateArray } from '@/components/common/map/geojson-parsers.ts';
 import { getModeConfig, type Mode, MODES } from '@/components/common/map/getModeConfig.ts';
-import {
-	formatODKValue,
-	isWebGLAvailable,
-	toGeoJsonCoordinateArray,
-} from '@/components/common/map/map-helpers.ts';
+import { formatODKValue, isWebGLAvailable } from '@/components/common/map/map-helpers.ts';
 import {
 	getDrawStyles,
 	getSavedStyles,

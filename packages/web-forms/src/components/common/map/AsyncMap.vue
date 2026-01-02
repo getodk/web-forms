@@ -11,7 +11,7 @@ import type { Mode } from '@/components/common/map/getModeConfig.ts';
 import {
 	createFeatureCollectionAndProps,
 	type Feature,
-} from '@/components/common/map/createFeatureCollectionAndProps.ts';
+} from '@/components/common/map/geojson-parsers.ts';
 
 type DrawFeatureType = 'shape' | 'trace';
 

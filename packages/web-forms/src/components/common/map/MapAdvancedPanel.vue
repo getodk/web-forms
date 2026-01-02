@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import IconSVG from '@/components/common/IconSVG.vue';
-import { toGeoJsonCoordinateArray } from '@/components/common/map/map-helpers.ts';
+import { toGeoJsonCoordinateArray } from '@/components/common/map/geojson-parsers.ts';
 import { fromLonLat } from 'ol/proj';
 import { ref, watch } from 'vue';
 import type { Coordinate } from 'ol/coordinate';

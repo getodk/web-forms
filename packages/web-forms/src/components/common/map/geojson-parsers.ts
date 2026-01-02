@@ -1,4 +1,9 @@
-import { toGeoJsonCoordinateArray } from '@/components/common/map/map-helpers.ts';
+/**
+ * IMPORTANT: OpenLayers is not statically imported here to enable bundling them into a separate chunk.
+ * This prevents unnecessary bloat in the main application bundle, reducing initial load times and improving performance.
+ *
+ * This file is for GeoJSON logic, which should not use OpenLayers types directly.
+ */
 import type { SelectItem } from '@getodk/xforms-engine';
 
 const PROPERTY_PREFIX = 'odk_'; // Avoids conflicts with OpenLayers (for example, geometry).
@@ -25,6 +30,22 @@ export interface Feature {
 	geometry: Geometry;
 	properties: Record<string, string>;
 }
+
+// Longitude is first for GeoJSON and latitude is second.
+export const toGeoJsonCoordinateArray = (
+	longitude: number,
+	latitude: number,
+	altitude: number | null | undefined,
+	accuracy: number | null | undefined
+): number[] => {
+	const coords = [longitude, latitude];
+	if (accuracy != null) {
+		coords.push(altitude ?? 0, accuracy);
+	} else if (altitude != null) {
+		coords.push(altitude);
+	}
+	return coords;
+};
 
 const getGeoJSONCoordinates = (geometry: string): [Coordinates, ...Coordinates[]] | undefined => {
 	const coordinates: Coordinates[] = [];

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { createGeoJSONGeometry } from '@/components/common/map/createFeatureCollectionAndProps.ts';
+import { createGeoJSONGeometry } from '@/components/common/map/geojson-parsers.ts';
 import {
 	DRAW_FEATURE_TYPES,
 	type DrawFeatureType,

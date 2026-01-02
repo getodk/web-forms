@@ -4,31 +4,6 @@ import type Feature from 'ol/Feature';
 import type { LineString, Point, Polygon } from 'ol/geom';
 import { toLonLat } from 'ol/proj';
 
-const resolveAltitudeAndAccuracy = (
-	altitude: number | null | undefined,
-	accuracy: number | null | undefined
-) => {
-	const arr = [];
-	if (accuracy != null) {
-		arr.push(altitude ?? 0, accuracy);
-	} else if (altitude != null) {
-		arr.push(altitude);
-	}
-	return arr;
-};
-
-// Longitude is first for GeoJSON and latitude is second.
-export const toGeoJsonCoordinateArray = (
-	longitude: number,
-	latitude: number,
-	altitude: number | null | undefined,
-	accuracy: number | null | undefined
-): number[] => {
-	const coords = [longitude, latitude];
-	coords.push(...resolveAltitudeAndAccuracy(altitude, accuracy));
-	return coords;
-};
-
 // Latitude is first for ODK and longitude is second.
 export const toODKCoordinateArray = (
 	longitude: number,
@@ -37,7 +12,11 @@ export const toODKCoordinateArray = (
 	accuracy: number | null | undefined
 ): number[] => {
 	const coords = [latitude, longitude];
-	coords.push(...resolveAltitudeAndAccuracy(altitude, accuracy));
+	if (accuracy != null) {
+		coords.push(altitude ?? 0, accuracy);
+	} else if (altitude != null) {
+		coords.push(altitude);
+	}
 	return coords;
 };
 

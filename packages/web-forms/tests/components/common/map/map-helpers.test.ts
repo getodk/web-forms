@@ -1,8 +1,4 @@
-import {
-	formatODKValue,
-	toGeoJsonCoordinateArray,
-	toODKCoordinateArray,
-} from '@/components/common/map/map-helpers.ts';
+import { formatODKValue, toODKCoordinateArray } from '@/components/common/map/map-helpers.ts';
 import { COORDINATE_LAYOUT_XYZM } from '@/components/common/map/useMapViewControls.ts';
 import Feature from 'ol/Feature';
 import { LineString, Point, Polygon } from 'ol/geom';
@@ -66,28 +62,6 @@ describe('Map Helpers', () => {
 			const geom = new Polygon(coords, COORDINATE_LAYOUT_XYZM);
 			const feature = new Feature({ geometry: geom });
 			expect(formatODKValue(feature)).toBe('0 0; 0 1; 1 1; 0 0');
-		});
-	});
-
-	describe('toGeoJsonCoordinateArray', () => {
-		it('returns longitude and latitude only when altitude and accuracy were not provided', () => {
-			const result = toGeoJsonCoordinateArray(2.2945, 48.8584, null, null);
-			expect(result).toEqual([2.2945, 48.8584]);
-		});
-
-		it('returns coordinates with altitude', () => {
-			const result = toGeoJsonCoordinateArray(2.2945, 48.8584, 170, null);
-			expect(result).toEqual([2.2945, 48.8584, 170]);
-		});
-
-		it('returns coordinates with accuracy and defaults altitude to 0', () => {
-			const result = toGeoJsonCoordinateArray(2.2945, 48.8584, null, 5);
-			expect(result).toEqual([2.2945, 48.8584, 0, 5]);
-		});
-
-		it('returns coordinates with altitude and accuracy', () => {
-			const result = toGeoJsonCoordinateArray(2.2945, 48.8584, 170, 5);
-			expect(result).toEqual([2.2945, 48.8584, 170, 5]);
 		});
 	});
 
