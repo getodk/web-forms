@@ -55,7 +55,7 @@ export const formatODKValue = (feature: Feature): string => {
 	const featureType = geometry.getType();
 	if (featureType === 'Point') {
 		const coordinates = (geometry as Point).getCoordinates();
-		return coordinates ? formatCoords(coordinates) : '';
+		return coordinates?.length ? formatCoords(coordinates) : '';
 	}
 
 	const coordinates: Coordinate[] = getFlatCoordinates(geometry as LineString | Polygon);

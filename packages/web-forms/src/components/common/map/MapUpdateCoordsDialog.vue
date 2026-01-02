@@ -53,7 +53,7 @@ const parseFileCoordinates = async (file: File): Promise<Geometry | undefined> =
 		}
 
 		const fileName = file.name.toLowerCase();
-		if (fileName.endsWith('.geojson') || file.type === 'application/json') {
+		if (fileName.endsWith('.geojson')) {
 			return parseGeoJSONCoordinates(text);
 		}
 

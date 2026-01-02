@@ -15,6 +15,8 @@ export interface ModeCapabilities {
 	canShowMapOverlay: boolean;
 	canShowMapOverlayOnError: boolean;
 	canUndoLastChange: boolean;
+	canUpdateFeatureCoordinates: boolean;
+	canUpdateVertexCoordinates: boolean;
 	canViewProperties: boolean;
 }
 
@@ -46,6 +48,8 @@ export const getModeConfig = (mode: Mode): ModeConfig => {
 			canShowMapOverlay: false,
 			canShowMapOverlayOnError: false,
 			canUndoLastChange: false,
+			canUpdateFeatureCoordinates: false,
+			canUpdateVertexCoordinates: false,
 			canViewProperties: false,
 		},
 	} as const;
@@ -89,6 +93,7 @@ export const getModeConfig = (mode: Mode): ModeConfig => {
 				canRemoveCurrentLocation: true,
 				canSaveCurrentLocation: true,
 				canShowMapOverlay: true,
+				canUpdateFeatureCoordinates: true,
 			},
 		};
 	}
@@ -106,6 +111,8 @@ export const getModeConfig = (mode: Mode): ModeConfig => {
 				canDeleteFeature: true,
 				canSelectFeatureOrVertex: true,
 				canUndoLastChange: true,
+				canUpdateFeatureCoordinates: true,
+				canUpdateVertexCoordinates: true,
 			},
 		};
 	}

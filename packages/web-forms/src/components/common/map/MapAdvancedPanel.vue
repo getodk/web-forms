@@ -7,7 +7,7 @@ import type { Coordinate } from 'ol/coordinate';
 
 const props = defineProps<{
 	isOpen: boolean;
-	coordinates: Coordinate | undefined;
+	coordinates: Coordinate | null;
 }>();
 
 const emit = defineEmits(['open-paste-dialog', 'save']);

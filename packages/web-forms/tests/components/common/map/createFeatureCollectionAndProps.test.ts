@@ -1,5 +1,8 @@
 import { describe, it, expect, vi } from 'vitest';
-import { createFeatureCollectionAndProps } from '@/components/common/map/createFeatureCollectionAndProps';
+import {
+	createFeatureCollectionAndProps,
+	createGeoJSONGeometry,
+} from '@/components/common/map/createFeatureCollectionAndProps';
 import type { SelectItem } from '@getodk/xforms-engine';
 
 describe('createFeatureCollectionAndProps', () => {
@@ -34,7 +37,7 @@ describe('createFeatureCollectionAndProps', () => {
 					type: 'Feature',
 					geometry: {
 						type: 'Point',
-						coordinates: [-74.006, 40.7128],
+						coordinates: [-74.006, 40.7128, 100, 5],
 					},
 					properties: {
 						odk_label: 'Point 1',
@@ -51,7 +54,7 @@ describe('createFeatureCollectionAndProps', () => {
 
 	it('converts an ODK trace to a GeoJSON LineString feature', () => {
 		const odkFeatures: SelectItem[] = [
-			createSelectItem('trace1', 'Trace 1', '40.7128 -74.0060 100 5;40.7129 -74.0061 100 5', [
+			createSelectItem('trace1', 'Trace 1', '40.7128 -74.0060;40.7129 -74.0061 0 25', [
 				['stroke', '#0000ff'],
 			]),
 		];
@@ -68,13 +71,13 @@ describe('createFeatureCollectionAndProps', () => {
 						type: 'LineString',
 						coordinates: [
 							[-74.006, 40.7128],
-							[-74.0061, 40.7129],
+							[-74.0061, 40.7129, 0, 25],
 						],
 					},
 					properties: {
 						odk_label: 'Trace 1',
 						odk_value: 'trace1',
-						odk_geometry: '40.7128 -74.0060 100 5;40.7129 -74.0061 100 5',
+						odk_geometry: '40.7128 -74.0060;40.7129 -74.0061 0 25',
 						odk_stroke: '#0000ff',
 					},
 				},
@@ -89,7 +92,7 @@ describe('createFeatureCollectionAndProps', () => {
 			createSelectItem(
 				'shape1',
 				'Shape 1',
-				'40.7128 -74.0060 100 5;40.7129 -74.0061 100 5;40.7128 -74.0060 100 5',
+				'40.7128 -74.0060 1300;40.7129 -74.0061 1400 6;40.7128 -74.0060',
 				[['fill', '#00ff00']]
 			),
 		];
@@ -106,8 +109,8 @@ describe('createFeatureCollectionAndProps', () => {
 						type: 'Polygon',
 						coordinates: [
 							[
-								[-74.006, 40.7128],
-								[-74.0061, 40.7129],
+								[-74.006, 40.7128, 1300],
+								[-74.0061, 40.7129, 1400, 6],
 								[-74.006, 40.7128],
 							],
 						],
@@ -115,7 +118,7 @@ describe('createFeatureCollectionAndProps', () => {
 					properties: {
 						odk_label: 'Shape 1',
 						odk_value: 'shape1',
-						odk_geometry: '40.7128 -74.0060 100 5;40.7129 -74.0061 100 5;40.7128 -74.0060 100 5',
+						odk_geometry: '40.7128 -74.0060 1300;40.7129 -74.0061 1400 6;40.7128 -74.0060',
 						odk_fill: '#00ff00',
 					},
 				},
@@ -143,7 +146,7 @@ describe('createFeatureCollectionAndProps', () => {
 					type: 'Feature',
 					geometry: {
 						type: 'Point',
-						coordinates: [-74.006, 40.7128],
+						coordinates: [-74.006, 40.7128, 100, 5],
 					},
 					properties: {
 						odk_label: 'Point 1',
@@ -179,7 +182,7 @@ describe('createFeatureCollectionAndProps', () => {
 					type: 'Feature',
 					geometry: {
 						type: 'Point',
-						coordinates: [-74.006, 40.7128],
+						coordinates: [-74.006, 40.7128, 100, 5],
 					},
 					properties: {
 						odk_label: 'Point 1',
@@ -239,7 +242,7 @@ describe('createFeatureCollectionAndProps', () => {
 					type: 'Feature',
 					geometry: {
 						type: 'Point',
-						coordinates: [-74.006, 40.7128],
+						coordinates: [-74.006, 40.7128, 100, 5],
 					},
 					properties: {
 						odk_label: 'Point 1',
@@ -279,7 +282,7 @@ describe('createFeatureCollectionAndProps', () => {
 					type: 'Feature',
 					geometry: {
 						type: 'Point',
-						coordinates: [-74.006, 40.7128],
+						coordinates: [-74.006, 40.7128, 100, 5],
 					},
 					properties: {
 						odk_label: '',
@@ -312,7 +315,7 @@ describe('createFeatureCollectionAndProps', () => {
 					type: 'Feature',
 					geometry: {
 						type: 'Point',
-						coordinates: [-74.006, 40.7128],
+						coordinates: [-74.006, 40.7128, 100, 5],
 					},
 					properties: {
 						odk_label: 'Point 1',
@@ -377,7 +380,7 @@ describe('createFeatureCollectionAndProps', () => {
 					type: 'Feature',
 					geometry: {
 						type: 'Point',
-						coordinates: [-74.006, 40.7128],
+						coordinates: [-74.006, 40.7128, 100, 5],
 					},
 					properties: {
 						odk_label: 'Point 1',
@@ -400,13 +403,13 @@ describe('createFeatureCollectionAndProps', () => {
 				['marker-color', '#ff0000'],
 				['custom-prop', 'value1'],
 			]),
-			createSelectItem('trace1', 'Trace 1', '40.7128 -74.0060 100 5;40.7129 -74.0061 100 5', [
+			createSelectItem('trace1', 'Trace 1', '40.7128 -74.0060;40.7129 -74.0061', [
 				['stroke', '#0000ff'],
 			]),
 			createSelectItem(
 				'shape1',
 				'Shape 1',
-				'40.7128 -74.0060 100 5;40.7129 -74.0061 100 5;40.7128 -74.0060 100 5',
+				'40.7128 -74.0060 100 5;40.7129 -74.0061 0 0;40.7128 -74.0060 0 12',
 				[
 					['fill', '#00ff00'],
 					['another-prop', 'value2'],
@@ -425,7 +428,7 @@ describe('createFeatureCollectionAndProps', () => {
 					type: 'Feature',
 					geometry: {
 						type: 'Point',
-						coordinates: [-74.006, 40.7128],
+						coordinates: [-74.006, 40.7128, 100, 5],
 					},
 					properties: {
 						odk_label: 'Point 1',
@@ -446,7 +449,7 @@ describe('createFeatureCollectionAndProps', () => {
 					properties: {
 						odk_label: 'Trace 1',
 						odk_value: 'trace1',
-						odk_geometry: '40.7128 -74.0060 100 5;40.7129 -74.0061 100 5',
+						odk_geometry: '40.7128 -74.0060;40.7129 -74.0061',
 						odk_stroke: '#0000ff',
 					},
 				},
@@ -456,16 +459,16 @@ describe('createFeatureCollectionAndProps', () => {
 						type: 'Polygon',
 						coordinates: [
 							[
-								[-74.006, 40.7128],
-								[-74.0061, 40.7129],
-								[-74.006, 40.7128],
+								[-74.006, 40.7128, 100, 5],
+								[-74.0061, 40.7129, 0, 0],
+								[-74.006, 40.7128, 0, 12],
 							],
 						],
 					},
 					properties: {
 						odk_label: 'Shape 1',
 						odk_value: 'shape1',
-						odk_geometry: '40.7128 -74.0060 100 5;40.7129 -74.0061 100 5;40.7128 -74.0060 100 5',
+						odk_geometry: '40.7128 -74.0060 100 5;40.7129 -74.0061 0 0;40.7128 -74.0060 0 12',
 						odk_fill: '#00ff00',
 					},
 				},
@@ -507,7 +510,7 @@ describe('createFeatureCollectionAndProps', () => {
 					type: 'Feature',
 					geometry: {
 						type: 'Point',
-						coordinates: [-74.006, 40.7128],
+						coordinates: [-74.006, 40.7128, 100, 5],
 					},
 					properties: {
 						odk_label: '40.7128 -74.0060 100 5',
@@ -520,8 +523,8 @@ describe('createFeatureCollectionAndProps', () => {
 					geometry: {
 						type: 'LineString',
 						coordinates: [
-							[-74.006, 40.7128],
-							[-74.0061, 40.7129],
+							[-74.006, 40.7128, 100, 5],
+							[-74.0061, 40.7129, 100, 5],
 						],
 					},
 					properties: {
@@ -536,9 +539,9 @@ describe('createFeatureCollectionAndProps', () => {
 						type: 'Polygon',
 						coordinates: [
 							[
-								[-74.006, 40.7128],
-								[-74.0061, 40.7129],
-								[-74.006, 40.7128],
+								[-74.006, 40.7128, 100, 5],
+								[-74.0061, 40.7129, 100, 5],
+								[-74.006, 40.7128, 100, 5],
 							],
 						],
 					},
@@ -563,5 +566,55 @@ describe('createFeatureCollectionAndProps', () => {
 		expect(console.warn).toHaveBeenCalledWith('Invalid geo point coordinates: abc');
 		// eslint-disable-next-line no-console
 		expect(console.warn).toHaveBeenCalledWith('Missing geo points for option: abc');
+	});
+});
+
+describe('createGeoJSONGeometry', () => {
+	it('returns undefined for empty string', () => {
+		vi.spyOn(console, 'warn').mockImplementation(() => false);
+		expect(createGeoJSONGeometry('')).toBeUndefined();
+		// eslint-disable-next-line no-console
+		expect(console.warn).toHaveBeenCalledWith(
+			expect.stringContaining('Invalid geo point coordinates: ')
+		);
+	});
+
+	it('returns undefined for invalid coordinates', () => {
+		vi.spyOn(console, 'warn').mockImplementation(() => false);
+		expect(createGeoJSONGeometry('abc def')).toBeUndefined();
+		// eslint-disable-next-line no-console
+		expect(console.warn).toHaveBeenCalledWith(
+			expect.stringContaining('Invalid geo point coordinates: ')
+		);
+	});
+
+	it('returns Point for single valid coordinate', () => {
+		expect(createGeoJSONGeometry('40.7128 -74.0060 100 5')).toEqual({
+			type: 'Point',
+			coordinates: [-74.006, 40.7128, 100, 5],
+		});
+	});
+
+	it('returns LineString for multiple valid coordinates', () => {
+		expect(createGeoJSONGeometry('40.7128 -74.0060;40.7129 -74.0061')).toEqual({
+			type: 'LineString',
+			coordinates: [
+				[-74.006, 40.7128],
+				[-74.0061, 40.7129],
+			],
+		});
+	});
+
+	it('returns Polygon for multiple closed coordinates', () => {
+		expect(createGeoJSONGeometry('40.7128 -74.0060;40.7129 -74.0061;40.7128 -74.0060')).toEqual({
+			type: 'Polygon',
+			coordinates: [
+				[
+					[-74.006, 40.7128],
+					[-74.0061, 40.7129],
+					[-74.006, 40.7128],
+				],
+			],
+		});
 	});
 });

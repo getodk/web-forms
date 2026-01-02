@@ -41,7 +41,7 @@ import { Map, View } from 'ol';
 import { Attribution, Zoom } from 'ol/control';
 import type { Coordinate } from 'ol/coordinate';
 import Feature from 'ol/Feature';
-import { LineString, Point, Polygon } from 'ol/geom';
+import { LineString, Point, Polygon, SimpleGeometry } from 'ol/geom';
 import TileLayer from 'ol/layer/Tile';
 import VectorLayer from 'ol/layer/Vector';
 import WebGLVectorLayer from 'ol/layer/WebGLVector';
@@ -293,9 +293,9 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 	};
 
 	const updateVertexCoords = (newCoords: Coordinate) => {
-		/*if (!newCoords.length || !canUpdateVertexCoordinates()) {
+		if (!newCoords.length || !currentMode.capabilities.canUpdateVertexCoordinates) {
 			return;
-		}*/
+		}
 
 		const feature = mapFeatures?.getSavedFeature() as Feature<LineString | Polygon>;
 		const vertexIndex = feature?.get(SELECTED_VERTEX_INDEX_PROPERTY) as number;
@@ -310,19 +310,18 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 	};
 
 	const updateFeatureCoordinates = (newCoords: Coordinate | Coordinate[] | Coordinate[][]) => {
-		/*if (!newCoords.length || !canUpdateFeatureCoordinates()) {
+		if (!newCoords.length || !currentMode.capabilities.canUpdateFeatureCoordinates) {
 			return;
-		}*/
+		}
 
 		const feature = mapFeatures?.getSavedFeature() as Feature<LineString | Point | Polygon>;
-		const geometry = feature?.getGeometry();
+		const geometry = feature?.getGeometry() as SimpleGeometry | undefined;
 		if (!geometry) {
 			return;
 		}
 
 		mapInteractions?.savePreviousFeatureState(feature);
-		// Technically setCoordinates supports Coordinate | Coordinate[] | Coordinate[][]. Typing is being stricter than it should be.
-		geometry.setCoordinates(newCoords as never[], COORDINATE_LAYOUT_XYZM);
+		geometry.setCoordinates(newCoords, COORDINATE_LAYOUT_XYZM);
 		updateAndSaveFeature(feature);
 		unselectFeature();
 		mapViewControls?.fitToAllFeatures(featuresSource);
@@ -448,6 +447,11 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 		return longPress && (dragFeature || dragFeatureAndVertex);
 	};
 
+	const canOpenAdvacedPanel = () => {
+		const { canUpdateFeatureCoordinates, canUpdateVertexCoordinates } = currentMode.capabilities;
+		return canUpdateFeatureCoordinates || canUpdateVertexCoordinates;
+	};
+
 	const watchCurrentLocation = () => {
 		currentState.value = STATES.CAPTURING;
 
@@ -520,6 +524,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 
 		canLongPressAndDrag,
 		canViewProperties: () => currentMode.capabilities.canViewProperties,
+		canOpenAdvacedPanel,
 		shouldShowMapOverlay,
 	};
 }
