@@ -74,7 +74,9 @@ onMounted(loadMap);
 	<div class="async-map-container">
 		<div v-if="currentState === STATES.ERROR" class="map-error">
 			<!-- TODO: translations -->
-			<p class="map-error-message">Unable to load map</p>
+			<p class="map-error-message">
+				Unable to load map
+			</p>
 		</div>
 
 		<ProgressSpinner v-else-if="currentState === STATES.LOADING" class="map-spinner" />
