@@ -1,7 +1,7 @@
 import {
-	DRAW_FEATURE_TYPES,
-	type DrawFeatureType,
-} from '@/components/common/map/useMapInteractions.ts';
+	SINGLE_FEATURE_TYPES,
+	type SingleFeatureType,
+} from '@/components/common/map/getModeConfig.ts';
 import { getFlatCoordinates, isCoordsEqual } from '@/components/common/map/vertex-geometry.ts';
 import type { Coordinate } from 'ol/coordinate';
 import type Feature from 'ol/Feature';
@@ -61,14 +61,18 @@ export const isWebGLAvailable = () => {
 
 export const getValidCoordinates = (
 	geometry: LineStringGeoJSON | PointGeoJSON | PolygonGeoJSON | undefined,
-	drawFeatureType: DrawFeatureType | undefined
+	singleFeatureType: SingleFeatureType | undefined
 ) => {
 	if (!geometry?.coordinates?.length) {
 		return;
 	}
 
 	const coords = geometry.coordinates as Coordinate | Coordinate[] | Coordinate[][];
-	if (geometry.type === 'Point' && !drawFeatureType && !Array.isArray(coords[0])) {
+	if (
+		geometry.type === 'Point' &&
+		singleFeatureType === SINGLE_FEATURE_TYPES.POINT &&
+		!Array.isArray(coords[0])
+	) {
 		return fromLonLat(coords as Coordinate);
 	}
 
@@ -82,7 +86,7 @@ export const getValidCoordinates = (
 	const isClosed = isCoordsEqual(flatCoords[0], flatCoords[flatCoords.length - 1]);
 	if (
 		geometry.type === 'LineString' &&
-		drawFeatureType === DRAW_FEATURE_TYPES.TRACE &&
+		singleFeatureType === SINGLE_FEATURE_TYPES.TRACE &&
 		!isClosed &&
 		flatCoords.length >= 2
 	) {
@@ -91,7 +95,7 @@ export const getValidCoordinates = (
 
 	if (
 		geometry.type === 'Polygon' &&
-		drawFeatureType === DRAW_FEATURE_TYPES.SHAPE &&
+		singleFeatureType === SINGLE_FEATURE_TYPES.SHAPE &&
 		isClosed &&
 		flatCoords.length >= 3
 	) {

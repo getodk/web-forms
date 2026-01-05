@@ -1,9 +1,9 @@
+import { SINGLE_FEATURE_TYPES } from '@/components/common/map/getModeConfig.ts';
 import {
 	formatODKValue,
 	getValidCoordinates,
 	toODKCoordinateArray,
 } from '@/components/common/map/map-helpers.ts';
-import { DRAW_FEATURE_TYPES } from '@/components/common/map/useMapInteractions.ts';
 import { COORDINATE_LAYOUT_XYZM } from '@/components/common/map/useMapViewControls.ts';
 import Feature from 'ol/Feature';
 import { LineString, Point, Polygon } from 'ol/geom';
@@ -116,13 +116,13 @@ describe('Map Helpers', () => {
 			};
 			const expected = [fromLonLat([2.2945, 48.8584]), fromLonLat([2.3522, 48.8606])];
 			// @ts-expect-error - skip type check for testing purposes
-			expect(getValidCoordinates(geometry, DRAW_FEATURE_TYPES.TRACE)).toEqual(expected);
+			expect(getValidCoordinates(geometry, SINGLE_FEATURE_TYPES.TRACE)).toEqual(expected);
 		});
 
 		it('returns undefined for LineString with length < 2', () => {
 			const geometry = { type: 'LineString', coordinates: [[2.2945, 48.8584]] };
 			// @ts-expect-error - skip type check for testing purposes
-			expect(getValidCoordinates(geometry, DRAW_FEATURE_TYPES.TRACE)).toBeUndefined();
+			expect(getValidCoordinates(geometry, SINGLE_FEATURE_TYPES.TRACE)).toBeUndefined();
 		});
 
 		it('returns undefined for closed LineString', () => {
@@ -135,7 +135,7 @@ describe('Map Helpers', () => {
 				],
 			};
 			// @ts-expect-error - skip type check for testing purposes
-			expect(getValidCoordinates(geometry, DRAW_FEATURE_TYPES.TRACE)).toBeUndefined();
+			expect(getValidCoordinates(geometry, SINGLE_FEATURE_TYPES.TRACE)).toBeUndefined();
 		});
 
 		it('returns projected coordinates for a valid Polygon', () => {
@@ -159,7 +159,7 @@ describe('Map Helpers', () => {
 				],
 			];
 			// @ts-expect-error - skip type check for testing purposes
-			expect(getValidCoordinates(geometry, DRAW_FEATURE_TYPES.SHAPE)).toEqual(expected);
+			expect(getValidCoordinates(geometry, SINGLE_FEATURE_TYPES.SHAPE)).toEqual(expected);
 		});
 
 		it('returns undefined for Polygon with length < 3', () => {
@@ -173,7 +173,7 @@ describe('Map Helpers', () => {
 				],
 			};
 			// @ts-expect-error - skip type check for testing purposes
-			expect(getValidCoordinates(geometry, DRAW_FEATURE_TYPES.SHAPE)).toBeUndefined();
+			expect(getValidCoordinates(geometry, SINGLE_FEATURE_TYPES.SHAPE)).toBeUndefined();
 		});
 
 		it('returns undefined for open Polygon', () => {
@@ -188,7 +188,7 @@ describe('Map Helpers', () => {
 				],
 			};
 			// @ts-expect-error - skip type check for testing purposes
-			expect(getValidCoordinates(geometry, DRAW_FEATURE_TYPES.SHAPE)).toBeUndefined();
+			expect(getValidCoordinates(geometry, SINGLE_FEATURE_TYPES.SHAPE)).toBeUndefined();
 		});
 	});
 });

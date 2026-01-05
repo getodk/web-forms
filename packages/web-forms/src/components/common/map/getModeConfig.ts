@@ -1,3 +1,8 @@
+/**
+ * IMPORTANT: OpenLayers and MapBlock are not statically imported here to enable bundling them into a separate chunk.
+ * This prevents unnecessary bloat in the main application bundle, reducing initial load times and improving performance.
+ */
+
 export const MODES = {
 	SELECT: 'select', // Used in Select one from map question type
 	LOCATION: 'location', // Used in Geopoint with "maps" appearance
@@ -5,6 +10,18 @@ export const MODES = {
 	DRAW: 'draw', // Used in Geoshape and Geotrace question types
 } as const;
 export type Mode = (typeof MODES)[keyof typeof MODES];
+
+// Used when loading a single feature from the map.
+export const SINGLE_FEATURE_TYPES = {
+	POINT: 'point',
+	SHAPE: 'shape',
+	TRACE: 'trace',
+} as const;
+export type SingleFeatureType = (typeof SINGLE_FEATURE_TYPES)[keyof typeof SINGLE_FEATURE_TYPES];
+export const VERTEX_FEATURES: SingleFeatureType[] = [
+	SINGLE_FEATURE_TYPES.SHAPE,
+	SINGLE_FEATURE_TYPES.TRACE,
+] as const;
 
 export interface ModeCapabilities {
 	canDeleteFeature: boolean;

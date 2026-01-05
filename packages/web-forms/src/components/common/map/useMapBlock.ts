@@ -1,5 +1,10 @@
 import { toGeoJsonCoordinateArray } from '@/components/common/map/geojson-parsers.ts';
-import { getModeConfig, type Mode, MODES } from '@/components/common/map/getModeConfig.ts';
+import {
+	getModeConfig,
+	type Mode,
+	MODES,
+	type SingleFeatureType,
+} from '@/components/common/map/getModeConfig.ts';
 import { formatODKValue, isWebGLAvailable } from '@/components/common/map/map-helpers.ts';
 import {
 	getDrawStyles,
@@ -17,7 +22,6 @@ import {
 	type UseMapFeatures,
 } from '@/components/common/map/useMapFeatures.ts';
 import {
-	type DrawFeatureType,
 	useMapInteractions,
 	type UseMapInteractions,
 } from '@/components/common/map/useMapInteractions.ts';
@@ -61,7 +65,7 @@ export const ODK_VALUE_PROPERTY = 'odk_value';
 
 interface MapBlockConfig {
 	mode: Mode;
-	drawFeatureType?: DrawFeatureType;
+	singleFeatureType?: SingleFeatureType;
 }
 
 interface MapBlockEvents {
@@ -134,7 +138,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 		mapInteractions = useMapInteractions(
 			mapInstance,
 			currentMode.capabilities,
-			config.drawFeatureType
+			config.singleFeatureType
 		);
 		mapFeatures = useMapFeatures(
 			mapInstance,

@@ -4,8 +4,8 @@ import {
 	parseSingleFeatureFromCSV,
 	parseSingleFeatureFromGeoJSON,
 } from '@/components/common/map/geojson-parsers.ts';
+import type { SingleFeatureType } from '@/components/common/map/getModeConfig.ts';
 import { getValidCoordinates } from '@/components/common/map/map-helpers.ts';
-import { type DrawFeatureType } from '@/components/common/map/useMapInteractions.ts';
 import type { Geometry, LineString, Point, Polygon } from 'geojson';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
@@ -15,7 +15,7 @@ import { ref, watch } from 'vue';
 
 const props = defineProps<{
 	visible: boolean;
-	drawFeatureType?: DrawFeatureType;
+	singleFeatureType?: SingleFeatureType;
 }>();
 
 const emit = defineEmits(['update:visible', 'save']);
@@ -87,7 +87,7 @@ const save = async () => {
 
 	const coordinates = getValidCoordinates(
 		geometry as LineString | Point | Polygon | undefined,
-		props.drawFeatureType
+		props.singleFeatureType
 	);
 	isParsing.value = false;
 

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import IconSVG from '@/components/common/IconSVG.vue';
 import {
-	DRAW_FEATURE_TYPES,
-	type DrawFeatureType,
-} from '@/components/common/map/useMapInteractions.ts';
+	SINGLE_FEATURE_TYPES,
+	type SingleFeatureType,
+} from '@/components/common/map/getModeConfig.ts';
 import { isCoordsEqual } from '@/components/common/map/vertex-geometry.ts';
 import { truncateDecimals } from '@/lib/format/truncate-decimals.ts';
 import type { Feature, LineString, Point, Polygon, Position } from 'geojson';
@@ -22,7 +22,7 @@ interface StatusDetails {
 const props = defineProps<{
 	savedFeatureValue: Feature | undefined;
 	selectedVertex: Coordinate | undefined;
-	drawFeatureType?: DrawFeatureType;
+	singleFeatureType?: SingleFeatureType;
 	isCapturing: boolean;
 	canRemove: boolean;
 	canSave: boolean;
@@ -38,11 +38,11 @@ const POLYGON_ICON = 'mdiVectorPolygon';
 
 const noSavedStatus = computed<StatusDetails>(() => {
 	// TODO: translations
-	if (props.drawFeatureType === DRAW_FEATURE_TYPES.TRACE) {
+	if (props.singleFeatureType === SINGLE_FEATURE_TYPES.TRACE) {
 		return { message: 'No trace saved', icon: LINE_ICON };
 	}
 
-	if (props.drawFeatureType === DRAW_FEATURE_TYPES.SHAPE) {
+	if (props.singleFeatureType === SINGLE_FEATURE_TYPES.SHAPE) {
 		return { message: 'No shape saved', icon: POLYGON_ICON };
 	}
 
@@ -69,18 +69,17 @@ const selectedVertexInfo = computed(() => {
 });
 
 const countPoints = (coords: Position | Position[] | Position[][] | undefined = []) => {
-	const isPoint = !props.drawFeatureType && coords?.length;
-	if (isPoint) {
+	if (props.singleFeatureType === SINGLE_FEATURE_TYPES.POINT && coords?.length) {
 		return 1;
 	}
 
-	if (props.drawFeatureType === DRAW_FEATURE_TYPES.TRACE) {
+	if (props.singleFeatureType === SINGLE_FEATURE_TYPES.TRACE) {
 		return coords.length;
 	}
 
 	const ring = coords[0];
 	if (
-		props.drawFeatureType === DRAW_FEATURE_TYPES.SHAPE &&
+		props.singleFeatureType === SINGLE_FEATURE_TYPES.SHAPE &&
 		Array.isArray(ring) &&
 		isCoordsEqual(ring[0] as [number, number], ring[ring.length - 1] as [number, number])
 	) {
@@ -99,11 +98,11 @@ const savedStatus = computed<StatusDetails | null>(() => {
 
 	// TODO: translations
 	const message = `${count} points saved`;
-	if (props.drawFeatureType === DRAW_FEATURE_TYPES.TRACE) {
+	if (props.singleFeatureType === SINGLE_FEATURE_TYPES.TRACE) {
 		return { message, icon: LINE_ICON };
 	}
 
-	if (props.drawFeatureType === DRAW_FEATURE_TYPES.SHAPE) {
+	if (props.singleFeatureType === SINGLE_FEATURE_TYPES.SHAPE) {
 		return { message, icon: POLYGON_ICON };
 	}
 
@@ -141,7 +140,14 @@ const savedStatus = computed<StatusDetails | null>(() => {
 					<!-- TODO: translations -->
 					<span>View details</span>
 				</Button>
-				<Button v-if="canOpenAdvancedPanel" class="advanced-button" :disabled="!canEnableAdvancedPanel" outlined severity="contrast" @click="emit('open-advanced-panel')">
+				<Button
+					v-if="canOpenAdvancedPanel"
+					class="advanced-button"
+					:disabled="!canEnableAdvancedPanel"
+					outlined
+					severity="contrast"
+					@click="emit('open-advanced-panel')"
+				>
 					<IconSVG name="mdiCogOutline" />
 					<!-- TODO: translations -->
 					<span>Advanced</span>

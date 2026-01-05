@@ -5,7 +5,11 @@
  * load on demand. Avoids main bundle bloat.
  */
 import IconSVG from '@/components/common/IconSVG.vue';
-import type { Mode } from '@/components/common/map/getModeConfig.ts';
+import {
+	type Mode,
+	type SingleFeatureType,
+	VERTEX_FEATURES,
+} from '@/components/common/map/getModeConfig.ts';
 import MapAdvancedPanel from '@/components/common/map/MapAdvancedPanel.vue';
 import MapConfirmDialog from '@/components/common/map/MapConfirmDialog.vue';
 import MapControls from '@/components/common/map/MapControls.vue';
@@ -13,7 +17,6 @@ import MapProperties from '@/components/common/map/MapProperties.vue';
 import MapStatusBar from '@/components/common/map/MapStatusBar.vue';
 import MapUpdateCoordsDialog from '@/components/common/map/MapUpdateCoordsDialog.vue';
 import { STATES, useMapBlock } from '@/components/common/map/useMapBlock.ts';
-import { type DrawFeatureType } from '@/components/common/map/useMapInteractions.ts';
 import { QUESTION_HAS_ERROR } from '@/lib/constants/injection-keys.ts';
 import type { Feature, FeatureCollection, Point as PointGeoJSON } from 'geojson';
 import type { Coordinate } from 'ol/coordinate';
@@ -25,7 +28,7 @@ import { computed, type ComputedRef, inject, onMounted, onUnmounted, ref, watch 
 interface MapBlockProps {
 	featureCollection: FeatureCollection;
 	disabled: boolean;
-	drawFeatureType?: DrawFeatureType;
+	singleFeatureType?: SingleFeatureType;
 	mode: Mode;
 	orderedExtraProps: Map<string, Array<[string, string]>>;
 	savedFeatureValue: Feature | undefined;
@@ -45,7 +48,7 @@ const showErrorStyle = inject<ComputedRef<boolean>>(
 );
 
 const mapHandler = useMapBlock(
-	{ mode: props.mode, drawFeatureType: props.drawFeatureType },
+	{ mode: props.mode, singleFeatureType: props.singleFeatureType },
 	{
 		onFeaturePlacement: () => emitSavedFeature(),
 		onVertexSelect: (vertex) => {
@@ -62,7 +65,11 @@ const advancedPanelCoords = computed<Coordinate | null>(() => {
 		return null;
 	}
 
-	if (props.drawFeatureType && selectedVertex.value) {
+	if (
+		selectedVertex.value &&
+		props.singleFeatureType &&
+		VERTEX_FEATURES.includes(props.singleFeatureType)
+	) {
 		return toLonLat(selectedVertex.value);
 	}
 
@@ -165,7 +172,7 @@ const updateFeatureCoords = (newCoords: Coordinate | Coordinate[] | Coordinate[]
 };
 
 const saveAdvancedPanelCoords = (newCoords: Coordinate) => {
-	if (props.drawFeatureType) {
+	if (props.singleFeatureType && VERTEX_FEATURES.includes(props.singleFeatureType)) {
 		mapHandler.updateVertexCoords(newCoords);
 		emitSavedFeature();
 		return;
@@ -219,7 +226,7 @@ const saveAdvancedPanelCoords = (newCoords: Coordinate) => {
 				:can-remove="!disabled && mapHandler.canRemoveCurrentLocation()"
 				:can-save="!disabled && mapHandler.canSaveCurrentLocation()"
 				:can-view-details="mapHandler.canViewProperties()"
-				:draw-feature-type="drawFeatureType"
+				:single-feature-type="singleFeatureType"
 				:is-capturing="mapHandler.currentState.value === STATES.CAPTURING"
 				:saved-feature-value="savedFeatureValue"
 				:selected-vertex="selectedVertex"
@@ -263,13 +270,13 @@ const saveAdvancedPanelCoords = (newCoords: Coordinate) => {
 
 	<MapConfirmDialog
 		v-model:visible="confirmDeleteAction"
-		:draw-feature-type="drawFeatureType"
+		:single-feature-type="singleFeatureType"
 		@delete-feature="deleteFeature"
 	/>
 
 	<MapUpdateCoordsDialog
 		v-model:visible="isUpdateCoordsDialogOpen"
-		:draw-feature-type="drawFeatureType"
+		:single-feature-type="singleFeatureType"
 		@save="updateFeatureCoords"
 	/>
 </template>
