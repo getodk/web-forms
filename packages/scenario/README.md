@@ -24,7 +24,7 @@ All of JavaRosa's tests as of [https://github.com/getodk/javarosa/commit/5ae6894
 
    - … with companion and/or alternate tests, either demonstrating the nature of current known failures; adding supplemental context; or exercising meaningful test cases against a different abstraction level (e.g. apparent unit tests adapted to be `Scenario`-based integration tests).
 
-2. Explicitly marked as `todo`, where some tests or suites were considered pertinent but there is some other prerequisite work necessary to complete porting them.
+2. Explicitly marked as `todo`, where some tests or suites were considered pertinent, but there is some other prerequisite work necessary to complete porting them.
 
 3. Explicitly marked `skip`, where some noteworthy tests were deemed either impertinent or of unclear future pertinence.
 
