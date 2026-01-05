@@ -11,7 +11,7 @@ import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import IconSVG from '@/components/common/IconSVG.vue';
-import { ref, computed, watch } from 'vue';
+import { ref, watch } from 'vue';
 
 const props = defineProps<{
 	visible: boolean;
@@ -26,28 +26,27 @@ const selectedFile = ref<File | null>(null);
 const isParsing = ref(false);
 const error = ref<string | null>(null);
 
-const hasPastedValue = computed(() => pasteValue.value.trim().length > 0);
-
 const openFileChooser = () => fileInput.value?.click();
 
 const selectFile = (event: Event) => {
 	const input = event.target as HTMLInputElement;
 	const file = input.files?.[0];
 	if (!file) {
+		resetSelectedFile();
 		return;
 	}
 
+	resetError();
 	pasteValue.value = '';
 	selectedFile.value = file;
-	error.value = null;
 };
 
 const parseFileCoordinates = async (file: File): Promise<Geometry | undefined> => {
 	try {
 		const text = await file.text();
-		if (!text.trim()) {
+		if (!text?.trim()?.length) {
 			// TODO: translations
-			error.value = 'File is empty.';
+			setErrorIfBlank('File is empty.');
 			return;
 		}
 
@@ -60,10 +59,10 @@ const parseFileCoordinates = async (file: File): Promise<Geometry | undefined> =
 			return parseSingleFeatureFromCSV(text);
 		}
 		// TODO: translations
-		error.value = 'Unsupported file type. Please upload a .csv or .geojson file.';
+		setErrorIfBlank('Unsupported file type. Please upload a .csv or .geojson file.');
 	} catch {
 		// TODO: translations
-		error.value = 'Failed to parse file. Ensure it is valid CSV or GeoJSON.';
+		setErrorIfBlank('Failed to parse file. Ensure it is a valid CSV or GeoJSON.');
 	}
 };
 
@@ -77,11 +76,12 @@ const parsePastedValue = () => {
 };
 
 const save = async () => {
-	error.value = null;
+	resetError();
+	isParsing.value = true;
 	let geometry;
 	if (selectedFile.value) {
 		geometry = await parseFileCoordinates(selectedFile.value);
-	} else if (hasPastedValue.value) {
+	} else if (pasteValue.value.length) {
 		geometry = parsePastedValue();
 	}
 
@@ -89,12 +89,11 @@ const save = async () => {
 		geometry as LineString | Point | Polygon | undefined,
 		props.drawFeatureType
 	);
-	if (!coordinates?.length) {
-		return;
-	}
+	isParsing.value = false;
+
 	if (!coordinates?.length) {
 		// TODO: translations
-		error.value ??= 'Incorrect geometry type.';
+		setErrorIfBlank('Incorrect geometry type.');
 		return;
 	}
 
@@ -109,20 +108,26 @@ const close = () => {
 
 const reset = () => {
 	pasteValue.value = '';
-	selectedFile.value = null;
-	error.value = null;
 	isParsing.value = false;
+	resetSelectedFile();
+	resetError();
+};
+
+const resetSelectedFile = () => {
+	selectedFile.value = null;
 	if (fileInput.value) {
 		fileInput.value.value = '';
 	}
 };
 
+const resetError = () => (error.value = null);
+
+const setErrorIfBlank = (message: string) => (error.value ??= message);
+
 watch(pasteValue, (newVal) => {
+	resetError();
 	if (newVal && selectedFile.value) {
-		selectedFile.value = null;
-		if (fileInput.value) {
-			fileInput.value.value = '';
-		}
+		resetSelectedFile();
 	}
 });
 </script>
@@ -145,7 +150,7 @@ watch(pasteValue, (newVal) => {
 			<div class="dialog-field-container">
 				<!-- TODO: translations -->
 				<label for="paste-input">Paste the new value in ODK format</label>
-				<InputText id="paste-input" v-model="pasteValue" />
+				<InputText id="paste-input" v-model="pasteValue" :disabled="isParsing" />
 			</div>
 
 			<div class="dialog-field-container">
@@ -153,7 +158,7 @@ watch(pasteValue, (newVal) => {
 				<label>Or upload a GeoJSON or a CSV file</label>
 				<!-- TODO: translations -->
 				<span v-if="selectedFile"><i>File uploaded</i></span>
-				<Button outlined severity="contrast" @click="openFileChooser">
+				<Button outlined severity="contrast" :disabled="isParsing" @click="openFileChooser">
 					<IconSVG name="mdiUpload" />
 					<!-- TODO: translations -->
 					<span>Upload file</span>
@@ -172,7 +177,7 @@ watch(pasteValue, (newVal) => {
 			<p v-if="error?.length" class="coords-error-message">
 				{{ error }}
 			</p>
-			<Button label="Save" :disabled="!selectedFile && !hasPastedValue" @click="save" />
+			<Button label="Save" :disabled="!selectedFile && !pasteValue.length" @click="save" />
 		</template>
 	</Dialog>
 </template>
