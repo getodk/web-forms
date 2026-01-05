@@ -31,7 +31,7 @@ const props = defineProps<{
 	canEnableAdvancedPanel: boolean;
 }>();
 
-const emit = defineEmits(['discard', 'open-advanced-panel', 'save', 'view-details']);
+const emit = defineEmits(['discard', 'toggle-advanced-panel', 'save', 'view-details']);
 
 const LINE_ICON = 'mdiVectorPolyline';
 const POLYGON_ICON = 'mdiVectorPolygon';
@@ -89,8 +89,35 @@ const countPoints = (coords: Position | Position[] | Position[][] | undefined = 
 	return 0;
 };
 
+const getSavedMessageForMultiFeature = (type: string) => {
+	const geometryType = type?.toLowerCase();
+	// TODO: translations
+	if (geometryType === 'point') {
+		return 'Point saved';
+	}
+
+	if (geometryType === 'linestring') {
+		return 'Trace saved';
+	}
+
+	if (geometryType === 'polygon') {
+		return 'Shape saved';
+	}
+
+	return 'Feature saved';
+};
+
 const savedStatus = computed<StatusDetails | null>(() => {
 	const geometry = props.savedFeatureValue?.geometry as LineString | Point | Polygon | undefined;
+	const expectAnyFeature = !props.singleFeatureType;
+	if (expectAnyFeature && geometry) {
+		return {
+			message: getSavedMessageForMultiFeature(geometry.type),
+			icon: 'mdiCheckCircle',
+			highlight: true,
+		};
+	}
+
 	const count = countPoints(geometry?.coordinates);
 	if (count === 0) {
 		return null;
@@ -146,7 +173,7 @@ const savedStatus = computed<StatusDetails | null>(() => {
 					:disabled="!canEnableAdvancedPanel"
 					outlined
 					severity="contrast"
-					@click="emit('open-advanced-panel')"
+					@click="emit('toggle-advanced-panel')"
 				>
 					<IconSVG name="mdiCogOutline" />
 					<!-- TODO: translations -->

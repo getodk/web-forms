@@ -28,12 +28,17 @@ export const toGeoJsonCoordinateArray = (
 	altitude: number | null | undefined,
 	accuracy: number | null | undefined
 ): number[] => {
-	const coords = [longitude, latitude];
-	if (accuracy != null) {
-		coords.push(altitude ?? 0, accuracy);
-	} else if (altitude != null) {
-		coords.push(altitude);
+	const coords = [];
+	if (Number.isFinite(longitude) && Number.isFinite(latitude)) {
+		coords.push(longitude, latitude);
+
+		if (Number.isFinite(accuracy)) {
+			coords.push(Number.isFinite(altitude) ? altitude! : 0, accuracy!);
+		} else if (Number.isFinite(altitude)) {
+			coords.push(altitude!);
+		}
 	}
+
 	return coords;
 };
 

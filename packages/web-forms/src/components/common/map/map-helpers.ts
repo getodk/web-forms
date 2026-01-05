@@ -20,12 +20,17 @@ export const toODKCoordinateArray = (
 	altitude: number | null | undefined,
 	accuracy: number | null | undefined
 ): number[] => {
-	const coords = [latitude, longitude];
-	if (accuracy != null) {
-		coords.push(altitude ?? 0, accuracy);
-	} else if (altitude != null) {
-		coords.push(altitude);
+	const coords = [];
+	if (Number.isFinite(latitude) && Number.isFinite(longitude)) {
+		coords.push(latitude, longitude);
+
+		if (Number.isFinite(accuracy)) {
+			coords.push(Number.isFinite(altitude) ? altitude! : 0, accuracy!);
+		} else if (Number.isFinite(altitude)) {
+			coords.push(altitude!);
+		}
 	}
+
 	return coords;
 };
 

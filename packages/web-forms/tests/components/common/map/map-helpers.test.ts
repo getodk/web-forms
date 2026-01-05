@@ -103,7 +103,7 @@ describe('Map Helpers', () => {
 		it('returns projected coordinates for a valid Point', () => {
 			const geometry = { type: 'Point', coordinates: [2.2945, 48.8584] };
 			// @ts-expect-error - skip type check for testing purposes
-			expect(getValidCoordinates(geometry, undefined)).toEqual(fromLonLat([2.2945, 48.8584]));
+			expect(getValidCoordinates(geometry,  SINGLE_FEATURE_TYPES.POINT)).toEqual(fromLonLat([2.2945, 48.8584]));
 		});
 
 		it('returns projected coordinates for a valid LineString', () => {

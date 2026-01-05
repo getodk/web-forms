@@ -51,12 +51,7 @@ const mapHandler = useMapBlock(
 	{ mode: props.mode, singleFeatureType: props.singleFeatureType },
 	{
 		onFeaturePlacement: () => emitSavedFeature(),
-		onVertexSelect: (vertex) => {
-			selectedVertex.value = vertex;
-			if (!selectedVertex.value?.length) {
-				isAdvancedPanelOpen.value = false;
-			}
-		},
+		onVertexSelect: (vertex) => (selectedVertex.value = vertex),
 	}
 );
 
@@ -65,16 +60,12 @@ const advancedPanelCoords = computed<Coordinate | null>(() => {
 		return null;
 	}
 
-	if (
-		selectedVertex.value &&
-		props.singleFeatureType &&
-		VERTEX_FEATURES.includes(props.singleFeatureType)
-	) {
-		return toLonLat(selectedVertex.value);
+	if (props.singleFeatureType && VERTEX_FEATURES.includes(props.singleFeatureType)) {
+		return selectedVertex.value?.length ? toLonLat(selectedVertex.value) : null;
 	}
 
 	const geometry = props.savedFeatureValue?.geometry as PointGeoJSON | undefined;
-	if (geometry) {
+	if (geometry?.coordinates?.length) {
 		return geometry.coordinates;
 	}
 
@@ -119,6 +110,16 @@ watch(
 watch(
 	() => props.disabled,
 	(newValue) => mapHandler.setupMapInteractions(newValue)
+);
+
+watch(
+	() => advancedPanelCoords.value,
+	(newValue) => {
+		if (!newValue?.length) {
+			isAdvancedPanelOpen.value = false;
+		}
+	},
+	{ immediate: true }
 );
 
 const handleEscapeKey = (event: KeyboardEvent) => {
@@ -221,7 +222,7 @@ const saveAdvancedPanelCoords = (newCoords: Coordinate) => {
 			</div>
 
 			<MapStatusBar
-				:can-enable-advanced-panel="!!advancedPanelCoords"
+				:can-enable-advanced-panel="!!advancedPanelCoords?.length"
 				:can-open-advanced-panel="!disabled && mapHandler.canOpenAdvacedPanel()"
 				:can-remove="!disabled && mapHandler.canRemoveCurrentLocation()"
 				:can-save="!disabled && mapHandler.canSaveCurrentLocation()"
@@ -234,7 +235,7 @@ const saveAdvancedPanelCoords = (newCoords: Coordinate) => {
 				@discard="discardSavedFeature"
 				@save="saveCurrentLocation"
 				@view-details="mapHandler.selectSavedFeature"
-				@open-advanced-panel="isAdvancedPanelOpen = !isAdvancedPanelOpen"
+				@toggle-advanced-panel="isAdvancedPanelOpen = !isAdvancedPanelOpen"
 			/>
 
 			<MapAdvancedPanel

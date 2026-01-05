@@ -38,17 +38,19 @@ const updateVertex = () => {
 	}
 
 	const [originalLong, originalLat] = props.coordinates;
-	const long = longitude.value ?? originalLong;
-	const lat = latitude.value ?? originalLat;
-	if (long === undefined || lat === undefined) {
-		return;
+	if (Number(longitude.value) === 0) {
+		longitude.value = originalLong;
+	}
+
+	if (Number(latitude.value) === 0) {
+		latitude.value = originalLat;
 	}
 
 	const newVertex = toGeoJsonCoordinateArray(
-		long,
-		lat,
-		altitude.value,
-		accuracy.value
+		Number(longitude.value),
+		Number(latitude.value),
+		Number(altitude.value),
+		Number(accuracy.value)
 	) as Coordinate;
 	emit('save', fromLonLat(newVertex));
 };
