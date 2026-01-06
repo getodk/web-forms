@@ -21,7 +21,7 @@
           </text>
           <text id="/data/combined_question:label">
             <value>Question with all media in label</value>
-            <value form="audio">jr://audio/test-audio.m4a</value>
+            <value form="audio">jr://audio/test-audio.mp3</value>
             <value form="video">jr://video/test-video.mp4</value>
             <value form="image">jr://images/test-image.jpg</value>
           </text>
