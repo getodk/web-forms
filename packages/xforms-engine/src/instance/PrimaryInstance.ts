@@ -1,6 +1,7 @@
 import { clearCache, XPathNodeKindKey } from '@getodk/xpath';
 import type { Accessor } from 'solid-js';
 import { createSignal } from 'solid-js';
+import type { GeolocationProvider } from '../client';
 import type { FormInstanceInitializationMode } from '../client/form/FormInstance.ts';
 import type { ActiveLanguage, FormLanguage, FormLanguages } from '../client/FormLanguage.ts';
 import type { FormNodeID } from '../client/identity.ts';
@@ -108,6 +109,8 @@ export interface PrimaryInstanceOptions<Mode extends FormInstanceInitializationM
 	readonly initialState: PrimaryInstanceInitialState<Mode>;
 }
 
+export type BackgroundGeopoint = Promise<string>;
+
 export class PrimaryInstance<
 		Mode extends FormInstanceInitializationMode = FormInstanceInitializationMode,
 	>
@@ -122,6 +125,7 @@ export class PrimaryInstance<
 	readonly initializationMode: FormInstanceInitializationMode;
 	readonly model: ModelDefinition;
 	readonly attachments: InstanceAttachmentsState;
+	protected backgroundGeopoint: BackgroundGeopoint | null = null;
 
 	// InstanceNode
 	protected readonly state: SharedNodeState<PrimaryInstanceStateSpec>;
@@ -134,6 +138,7 @@ export class PrimaryInstance<
 	readonly hasNonRelevantAncestor = () => false;
 	readonly isRelevant = () => true;
 
+	private geolocationProvider: GeolocationProvider | undefined;
 	// TranslationContext (support)
 	private readonly setActiveLanguage: SimpleAtomicStateSetter<FormLanguage>;
 
@@ -176,6 +181,7 @@ export class PrimaryInstance<
 		this.model = model;
 		this.attachments = new InstanceAttachmentsState(initialState?.attachments);
 		this.instanceNode = activeInstance;
+		this.geolocationProvider = config.geolocationProvider;
 
 		const [isAttached, setIsAttached] = createSignal(false);
 
@@ -288,5 +294,23 @@ export class PrimaryInstance<
 		});
 
 		return Promise.resolve(result);
+	}
+
+	async getBackgroundGeopoint() {
+		if (this.backgroundGeopoint != null) {
+			return await this.backgroundGeopoint;
+		}
+
+		try {
+			this.backgroundGeopoint = this.geolocationProvider?.getLocation() ?? Promise.resolve('');
+			const result = await this.backgroundGeopoint;
+			if (!result.length) {
+				this.backgroundGeopoint = null;
+			}
+			return result;
+		} catch {
+			this.backgroundGeopoint = null;
+			return '';
+		}
 	}
 }
