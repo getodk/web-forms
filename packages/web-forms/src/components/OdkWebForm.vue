@@ -4,7 +4,7 @@ import IconSVG from '@/components/common/IconSVG.vue';
 import FormHeader from '@/components/form-layout/FormHeader.vue';
 import QuestionList from '@/components/form-layout/QuestionList.vue';
 import {
-	FORM_IMAGE_CACHE,
+	FORM_MEDIA_CACHE,
 	FORM_OPTIONS,
 	IS_FORM_EDIT_MODE,
 	SUBMIT_PRESSED,
@@ -160,7 +160,7 @@ const formOptions = readonly<FormOptions>({
 	missingResourceBehavior: props.missingResourceBehavior,
 });
 provide(FORM_OPTIONS, formOptions);
-provide(FORM_IMAGE_CACHE, new Map<JRResourceURLString, ObjectURL>());
+provide(FORM_MEDIA_CACHE, new Map<JRResourceURLString, ObjectURL>());
 
 const state = initializeFormState();
 const submitPressed = ref(false);

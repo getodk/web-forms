@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import ImageBlock from '@/components/common/ImageBlock.vue';
+import AudioBlock from '@/components/common/media/AudioBlock.vue';
+import ImageBlock from '@/components/common/media/ImageBlock.vue';
 import MarkdownBlock from '@/components/common/MarkdownBlock.vue';
+import VideoBlock from '@/components/common/media/VideoBlock.vue';
 import type { AnyControlNode as QuestionNode } from '@getodk/xforms-engine';
 import { computed } from 'vue';
 
@@ -18,12 +20,8 @@ const audio = computed(() => question.currentState.label?.audioSource);
 		<MarkdownBlock v-for="elem in text" :key="elem.id" :elem="elem" />
 		<div v-if="image || video || audio" class="media-content">
 			<ImageBlock v-if="image" :resource-url="image" :alt="alt" />
-
-			<!-- TODO: Implement VideoBlock component -->
-			<span v-else-if="video">🚧 Video media type is not supported</span>
-
-			<!-- TODO: Implement AudioBlock component -->
-			<span v-else-if="audio">🚧 Video media type is not supported</span>
+			<AudioBlock v-if="audio" :resource-url="audio" :alt="alt" />
+			<VideoBlock v-if="video" :resource-url="video" :alt="alt" />
 		</div>
 	</label>
 </template>

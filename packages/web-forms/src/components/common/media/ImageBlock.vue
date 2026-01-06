@@ -1,12 +1,8 @@
 <script setup lang="ts">
-import { FORM_IMAGE_CACHE, FORM_OPTIONS } from '@/lib/constants/injection-keys.ts';
-import type { FormOptions } from '@/lib/init/load-form-state.ts';
-import type {
-	JRResourceURL,
-	JRResourceURLString,
-} from '@getodk/common/jr-resources/JRResourceURL.ts';
-import { createObjectURL, type ObjectURL } from '@getodk/common/lib/web-compat/url.ts';
-import { computed, inject, ref, triggerRef, watchEffect } from 'vue';
+import { useMediaLoader } from '@/components/common/media/useMediaLoader.ts';
+import type { JRResourceURL } from '@getodk/common/jr-resources/JRResourceURL.ts';
+import { type ObjectURL } from '@getodk/common/lib/web-compat/url.ts';
+import { computed, ref, triggerRef, watchEffect } from 'vue';
 
 interface ImageBlockProps {
 	readonly resourceUrl?: JRResourceURL;
@@ -23,9 +19,7 @@ const SMALL_IMAGE_SIZE = 300;
 
 const props = defineProps<ImageBlockProps>();
 
-const formOptions = inject<FormOptions>(FORM_OPTIONS);
 const loading = ref<boolean>(true);
-const imageCache = inject<Map<JRResourceURLString, ObjectURL>>(FORM_IMAGE_CACHE, new Map());
 const imageUrl = ref<string>('');
 const loadedDimensions = ref<NaturalDimensions>({ naturalWidth: 0, naturalHeight: 0 });
 const errorMessage = ref<string>('');
@@ -34,30 +28,6 @@ const isSmallImage = computed(() => {
 	const { naturalWidth, naturalHeight } = loadedDimensions.value;
 	return naturalWidth < SMALL_IMAGE_SIZE && naturalHeight < SMALL_IMAGE_SIZE;
 });
-
-const loadImage = async (src?: JRResourceURL) => {
-	if (src == null || formOptions?.fetchFormAttachment == null) {
-		// TODO: translations
-		throw new Error('Cannot fetch image. Verify the URL and fetch settings.');
-	}
-
-	const cachedImage = imageCache.get(src.href);
-	if (cachedImage != null) {
-		setImage(cachedImage);
-		return;
-	}
-
-	const response = await formOptions.fetchFormAttachment(src);
-	if (!response.ok || response.status !== 200) {
-		// TODO: translations
-		throw new Error(`Image not found. File: ${src.href}`);
-	}
-
-	const data = await response.blob();
-	const url = createObjectURL(data);
-	imageCache.set(src.href, url);
-	setImage(url);
-};
 
 const setImage = (value: string) => {
 	imageUrl.value = value;
@@ -76,6 +46,7 @@ const handleError = (error: Error) => {
 	errorMessage.value = error.message;
 };
 
+const { loadMedia } = useMediaLoader(setImage, handleError);
 watchEffect(() => {
 	loadedDimensions.value = { naturalWidth: 0, naturalHeight: 0 };
 	errorMessage.value = '';
@@ -85,12 +56,18 @@ watchEffect(() => {
 		return;
 	}
 
-	loadImage(props.resourceUrl).catch((error: Error) => handleError(error));
+	void loadMedia(props.resourceUrl);
 });
 </script>
 
 <template>
-	<div :class="{ 'image-block': true, 'broken-image': errorMessage?.length, 'small-image': !loading && isSmallImage }">
+	<div
+		:class="{
+			'image-block': true,
+			'broken-image': errorMessage?.length,
+			'small-image': !loading && isSmallImage,
+		}"
+	>
 		<!-- TODO: translations -->
 		<img
 			v-if="!loading && !errorMessage?.length"
@@ -103,7 +80,7 @@ watchEffect(() => {
 		<div v-if="loading" class="skeleton-loading" />
 
 		<template v-if="errorMessage?.length">
-			<img src="../../assets/images/broken-image.svg" :alt="alt">
+			<img src="../../../assets/images/broken-image.svg" :alt="alt">
 			<p class="image-error-message">
 				{{ errorMessage }}
 			</p>

@@ -20,8 +20,38 @@
             <value form="image">jr://images/test-image.jpg</value>
           </text>
           <text id="/data/combined_question:label">
-            <value>Question with both audio and video in label</value>
+            <value>Question with all media in label</value>
             <value form="audio">jr://audio/test-audio.m4a</value>
+            <value form="video">jr://video/test-video.mp4</value>
+            <value form="image">jr://images/test-image.jpg</value>
+          </text>
+          <text id="/data/select_one_media:label">
+            <value>Select one with media options</value>
+          </text>
+          <text id="/data/select_multiple_media:label">
+            <value>Select multiple with media options</value>
+          </text>
+          <text id="/data/select_one_no_image:label">
+            <value>Select one audio or video</value>
+          </text>
+          <text id="/data/select_multiple_no_image:label">
+            <value>Select multiple audio or video</value>
+          </text>
+          <text id="choice_audio">
+            <value>Option 1: Audio</value>
+            <value form="audio">jr://audio/test-audio.mp3</value>
+          </text>
+          <text id="choice_video">
+            <value>Option 2: Video</value>
+            <value form="video">jr://video/test-video.mp4</value>
+          </text>
+          <text id="choice_image">
+            <value>Option 3: Image</value>
+            <value form="image">jr://images/test-image.jpg</value>
+          </text>
+          <text id="choice_all">
+            <value>Option 4: All media</value>
+            <value form="audio">jr://audio/test-audio.mp3</value>
             <value form="video">jr://video/test-video.mp4</value>
             <value form="image">jr://images/test-image.jpg</value>
           </text>
@@ -36,6 +66,10 @@
           <video_question/>
           <image_question/>
           <combined_question/>
+          <select_one_media/>
+          <select_multiple_media/>
+          <select_one_no_image/>
+          <select_multiple_no_image/>
         </data>
       </instance>
       <bind nodeset="/data/meta/instanceID" type="string" readonly="true()" jr:preload="uid"/>
@@ -43,6 +77,10 @@
       <bind nodeset="/data/video_question" type="string"/>
       <bind nodeset="/data/image_question" type="string"/>
       <bind nodeset="/data/combined_question" type="string"/>
+      <bind nodeset="/data/select_one_media" type="select1"/>
+      <bind nodeset="/data/select_multiple_media" type="select"/>
+      <bind nodeset="/data/select_one_no_image" type="select1"/>
+      <bind nodeset="/data/select_multiple_no_image" type="select"/>
     </model>
   </h:head>
   <h:body>
@@ -58,5 +96,65 @@
     <input ref="/data/combined_question">
       <label ref="jr:itext('/data/combined_question:label')"/>
     </input>
+    <select1 ref="/data/select_one_media">
+      <label ref="jr:itext('/data/select_one_media:label')"/>
+      <item>
+        <label ref="jr:itext('choice_audio')"/>
+        <value>audio</value>
+      </item>
+      <item>
+        <label ref="jr:itext('choice_video')"/>
+        <value>video</value>
+      </item>
+      <item>
+        <label ref="jr:itext('choice_image')"/>
+        <value>image</value>
+      </item>
+      <item>
+        <label ref="jr:itext('choice_all')"/>
+        <value>all</value>
+      </item>
+    </select1>
+    <select ref="/data/select_multiple_media">
+      <label ref="jr:itext('/data/select_multiple_media:label')"/>
+      <item>
+        <label ref="jr:itext('choice_audio')"/>
+        <value>audio</value>
+      </item>
+      <item>
+        <label ref="jr:itext('choice_video')"/>
+        <value>video</value>
+      </item>
+      <item>
+        <label ref="jr:itext('choice_image')"/>
+        <value>image</value>
+      </item>
+      <item>
+        <label ref="jr:itext('choice_all')"/>
+        <value>all</value>
+      </item>
+    </select>
+    <select1 ref="/data/select_one_no_image">
+      <label ref="jr:itext('/data/select_one_no_image:label')"/>
+      <item>
+        <label ref="jr:itext('choice_audio')"/>
+        <value>audio</value>
+      </item>
+      <item>
+        <label ref="jr:itext('choice_video')"/>
+        <value>video</value>
+      </item>
+    </select1>
+    <select ref="/data/select_multiple_no_image">
+      <label ref="jr:itext('/data/select_multiple_no_image:label')"/>
+      <item>
+        <label ref="jr:itext('choice_audio')"/>
+        <value>audio</value>
+      </item>
+      <item>
+        <label ref="jr:itext('choice_video')"/>
+        <value>video</value>
+      </item>
+    </select>
   </h:body>
 </h:html>
