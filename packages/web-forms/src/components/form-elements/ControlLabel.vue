@@ -45,5 +45,14 @@ label {
 	:first-child {
 		margin-top: 0;
 	}
+
+	.media-content {
+		margin-top: 15px;
+		width: 400px;
+		display: flex;
+		gap: 20px;
+		flex-direction: column;
+		align-items: flex-start;
+	}
 }
 </style>

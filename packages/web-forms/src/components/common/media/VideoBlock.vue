@@ -9,9 +9,10 @@ defineProps<{
 </script>
 
 <template>
-	<MediaBlockBase v-slot="{ mediaUrl, reportError }" :alt="alt" broken-file-image="broken-video.svg" :resource-url="resourceUrl" :is-small-media="true">
+	<MediaBlockBase v-slot="{ mediaUrl, reportError }" :alt="alt" broken-file-image="broken-video.svg" :resource-url="resourceUrl">
 		<video
 			controls
+			controlsList="nodownload noplaybackrate"
 			:src="mediaUrl"
 			:title="alt"
 			class="video-block"

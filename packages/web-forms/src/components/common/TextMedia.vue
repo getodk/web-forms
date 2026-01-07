@@ -8,6 +8,7 @@ import MarkdownBlock from './MarkdownBlock.vue';
 
 interface TextMediaProps {
 	readonly label: TextRange<'item-label'>;
+	readonly audioIconsOnly?: boolean;
 }
 
 const props = defineProps<TextMediaProps>();
@@ -22,11 +23,12 @@ const audio = computed(() => props.label.audioSource);
 <template>
 	<span v-if="text != null" class="text-content">
 		<MarkdownBlock v-for="elem in text" :key="elem.id" :elem="elem" />
+		<AudioBlock v-if="audio && audioIconsOnly" :resource-url="audio" :alt="alt" variant="icons" />
 	</span>
 
 	<div v-if="image || video || audio" class="media-content">
 		<ImageBlock v-if="image" :resource-url="image" :alt="alt" />
-		<AudioBlock v-if="audio" :resource-url="audio" :alt="alt" />
+		<AudioBlock v-if="audio && !audioIconsOnly" :resource-url="audio" :alt="alt" />
 		<VideoBlock v-if="video" :resource-url="video" :alt="alt" />
 	</div>
 </template>
