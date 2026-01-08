@@ -13,7 +13,7 @@ const props = defineProps<{
 	readonly blobUrl?: ObjectURL;
 	readonly alt: string;
 	readonly brokenFileImage: string;
-	readonly isSmallMedia?: boolean;
+	readonly variant?: 'fit-content' | 'full-width' | 'small-fixed';
 }>();
 
 const formOptions = inject<FormOptions>(FORM_OPTIONS);
@@ -84,8 +84,20 @@ watchEffect(() => {
 </script>
 
 <template>
-	<div class="media-block" :class="{ 'broken-file': errorMessage?.length, 'small-media': isSmallMedia }">
-		<slot v-if="!loading && !errorMessage?.length" :media-url="mediaUrl" :report-error="handleError" />
+	<div
+		class="media-block"
+		:class="{
+			'fit-content': !variant || variant === 'fit-content',
+			'small-fixed': variant === 'small-fixed',
+			'full-width': variant === 'full-width',
+			'broken-file': errorMessage?.length,
+		}"
+	>
+		<slot
+			v-if="!loading && !errorMessage?.length"
+			:media-url="mediaUrl"
+			:report-error="handleError"
+		/>
 
 		<div v-if="loading" class="skeleton-loading" />
 
@@ -105,15 +117,26 @@ watchEffect(() => {
 	flex-direction: column;
 	position: relative;
 	overflow: hidden;
-	width: 100%;
 
-	&.small-media {
+	&.full-width {
+		width: 100%;
+	}
+
+	&.small-fixed {
 		max-width: var(--odk-image-container-size);
 	}
 
-	&.broken-file img {
-		max-width: 90%;
-		margin-top: 10px;
+	&.fit-content {
+		width: fit-content;
+	}
+
+	&.broken-file {
+		max-width: var(--odk-image-container-size);
+
+		img {
+			max-width: 90%;
+			margin-top: 10px;
+		}
 	}
 
 	.media-error-message {

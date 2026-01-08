@@ -27,6 +27,8 @@ const audio = computed(() => question.currentState.label?.audioSource);
 </template>
 
 <style scoped lang="scss">
+@use 'primeflex/core/_variables.scss' as pf;
+
 label {
 	font-weight: 400;
 	font-size: var(--odk-question-font-size);
@@ -48,11 +50,17 @@ label {
 
 	.media-content {
 		margin-top: 15px;
-		width: 400px;
+		max-width: 400px;
 		display: flex;
 		gap: 20px;
 		flex-direction: column;
 		align-items: flex-start;
+	}
+}
+
+@media screen and (max-width: #{pf.$sm}) {
+	label .media-content {
+		width: auto;
 	}
 }
 </style>

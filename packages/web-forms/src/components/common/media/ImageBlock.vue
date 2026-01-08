@@ -31,7 +31,14 @@ const setDimensions = (event: Event) => {
 </script>
 
 <template>
-	<MediaBlockBase v-slot="{ mediaUrl, reportError }" :alt="alt" broken-file-image="broken-image.svg" :resource-url="resourceUrl" :blob-url="blobUrl" :is-small-media="isSmallImage">
+	<MediaBlockBase
+		v-slot="{ mediaUrl, reportError }"
+		:alt="alt"
+		broken-file-image="broken-image.svg"
+		:resource-url="resourceUrl"
+		:blob-url="blobUrl"
+		:variant="isSmallImage ? 'small-fixed' : 'full-width'"
+	>
 		<img
 			:src="mediaUrl"
 			:alt="alt"

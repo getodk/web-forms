@@ -21,7 +21,7 @@ const audio = computed(() => props.label.audioSource);
 </script>
 
 <template>
-	<span v-if="text != null" class="text-content">
+	<span v-if="text != null" class="text-content" :class="{ 'audio-icons-only': audioIconsOnly }">
 		<MarkdownBlock v-for="elem in text" :key="elem.id" :elem="elem" />
 		<AudioBlock v-if="audio && audioIconsOnly" :resource-url="audio" :alt="alt" variant="icons" />
 	</span>
@@ -36,5 +36,12 @@ const audio = computed(() => props.label.audioSource);
 <style scoped lang="scss">
 .text-content {
 	margin-left: 0;
+}
+
+.text-content.audio-icons-only {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 10px;
 }
 </style>

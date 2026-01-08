@@ -7,7 +7,7 @@ import { ref } from 'vue';
 defineProps<{
 	readonly resourceUrl?: JRResourceURL;
 	readonly alt: string;
-	readonly variant?: 'icons' | 'bar';
+	readonly variant?: 'bar' | 'icons';
 }>();
 const audioRef = ref<HTMLAudioElement | null>(null);
 const isPlaying = ref(false);
@@ -35,7 +35,13 @@ const play = async () => {
 </script>
 
 <template>
-	<MediaBlockBase v-slot="{ mediaUrl, reportError }" :alt="alt" broken-file-image="broken-audio.svg" :resource-url="resourceUrl">
+	<MediaBlockBase
+		v-slot="{ mediaUrl, reportError }"
+		:alt="alt"
+		broken-file-image="broken-audio.svg"
+		:resource-url="resourceUrl"
+		:variant="variant === 'icons' ? 'fit-content' : 'full-width'"
+	>
 		<div :class="{ 'bar-only': !variant || variant === 'bar', 'icons-only': variant === 'icons' }">
 			<audio
 				ref="audioRef"
@@ -55,8 +61,13 @@ const play = async () => {
 </template>
 
 <style scoped lang="scss">
-.bar-only .audio-block {
-	display: block;
+.bar-only {
+	width: 100%;
+
+	.audio-block {
+		width: 100%;
+		display: block;
+	}
 }
 
 .icons-only .audio-block {

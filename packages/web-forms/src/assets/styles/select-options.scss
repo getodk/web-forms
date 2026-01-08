@@ -1,3 +1,5 @@
+@use 'primeflex/core/_variables.scss' as pf;
+
 .value-option {
 	--text-content-margin: 15px;
 }
@@ -58,7 +60,7 @@
 		background: var(--odk-base-background-color);
 		height: calc(100% - (var(--odk-base-font-size) + (var(--text-content-margin) * 2)));
 		width: 100%;
-		justify-items: center;
+		justify-items: flex-end;
 	}
 
 	&:has(.media-content) {
@@ -94,4 +96,18 @@
 	background: var(--odk-light-background-color);
 	align-content: flex-start;
 	flex-wrap: wrap;
+
+	:deep(.media-content) {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: flex-start;
+		gap: 10px;
+	}
+}
+
+@media screen and (max-width: #{pf.$sm}) {
+	:not(.select-with-images) .value-option {
+		flex-wrap: wrap;
+	}
 }
