@@ -59,10 +59,11 @@ const imageURL = computed((previous: ObjectURL | null = null) => {
 		z-index: var(--odk-z-index-form-floating);
 	}
 
-	.image-block {
+	.media-block {
 		background: var(--odk-muted-background-color);
 		min-width: var(--odk-image-container-size);
 		height: var(--odk-max-image-height);
+		justify-content: center;
 	}
 }
 
