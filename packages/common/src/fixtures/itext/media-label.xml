@@ -49,6 +49,11 @@
             <value>Option 3: Image</value>
             <value form="image">jr://images/test-image.jpg</value>
           </text>
+          <text id="choice_image_audio">
+            <value>Option 4: Audio + Image</value>
+            <value form="image">jr://images/test-image.jpg</value>
+            <value form="audio">jr://audio/test-audio.mp3</value>
+          </text>
         </translation>
       </itext>
       <instance>
@@ -104,6 +109,10 @@
         <label ref="jr:itext('choice_image')"/>
         <value>image</value>
       </item>
+      <item>
+        <label ref="jr:itext('choice_image_audio')"/>
+        <value>image</value>
+      </item>
     </select1>
     <select ref="/data/select_multiple_media">
       <label ref="jr:itext('/data/select_multiple_media:label')"/>
@@ -117,6 +126,10 @@
       </item>
       <item>
         <label ref="jr:itext('choice_image')"/>
+        <value>image</value>
+      </item>
+      <item>
+        <label ref="jr:itext('choice_image_audio')"/>
         <value>image</value>
       </item>
     </select>
