@@ -3,3 +3,5 @@
 *.jpg -text
 
 *.xlsx binary
+*.mp3 binary
+*.mp4 binary
