@@ -117,6 +117,7 @@ watchEffect(() => {
 	flex-direction: column;
 	position: relative;
 	overflow: hidden;
+	width: 100%;
 
 	&.full-width {
 		width: 100%;

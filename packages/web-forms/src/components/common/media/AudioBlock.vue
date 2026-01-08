@@ -50,11 +50,12 @@ const play = async () => {
 				:src="mediaUrl"
 				:title="alt"
 				class="audio-block"
+				@ended="isPlaying = false"
 				@error="reportError(new Error(`Failed to load audio. File: ${resourceUrl?.href}`))"
 			/>
 			<template v-if="variant === 'icons'">
-				<IconSVG v-if="isPlaying" name="mdiStopCircleOutline" @click="stop" />
-				<IconSVG v-else name="mdiVolumeHigh" @click="play" />
+				<IconSVG v-if="isPlaying" name="mdiStopCircleOutline" @click.stop.prevent="stop" />
+				<IconSVG v-else name="mdiVolumeHigh" @click.stop.prevent="play" />
 			</template>
 		</div>
 	</MediaBlockBase>

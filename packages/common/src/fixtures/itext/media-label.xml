@@ -20,16 +20,16 @@
             <value form="image">jr://images/test-image.jpg</value>
           </text>
           <text id="/data/combined_question:label">
-            <value>Question with all media in label</value>
+            <value>Edge case: question with all media in label</value>
             <value form="audio">jr://audio/test-audio.mp3</value>
             <value form="video">jr://video/test-video.mp4</value>
             <value form="image">jr://images/test-image.jpg</value>
           </text>
           <text id="/data/select_one_media:label">
-            <value>Select one with media options</value>
+            <value>Select one with media options (special style when it contains images)</value>
           </text>
           <text id="/data/select_multiple_media:label">
-            <value>Select multiple with media options</value>
+            <value>Select multiple with media options (special style when it contains images)</value>
           </text>
           <text id="/data/select_one_no_image:label">
             <value>Select one audio or video</value>
@@ -47,12 +47,6 @@
           </text>
           <text id="choice_image">
             <value>Option 3: Image</value>
-            <value form="image">jr://images/test-image.jpg</value>
-          </text>
-          <text id="choice_all">
-            <value>Option 4: All media</value>
-            <value form="audio">jr://audio/test-audio.mp3</value>
-            <value form="video">jr://video/test-video.mp4</value>
             <value form="image">jr://images/test-image.jpg</value>
           </text>
         </translation>
@@ -110,10 +104,6 @@
         <label ref="jr:itext('choice_image')"/>
         <value>image</value>
       </item>
-      <item>
-        <label ref="jr:itext('choice_all')"/>
-        <value>all</value>
-      </item>
     </select1>
     <select ref="/data/select_multiple_media">
       <label ref="jr:itext('/data/select_multiple_media:label')"/>
@@ -128,10 +118,6 @@
       <item>
         <label ref="jr:itext('choice_image')"/>
         <value>image</value>
-      </item>
-      <item>
-        <label ref="jr:itext('choice_all')"/>
-        <value>all</value>
       </item>
     </select>
     <select1 ref="/data/select_one_no_image">
