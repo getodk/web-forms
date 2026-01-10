@@ -118,6 +118,7 @@ watchEffect(() => {
 	position: relative;
 	overflow: hidden;
 	width: 100%;
+	border-radius: var(--odk-radius);
 
 	&.full-width {
 		width: 100%;
