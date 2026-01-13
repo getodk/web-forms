@@ -15,70 +15,95 @@ import {
 import { describe, expect, it } from 'vitest';
 import { flushPromises } from '@vue/test-utils';
 import { stringAnswer } from '../../src/answer/ExpectedStringAnswer.ts';
+import { createGeolocationProvider } from '../../src/client/createGeolocationProvider.ts';
 import { Scenario } from '../../src/jr/Scenario.ts';
 
+// Original JavaRosa Tests: https://github.com/getodk/javarosa/blob/master/src/test/java/org/javarosa/core/model/actions/SetGeopointActionTest.java
 describe('odk:setgeopoint action', () => {
-	const geolocationProvider = {
-		geolocationProvider: {
-			getLocation: () => Promise.resolve('38.295 21.7567 110 5'),
-		},
-	};
-
 	it('should not set invalid point when coordinates are wrong', async () => {
 		const scenario = await Scenario.init(
-			'Invalid coords',
+			'On first load',
 			html(
 				head(
-					title('Invalid coords'),
+					title('On first load'),
 					model(
-						mainInstance(t('data id="invalid-coords"', t('source'), t('destination'))),
-						bind('/data/destination').type('string')
+						mainInstance(t('data id="first-load"', t('destination'))),
+						bind('/data/destination').readonly('1').type('string'),
+						setgeopoint('odk-instance-first-load', '/data/destination')
 					)
 				),
-				body(input('/data/source'), setgeopoint('odk-instance-first-load', '/data/destination'))
+				body(input('/data/destination'))
 			),
-			{ geolocationProvider: { getLocation: () => Promise.resolve('300 21.7567 110 5') } }
+			{ geolocationProvider: createGeolocationProvider('300 21.7567 110 5') }
 		);
 
-		expect(scenario.answerOf('/data/destination').getValue()).toBe('');
+		expect(scenario.answerOf('/data/destination')).toEqualAnswer(
+			stringAnswer('')
+		);
+	});
+
+	it('should not set point if invalid namespace', async () => {
+		const scenario = await Scenario.init(
+			'On first load',
+			html(
+				head(
+					title('On first load'),
+					model(
+						mainInstance(t('data id="first-load"', t('destination'))),
+						bind('/data/destination').readonly('1').type('string'),
+						t('setgeopoint event="odk-instance-first-load" ref="/data/destination"')
+					)
+				),
+				body(input('/data/destination'))
+			),
+			{ geolocationProvider: createGeolocationProvider('38.295 21.7567 110 5') }
+		);
+
+		expect(scenario.answerOf('/data/destination')).toEqualAnswer(
+			stringAnswer('')
+		);
 	});
 
 	it('should not set invalid point when incorrect text provided', async () => {
 		const scenario = await Scenario.init(
-			'Invalid text',
+			'On first load',
 			html(
 				head(
-					title('Invalid text'),
+					title('On first load'),
 					model(
-						mainInstance(t('data id="invalid-text"', t('source'), t('destination'))),
-						bind('/data/destination').type('string')
+						mainInstance(t('data id="first-load"', t('destination'))),
+						bind('/data/destination').readonly('1').type('string'),
+						setgeopoint('odk-instance-first-load', '/data/destination')
 					)
 				),
-				body(input('/data/source'), setgeopoint('odk-instance-first-load', '/data/destination'))
+				body(input('/data/destination'))
 			),
-			{ geolocationProvider: { getLocation: () => Promise.resolve('abcd') } }
+			{ geolocationProvider: createGeolocationProvider('abcd') }
 		);
 
-		expect(scenario.answerOf('/data/destination').getValue()).toBe('');
+		expect(scenario.answerOf('/data/destination')).toEqualAnswer(
+			stringAnswer('')
+		);
 	});
 
 	it('should not set point when incorrect event provided', async () => {
-		const scenario = await Scenario.init(
-			'Invalid event',
-			html(
-				head(
-					title('Invalid event'),
-					model(
-						mainInstance(t('data id="invalid-event"', t('source'), t('destination'))),
-						bind('/data/destination').type('string')
-					)
+		await expect(async () => {
+			await Scenario.init(
+				'On first load',
+				html(
+					head(
+						title('On first load'),
+						model(
+							mainInstance(t('data id="first-load"', t('destination'))),
+							bind('/data/destination').readonly('1').type('string'),
+							setgeopoint('odk-some-random-event', '/data/destination')
+						)
+					),
+					body(input('/data/destination'))
 				),
-				body(input('/data/source'), setgeopoint('odk-some-random-event', '/data/destination'))
-			),
-			geolocationProvider
-		);
-
-		expect(scenario.answerOf('/data/destination').getValue()).toBe('');
+				{ geolocationProvider: createGeolocationProvider('38.295 21.7567 110 5') }
+			);
+		}).rejects.toThrowError('An action was registered for unsupported events: odk-some-random-event');
 	});
 
 	it('set point when event is odk-instance-first-load', async () => {
@@ -95,7 +120,7 @@ describe('odk:setgeopoint action', () => {
 				),
 				body(input('/data/destination'))
 			),
-			geolocationProvider
+			{ geolocationProvider: createGeolocationProvider('38.295 21.7567 110 5') }
 		);
 
 		expect(scenario.answerOf('/data/destination')).toEqualAnswer(
@@ -117,7 +142,7 @@ describe('odk:setgeopoint action', () => {
 				),
 				body(input('/data/house_location'))
 			),
-			geolocationProvider
+			{ geolocationProvider: createGeolocationProvider('38.295 21.7567 110 5') }
 		);
 
 		expect(scenario.answerOf('/data/house_location')).toEqualAnswer(
@@ -147,7 +172,7 @@ describe('odk:setgeopoint action', () => {
 					)
 				)
 			),
-			geolocationProvider
+			{ geolocationProvider: createGeolocationProvider('38.295 21.7567 110 5', '38.333 21.766 150 3') },
 		);
 
 		scenario.createNewRepeat('/data/person');
@@ -159,7 +184,7 @@ describe('odk:setgeopoint action', () => {
 		scenario.createNewRepeat('/data/person');
 		await flushPromises();
 		expect(scenario.answerOf('/data/person[2]/location')).toEqualAnswer(
-			stringAnswer('38.295 21.7567 110 5')
+			stringAnswer('38.333 21.766 150 3')
 		);
 	});
 
@@ -177,12 +202,17 @@ describe('odk:setgeopoint action', () => {
 				),
 				body(input('/data/source', setgeopoint('xforms-value-changed', '/data/destination')))
 			),
-			geolocationProvider
+			{ geolocationProvider: createGeolocationProvider('38.295 21.7567 110 5', '38.333 21.766 150 3') },
 		);
 
 		scenario.answer('/data/source', 22);
 		expect(scenario.answerOf('/data/destination')).toEqualAnswer(
 			stringAnswer('38.295 21.7567 110 5')
+		);
+
+		scenario.answer('/data/source', 33);
+		expect(scenario.answerOf('/data/destination')).toEqualAnswer(
+			stringAnswer('38.333 21.766 150 3')
 		);
 	});
 });
