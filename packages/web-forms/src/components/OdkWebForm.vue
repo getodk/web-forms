@@ -289,10 +289,14 @@ onUnmounted(() => {
 				@close="floatingErrorActive = false"
 			>
 				<IconSVG name="mdiAlertCircleOutline" variant="error" />
-				<span class="form-error-text-wrap">
-					<span v-if="validationErrorMessage?.length">{{ validationErrorMessage }}</span>
-					<span v-if="geolocationErrorMessage?.length">{{ geolocationErrorMessage }}</span>
-				</span>
+				<ul class="form-error-text-wrap">
+					<li v-if="validationErrorMessage?.length">
+						{{ validationErrorMessage }}
+					</li>
+					<li v-if="geolocationErrorMessage?.length">
+						{{ geolocationErrorMessage }}
+					</li>
+				</ul>
 			</Message>
 
 			<FormHeader :form="state.root" />
@@ -390,8 +394,13 @@ onUnmounted(() => {
 			}
 
 			.form-error-text-wrap {
-				display: flex;
-				flex-direction: column;
+				margin: 0;
+				list-style: none;
+				padding: 0;
+
+				li:not(:last-child) {
+					margin-bottom: 10px;
+				}
 			}
 		}
 	}

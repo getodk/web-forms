@@ -37,9 +37,7 @@ describe('odk:setgeopoint action', () => {
 			{ geolocationProvider: createGeolocationProvider('300 21.7567 110 5') }
 		);
 
-		expect(scenario.answerOf('/data/destination')).toEqualAnswer(
-			stringAnswer('')
-		);
+		expect(scenario.answerOf('/data/destination')).toEqualAnswer(stringAnswer(''));
 	});
 
 	it('should not set point if invalid namespace', async () => {
@@ -59,9 +57,7 @@ describe('odk:setgeopoint action', () => {
 			{ geolocationProvider: createGeolocationProvider('38.295 21.7567 110 5') }
 		);
 
-		expect(scenario.answerOf('/data/destination')).toEqualAnswer(
-			stringAnswer('')
-		);
+		expect(scenario.answerOf('/data/destination')).toEqualAnswer(stringAnswer(''));
 	});
 
 	it('should not set invalid point when incorrect text provided', async () => {
@@ -81,9 +77,7 @@ describe('odk:setgeopoint action', () => {
 			{ geolocationProvider: createGeolocationProvider('abcd') }
 		);
 
-		expect(scenario.answerOf('/data/destination')).toEqualAnswer(
-			stringAnswer('')
-		);
+		expect(scenario.answerOf('/data/destination')).toEqualAnswer(stringAnswer(''));
 	});
 
 	it('should not set point when incorrect event provided', async () => {
@@ -103,7 +97,9 @@ describe('odk:setgeopoint action', () => {
 				),
 				{ geolocationProvider: createGeolocationProvider('38.295 21.7567 110 5') }
 			);
-		}).rejects.toThrowError('An action was registered for unsupported events: odk-some-random-event');
+		}).rejects.toThrowError(
+			'An action was registered for unsupported events: odk-some-random-event'
+		);
 	});
 
 	it('set point when event is odk-instance-first-load', async () => {
@@ -172,7 +168,12 @@ describe('odk:setgeopoint action', () => {
 					)
 				)
 			),
-			{ geolocationProvider: createGeolocationProvider('38.295 21.7567 110 5', '38.333 21.766 150 3') },
+			{
+				geolocationProvider: createGeolocationProvider(
+					'38.295 21.7567 110 5',
+					'38.333 21.766 150 3'
+				),
+			}
 		);
 
 		scenario.createNewRepeat('/data/person');
@@ -202,7 +203,12 @@ describe('odk:setgeopoint action', () => {
 				),
 				body(input('/data/source', setgeopoint('xforms-value-changed', '/data/destination')))
 			),
-			{ geolocationProvider: createGeolocationProvider('38.295 21.7567 110 5', '38.333 21.766 150 3') },
+			{
+				geolocationProvider: createGeolocationProvider(
+					'38.295 21.7567 110 5',
+					'38.333 21.766 150 3'
+				),
+			}
 		);
 
 		scenario.answer('/data/source', 22);

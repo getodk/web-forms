@@ -32,23 +32,26 @@ class GeolocationService {
 		this.bestPoint = undefined;
 		this.activePromise = new Promise((resolve, reject) => {
 			if (!navigator.geolocation) {
-				this.complete(resolve, reject, 'Geolocation is not supported by this browser.');
+				this.complete(resolve, reject, new Error('Geolocation is not supported by this browser.'));
 			}
 
 			this.watcherId = navigator.geolocation.watchPosition(
 				(point) => {
-					this.bestPoint =
-						!this.bestPoint || point.coords.accuracy < this.bestPoint.coords.accuracy
-							? point
-							: this.bestPoint;
+					if (!this.bestPoint || point.coords.accuracy < this.bestPoint.coords.accuracy) {
+						this.bestPoint = point;
+					}
 				},
 				(error) => {
-					this.complete(resolve, reject, error.message || `Geolocation error (code ${error.code})`);
+					this.complete(resolve, reject, new Error(`Geolocation error (code ${error.code})`));
 				},
 				this.options
 			);
 			setTimeout(() => {
-				this.complete(resolve, reject, 'No geolocation readings received within the time window.');
+				this.complete(
+					resolve,
+					reject,
+					new Error('No geolocation readings received within the time window.')
+				);
 			}, timeoutSeconds * 1000);
 		});
 		return this.activePromise;
@@ -63,12 +66,12 @@ class GeolocationService {
 	private complete(
 		resolveFn: (val: string) => void,
 		rejectFn: (err: Error) => void,
-		errorMessage: string
+		errorMessage: Error
 	): void {
 		if (this.bestPoint) {
-			resolveFn?.(this.formatGeopoint(this.bestPoint));
+			resolveFn(this.formatGeopoint(this.bestPoint));
 		} else {
-			rejectFn?.(new Error(errorMessage));
+			rejectFn(errorMessage);
 		}
 		this.teardown();
 	}
