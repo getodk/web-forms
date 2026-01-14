@@ -212,11 +212,13 @@ describe('odk:setgeopoint action', () => {
 		);
 
 		scenario.answer('/data/source', 22);
+		await flushPromises();
 		expect(scenario.answerOf('/data/destination')).toEqualAnswer(
 			stringAnswer('38.295 21.7567 110 5')
 		);
 
 		scenario.answer('/data/source', 33);
+		await flushPromises();
 		expect(scenario.answerOf('/data/destination')).toEqualAnswer(
 			stringAnswer('38.333 21.766 150 3')
 		);

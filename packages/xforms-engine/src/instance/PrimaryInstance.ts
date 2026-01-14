@@ -125,7 +125,6 @@ export class PrimaryInstance<
 	readonly initializationMode: FormInstanceInitializationMode;
 	readonly model: ModelDefinition;
 	readonly attachments: InstanceAttachmentsState;
-	protected backgroundGeopoint: BackgroundGeopoint | null = null;
 
 	// InstanceNode
 	protected readonly state: SharedNodeState<PrimaryInstanceStateSpec>;
@@ -298,23 +297,10 @@ export class PrimaryInstance<
 
 	async getBackgroundGeopoint() {
 		if (!this.geolocationProvider) {
-			return;
-		}
-
-		if (this.backgroundGeopoint != null) {
-			return await this.backgroundGeopoint;
-		}
-
-		try {
-			this.backgroundGeopoint = this.geolocationProvider.getLocation() ?? Promise.resolve('');
-			const result = await this.backgroundGeopoint;
-			if (!result.length) {
-				this.backgroundGeopoint = null;
-			}
-			return result;
-		} catch {
-			this.backgroundGeopoint = null;
 			return '';
 		}
+
+		const location = await this.geolocationProvider.getLocation();
+		return location ?? '';
 	}
 }

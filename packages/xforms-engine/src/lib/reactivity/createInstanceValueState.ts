@@ -201,31 +201,52 @@ const createCalculation = (
 	});
 };
 
+const resolveAndSetValueChanged = (
+	context: ValueContext,
+	setRelevantValue: SimpleAtomicStateSetter<string>,
+	expression: string,
+	candidateValue?: string
+): void => {
+	if (candidateValue?.length) {
+		setRelevantValue(candidateValue);
+		return;
+	}
+
+	const calc = context.evaluator.evaluateString(expression, context);
+	const value = context.decodeInstanceValue(calc);
+	setRelevantValue(value);
+};
+
 const createValueChangedCalculation = (
 	context: ValueContext,
 	setRelevantValue: SimpleAtomicStateSetter<string>,
-	action: ActionDefinition,
-	resolvedActionValue?: string
+	action: ActionDefinition
 ): void => {
 	const { source, ref } = bindToRepeatInstance(context, action);
 	if (!source) {
-		// no element to listen to
+		// No element to listen to
 		return;
 	}
 	let previous = '';
 	const sourceElementExpression = new ActionComputationExpression('string', source);
-	const calculateValueSource = createComputedExpression(context, sourceElementExpression); // registers listener
+	const calculateValueSource = createComputedExpression(context, sourceElementExpression); // Registers listener
 	createComputed(() => {
 		if (context.isAttached() && context.isRelevant()) {
 			const valueSource = calculateValueSource();
 			if (previous !== valueSource && referencesCurrentNode(context, ref)) {
 				// Only update if value has changed
-				let value = resolvedActionValue;
-				if (!value?.length) {
-					const calc = context.evaluator.evaluateString(action.computation.expression, context);
-					value = context.decodeInstanceValue(calc);
+				if (action.element.nodeName === SET_GEOPOINT_LOCAL_NAME) {
+					getGeopointValue(context, (point) => {
+						resolveAndSetValueChanged(
+							context,
+							setRelevantValue,
+							action.computation.expression,
+							point
+						);
+					});
+				} else {
+					resolveAndSetValueChanged(context, setRelevantValue, action.computation.expression);
 				}
-				setRelevantValue(value);
 			}
 			previous = valueSource;
 		}
@@ -253,20 +274,6 @@ const performActionComputation = (
 	createCalculation(context, setValue, action.computation);
 };
 
-const performActionOnValueChange = (
-	context: ValueContext,
-	setValue: SimpleAtomicStateSetter<string>,
-	action: ActionDefinition
-) => {
-	if (action.element.nodeName === SET_GEOPOINT_LOCAL_NAME) {
-		getGeopointValue(context, (point) => {
-			createValueChangedCalculation(context, setValue, action, point);
-		});
-		return;
-	}
-	createValueChangedCalculation(context, setValue, action);
-};
-
 const dispatchAction = (
 	context: ValueContext,
 	setValue: SimpleAtomicStateSetter<string>,
@@ -288,7 +295,7 @@ const dispatchAction = (
 		}
 	}
 	if (action.events.includes(XFORM_EVENT.xformsValueChanged)) {
-		performActionOnValueChange(context, setValue, action);
+		createValueChangedCalculation(context, setValue, action);
 	}
 };
 
