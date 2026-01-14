@@ -1,12 +1,18 @@
+import type { TimerID } from '@getodk/common/types/timers.ts';
+
 /**
  * Singleton for geolocation. Ensures a single active watchPosition process.
  */
 class GeolocationService {
 	private static instance: GeolocationService | null = null;
 	private watcherId: number | null = null;
+	private timerId: TimerID | null = null;
 	private activePromise: Promise<string> | null = null;
 	private bestPoint: GeolocationPosition | undefined = undefined;
 	private options: PositionOptions = { enableHighAccuracy: true };
+
+	private pendingResolve: ((val: string) => void) | null = null;
+	private pendingReject: ((err: Error) => void) | null = null;
 
 	public static getInstance(): GeolocationService {
 		GeolocationService.instance ??= new GeolocationService();
@@ -24,37 +30,62 @@ class GeolocationService {
 	 * @returns A promise resolving to an ODK geopoint string.
 	 * @throws Error if geolocation is unsupported, no readings received, or a geolocation error occurs.
 	 */
-	public getBestGeopoint(timeoutSeconds = 20): Promise<string> {
+	public async getBestGeopoint(timeoutSeconds = 20): Promise<string> {
 		if (this.activePromise) {
 			return this.activePromise;
 		}
 
+		if (!navigator.geolocation) {
+			// TODO: translations
+			return Promise.reject(new Error('Geolocation is not supported by this browser.'));
+		}
+
 		this.bestPoint = undefined;
-		this.activePromise = new Promise((resolve, reject) => {
-			if (!navigator.geolocation) {
-				this.complete(resolve, reject, new Error('Geolocation is not supported by this browser.'));
-			}
+
+		const promise = new Promise<string>((resolve, reject) => {
+			this.pendingResolve = resolve;
+			this.pendingReject = reject;
 
 			this.watcherId = navigator.geolocation.watchPosition(
 				(point) => {
+					// Keep the point with the lowest accuracy value (smaller is better)
 					if (!this.bestPoint || point.coords.accuracy < this.bestPoint.coords.accuracy) {
 						this.bestPoint = point;
 					}
 				},
 				(error) => {
-					this.complete(resolve, reject, new Error(`Geolocation error (code ${error.code})`));
+					// TODO: translations
+					this.resolveNow(new Error(`Geolocation error (code ${error.code})`));
 				},
 				this.options
 			);
-			setTimeout(() => {
-				this.complete(
-					resolve,
-					reject,
-					new Error('No geolocation readings received within the time window.')
-				);
+			this.timerId = setTimeout(() => {
+				// TODO: translations
+				this.resolveNow(new Error('No geolocation readings received within the time window.'));
 			}, timeoutSeconds * 1000);
 		});
-		return this.activePromise;
+
+		this.activePromise = promise;
+		return promise;
+	}
+
+	/**
+	 * Stops the watcher immediately.
+	 * If we have a location reading, resolves the promise with it.
+	 * If we have no readings, rejects with the provided error.
+	 */
+	public resolveNow(error: Error): void {
+		if (!this.pendingResolve || !this.pendingReject) {
+			return;
+		}
+
+		if (this.bestPoint) {
+			this.pendingResolve(this.formatGeopoint(this.bestPoint));
+		} else {
+			this.pendingReject(error);
+		}
+
+		this.teardown();
 	}
 
 	private formatGeopoint(position: GeolocationPosition): string {
@@ -63,28 +94,19 @@ class GeolocationService {
 		return `${latitude} ${longitude} ${altitude} ${accuracy}`;
 	}
 
-	private complete(
-		resolveFn: (val: string) => void,
-		rejectFn: (err: Error) => void,
-		errorMessage: Error
-	): void {
-		if (this.bestPoint) {
-			resolveFn(this.formatGeopoint(this.bestPoint));
-		} else {
-			rejectFn(errorMessage);
-		}
-		this.teardown();
-	}
-
 	public teardown(): void {
-		this.bestPoint = undefined;
 		if (this.watcherId !== null) {
 			navigator.geolocation.clearWatch(this.watcherId);
 			this.watcherId = null;
 		}
-		if (this.activePromise) {
-			this.activePromise = null;
+		if (this.timerId !== null) {
+			clearTimeout(this.timerId);
+			this.timerId = null;
 		}
+		this.activePromise = null;
+		this.bestPoint = undefined;
+		this.pendingResolve = null;
+		this.pendingReject = null;
 	}
 }
 

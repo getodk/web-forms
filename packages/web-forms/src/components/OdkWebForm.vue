@@ -3,6 +3,7 @@ import FormLoadFailureDialog from '@/components/FormLoadFailureDialog.vue';
 import IconSVG from '@/components/common/IconSVG.vue';
 import FormHeader from '@/components/form-layout/FormHeader.vue';
 import QuestionList from '@/components/form-layout/QuestionList.vue';
+import { waitAllTasksToFinish } from '@/lib/async/event-loop.ts';
 import {
 	FORM_IMAGE_CACHE,
 	FORM_OPTIONS,
@@ -137,6 +138,7 @@ const isEmitSubscribed = (eventKey: EventKey): boolean => {
 
 const emitSubmit = async (currentState: FormStateSuccessResult) => {
 	if (isEmitSubscribed('onSubmit')) {
+		await waitAllTasksToFinish();
 		const payload = await currentState.root.prepareInstancePayload({
 			payloadType: 'monolithic',
 		});
@@ -154,6 +156,7 @@ const emitSubmitChunked = async (currentState: FormStateSuccessResult) => {
 			throw new Error('The `submissionMaxSize` prop is required for chunked submissions');
 		}
 
+		await waitAllTasksToFinish();
 		const payload = await currentState.root.prepareInstancePayload({
 			payloadType: 'chunked',
 			maxSize,
@@ -214,6 +217,11 @@ const handleSubmit = (currentState: FormStateSuccessResult) => {
 	const { root } = currentState;
 
 	if (root.validationState.violations.length === 0) {
+		// TODO: translations
+		geolocationService.resolveNow(
+			new Error('No geolocation readings received within the time window.')
+		);
+
 		floatingErrorActive.value = false;
 		// eslint-disable-next-line @typescript-eslint/no-floating-promises
 		emitSubmit(currentState);
