@@ -232,7 +232,7 @@ const createValueChangedCalculation = (
 	});
 };
 
-const setGeopointValue = (context: ValueContext, callback: (value: string) => void) => {
+const getGeopointValue = (context: ValueContext, callback: (value: string) => void) => {
 	// eslint-disable-next-line @typescript-eslint/no-floating-promises -- we don't want to block
 	context.rootDocument.getBackgroundGeopoint()?.then((point) => {
 		// Allow the codec to manage all geolocation validation.
@@ -247,7 +247,7 @@ const performActionComputation = (
 	action: ActionDefinition
 ) => {
 	if (action.element.nodeName === SET_GEOPOINT_LOCAL_NAME) {
-		setGeopointValue(context, (point) => setValue(point));
+		getGeopointValue(context, (point) => setValue(point));
 		return;
 	}
 	createCalculation(context, setValue, action.computation);
@@ -259,7 +259,7 @@ const performActionOnValueChange = (
 	action: ActionDefinition
 ) => {
 	if (action.element.nodeName === SET_GEOPOINT_LOCAL_NAME) {
-		setGeopointValue(context, (point) => {
+		getGeopointValue(context, (point) => {
 			createValueChangedCalculation(context, setValue, action, point);
 		});
 		return;

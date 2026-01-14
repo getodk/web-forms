@@ -6,7 +6,7 @@ class GeolocationService {
 	private watcherId: number | null = null;
 	private activePromise: Promise<string> | null = null;
 	private bestPoint: GeolocationPosition | undefined = undefined;
-	private options: PositionOptions = { enableHighAccuracy: true, maximumAge: 0 };
+	private options: PositionOptions = { enableHighAccuracy: true };
 
 	public static getInstance(): GeolocationService {
 		GeolocationService.instance ??= new GeolocationService();

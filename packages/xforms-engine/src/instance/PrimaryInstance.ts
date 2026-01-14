@@ -297,12 +297,16 @@ export class PrimaryInstance<
 	}
 
 	async getBackgroundGeopoint() {
+		if (!this.geolocationProvider) {
+			return;
+		}
+
 		if (this.backgroundGeopoint != null) {
 			return await this.backgroundGeopoint;
 		}
 
 		try {
-			this.backgroundGeopoint = this.geolocationProvider?.getLocation() ?? Promise.resolve('');
+			this.backgroundGeopoint = this.geolocationProvider.getLocation() ?? Promise.resolve('');
 			const result = await this.backgroundGeopoint;
 			if (!result.length) {
 				this.backgroundGeopoint = null;
