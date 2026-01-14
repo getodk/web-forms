@@ -174,7 +174,9 @@ const getLocation = async (): Promise<string> => {
 	try {
 		geolocationErrorMessage.value = '';
 		point = await geolocationService.getBestGeopoint();
-	} catch {
+	} catch (error) {
+		// eslint-disable-next-line no-console -- Skip silently to match Collect behaviour.
+		console.warn('Error occurred while retrieving background location.', error);
 		// TODO: translations
 		geolocationErrorMessage.value =
 			'Cannot access location. Grant location permission in the browser settings and make sure location is turned on.';
