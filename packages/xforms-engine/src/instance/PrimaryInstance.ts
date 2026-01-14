@@ -109,8 +109,6 @@ export interface PrimaryInstanceOptions<Mode extends FormInstanceInitializationM
 	readonly initialState: PrimaryInstanceInitialState<Mode>;
 }
 
-export type BackgroundGeopoint = Promise<string>;
-
 export class PrimaryInstance<
 		Mode extends FormInstanceInitializationMode = FormInstanceInitializationMode,
 	>
@@ -295,7 +293,7 @@ export class PrimaryInstance<
 		return Promise.resolve(result);
 	}
 
-	async getBackgroundGeopoint() {
+	async getBackgroundGeopoint(): Promise<string> {
 		if (!this.geolocationProvider) {
 			return '';
 		}
