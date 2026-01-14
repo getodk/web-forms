@@ -4,7 +4,7 @@ export const createGeolocationProvider = (...points: string[]) => {
 		getLocation: () => {
 			const point = points[callCount];
 			callCount++;
-			return Promise.resolve(point);
+			return Promise.resolve(point ?? '');
 		},
 	};
 };
