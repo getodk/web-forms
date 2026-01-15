@@ -110,7 +110,6 @@ export const getModeConfig = (mode: Mode): ModeConfig => {
 				canRemoveCurrentLocation: true,
 				canSaveCurrentLocation: true,
 				canShowMapOverlay: true,
-				canUpdateFeatureCoordinates: true,
 			},
 		};
 	}

@@ -2,7 +2,6 @@ import { describe, it, expect, vi } from 'vitest';
 import {
 	createFeatureCollectionAndProps,
 	createGeoJSONGeometry,
-	parseSingleFeatureFromCSV,
 	parseSingleFeatureFromGeoJSON,
 	toGeoJsonCoordinateArray,
 } from '@/components/common/map/geojson-parsers.ts';
@@ -735,48 +734,6 @@ describe('GeoJson Parsers', () => {
 
 			const invalidJson = 'abc';
 			expect(parseSingleFeatureFromGeoJSON(invalidJson)).toBeUndefined();
-		});
-	});
-
-	describe('parseSingleFeatureFromCSV', () => {
-		it('returns geometry from valid CSV', () => {
-			const text = 'geometry\n40.7128 -74.0060 100 5';
-			expect(parseSingleFeatureFromCSV(text)).toEqual({
-				type: 'Point',
-				coordinates: [-74.006, 40.7128, 100, 5],
-			});
-		});
-
-		it('returns undefined for text with fewer than 2 lines', () => {
-			const text = 'geometry';
-			expect(parseSingleFeatureFromCSV(text)).toBeUndefined();
-		});
-
-		it('returns undefined if no geometry column is found in header', () => {
-			const text = 'id,name\n1,Test';
-			expect(parseSingleFeatureFromCSV(text)).toBeUndefined();
-		});
-
-		it('returns undefined for empty text', () => {
-			expect(parseSingleFeatureFromCSV('')).toBeUndefined();
-		});
-
-		it('ignores extra lines and only parses the first data row', () => {
-			const text = 'geometry\n40.7128 -74.0060 100 5\n-74.0061 40.7129';
-			expect(parseSingleFeatureFromCSV(text)).toEqual({
-				type: 'Point',
-				coordinates: [-74.006, 40.7128, 100, 5],
-			});
-		});
-
-		it('returns undefined and logs warning for invalid geometry value', () => {
-			vi.spyOn(console, 'warn').mockImplementation(() => false);
-			const text = 'geometry\ninvalid-geometry';
-			expect(parseSingleFeatureFromCSV(text)).toBeUndefined();
-			// eslint-disable-next-line no-console
-			expect(console.warn).toHaveBeenCalledWith(
-				expect.stringContaining('Invalid geo point coordinates: invalid-geometry')
-			);
 		});
 	});
 });

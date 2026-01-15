@@ -112,16 +112,6 @@ watch(
 	(newValue) => mapHandler.setupMapInteractions(newValue)
 );
 
-watch(
-	() => advancedPanelCoords.value,
-	(newValue) => {
-		if (!newValue?.length) {
-			isAdvancedPanelOpen.value = false;
-		}
-	},
-	{ immediate: true }
-);
-
 const handleEscapeKey = (event: KeyboardEvent) => {
 	if (event.key === 'Escape' && isFullScreen.value) {
 		isFullScreen.value = false;
@@ -222,7 +212,6 @@ const saveAdvancedPanelCoords = (newCoords: Coordinate) => {
 			</div>
 
 			<MapStatusBar
-				:can-enable-advanced-panel="!!advancedPanelCoords?.length"
 				:can-open-advanced-panel="!disabled && mapHandler.canOpenAdvacedPanel()"
 				:can-remove="!disabled && mapHandler.canRemoveCurrentLocation()"
 				:can-save="!disabled && mapHandler.canSaveCurrentLocation()"

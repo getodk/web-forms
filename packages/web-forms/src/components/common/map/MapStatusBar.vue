@@ -28,7 +28,6 @@ const props = defineProps<{
 	canSave: boolean;
 	canViewDetails: boolean;
 	canOpenAdvancedPanel: boolean;
-	canEnableAdvancedPanel: boolean;
 }>();
 
 const emit = defineEmits(['discard', 'toggle-advanced-panel', 'save', 'view-details']);
@@ -167,18 +166,6 @@ const savedStatus = computed<StatusDetails | null>(() => {
 					<!-- TODO: translations -->
 					<span>View details</span>
 				</Button>
-				<Button
-					v-if="canOpenAdvancedPanel"
-					class="advanced-button"
-					:disabled="!canEnableAdvancedPanel"
-					outlined
-					severity="contrast"
-					@click="emit('toggle-advanced-panel')"
-				>
-					<IconSVG name="mdiCogOutline" />
-					<!-- TODO: translations -->
-					<span>Advanced</span>
-				</Button>
 			</div>
 		</div>
 
@@ -195,6 +182,18 @@ const savedStatus = computed<StatusDetails | null>(() => {
 				<span class="desktop-only">Save point</span>
 			</Button>
 		</div>
+
+		<Button
+			v-if="canOpenAdvancedPanel"
+			class="advanced-button"
+			outlined
+			severity="contrast"
+			@click="emit('toggle-advanced-panel')"
+		>
+			<IconSVG name="mdiCogOutline" />
+			<!-- TODO: translations -->
+			<span>Advanced</span>
+		</Button>
 	</div>
 </template>
 

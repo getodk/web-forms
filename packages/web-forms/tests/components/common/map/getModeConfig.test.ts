@@ -74,7 +74,7 @@ describe('getModeConfig', () => {
 				canShowMapOverlayOnError: false,
 				canUndoLastChange: false,
 				canDeleteFeature: false,
-				canUpdateFeatureCoordinates: true,
+				canUpdateFeatureCoordinates: false,
 				canUpdateVertexCoordinates: false,
 			},
 		});

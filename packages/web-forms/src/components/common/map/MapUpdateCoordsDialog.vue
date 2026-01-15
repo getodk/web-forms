@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {
 	createGeoJSONGeometry,
-	parseSingleFeatureFromCSV,
 	parseSingleFeatureFromGeoJSON,
 } from '@/components/common/map/geojson-parsers.ts';
 import type { SingleFeatureType } from '@/components/common/map/getModeConfig.ts';
@@ -55,14 +54,11 @@ const parseFileCoordinates = async (file: File): Promise<Geometry | undefined> =
 			return parseSingleFeatureFromGeoJSON(text);
 		}
 
-		if (fileName.endsWith('.csv')) {
-			return parseSingleFeatureFromCSV(text);
-		}
 		// TODO: translations
-		setErrorIfBlank('Unsupported file type. Please upload a .csv or .geojson file.');
+		setErrorIfBlank('Unsupported file type. Please upload a .geojson file.');
 	} catch {
 		// TODO: translations
-		setErrorIfBlank('Failed to parse file. Ensure it is a valid CSV or GeoJSON.');
+		setErrorIfBlank('Failed to parse file. Ensure it is a valid GeoJSON.');
 	}
 };
 
@@ -143,19 +139,19 @@ watch(pasteValue, (newVal) => {
 	>
 		<template #header>
 			<!-- TODO: translations -->
-			<strong>Paste or upload location data</strong>
+			<strong>Import location data</strong>
 		</template>
 
 		<template #default>
 			<div class="dialog-field-container">
 				<!-- TODO: translations -->
-				<label for="paste-input">Paste the new value in ODK format</label>
+				<label for="paste-input">Paste ODK format to replace current location</label>
 				<InputText id="paste-input" v-model="pasteValue" :disabled="isParsing" />
 			</div>
 
 			<div class="dialog-field-container">
 				<!-- TODO: translations -->
-				<label>Or upload a GeoJSON or a CSV file</label>
+				<label>Or upload GeoJSON to replace the location</label>
 				<!-- TODO: translations -->
 				<span v-if="selectedFile"><i>File uploaded</i></span>
 				<Button outlined severity="contrast" :disabled="isParsing" @click="openFileChooser">
@@ -167,7 +163,7 @@ watch(pasteValue, (newVal) => {
 				<input
 					ref="fileInput"
 					type="file"
-					accept=".geojson,.csv,application/json,text/csv"
+					accept=".geojson,application/json"
 					@change="selectFile"
 				>
 			</div>

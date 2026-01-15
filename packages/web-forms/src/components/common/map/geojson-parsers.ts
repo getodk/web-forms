@@ -32,12 +32,16 @@ export const toGeoJsonCoordinateArray = (
 	accuracy: number | null | undefined
 ): number[] => {
 	const coords = [];
-	if (Number.isFinite(longitude) && Number.isFinite(latitude)) {
+	if (
+		isValidLatitude(latitude) &&
+		isValidLongitude(longitude) &&
+		!isNullLocation(latitude, longitude)
+	) {
 		coords.push(longitude, latitude);
 
-		if (Number.isFinite(accuracy)) {
-			coords.push(Number.isFinite(altitude) ? altitude! : 0, accuracy!);
-		} else if (Number.isFinite(altitude)) {
+		if (isAccuracyProvided(accuracy)) {
+			coords.push(isAltitudeProvided(altitude) ? altitude! : 0, accuracy!);
+		} else if (isAltitudeProvided(altitude)) {
 			coords.push(altitude!);
 		}
 	}
@@ -45,28 +49,41 @@ export const toGeoJsonCoordinateArray = (
 	return coords;
 };
 
+export const isNullLocation = (lat: number | null | undefined, lon: number | null | undefined) => {
+	return lat === 0 && lon === 0;
+};
+
+export const isValidLatitude = (lat: number | null | undefined) => {
+	return lat != null && Number.isFinite(lat) && Math.abs(lat) <= 90;
+};
+
+export const isValidLongitude = (lon: number | null | undefined) => {
+	return lon != null && Number.isFinite(lon) && Math.abs(lon) <= 180;
+};
+
+export const isAltitudeProvided = (alt: number | null | undefined) => {
+	return alt != null && Number.isFinite(alt);
+};
+
+export const isAccuracyProvided = (acc: number | null | undefined) => {
+	return acc != null && Number.isFinite(acc);
+};
+
 const getGeoJSONCoordinates = (geometry: string): [Coordinates, ...Coordinates[]] | undefined => {
 	const coordinates: Coordinates[] = [];
 	for (const coord of geometry.split(';')) {
 		const [lat, lon, alt, acc] = coord.trim().split(/\s+/).map(Number);
-
-		const isNullLocation = lat === 0 && lon === 0;
-		const isValidLatitude = lat != null && !Number.isNaN(lat) && Math.abs(lat) <= 90;
-		const isValidLongitude = lon != null && !Number.isNaN(lon) && Math.abs(lon) <= 180;
-		const isAltitudeProvided = alt != null && !Number.isNaN(alt);
-		const isAccuracyProvided = acc != null && !Number.isNaN(acc);
-
-		if (isNullLocation || !isValidLatitude || !isValidLongitude) {
+		if (!isValidLatitude(lat) || !isValidLongitude(lon) || isNullLocation(lat, lon)) {
 			// eslint-disable-next-line no-console -- Skip silently to match Collect behaviour.
 			console.warn(`Invalid geo point coordinates: ${geometry}`);
 			return;
 		}
 
 		const parsedCoords = toGeoJsonCoordinateArray(
-			lon,
-			lat,
-			isAltitudeProvided ? alt : undefined,
-			isAccuracyProvided ? acc : undefined
+			lon!,
+			lat!,
+			isAltitudeProvided(alt) ? alt : undefined,
+			isAccuracyProvided(acc) ? acc : undefined
 		) as Coordinates;
 		coordinates.push(parsedCoords);
 	}
@@ -175,21 +192,4 @@ export const parseSingleFeatureFromGeoJSON = (text: string): Geometry | undefine
 		console.warn(`Invalid GeoJSON: ${text}`);
 		return;
 	}
-};
-
-export const parseSingleFeatureFromCSV = (text: string): Geometry | undefined => {
-	const lines = text.split(/\r?\n/).filter((line) => line.trim().length > 0);
-	if (lines.length < 2) {
-		return;
-	}
-
-	const header = lines[0]?.split(',') ?? [];
-	const geometryIndex = header.findIndex((col) => col.trim().toLowerCase() === 'geometry');
-	if (geometryIndex === -1) {
-		return;
-	}
-
-	const firstDataRow = lines[1]?.split(',') ?? [];
-	const geometryValue = firstDataRow[geometryIndex]?.trim() ?? '';
-	return createGeoJSONGeometry(geometryValue);
 };

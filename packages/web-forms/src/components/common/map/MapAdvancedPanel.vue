@@ -1,8 +1,13 @@
 <script setup lang="ts">
 import IconSVG from '@/components/common/IconSVG.vue';
-import { toGeoJsonCoordinateArray } from '@/components/common/map/geojson-parsers.ts';
+import {
+	isNullLocation,
+	isValidLatitude,
+	isValidLongitude,
+	toGeoJsonCoordinateArray,
+} from '@/components/common/map/geojson-parsers.ts';
 import { fromLonLat } from 'ol/proj';
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import type { Coordinate } from 'ol/coordinate';
 
 const props = defineProps<{
@@ -12,10 +17,17 @@ const props = defineProps<{
 
 const emit = defineEmits(['open-paste-dialog', 'save']);
 
-const accuracy = ref<number | undefined>();
 const latitude = ref<number | undefined>();
-const altitude = ref<number | undefined>();
 const longitude = ref<number | undefined>();
+const accuracy = ref<number | undefined>();
+const altitude = ref<number | undefined>();
+const disableInputs = computed(() => !props.coordinates?.length);
+const validLatitude = computed(() => {
+	return isValidLatitude(latitude.value) && !isNullLocation(latitude.value, longitude.value);
+});
+const validLongitude = computed(() => {
+	return isValidLongitude(longitude.value) && !isNullLocation(latitude.value, longitude.value);
+});
 
 watch(
 	() => props.coordinates,
@@ -33,17 +45,8 @@ watch(
 );
 
 const updateVertex = () => {
-	if (!props.coordinates?.length) {
+	if (!validLatitude.value || !validLongitude.value) {
 		return;
-	}
-
-	const [originalLong, originalLat] = props.coordinates;
-	if (Number(longitude.value) === 0) {
-		longitude.value = originalLong;
-	}
-
-	if (Number(latitude.value) === 0) {
-		latitude.value = originalLat;
 	}
 
 	const newVertex = toGeoJsonCoordinateArray(
@@ -52,7 +55,10 @@ const updateVertex = () => {
 		Number(altitude.value),
 		Number(accuracy.value)
 	) as Coordinate;
-	emit('save', fromLonLat(newVertex));
+
+	if (newVertex.length) {
+		emit('save', fromLonLat(newVertex));
+	}
 };
 </script>
 
@@ -60,27 +66,72 @@ const updateVertex = () => {
 	<transition name="panel">
 		<div v-if="isOpen" class="advanced-panel">
 			<div class="fields-container">
-				<div class="field-set">
-					<label for="longitude">Longitude</label>
-					<input id="longitude" v-model="longitude" type="number" @change="updateVertex">
+				<div :class="{ 'field-error': !disableInputs && !validLongitude }" class="field-set">
+					<div class="input-wrap">
+						<!-- TODO: translations -->
+						<label for="longitude">Longitude</label>
+						<input
+							id="longitude"
+							v-model="longitude"
+							type="number"
+							:disabled="disableInputs"
+							@change="updateVertex"
+						>
+					</div>
+					<!-- TODO: translations -->
+					<p class="field-error-message">
+						Enter a valid longitude
+					</p>
+				</div>
+				<div :class="{ 'field-error': !disableInputs && !validLatitude }" class="field-set">
+					<div class="input-wrap">
+						<!-- TODO: translations -->
+						<label for="latitude">Latitude</label>
+						<input
+							id="latitude"
+							v-model="latitude"
+							type="number"
+							:disabled="disableInputs"
+							@change="updateVertex"
+						>
+					</div>
+					<!-- TODO: translations -->
+					<p class="field-error-message">
+						Enter a valid latitude
+					</p>
 				</div>
 				<div class="field-set">
-					<label for="latitude">Latitude</label>
-					<input id="latitude" v-model="latitude" type="number" @change="updateVertex">
+					<div class="input-wrap">
+						<!-- TODO: translations -->
+						<label for="altitude">Altitude</label>
+						<input
+							id="altitude"
+							v-model="altitude"
+							type="number"
+							:disabled="disableInputs"
+							@change="updateVertex"
+						>
+					</div>
 				</div>
 				<div class="field-set">
-					<label for="altitude">Altitude</label>
-					<input id="altitude" v-model="altitude" type="number" @change="updateVertex">
-				</div>
-				<div class="field-set">
-					<label for="accuracy">Accuracy</label>
-					<input id="accuracy" v-model="accuracy" type="number" @change="updateVertex">
+					<div class="input-wrap">
+						<!-- TODO: translations -->
+						<label for="accuracy">Accuracy</label>
+						<input
+							id="accuracy"
+							v-model="accuracy"
+							type="number"
+							:disabled="disableInputs"
+							@change="updateVertex"
+						>
+					</div>
 				</div>
 			</div>
 
 			<a class="paste-location" @click="emit('open-paste-dialog')">
 				<IconSVG name="mdiFileOutline" size="sm" />
-				<strong>Paste location data</strong>
+				<!-- TODO: translations -->
+				<strong title="This will replace the current location data."> Import location data </strong>
 			</a>
 		</div>
 	</transition>
@@ -107,11 +158,17 @@ const updateVertex = () => {
 
 	.field-set {
 		display: flex;
+		flex: 1 1 calc(50% - var(--odk-double-map-spacing));
+		flex-direction: column;
+	}
+
+	.input-wrap {
+		display: flex;
+		flex-direction: row;
 		border: 1px solid var(--odk-border-color);
 		border-radius: 6px;
 		overflow: hidden;
 		background-color: var(--odk-muted-background-color);
-		flex: 1 1 calc(50% - var(--odk-double-map-spacing));
 		height: 38px;
 		min-width: 250px;
 	}
@@ -126,6 +183,8 @@ const updateVertex = () => {
 		align-items: center;
 		border-right: 1px solid var(--odk-border-color);
 		white-space: nowrap;
+		flex-basis: 110px;
+		max-width: 150px;
 	}
 
 	input {
@@ -146,6 +205,27 @@ const updateVertex = () => {
 			appearance: none;
 			-webkit-appearance: none;
 			margin: 0;
+		}
+
+		&:disabled {
+			background-color: var(--odk-muted-background-color);
+			cursor: not-allowed;
+		}
+	}
+
+	.field-error-message {
+		color: var(--odk-error-text-color);
+		display: none;
+	}
+
+	.field-error {
+		.field-error-message {
+			display: block;
+		}
+
+		.input-wrap,
+		label {
+			border-color: var(--odk-error-text-color);
 		}
 	}
 }
