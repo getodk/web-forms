@@ -5,7 +5,7 @@ import type { JRResourceURL } from '@getodk/common/jr-resources/JRResourceURL.ts
 import { ref } from 'vue';
 
 defineProps<{
-	readonly resourceUrl?: JRResourceURL;
+	readonly resourceUrl: JRResourceURL;
 	readonly alt: string;
 	readonly variant?: 'bar' | 'icons';
 }>();
@@ -51,7 +51,7 @@ const play = async () => {
 				:title="alt"
 				class="audio-block"
 				@ended="isPlaying = false"
-				@error="reportError(new Error(`Failed to load audio. File: ${resourceUrl?.href}`))"
+				@error="reportError(new Error(`Failed to load audio. File: ${resourceUrl.href}`))"
 			/>
 			<template v-if="variant === 'icons'">
 				<IconSVG v-if="isPlaying" name="mdiStopCircleOutline" @click.stop.prevent="stop" />

@@ -3,7 +3,7 @@ import MediaBlockBase from '@/components/common/media/MediaBlockBase.vue';
 import type { JRResourceURL } from '@getodk/common/jr-resources/JRResourceURL.ts';
 
 defineProps<{
-	readonly resourceUrl?: JRResourceURL;
+	readonly resourceUrl: JRResourceURL;
 	readonly alt: string;
 }>();
 </script>
@@ -22,7 +22,7 @@ defineProps<{
 			:src="mediaUrl"
 			:title="alt"
 			class="video-block"
-			@error="reportError(new Error(`Failed to load video. File: ${resourceUrl?.href}`))"
+			@error="reportError(new Error(`Failed to load video. File: ${resourceUrl.href}`))"
 		/>
 	</MediaBlockBase>
 </template>

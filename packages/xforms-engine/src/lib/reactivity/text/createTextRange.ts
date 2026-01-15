@@ -72,7 +72,7 @@ const getChunkExpressions = <Role extends TextRole>(
  *
  * @param context The evaluation context for reactive XPath computations.
  * @param definition The definition for the text range which contains chunks to transform
- * @returns An accessor for an object with all chunks and the first image (if any).
+ * @returns An accessor for an object with all chunks and the first image, audio and video (if any).
  */
 const createTextChunks = <Role extends TextRole>(
 	context: EvaluationContext,
