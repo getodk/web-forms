@@ -131,7 +131,7 @@ const updateVertex = () => {
 			<a class="paste-location" @click="emit('open-paste-dialog')">
 				<IconSVG name="mdiFileOutline" size="sm" />
 				<!-- TODO: translations -->
-				<strong title="This will replace the current location data."> Import location data </strong>
+				<strong title="This will replace the current location data.">Import data to replace location</strong>
 			</a>
 		</div>
 	</transition>
@@ -165,8 +165,7 @@ const updateVertex = () => {
 	.input-wrap {
 		display: flex;
 		flex-direction: row;
-		border: 1px solid var(--odk-border-color);
-		border-radius: 6px;
+		border-radius: var(--odk-radius);
 		overflow: hidden;
 		background-color: var(--odk-muted-background-color);
 		height: 38px;
@@ -179,11 +178,14 @@ const updateVertex = () => {
 		color: var(--odk-text-color);
 		font-weight: normal;
 		font-size: var(--odk-base-font-size);
+		border-radius: var(--odk-radius) 0 0 var(--odk-radius);
+		border: 1px solid var(--odk-border-color);
+		border-right: none;
 		display: flex;
 		align-items: center;
-		border-right: 1px solid var(--odk-border-color);
 		white-space: nowrap;
 		flex-basis: 110px;
+		flex-shrink: 0;
 		max-width: 150px;
 	}
 
@@ -191,7 +193,8 @@ const updateVertex = () => {
 		padding: var(--odk-map-controls-spacing);
 		width: 100%;
 		background-color: var(--odk-base-background-color);
-		border: none;
+		border-radius: 0 var(--odk-radius) var(--odk-radius) 0;
+		border: 1px solid var(--odk-border-color);
 		font-size: var(--odk-base-font-size);
 		color: var(--odk-text-color);
 
@@ -223,9 +226,8 @@ const updateVertex = () => {
 			display: block;
 		}
 
-		.input-wrap,
-		label {
-			border-color: var(--odk-error-text-color);
+		.input-wrap input {
+			border: 1px solid var(--odk-error-text-color);
 		}
 	}
 }

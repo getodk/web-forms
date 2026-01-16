@@ -23,21 +23,20 @@ const pasteValue = ref('');
 const fileInput = ref<HTMLInputElement | null>(null);
 const selectedFile = ref<File | null>(null);
 const isParsing = ref(false);
-const error = ref<string | null>(null);
+const pasteError = ref<string | null>(null);
+const uploadError = ref<string | null>(null);
 
-const openFileChooser = () => fileInput.value?.click();
+const openFileChooser = () => {
+	reset();
+	fileInput.value?.click();
+};
 
 const selectFile = (event: Event) => {
 	const input = event.target as HTMLInputElement;
 	const file = input.files?.[0];
-	if (!file) {
-		resetSelectedFile();
-		return;
+	if (file) {
+		selectedFile.value = file;
 	}
-
-	resetError();
-	pasteValue.value = '';
-	selectedFile.value = file;
 };
 
 const parseFileCoordinates = async (file: File): Promise<Geometry | undefined> => {
@@ -45,7 +44,7 @@ const parseFileCoordinates = async (file: File): Promise<Geometry | undefined> =
 		const text = await file.text();
 		if (!text?.trim()?.length) {
 			// TODO: translations
-			setErrorIfBlank('File is empty.');
+			setUploadErrorIfBlank('File is empty.');
 			return;
 		}
 
@@ -55,10 +54,10 @@ const parseFileCoordinates = async (file: File): Promise<Geometry | undefined> =
 		}
 
 		// TODO: translations
-		setErrorIfBlank('Unsupported file type. Please upload a .geojson file.');
+		setUploadErrorIfBlank('Unsupported file type. Please upload a .geojson file.');
 	} catch {
 		// TODO: translations
-		setErrorIfBlank('Failed to parse file. Ensure it is a valid GeoJSON.');
+		setUploadErrorIfBlank('Failed to parse file. Ensure it is a valid GeoJSON.');
 	}
 };
 
@@ -72,7 +71,7 @@ const parsePastedValue = () => {
 };
 
 const save = async () => {
-	resetError();
+	resetErrors();
 	isParsing.value = true;
 	let geometry;
 	if (selectedFile.value) {
@@ -87,9 +86,15 @@ const save = async () => {
 	);
 	isParsing.value = false;
 
-	if (!coordinates?.length) {
-		// TODO: translations
-		setErrorIfBlank('Incorrect geometry type.');
+	// TODO: translations
+	const errorMessage = 'Incorrect geometry type.';
+	if (!coordinates?.length && selectedFile.value) {
+		setUploadErrorIfBlank(errorMessage);
+		return;
+	}
+
+	if (!coordinates?.length && pasteValue.value.length) {
+		setPasteErrorIfBlank(errorMessage);
 		return;
 	}
 
@@ -106,7 +111,7 @@ const reset = () => {
 	pasteValue.value = '';
 	isParsing.value = false;
 	resetSelectedFile();
-	resetError();
+	resetErrors();
 };
 
 const resetSelectedFile = () => {
@@ -116,12 +121,17 @@ const resetSelectedFile = () => {
 	}
 };
 
-const resetError = () => (error.value = null);
+const resetErrors = () => {
+	pasteError.value = null;
+	uploadError.value = null;
+};
 
-const setErrorIfBlank = (message: string) => (error.value ??= message);
+const setUploadErrorIfBlank = (message: string) => (uploadError.value ??= message);
+
+const setPasteErrorIfBlank = (message: string) => (pasteError.value ??= message);
 
 watch(pasteValue, (newVal) => {
-	resetError();
+	resetErrors();
 	if (newVal && selectedFile.value) {
 		resetSelectedFile();
 	}
@@ -139,22 +149,31 @@ watch(pasteValue, (newVal) => {
 	>
 		<template #header>
 			<!-- TODO: translations -->
-			<strong>Import location data</strong>
+			<strong>Import data to replace location</strong>
 		</template>
 
 		<template #default>
 			<div class="dialog-field-container">
 				<!-- TODO: translations -->
-				<label for="paste-input">Paste ODK format to replace current location</label>
+				<label for="paste-input">Paste data in ODK format</label>
 				<InputText id="paste-input" v-model="pasteValue" :disabled="isParsing" />
+				<p v-if="pasteError?.length" class="coords-error-message">
+					{{ pasteError }}
+				</p>
 			</div>
 
 			<div class="dialog-field-container">
 				<!-- TODO: translations -->
-				<label>Or upload GeoJSON to replace the location</label>
+				<label>Upload a GeoJSON file</label>
 				<!-- TODO: translations -->
-				<span v-if="selectedFile"><i>File uploaded</i></span>
-				<Button outlined severity="contrast" :disabled="isParsing" @click="openFileChooser">
+				<div v-if="selectedFile" class="file-added-message">
+					<IconSVG name="mdiFileOutline" />
+					<span>File added</span>
+				</div>
+				<p v-if="uploadError?.length" class="coords-error-message">
+					{{ uploadError }}
+				</p>
+				<Button class="upload-button" outlined severity="contrast" :disabled="isParsing" @click="openFileChooser">
 					<IconSVG name="mdiUpload" />
 					<!-- TODO: translations -->
 					<span>Upload file</span>
@@ -170,9 +189,6 @@ watch(pasteValue, (newVal) => {
 		</template>
 
 		<template #footer>
-			<p v-if="error?.length" class="coords-error-message">
-				{{ error }}
-			</p>
 			<Button label="Save" :disabled="!selectedFile && !pasteValue.length" @click="save" />
 		</template>
 	</Dialog>
@@ -198,12 +214,22 @@ watch(pasteValue, (newVal) => {
 		width: 100%;
 		padding: 9px;
 	}
+
+	.upload-button {
+		margin-top: 10px;
+	}
 }
 
 .coords-error-message {
 	display: block;
 	color: var(--odk-error-text-color);
-	margin-bottom: 10px;
+	margin: 0;
+}
+
+.file-added-message {
+	display: flex;
+	align-items: center;
+	gap: 10px;
 }
 </style>
 
@@ -229,6 +255,9 @@ watch(pasteValue, (newVal) => {
 
 	.p-dialog-footer button {
 		font-size: var(--odk-base-font-size);
+		&:disabled {
+			cursor: not-allowed;
+		}
 	}
 }
 </style>
