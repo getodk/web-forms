@@ -1,4 +1,11 @@
+/**
+ * IMPORTANT: OpenLayers is not statically imported here to enable bundling them into a separate chunk.
+ * This prevents unnecessary bloat in the main application bundle, reducing initial load times and improving performance.
+ *
+ * This file is for GeoJSON logic, which should not use OpenLayers types directly.
+ */
 import type { SelectItem } from '@getodk/xforms-engine';
+import type { Feature, FeatureCollection, Geometry, LineString, Point, Polygon } from 'geojson';
 
 const PROPERTY_PREFIX = 'odk_'; // Avoids conflicts with OpenLayers (for example, geometry).
 
@@ -17,33 +24,68 @@ const RESERVED_MAP_PROPERTIES = [
 
 type Coordinates = [longitude: number, latitude: number];
 
-interface Geometry {
-	type: 'LineString' | 'Point' | 'Polygon';
-	coordinates: Coordinates | Coordinates[] | Coordinates[][];
-}
+// Longitude is first for GeoJSON and latitude is second.
+export const toGeoJsonCoordinateArray = (
+	longitude: number,
+	latitude: number,
+	altitude: number | null | undefined,
+	accuracy: number | null | undefined
+): number[] => {
+	const coords = [];
+	if (
+		isValidLatitude(latitude) &&
+		isValidLongitude(longitude) &&
+		!isNullLocation(latitude, longitude)
+	) {
+		coords.push(longitude, latitude);
 
-export interface Feature {
-	type: 'Feature';
-	geometry: Geometry;
-	properties: Record<string, string>;
-}
+		if (isAccuracyProvided(accuracy)) {
+			coords.push(isAltitudeProvided(altitude) ? altitude! : 0, accuracy!);
+		} else if (isAltitudeProvided(altitude)) {
+			coords.push(altitude!);
+		}
+	}
+
+	return coords;
+};
+
+export const isNullLocation = (lat: number | null | undefined, lon: number | null | undefined) => {
+	return lat === 0 && lon === 0;
+};
+
+export const isValidLatitude = (lat: number | null | undefined) => {
+	return lat != null && Number.isFinite(lat) && Math.abs(lat) <= 90;
+};
+
+export const isValidLongitude = (lon: number | null | undefined) => {
+	return lon != null && Number.isFinite(lon) && Math.abs(lon) <= 180;
+};
+
+export const isAltitudeProvided = (alt: number | null | undefined) => {
+	return alt != null && Number.isFinite(alt);
+};
+
+export const isAccuracyProvided = (acc: number | null | undefined) => {
+	return acc != null && Number.isFinite(acc);
+};
 
 const getGeoJSONCoordinates = (geometry: string): [Coordinates, ...Coordinates[]] | undefined => {
 	const coordinates: Coordinates[] = [];
 	for (const coord of geometry.split(';')) {
-		const [lat, lon] = coord.trim().split(/\s+/).map(Number);
-
-		const isNullLocation = lat === 0 && lon === 0;
-		const isValidLatitude = lat != null && !Number.isNaN(lat) && Math.abs(lat) <= 90;
-		const isValidLongitude = lon != null && !Number.isNaN(lon) && Math.abs(lon) <= 180;
-
-		if (isNullLocation || !isValidLatitude || !isValidLongitude) {
+		const [lat, lon, alt, acc] = coord.trim().split(/\s+/).map(Number);
+		if (!isValidLatitude(lat) || !isValidLongitude(lon) || isNullLocation(lat, lon)) {
 			// eslint-disable-next-line no-console -- Skip silently to match Collect behaviour.
 			console.warn(`Invalid geo point coordinates: ${geometry}`);
 			return;
 		}
 
-		coordinates.push([lon, lat]);
+		const parsedCoords = toGeoJsonCoordinateArray(
+			lon!,
+			lat!,
+			isAltitudeProvided(alt) ? alt : undefined,
+			isAccuracyProvided(acc) ? acc : undefined
+		) as Coordinates;
+		coordinates.push(parsedCoords);
 	}
 
 	return coordinates.length ? (coordinates as [Coordinates, ...Coordinates[]]) : undefined;
@@ -62,6 +104,14 @@ const getGeoJSONGeometry = (coords: [Coordinates, ...Coordinates[]]): Geometry =
 	}
 
 	return { type: 'LineString', coordinates: coords };
+};
+
+export const createGeoJSONGeometry = (value: string): Geometry | undefined => {
+	const coords = getGeoJSONCoordinates(value);
+	if (!coords) {
+		return;
+	}
+	return getGeoJSONGeometry(coords);
 };
 
 const normalizeODKFeature = (odkFeature: SelectItem | string) => {
@@ -131,4 +181,15 @@ export const createFeatureCollectionAndProps = (
 		featureCollection: { type: 'FeatureCollection', features },
 		orderedExtraPropsMap,
 	};
+};
+
+export const parseSingleFeatureFromGeoJSON = (text: string): Geometry | undefined => {
+	try {
+		const geojson = JSON.parse(text) as FeatureCollection<LineString | Point | Polygon>;
+		return geojson?.features?.[0]?.geometry as Geometry | undefined;
+	} catch {
+		// eslint-disable-next-line no-console -- Skip silently to match createFeatureCollectionAndProps
+		console.warn(`Invalid GeoJSON: ${text}`);
+		return;
+	}
 };
