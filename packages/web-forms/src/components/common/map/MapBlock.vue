@@ -18,7 +18,7 @@ import MapStatusBar from '@/components/common/map/MapStatusBar.vue';
 import MapUpdateCoordsDialog from '@/components/common/map/MapUpdateCoordsDialog.vue';
 import { STATES, useMapBlock } from '@/components/common/map/useMapBlock.ts';
 import { QUESTION_HAS_ERROR } from '@/lib/constants/injection-keys.ts';
-import type { Feature, FeatureCollection, Point as PointGeoJSON } from 'geojson';
+import type { Feature, FeatureCollection } from 'geojson';
 import type { Coordinate } from 'ol/coordinate';
 import { toLonLat } from 'ol/proj';
 import Button from 'primevue/button';
@@ -62,11 +62,6 @@ const advancedPanelCoords = computed<Coordinate | null>(() => {
 
 	if (props.singleFeatureType && VERTEX_FEATURES.includes(props.singleFeatureType)) {
 		return selectedVertex.value?.length ? toLonLat(selectedVertex.value) : null;
-	}
-
-	const geometry = props.savedFeatureValue?.geometry as PointGeoJSON | undefined;
-	if (geometry?.coordinates?.length) {
-		return geometry.coordinates;
 	}
 
 	return null;

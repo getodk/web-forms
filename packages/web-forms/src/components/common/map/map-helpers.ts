@@ -64,6 +64,10 @@ export const isWebGLAvailable = () => {
 	}
 };
 
+/**
+ * Validates and transforms GeoJSON coordinates to the map default projection (OL's fromLonLat)
+ * based on the specific geometry type (Point, Trace, or Shape).
+ */
 export const getValidCoordinates = (
 	geometry: LineStringGeoJSON | PointGeoJSON | PolygonGeoJSON | undefined,
 	singleFeatureType: SingleFeatureType | undefined

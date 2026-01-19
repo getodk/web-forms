@@ -1,8 +1,8 @@
 import { describe, it, expect, vi } from 'vitest';
 import {
 	createFeatureCollectionAndProps,
-	createGeoJSONGeometry,
-	parseSingleFeatureFromGeoJSON,
+	parseGeoJSONGeometry,
+	getGeometryFromJSON,
 	toGeoJsonCoordinateArray,
 } from '@/components/common/map/geojson-parsers.ts';
 import type { SelectItem } from '@getodk/xforms-engine';
@@ -623,10 +623,10 @@ describe('GeoJson Parsers', () => {
 		});
 	});
 
-	describe('createGeoJSONGeometry', () => {
+	describe('parseGeoJSONGeometry', () => {
 		it('returns undefined for empty string', () => {
 			vi.spyOn(console, 'warn').mockImplementation(() => false);
-			expect(createGeoJSONGeometry('')).toBeUndefined();
+			expect(parseGeoJSONGeometry('')).toBeUndefined();
 			// eslint-disable-next-line no-console
 			expect(console.warn).toHaveBeenCalledWith(
 				expect.stringContaining('Invalid geo point coordinates: ')
@@ -635,7 +635,7 @@ describe('GeoJson Parsers', () => {
 
 		it('returns undefined for invalid coordinates', () => {
 			vi.spyOn(console, 'warn').mockImplementation(() => false);
-			expect(createGeoJSONGeometry('abc def')).toBeUndefined();
+			expect(parseGeoJSONGeometry('abc def')).toBeUndefined();
 			// eslint-disable-next-line no-console
 			expect(console.warn).toHaveBeenCalledWith(
 				expect.stringContaining('Invalid geo point coordinates: ')
@@ -643,14 +643,14 @@ describe('GeoJson Parsers', () => {
 		});
 
 		it('returns Point for single valid coordinate', () => {
-			expect(createGeoJSONGeometry('40.7128 -74.0060 100 5')).toEqual({
+			expect(parseGeoJSONGeometry('40.7128 -74.0060 100 5')).toEqual({
 				type: 'Point',
 				coordinates: [-74.006, 40.7128, 100, 5],
 			});
 		});
 
 		it('returns LineString for multiple valid coordinates', () => {
-			expect(createGeoJSONGeometry('40.7128 -74.0060;40.7129 -74.0061')).toEqual({
+			expect(parseGeoJSONGeometry('40.7128 -74.0060;40.7129 -74.0061')).toEqual({
 				type: 'LineString',
 				coordinates: [
 					[-74.006, 40.7128],
@@ -660,7 +660,7 @@ describe('GeoJson Parsers', () => {
 		});
 
 		it('returns Polygon for multiple closed coordinates', () => {
-			expect(createGeoJSONGeometry('40.7128 -74.0060;40.7129 -74.0061;40.7128 -74.0060')).toEqual({
+			expect(parseGeoJSONGeometry('40.7128 -74.0060;40.7129 -74.0061;40.7128 -74.0060')).toEqual({
 				type: 'Polygon',
 				coordinates: [
 					[
@@ -695,7 +695,7 @@ describe('GeoJson Parsers', () => {
 		});
 	});
 
-	describe('parseSingleFeatureFromGeoJSON', () => {
+	describe('getGeometryFromJSON', () => {
 		it('returns the geometry of the first feature for a valid GeoJSON', () => {
 			const text = JSON.stringify({
 				type: 'FeatureCollection',
@@ -709,7 +709,7 @@ describe('GeoJson Parsers', () => {
 					},
 				],
 			});
-			expect(parseSingleFeatureFromGeoJSON(text)).toEqual({
+			expect(getGeometryFromJSON(text)).toEqual({
 				type: 'Point',
 				coordinates: [-74.006, 40.7128, 100, 5],
 			});
@@ -720,7 +720,7 @@ describe('GeoJson Parsers', () => {
 				type: 'FeatureCollection',
 				features: [],
 			});
-			expect(parseSingleFeatureFromGeoJSON(empty)).toBeUndefined();
+			expect(getGeometryFromJSON(empty)).toBeUndefined();
 
 			const noGeometry = JSON.stringify({
 				type: 'FeatureCollection',
@@ -730,10 +730,10 @@ describe('GeoJson Parsers', () => {
 					},
 				],
 			});
-			expect(parseSingleFeatureFromGeoJSON(noGeometry)).toBeUndefined();
+			expect(getGeometryFromJSON(noGeometry)).toBeUndefined();
 
 			const invalidJson = 'abc';
-			expect(parseSingleFeatureFromGeoJSON(invalidJson)).toBeUndefined();
+			expect(getGeometryFromJSON(invalidJson)).toBeUndefined();
 		});
 	});
 });

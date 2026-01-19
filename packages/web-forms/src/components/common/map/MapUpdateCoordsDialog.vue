@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {
-	createGeoJSONGeometry,
-	parseSingleFeatureFromGeoJSON,
+	parseGeoJSONGeometry,
+	getGeometryFromJSON,
 } from '@/components/common/map/geojson-parsers.ts';
 import type { SingleFeatureType } from '@/components/common/map/getModeConfig.ts';
 import { getValidCoordinates } from '@/components/common/map/map-helpers.ts';
@@ -50,7 +50,7 @@ const parseFileCoordinates = async (file: File): Promise<Geometry | undefined> =
 
 		const fileName = file.name.toLowerCase();
 		if (fileName.endsWith('.geojson')) {
-			return parseSingleFeatureFromGeoJSON(text);
+			return getGeometryFromJSON(text);
 		}
 
 		// TODO: translations
@@ -67,7 +67,7 @@ const parsePastedValue = () => {
 		return;
 	}
 
-	return createGeoJSONGeometry(value);
+	return parseGeoJSONGeometry(value);
 };
 
 const save = async () => {

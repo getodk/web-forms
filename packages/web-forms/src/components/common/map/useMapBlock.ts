@@ -333,7 +333,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 		}
 
 		featuresSource.addFeature(newFeature);
-		handlePointPlacement(newFeature);
+		updateAndSaveFeature(newFeature);
 	};
 
 	const modifyExistingFeature = (feature: Feature, coords: Coordinate[] | Coordinate[][]) => {

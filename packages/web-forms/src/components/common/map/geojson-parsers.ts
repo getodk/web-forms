@@ -69,7 +69,7 @@ export const isAccuracyProvided = (acc: number | null | undefined) => {
 	return acc != null && Number.isFinite(acc);
 };
 
-const getGeoJSONCoordinates = (geometry: string): [Coordinates, ...Coordinates[]] | undefined => {
+const parseGeoJSONCoordinates = (geometry: string): [Coordinates, ...Coordinates[]] | undefined => {
 	const coordinates: Coordinates[] = [];
 	for (const coord of geometry.split(';')) {
 		const [lat, lon, alt, acc] = coord.trim().split(/\s+/).map(Number);
@@ -79,19 +79,14 @@ const getGeoJSONCoordinates = (geometry: string): [Coordinates, ...Coordinates[]
 			return;
 		}
 
-		const parsedCoords = toGeoJsonCoordinateArray(
-			lon!,
-			lat!,
-			isAltitudeProvided(alt) ? alt : undefined,
-			isAccuracyProvided(acc) ? acc : undefined
-		) as Coordinates;
+		const parsedCoords = toGeoJsonCoordinateArray(lon!, lat!, alt, acc) as Coordinates;
 		coordinates.push(parsedCoords);
 	}
 
 	return coordinates.length ? (coordinates as [Coordinates, ...Coordinates[]]) : undefined;
 };
 
-const getGeoJSONGeometry = (coords: [Coordinates, ...Coordinates[]]): Geometry => {
+const createGeoJSONGeometry = (coords: [Coordinates, ...Coordinates[]]): Geometry => {
 	if (coords.length === 1) {
 		return { type: 'Point', coordinates: coords[0] };
 	}
@@ -106,12 +101,11 @@ const getGeoJSONGeometry = (coords: [Coordinates, ...Coordinates[]]): Geometry =
 	return { type: 'LineString', coordinates: coords };
 };
 
-export const createGeoJSONGeometry = (value: string): Geometry | undefined => {
-	const coords = getGeoJSONCoordinates(value);
-	if (!coords) {
-		return;
+export const parseGeoJSONGeometry = (coords: string): Geometry | undefined => {
+	const parsedCoords = parseGeoJSONCoordinates(coords);
+	if (parsedCoords) {
+		return createGeoJSONGeometry(parsedCoords);
 	}
-	return getGeoJSONGeometry(coords);
 };
 
 const normalizeODKFeature = (odkFeature: SelectItem | string) => {
@@ -163,7 +157,7 @@ export const createFeatureCollectionAndProps = (
 			return;
 		}
 
-		const geoJSONCoords = getGeoJSONCoordinates(geometry);
+		const geoJSONCoords = parseGeoJSONCoordinates(geometry);
 		if (!geoJSONCoords) {
 			// eslint-disable-next-line no-console -- Skip silently to match Collect behaviour.
 			console.warn(`Missing geo points for option: ${normalizedFeature.value}`);
@@ -172,7 +166,7 @@ export const createFeatureCollectionAndProps = (
 
 		features.push({
 			type: 'Feature',
-			geometry: getGeoJSONGeometry(geoJSONCoords),
+			geometry: createGeoJSONGeometry(geoJSONCoords),
 			properties: reservedProps,
 		});
 	});
@@ -183,13 +177,13 @@ export const createFeatureCollectionAndProps = (
 	};
 };
 
-export const parseSingleFeatureFromGeoJSON = (text: string): Geometry | undefined => {
+export const getGeometryFromJSON = (json: string): Geometry | undefined => {
 	try {
-		const geojson = JSON.parse(text) as FeatureCollection<LineString | Point | Polygon>;
+		const geojson = JSON.parse(json) as FeatureCollection<LineString | Point | Polygon>;
 		return geojson?.features?.[0]?.geometry as Geometry | undefined;
 	} catch {
 		// eslint-disable-next-line no-console -- Skip silently to match createFeatureCollectionAndProps
-		console.warn(`Invalid GeoJSON: ${text}`);
+		console.warn('Invalid GeoJSON', json);
 		return;
 	}
 };

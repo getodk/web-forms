@@ -2,4 +2,4 @@
 '@getodk/web-forms': minor
 ---
 
-Adds support for editing the coordinates of a vertex or point
+Adds support for editing the coordinates in geoshape and geotrace question types.

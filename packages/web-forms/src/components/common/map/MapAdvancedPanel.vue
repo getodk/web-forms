@@ -131,7 +131,7 @@ const updateVertex = () => {
 			<a class="paste-location" @click="emit('open-paste-dialog')">
 				<IconSVG name="mdiFileOutline" size="sm" />
 				<!-- TODO: translations -->
-				<strong title="This will replace the current location data.">Import data to replace location</strong>
+				<strong>Import data to replace location</strong>
 			</a>
 		</div>
 	</transition>
