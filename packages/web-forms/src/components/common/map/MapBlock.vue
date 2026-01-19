@@ -157,7 +157,7 @@ const undoLastChange = () => {
 	emitSavedFeature();
 };
 
-const updateFeatureCoords = (newCoords: Coordinate | Coordinate[] | Coordinate[][]) => {
+const updateFeatureCoords = (newCoords: Coordinate[] | Coordinate[][]) => {
 	mapHandler.updateFeatureCoordinates(newCoords);
 	emitSavedFeature();
 };
@@ -168,8 +168,6 @@ const saveAdvancedPanelCoords = (newCoords: Coordinate) => {
 		emitSavedFeature();
 		return;
 	}
-
-	updateFeatureCoords(newCoords);
 };
 </script>
 

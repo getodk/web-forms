@@ -3,6 +3,7 @@ import {
 	getModeConfig,
 	type Mode,
 	MODES,
+	SINGLE_FEATURE_TYPES,
 	type SingleFeatureType,
 } from '@/components/common/map/getModeConfig.ts';
 import { formatODKValue, isWebGLAvailable } from '@/components/common/map/map-helpers.ts';
@@ -42,7 +43,7 @@ import { Map, View } from 'ol';
 import { Attribution, Zoom } from 'ol/control';
 import type { Coordinate } from 'ol/coordinate';
 import Feature from 'ol/Feature';
-import { LineString, Point, Polygon, SimpleGeometry } from 'ol/geom';
+import { LineString, Polygon, SimpleGeometry } from 'ol/geom';
 import TileLayer from 'ol/layer/Tile';
 import VectorLayer from 'ol/layer/Vector';
 import WebGLVectorLayer from 'ol/layer/WebGLVector';
@@ -170,7 +171,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 			return;
 		}
 
-		const feature = mapFeatures?.createFeature(savedFeatureValue);
+		const feature = mapFeatures?.createFeatureFromGeoJSON(savedFeatureValue);
 		loadAndSaveSingleFeature(feature);
 	};
 
@@ -310,22 +311,41 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 		mapViewControls?.fitToAllFeatures(featuresSource);
 	};
 
-	const updateFeatureCoordinates = (newCoords: Coordinate | Coordinate[] | Coordinate[][]) => {
+	const updateFeatureCoordinates = (newCoords: Coordinate[] | Coordinate[][]) => {
 		if (!newCoords.length || !currentMode.capabilities.canUpdateFeatureCoordinates) {
 			return;
 		}
 
-		const feature = mapFeatures?.getSavedFeature() as Feature<LineString | Point | Polygon>;
-		const geometry = feature?.getGeometry() as SimpleGeometry | undefined;
+		const existingFeature = featuresSource.getFeatures()?.[0];
+		if (existingFeature) {
+			modifyExistingFeature(existingFeature, newCoords);
+		} else {
+			createNewFeature(newCoords);
+		}
+
+		mapViewControls?.fitToAllFeatures(featuresSource);
+	};
+
+	const createNewFeature = (coords: Coordinate[] | Coordinate[][]) => {
+		const newFeature = mapFeatures?.createFeatureFromType(config.singleFeatureType, coords);
+		if (!newFeature) {
+			return;
+		}
+
+		featuresSource.addFeature(newFeature);
+		handlePointPlacement(newFeature);
+	};
+
+	const modifyExistingFeature = (feature: Feature, coords: Coordinate[] | Coordinate[][]) => {
+		const geometry = feature.getGeometry() as SimpleGeometry | undefined;
 		if (!geometry) {
 			return;
 		}
 
 		mapInteractions?.savePreviousFeatureState(feature);
-		geometry.setCoordinates(newCoords, COORDINATE_LAYOUT_XYZM);
+		geometry.setCoordinates(coords, COORDINATE_LAYOUT_XYZM);
 		updateAndSaveFeature(feature);
 		unselectFeature();
-		mapViewControls?.fitToAllFeatures(featuresSource);
 	};
 
 	const loadAndSaveSingleFeature = (feature: Feature | undefined) => {
@@ -367,12 +387,15 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 			location.altitude,
 			location.accuracy
 		);
+		const feature = mapFeatures?.createFeatureFromType(
+			SINGLE_FEATURE_TYPES.POINT,
+			fromLonLat(coords)
+		);
 
-		const feature = new Feature({
-			geometry: new Point(fromLonLat(coords), COORDINATE_LAYOUT_XYZM),
-		});
-		feature.set(ODK_VALUE_PROPERTY, formatODKValue(feature));
-		loadAndSaveSingleFeature(feature);
+		if (feature) {
+			feature.set(ODK_VALUE_PROPERTY, formatODKValue(feature));
+			loadAndSaveSingleFeature(feature);
+		}
 	};
 
 	const discardSavedFeature = () => {

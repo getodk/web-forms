@@ -143,6 +143,7 @@ const updateVertex = () => {
 }
 
 .advanced-panel {
+	background: var(--odk-base-background-color);
 	border-top: 1px solid var(--odk-border-color);
 	display: flex;
 	flex-direction: column;

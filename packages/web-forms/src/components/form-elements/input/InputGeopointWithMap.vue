@@ -32,7 +32,7 @@ const mode = computed<Mode | null>(() => {
 		:disabled="question.currentState.readonly"
 		:mode="mode"
 		:saved-feature-value="question.currentState.instanceValue"
-		:single-feature-type="mode ? SINGLE_FEATURE_TYPES.POINT : undefined"
+		:single-feature-type="SINGLE_FEATURE_TYPES.POINT"
 		@save="(value) => question.setValue(value ?? '')"
 	/>
 </template>
