@@ -120,25 +120,34 @@ export function useMapInteractions(
 	): void => {
 		const hitFeatures = getVectorFeaturesAtPixel(event.pixel);
 
-		const selectedFeature = hitFeatures?.find((item) => {
+		const targetFeature = hitFeatures?.find((item) => {
 			const geometry = item.getGeometry();
 			return geometry instanceof Polygon || geometry instanceof LineString;
 		}) as Feature<LineString | Polygon> | undefined;
 
-		if (!selectedFeature) {
+		if (!targetFeature) {
 			onSelect?.(undefined, undefined);
 			return;
 		}
 
-		const coords = getFlatCoordinates(selectedFeature.getGeometry());
-		if (coords.length === 1) {
-			onSelect?.(selectedFeature, 0);
-			return;
-		}
+		const isSinglePoint = getFlatCoordinates(targetFeature.getGeometry()).length === 1;
+		const hitVertexFeature = hitFeatures.find((item) => {
+			return item.getGeometry() instanceof Point;
+		}) as Feature<Point> | undefined;
 
-		const vertexToSelect = hitFeatures.find((item) => item.getGeometry() instanceof Point);
-		const index = getVertexIndex(selectedFeature, vertexToSelect as Feature<Point> | undefined);
-		onSelect?.(selectedFeature, index);
+		const targetVertexIndex = isSinglePoint ? 0 : getVertexIndex(targetFeature, hitVertexFeature);
+		const isTapOnVertex = targetVertexIndex != null;
+		const currentVertexIndex = targetFeature.get(SELECTED_VERTEX_INDEX_PROPERTY) as number;
+		const isSameVertex = isTapOnVertex && currentVertexIndex === targetVertexIndex;
+
+		const isCurrentFeatureSelected = !!targetFeature.get(IS_SELECTED_PROPERTY);
+		const isSameBody = !isTapOnVertex && isCurrentFeatureSelected;
+
+		if (isSameVertex || isSameBody) {
+			onSelect?.(undefined, undefined);
+		} else {
+			onSelect?.(targetFeature, targetVertexIndex);
+		}
 	};
 
 	const toggleSelectEvent = (
