@@ -10,16 +10,13 @@ import {
 	getFlatCoordinates,
 	getVertexIndex,
 } from '@/components/common/map/vertex-geometry.ts';
-import type { TimerID } from '@getodk/common/types/timers.ts';
 import { Collection, Map, MapBrowserEvent } from 'ol';
 import type { Coordinate } from 'ol/coordinate';
 import Feature from 'ol/Feature';
 import { LineString, Point, Polygon } from 'ol/geom';
 import { Modify, Translate } from 'ol/interaction';
-import PointerInteraction from 'ol/interaction/Pointer';
 import VectorLayer from 'ol/layer/Vector';
 import WebGLVectorLayer from 'ol/layer/WebGLVector';
-import type { Pixel } from 'ol/pixel';
 import type VectorSource from 'ol/source/Vector';
 import { shallowRef } from 'vue';
 
@@ -35,7 +32,7 @@ export interface UseMapInteractions {
 	removeMapInteractions: () => void;
 	savePreviousFeatureState: (feature: Feature | null) => void;
 	setupFeatureDrag: (layer: VectorLayer, onDrag: (feature: Feature) => void) => void;
-	setupLongPressPoint: (source: VectorSource, onLongPress: (feature: Feature) => void) => void;
+	setupTapToAddVertex: (source: VectorSource, onAdd: (feature: Feature) => void) => void;
 	setupMapVisibilityObserver: (mapContainer: HTMLElement, onMapNotVisible: () => void) => void;
 	setupVertexDrag: (source: VectorSource, onDrag: (feature: Feature) => void) => void;
 	teardownMap: () => void;
@@ -45,8 +42,7 @@ export interface UseMapInteractions {
 	) => void;
 }
 
-const LONG_PRESS_TIME = 1300;
-const LONG_PRESS_HIT_TOLERANCE = 20;
+const ADD_VERTEX_HIT_TOLERANCE = 20;
 const SELECT_HIT_TOLERANCE = 15;
 
 export function useMapInteractions(
@@ -55,7 +51,7 @@ export function useMapInteractions(
 	drawFeatureType: DrawFeatureType | undefined
 ): UseMapInteractions {
 	const currentLocationObserver = shallowRef<IntersectionObserver | undefined>();
-	const pointerInteraction = shallowRef<PointerInteraction | undefined>();
+	const tapListener = shallowRef<((event: MapBrowserEvent) => void) | undefined>();
 	const translateInteraction = shallowRef<Translate | undefined>();
 	const modifyInteraction = shallowRef<Modify | undefined>();
 	const previousFeatureState = shallowRef<Feature | null | undefined>();
@@ -76,7 +72,7 @@ export function useMapInteractions(
 
 	const removeMapInteractions = () => {
 		toggleSelectEvent(false);
-		removeLongPressPoint();
+		removeTapToAddVertex();
 		removeFeatureDrag();
 		removePhantomMiddlePoint();
 	};
@@ -165,107 +161,60 @@ export function useMapInteractions(
 		}
 	};
 
-	const resolveFeatureForLongPress = (
+	const resolveFeatureForTapToAdd = (
 		coordinate: Coordinate,
 		resolution: number,
 		feature: Feature | undefined
 	) => {
 		if (drawFeatureType === DRAW_FEATURE_TYPES.SHAPE) {
-			return addShapeVertex(resolution, coordinate, feature, LONG_PRESS_HIT_TOLERANCE);
+			return addShapeVertex(resolution, coordinate, feature, ADD_VERTEX_HIT_TOLERANCE);
 		}
 
 		if (drawFeatureType === DRAW_FEATURE_TYPES.TRACE) {
-			return addTraceVertex(resolution, coordinate, feature, LONG_PRESS_HIT_TOLERANCE);
+			return addTraceVertex(resolution, coordinate, feature, ADD_VERTEX_HIT_TOLERANCE);
 		}
 
 		return new Feature({ geometry: new Point(coordinate) });
 	};
 
-	const addVertexOnLongPress = (
-		source: VectorSource,
-		coordinate: Coordinate,
-		onLongPress: (feature: Feature) => void
-	) => {
-		const resolution = mapInstance.getView().getResolution() ?? 1;
-		const feature = source.getFeatures()?.[0];
-		savePreviousFeatureState(feature ?? null);
-		const updatedFeature = resolveFeatureForLongPress(coordinate, resolution, feature)!;
-
-		if (!drawFeatureType && !source.isEmpty()) {
-			source.clear(true);
-		}
-
-		if (source.isEmpty()) {
-			source.addFeature(updatedFeature);
-		}
-
-		onLongPress(updatedFeature);
-	};
-
-	const isPressInHitTolerance = (pixel: number[] | undefined, startPixel: Pixel | null) => {
-		if (!startPixel?.length || !pixel || pixel.length < 2) {
-			return false;
-		}
-
-		const [eventX, eventY] = pixel as [number, number];
-		const [startX, startY] = startPixel as [number, number];
-		const distanceX = Math.abs(eventX - startX);
-		const distanceY = Math.abs(eventY - startY);
-
-		return distanceX <= LONG_PRESS_HIT_TOLERANCE && distanceY <= LONG_PRESS_HIT_TOLERANCE;
-	};
-
 	const preventContextMenu = (e: Event) => e.preventDefault();
 
-	const setupLongPressPoint = (source: VectorSource, onLongPress: (feature: Feature) => void) => {
-		if (pointerInteraction.value) {
+	const setupTapToAddVertex = (source: VectorSource, onAdd: (feature: Feature) => void) => {
+		if (tapListener.value) {
 			return;
 		}
 
-		const viewport = mapInstance.getViewport();
-		let timer: TimerID | undefined;
-		let startPixel: Pixel | null = null;
-		const upListener = () => clearAndRemoveListeners();
-		const moveListener = (moveEvent: MapBrowserEvent) => {
-			if (!startPixel || !isPressInHitTolerance(moveEvent.pixel, startPixel)) {
-				clearAndRemoveListeners();
+		const listener = (event: MapBrowserEvent) => {
+			if (event.dragging) {
+				return;
 			}
+
+			const resolution = mapInstance.getView().getResolution() ?? 1;
+			const feature = source.getFeatures()?.[0];
+			savePreviousFeatureState(feature ?? null);
+			const updatedFeature = resolveFeatureForTapToAdd(event.coordinate, resolution, feature)!;
+
+			if (!drawFeatureType && !source.isEmpty()) {
+				source.clear(true);
+			}
+
+			if (source.isEmpty()) {
+				source.addFeature(updatedFeature);
+			}
+
+			onAdd(updatedFeature);
 		};
-		const clearAndRemoveListeners = () => {
-			clearTimeout(timer);
-			timer = undefined;
-			startPixel = null;
-			mapInstance.un('pointermove', moveListener);
-			viewport.removeEventListener('pointerup', upListener);
-		};
 
-		pointerInteraction.value = new PointerInteraction({
-			handleDownEvent: (event) => {
-				if (timer) {
-					clearAndRemoveListeners();
-					return false;
-				}
-				startPixel = event.pixel;
-				setCursor('pointer');
-				mapInstance.on('pointermove', moveListener);
-				viewport.addEventListener('pointerup', upListener);
-
-				timer = setTimeout(() => {
-					clearAndRemoveListeners();
-					addVertexOnLongPress(source, event.coordinate, onLongPress);
-				}, LONG_PRESS_TIME);
-				return false;
-			},
-		});
-
-		mapInstance.addInteraction(pointerInteraction.value);
-		viewport.addEventListener('contextmenu', preventContextMenu);
+		tapListener.value = listener;
+		mapInstance.on('click', listener);
+		mapInstance.getViewport().addEventListener('contextmenu', preventContextMenu);
 	};
 
-	const removeLongPressPoint = () => {
-		if (pointerInteraction.value) {
-			mapInstance.removeInteraction(pointerInteraction.value);
-			pointerInteraction.value = undefined;
+	const removeTapToAddVertex = () => {
+		if (tapListener.value) {
+			mapInstance.un('click', tapListener.value);
+			tapListener.value = undefined;
+			setCursor('default');
 		}
 	};
 
@@ -359,7 +308,7 @@ export function useMapInteractions(
 		removeMapInteractions,
 		savePreviousFeatureState,
 		setupFeatureDrag,
-		setupLongPressPoint,
+		setupTapToAddVertex,
 		setupMapVisibilityObserver,
 		setupVertexDrag,
 		teardownMap,

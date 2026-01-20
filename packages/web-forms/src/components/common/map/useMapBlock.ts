@@ -193,7 +193,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 		}
 
 		if (currentMode.interactions.longPress) {
-			mapInteractions.setupLongPressPoint(featuresSource, (feature) =>
+			mapInteractions.setupTapToAddVertex(featuresSource, (feature) =>
 				handlePointPlacement(feature)
 			);
 
