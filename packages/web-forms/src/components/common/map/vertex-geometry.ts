@@ -91,6 +91,48 @@ const isOnLine = (squaredDist: number, resolution: number, hitTolerance: number)
 	return squaredDist <= tolerance ** 2;
 };
 
+export const isNearVertex = (
+	feature: Feature | undefined,
+	point: Coordinate,
+	resolution: number,
+	hitTolerance: number
+): boolean => {
+	const geometry = feature?.getGeometry();
+	if (!geometry || (!(geometry instanceof LineString) && !(geometry instanceof Polygon))) {
+		return false;
+	}
+
+	return getFlatCoordinates(geometry).some((vertex) => {
+		const { deltaX, deltaY } = getDeltaBetweenPoints(point, vertex);
+		const squaredDist = getDistanceBetweenPoints(deltaX, deltaY);
+		return isOnLine(squaredDist, resolution, hitTolerance);
+	});
+};
+
+export const isOnFeatureEdge = (
+	feature: Feature | undefined,
+	point: Coordinate,
+	resolution: number,
+	hitTolerance: number
+): boolean => {
+	const geometry = feature?.getGeometry();
+	if (geometry instanceof LineString) {
+		return true;
+	}
+
+	if (geometry instanceof Polygon) {
+		const ring = getFlatCoordinates(geometry);
+		if (ring.length < 2) {
+			return false;
+		}
+
+		const { squaredDist } = getClosestSegmentAndIndex(ring, point);
+		return isOnLine(squaredDist, resolution, hitTolerance);
+	}
+
+	return false;
+};
+
 export const addTraceVertex = (
 	resolution: number,
 	newVertex: Coordinate,

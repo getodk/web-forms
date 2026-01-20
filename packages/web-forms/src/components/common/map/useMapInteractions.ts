@@ -9,6 +9,8 @@ import {
 	addTraceVertex,
 	getFlatCoordinates,
 	getVertexIndex,
+	isNearVertex,
+	isOnFeatureEdge,
 } from '@/components/common/map/vertex-geometry.ts';
 import { Collection, Map, MapBrowserEvent } from 'ol';
 import type { Coordinate } from 'ol/coordinate';
@@ -17,6 +19,7 @@ import { LineString, Point, Polygon } from 'ol/geom';
 import { Modify, Translate } from 'ol/interaction';
 import VectorLayer from 'ol/layer/Vector';
 import WebGLVectorLayer from 'ol/layer/WebGLVector';
+import type { Pixel } from 'ol/pixel';
 import type VectorSource from 'ol/source/Vector';
 import { shallowRef } from 'vue';
 
@@ -55,6 +58,13 @@ export function useMapInteractions(
 	const translateInteraction = shallowRef<Translate | undefined>();
 	const modifyInteraction = shallowRef<Modify | undefined>();
 	const previousFeatureState = shallowRef<Feature | null | undefined>();
+
+	const getVectorFeaturesAtPixel = (pixel: Pixel) => {
+		return mapInstance.getFeaturesAtPixel(pixel, {
+			layerFilter: (layer) => layer instanceof VectorLayer,
+			hitTolerance: SELECT_HIT_TOLERANCE,
+		});
+	};
 
 	const setupMapVisibilityObserver = (mapContainer: HTMLElement, onMapNotVisible: () => void) => {
 		if ('IntersectionObserver' in window) {
@@ -108,10 +118,7 @@ export function useMapInteractions(
 		event: MapBrowserEvent,
 		onSelect: (feature: Feature | undefined, selectedVertexIndex: number | undefined) => void
 	): void => {
-		const hitFeatures = mapInstance.getFeaturesAtPixel(event.pixel, {
-			layerFilter: (layer) => layer instanceof VectorLayer,
-			hitTolerance: SELECT_HIT_TOLERANCE,
-		});
+		const hitFeatures = getVectorFeaturesAtPixel(event.pixel);
 
 		const selectedFeature = hitFeatures?.find((item) => {
 			const geometry = item.getGeometry();
@@ -189,10 +196,26 @@ export function useMapInteractions(
 				return;
 			}
 
+			const eventCoords = event.coordinate;
 			const resolution = mapInstance.getView().getResolution() ?? 1;
+			const hitFeatures = getVectorFeaturesAtPixel(event.pixel);
+			const targetFeature = hitFeatures.find((f) => source.hasFeature(f as Feature)) as
+				| Feature
+				| undefined;
+
+			if (targetFeature) {
+				if (isNearVertex(targetFeature, eventCoords, resolution, ADD_VERTEX_HIT_TOLERANCE)) {
+					return;
+				}
+
+				if (!isOnFeatureEdge(targetFeature, eventCoords, resolution, ADD_VERTEX_HIT_TOLERANCE)) {
+					return;
+				}
+			}
+
 			const feature = source.getFeatures()?.[0];
 			savePreviousFeatureState(feature ?? null);
-			const updatedFeature = resolveFeatureForTapToAdd(event.coordinate, resolution, feature)!;
+			const updatedFeature = resolveFeatureForTapToAdd(eventCoords, resolution, feature)!;
 
 			if (!drawFeatureType && !source.isEmpty()) {
 				source.clear(true);
