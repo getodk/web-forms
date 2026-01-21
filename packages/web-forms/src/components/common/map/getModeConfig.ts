@@ -18,10 +18,6 @@ export const SINGLE_FEATURE_TYPES = {
 	TRACE: 'trace',
 } as const;
 export type SingleFeatureType = (typeof SINGLE_FEATURE_TYPES)[keyof typeof SINGLE_FEATURE_TYPES];
-export const VERTEX_FEATURES: SingleFeatureType[] = [
-	SINGLE_FEATURE_TYPES.SHAPE,
-	SINGLE_FEATURE_TYPES.TRACE,
-] as const;
 
 export interface ModeCapabilities {
 	canDeleteFeature: boolean;

@@ -472,6 +472,11 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 	};
 
 	const canOpenAdvacedPanel = () => {
+		const { singleFeatureType: type } = config;
+		if (type !== SINGLE_FEATURE_TYPES.SHAPE && type !== SINGLE_FEATURE_TYPES.TRACE) {
+			return false;
+		}
+
 		const { canUpdateFeatureCoordinates, canUpdateVertexCoordinates } = currentMode.capabilities;
 		return canUpdateFeatureCoordinates || canUpdateVertexCoordinates;
 	};

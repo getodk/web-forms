@@ -5,11 +5,7 @@
  * load on demand. Avoids main bundle bloat.
  */
 import IconSVG from '@/components/common/IconSVG.vue';
-import {
-	type Mode,
-	type SingleFeatureType,
-	VERTEX_FEATURES,
-} from '@/components/common/map/getModeConfig.ts';
+import { type Mode, type SingleFeatureType } from '@/components/common/map/getModeConfig.ts';
 import MapAdvancedPanel from '@/components/common/map/MapAdvancedPanel.vue';
 import MapConfirmDialog from '@/components/common/map/MapConfirmDialog.vue';
 import MapControls from '@/components/common/map/MapControls.vue';
@@ -59,12 +55,7 @@ const advancedPanelCoords = computed<Coordinate | null>(() => {
 	if (!mapHandler.canOpenAdvacedPanel()) {
 		return null;
 	}
-
-	if (props.singleFeatureType && VERTEX_FEATURES.includes(props.singleFeatureType)) {
-		return selectedVertex.value?.length ? toLonLat(selectedVertex.value) : null;
-	}
-
-	return null;
+	return selectedVertex.value?.length ? toLonLat(selectedVertex.value) : null;
 });
 
 const showSecondaryControls = computed(() => {
@@ -158,11 +149,8 @@ const updateFeatureCoords = (newCoords: Coordinate[] | Coordinate[][]) => {
 };
 
 const saveAdvancedPanelCoords = (newCoords: Coordinate) => {
-	if (props.singleFeatureType && VERTEX_FEATURES.includes(props.singleFeatureType)) {
-		mapHandler.updateVertexCoords(newCoords);
-		emitSavedFeature();
-		return;
-	}
+	mapHandler.updateVertexCoords(newCoords);
+	emitSavedFeature();
 };
 </script>
 
