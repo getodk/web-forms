@@ -8,7 +8,7 @@ import { getValidCoordinates } from '@/components/common/map/map-helpers.ts';
 import type { Geometry, LineString, Point, Polygon } from 'geojson';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
-import InputText from 'primevue/inputtext';
+import Textarea from 'primevue/textarea';
 import IconSVG from '@/components/common/IconSVG.vue';
 import { ref, watch } from 'vue';
 
@@ -156,7 +156,7 @@ watch(pasteValue, (newVal) => {
 			<div class="dialog-field-container">
 				<!-- TODO: translations -->
 				<label for="paste-input">Paste data in ODK format <span class="info-helper" title="ODK format: Lat Long Alt Acc; Lat Long Alt Acc; ... (Semicolon separated points)">&#9432;</span></label>
-				<InputText id="paste-input" v-model="pasteValue" :disabled="isParsing" />
+				<Textarea id="paste-input" v-model="pasteValue" :disabled="isParsing" auto-resize rows="1" />
 				<p v-if="pasteError?.length" class="coords-error-message">
 					{{ pasteError }}
 				</p>
@@ -210,11 +210,6 @@ watch(pasteValue, (newVal) => {
 		display: none;
 	}
 
-	input[type='text'] {
-		width: 100%;
-		padding: 9px;
-	}
-
 	.upload-button {
 		margin-top: 10px;
 	}
@@ -222,6 +217,11 @@ watch(pasteValue, (newVal) => {
 	.info-helper {
 		font-size: var(--odk-hint-font-size);
 		cursor: pointer;
+	}
+
+	#paste-input {
+		width: 100%;
+		padding: 10px;
 	}
 }
 
@@ -263,6 +263,11 @@ watch(pasteValue, (newVal) => {
 		&:disabled {
 			cursor: not-allowed;
 		}
+	}
+
+	button.p-button-secondary:focus-visible {
+		outline: none;
+		outline-offset: unset;
 	}
 }
 </style>
