@@ -198,6 +198,7 @@ const updateVertex = () => {
 		border: 1px solid var(--odk-border-color);
 		font-size: var(--odk-base-font-size);
 		color: var(--odk-text-color);
+		-moz-appearance: textfield;
 
 		&:focus-visible {
 			outline: none;
