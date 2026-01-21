@@ -111,7 +111,7 @@
       </item>
       <item>
         <label ref="jr:itext('choice_image_audio')"/>
-        <value>image</value>
+        <value>image-audio</value>
       </item>
     </select1>
     <select ref="/data/select_multiple_media">
@@ -130,7 +130,7 @@
       </item>
       <item>
         <label ref="jr:itext('choice_image_audio')"/>
-        <value>image</value>
+        <value>image-audio</value>
       </item>
     </select>
     <select1 ref="/data/select_one_no_image">

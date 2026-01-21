@@ -64,6 +64,8 @@ const play = async () => {
 <style scoped lang="scss">
 .bar-only {
 	width: 100%;
+	min-width: 300px;
+	max-width: 400px;
 
 	.audio-block {
 		width: 100%;

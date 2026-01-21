@@ -29,9 +29,9 @@ defineProps<{
 
 <style scoped lang="scss">
 .video-block {
-	max-height: var(--odk-max-video-height);
-	max-width: 100%;
-	width: auto;
+	max-height: fit-content;
+	max-width: 400px;
+	width: 100%;
 	height: auto;
 	display: block;
 	object-fit: contain;
