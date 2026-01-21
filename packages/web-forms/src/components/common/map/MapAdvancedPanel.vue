@@ -80,7 +80,7 @@ const updateVertex = () => {
 					</div>
 					<!-- TODO: translations -->
 					<p class="field-error-message">
-						Enter a valid longitude
+						Longitude is invalid
 					</p>
 				</div>
 				<div :class="{ 'field-error': !disableInputs && !validLatitude }" class="field-set">
@@ -97,7 +97,7 @@ const updateVertex = () => {
 					</div>
 					<!-- TODO: translations -->
 					<p class="field-error-message">
-						Enter a valid latitude
+						Latitude is invalid
 					</p>
 				</div>
 				<div class="field-set">
@@ -219,6 +219,7 @@ const updateVertex = () => {
 	}
 
 	.field-error-message {
+		margin: 8px 0 0 0;
 		color: var(--odk-error-text-color);
 		display: none;
 	}

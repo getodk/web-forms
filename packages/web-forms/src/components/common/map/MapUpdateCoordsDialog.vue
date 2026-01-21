@@ -155,7 +155,7 @@ watch(pasteValue, (newVal) => {
 		<template #default>
 			<div class="dialog-field-container">
 				<!-- TODO: translations -->
-				<label for="paste-input">Paste data in ODK format</label>
+				<label for="paste-input">Paste data in ODK format <span class="info-helper" title="ODK format: Lat Long Alt Acc; Lat Long Alt Acc; ... (Semicolon separated points)">&#9432;</span></label>
 				<InputText id="paste-input" v-model="pasteValue" :disabled="isParsing" />
 				<p v-if="pasteError?.length" class="coords-error-message">
 					{{ pasteError }}
@@ -217,6 +217,11 @@ watch(pasteValue, (newVal) => {
 
 	.upload-button {
 		margin-top: 10px;
+	}
+
+	.info-helper {
+		font-size: var(--odk-hint-font-size);
+		cursor: pointer;
 	}
 }
 
