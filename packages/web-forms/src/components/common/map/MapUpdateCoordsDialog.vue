@@ -155,7 +155,7 @@ watch(pasteValue, (newVal) => {
 		<template #default>
 			<div class="dialog-field-container">
 				<!-- TODO: translations -->
-				<label for="paste-input">Paste data in ODK format <span class="info-helper" title="ODK format: Lat Long Alt Acc; Lat Long Alt Acc; ... (Semicolon separated points)">&#9432;</span></label>
+				<label for="paste-input">Paste data in ODK format <span class="info-helper" title="Enter as: Lat Long Alt Acc (e.g. 45.5 -122.6 15 2; 45.6 -122.7 12 3)">&#9432;</span></label>
 				<Textarea id="paste-input" v-model="pasteValue" :disabled="isParsing" auto-resize rows="1" />
 				<p v-if="pasteError?.length" class="coords-error-message">
 					{{ pasteError }}
@@ -168,7 +168,7 @@ watch(pasteValue, (newVal) => {
 				<!-- TODO: translations -->
 				<div v-if="selectedFile" class="file-added-message">
 					<IconSVG name="mdiFileOutline" />
-					<span>File added</span>
+					<span>File added: {{ selectedFile.name }}</span>
 				</div>
 				<p v-if="uploadError?.length" class="coords-error-message">
 					{{ uploadError }}
@@ -216,6 +216,7 @@ watch(pasteValue, (newVal) => {
 
 	.info-helper {
 		font-size: var(--odk-hint-font-size);
+		font-weight: bold;
 		cursor: pointer;
 	}
 
