@@ -328,7 +328,7 @@ export function useMapInteractions(
 			return;
 		}
 
-		// Here null is a valid state representing 'deleted'
+		// Here null is a valid state representing clearing the map
 		const snapshot: Feature | null = feature?.clone() ?? null;
 		if (snapshot) {
 			snapshot.unset(SELECTED_VERTEX_INDEX_PROPERTY);
