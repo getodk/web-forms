@@ -60,8 +60,7 @@ class GeolocationService {
 				this.options
 			);
 			this.timerId = setTimeout(() => {
-				// TODO: translations
-				this.resolveNow(new Error('No geolocation readings received within the time window.'));
+				this.resolveNow();
 			}, timeoutSeconds * 1000);
 		});
 
@@ -74,7 +73,7 @@ class GeolocationService {
 	 * If we have a location reading, resolves the promise with it.
 	 * If we have no readings, rejects with the provided error.
 	 */
-	public resolveNow(error: Error): void {
+	public resolveNow(error?: Error): void {
 		if (!this.pendingResolve || !this.pendingReject) {
 			return;
 		}
@@ -82,7 +81,9 @@ class GeolocationService {
 		if (this.bestPoint) {
 			this.pendingResolve(this.formatGeopoint(this.bestPoint));
 		} else {
-			this.pendingReject(error);
+			// TODO: translations
+			const defaultError = new Error('No geolocation readings received within the time window.');
+			this.pendingReject(error ?? defaultError);
 		}
 
 		this.teardown();

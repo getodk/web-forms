@@ -219,11 +219,7 @@ const handleSubmit = (currentState: FormStateSuccessResult) => {
 	const { root } = currentState;
 
 	if (root.validationState.violations.length === 0) {
-		// TODO: translations
-		geolocationService.resolveNow(
-			new Error('No geolocation readings received within the time window.')
-		);
-
+		geolocationService.resolveNow();
 		floatingErrorActive.value = false;
 		// eslint-disable-next-line @typescript-eslint/no-floating-promises
 		emitSubmit(currentState);
