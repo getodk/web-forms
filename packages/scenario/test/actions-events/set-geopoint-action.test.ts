@@ -18,7 +18,7 @@ import { stringAnswer } from '../../src/answer/ExpectedStringAnswer.ts';
 import { createGeolocationProvider } from '../../src/client/createGeolocationProvider.ts';
 import { Scenario } from '../../src/jr/Scenario.ts';
 
-// Original JavaRosa Tests: https://github.com/getodk/javarosa/blob/master/src/test/java/org/javarosa/core/model/actions/SetGeopointActionTest.java
+// Original JavaRosa Tests: https://github.com/getodk/javarosa/blob/2e10861b2141f4ce40ac64d78e38e8548a01f7f1/src/test/java/org/javarosa/core/model/actions/SetGeopointActionTest.java
 describe('odk:setgeopoint action', () => {
 	it('should not set invalid point when coordinates are wrong', async () => {
 		const scenario = await Scenario.init(
