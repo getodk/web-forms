@@ -179,7 +179,7 @@ const getLocation = async (): Promise<string> => {
 		console.warn('Error occurred while retrieving background location.', error);
 		// TODO: translations
 		geolocationErrorMessage.value =
-			'Cannot access location. Grant location permission in the browser settings and make sure location is turned on.';
+			'Location unavailable. Enable GPS and browser permissions, then restart the form to try again.';
 	}
 
 	floatingErrorActive.value = !!geolocationErrorMessage.value.length;
@@ -219,7 +219,6 @@ const handleSubmit = (currentState: FormStateSuccessResult) => {
 	const { root } = currentState;
 
 	if (root.validationState.violations.length === 0) {
-		geolocationService.resolveNow();
 		floatingErrorActive.value = false;
 		// eslint-disable-next-line @typescript-eslint/no-floating-promises
 		emitSubmit(currentState);

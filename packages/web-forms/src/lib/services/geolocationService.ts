@@ -1,18 +1,9 @@
-import type { TimerID } from '@getodk/common/types/timers.ts';
-
 /**
- * Singleton for geolocation. Ensures a single active watchPosition process.
+ * Singleton for geolocation. Ensures a single active geolocation process.
  */
 class GeolocationService {
 	private static instance: GeolocationService | null = null;
-	private watcherId: number | null = null;
-	private timerId: TimerID | null = null;
 	private activePromise: Promise<string> | null = null;
-	private bestPoint: GeolocationPosition | undefined = undefined;
-	private options: PositionOptions = { enableHighAccuracy: true };
-
-	private pendingResolve: ((val: string) => void) | null = null;
-	private pendingReject: ((err: Error) => void) | null = null;
 
 	public static getInstance(): GeolocationService {
 		GeolocationService.instance ??= new GeolocationService();
@@ -20,15 +11,10 @@ class GeolocationService {
 	}
 
 	/**
-	 * Collects geolocation readings for a fixed time window and returns the most accurate
-	 * result (lowest accuracy value) in ODK geopoint format: "latitude longitude altitude accuracy".
+	 * Request the current position.
 	 *
-	 * If at least one reading is received, the best one is returned.
-	 * If no readings are received, or an error occurs before any reading, the operation fails.
-	 *
-	 * @param timeoutSeconds - Seconds to collect readings (default: 20).
+	 * @param timeoutSeconds - The maximum time allowed to obtain a location before a TIMEOUT error.
 	 * @returns A promise resolving to an ODK geopoint string.
-	 * @throws Error if geolocation is unsupported, no readings received, or a geolocation error occurs.
 	 */
 	public async getBestGeopoint(timeoutSeconds = 20): Promise<string> {
 		if (this.activePromise) {
@@ -40,53 +26,22 @@ class GeolocationService {
 			return Promise.reject(new Error('Geolocation is not supported by this browser.'));
 		}
 
-		this.bestPoint = undefined;
-
-		const promise = new Promise<string>((resolve, reject) => {
-			this.pendingResolve = resolve;
-			this.pendingReject = reject;
-
-			this.watcherId = navigator.geolocation.watchPosition(
+		this.activePromise = new Promise<string>((resolve, reject) => {
+			navigator.geolocation.getCurrentPosition(
 				(point) => {
-					// Keep the point with the lowest accuracy value (smaller is better)
-					if (!this.bestPoint || point.coords.accuracy < this.bestPoint.coords.accuracy) {
-						this.bestPoint = point;
-					}
+					resolve(this.formatGeopoint(point));
+					this.teardown();
 				},
 				(error) => {
 					// TODO: translations
-					this.resolveNow(new Error(`Geolocation error (code ${error.code})`));
+					reject(new Error(`Geolocation error (code ${error.code})`));
+					this.teardown();
 				},
-				this.options
+				{ enableHighAccuracy: true, timeout: timeoutSeconds * 1000 }
 			);
-			this.timerId = setTimeout(() => {
-				this.resolveNow();
-			}, timeoutSeconds * 1000);
 		});
 
-		this.activePromise = promise;
-		return promise;
-	}
-
-	/**
-	 * Stops the watcher immediately.
-	 * If we have a location reading, resolves the promise with it.
-	 * If we have no readings, rejects with the provided error.
-	 */
-	public resolveNow(error?: Error): void {
-		if (!this.pendingResolve || !this.pendingReject) {
-			return;
-		}
-
-		if (this.bestPoint) {
-			this.pendingResolve(this.formatGeopoint(this.bestPoint));
-		} else {
-			// TODO: translations
-			const defaultError = new Error('No geolocation readings received within the time window.');
-			this.pendingReject(error ?? defaultError);
-		}
-
-		this.teardown();
+		return this.activePromise;
 	}
 
 	private formatGeopoint(position: GeolocationPosition): string {
@@ -96,18 +51,7 @@ class GeolocationService {
 	}
 
 	public teardown(): void {
-		if (this.watcherId !== null) {
-			navigator.geolocation.clearWatch(this.watcherId);
-			this.watcherId = null;
-		}
-		if (this.timerId !== null) {
-			clearTimeout(this.timerId);
-			this.timerId = null;
-		}
 		this.activePromise = null;
-		this.bestPoint = undefined;
-		this.pendingResolve = null;
-		this.pendingReject = null;
 	}
 }
 
