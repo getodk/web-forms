@@ -166,9 +166,10 @@ watch(pasteValue, (newVal) => {
 				<!-- TODO: translations -->
 				<label>Upload a GeoJSON file</label>
 				<!-- TODO: translations -->
-				<div v-if="selectedFile" class="file-added-message">
+				<div v-if="selectedFile" class="file-added-container">
 					<IconSVG name="mdiFileOutline" />
-					<span>File added: {{ selectedFile.name }}</span>
+					<span class="file-name">selectedFile.name</span>
+					<IconSVG class="clear-file" name="mdiClose" variant="muted" size="sm" @click="reset" />
 				</div>
 				<p v-if="uploadError?.length" class="coords-error-message">
 					{{ uploadError }}
@@ -232,10 +233,21 @@ watch(pasteValue, (newVal) => {
 	margin: 0;
 }
 
-.file-added-message {
+.file-added-container {
 	display: flex;
 	align-items: center;
 	gap: 10px;
+	border: 1px solid var(--odk-border-color);
+	border-radius: var(--odk-radius);
+	padding: 10px;
+
+	.file-name {
+		flex: 1 1 100px;
+	}
+
+	.clear-file {
+		cursor: pointer;
+	}
 }
 </style>
 
