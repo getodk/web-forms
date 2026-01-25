@@ -1,4 +1,5 @@
 ---
+'@getodk/web-forms': patch
 '@getodk/xforms-engine': patch
 '@getodk/scenario': patch
 ---
