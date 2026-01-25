@@ -71,10 +71,9 @@ export class Attribute
 		definition: AttributeDefinition,
 		override readonly instanceNode: StaticAttribute
 	) {
-
 		const computeReference = () => {
 			return `${this.owner.contextReference()}/@${this.definition.qualifiedName.getPrefixedName()}`;
-		}
+		};
 
 		super(owner, instanceNode, definition, { computeReference });
 
