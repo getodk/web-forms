@@ -35,7 +35,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  ##### Question types (basic functionality)<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜ 67\%
+  ##### Question types (basic functionality)<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜ 70\%
 
   </summary>
   <br/>
@@ -54,7 +54,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | geopoint                   |    ✅    |
 | geotrace                   |    ✅    |
 | geoshape                   |    ✅    |
-| start-geopoint             |          |
+| start-geopoint             |    ✅    |
 | range                      |    ✅    |
 | image                      |    ✅    |
 | barcode                    |          |
