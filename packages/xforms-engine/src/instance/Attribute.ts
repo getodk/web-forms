@@ -49,7 +49,7 @@ export class Attribute
 {
 	override readonly [XPathNodeKindKey] = 'attribute';
 
-	readonly state: SharedNodeState<AttributeStateSpec>;
+	protected readonly state: SharedNodeState<AttributeStateSpec>;
 	protected readonly engineState: EngineState<AttributeStateSpec>;
 	readonly validationState: NullValidationState;
 
