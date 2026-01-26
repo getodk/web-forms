@@ -118,7 +118,7 @@ describe('Bind attributes', () => {
 			scenario = await Scenario.init('Bind attributes', formDefinition);
 		});
 
-		it('cuurent() resolves to the attribute', async () => {
+		it('current() resolves to the attribute', async () => {
 			scenario.answer('/root/rpt[1]/selected_thing', 'thing2');
 			scenario.next('/root/rpt');
 			scenario.createNewRepeat({
