@@ -113,11 +113,6 @@ const saveSelection = () => {
 	emitSavedFeature();
 };
 
-const saveCurrentLocation = () => {
-	mapHandler.saveCurrentLocation();
-	emitSavedFeature();
-};
-
 const discardSavedFeature = () => {
 	mapHandler.discardSavedFeature();
 	emitSavedFeature();
@@ -195,7 +190,6 @@ const saveAdvancedPanelCoords = (newCoords: Coordinate) => {
 			<MapStatusBar
 				:can-open-advanced-panel="!disabled && mapHandler.canOpenAdvacedPanel()"
 				:can-remove="!disabled && mapHandler.canRemoveCurrentLocation()"
-				:can-save="!disabled && mapHandler.canSaveCurrentLocation()"
 				:can-view-details="mapHandler.canViewProperties()"
 				:single-feature-type="singleFeatureType"
 				:is-capturing="mapHandler.currentState.value === STATES.CAPTURING"
@@ -203,7 +197,6 @@ const saveAdvancedPanelCoords = (newCoords: Coordinate) => {
 				:selected-vertex="selectedVertex"
 				class="map-status-bar-component"
 				@discard="discardSavedFeature"
-				@save="saveCurrentLocation"
 				@view-details="mapHandler.selectSavedFeature"
 				@toggle-advanced-panel="isAdvancedPanelOpen = !isAdvancedPanelOpen"
 			/>

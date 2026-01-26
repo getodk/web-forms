@@ -33,7 +33,6 @@ export interface UseMapViewControls {
 	centerFullWorldView: () => void;
 	fitToAllFeatures: (featureSource: VectorSource) => void;
 	getUserCurrentLocation: () => BrowserLocation | undefined;
-	hasCurrentLocationFeature: () => boolean;
 	stopWatchingCurrentLocation: () => void;
 	watchCurrentLocation: (onSuccess: () => void, onError: () => void) => void;
 }
@@ -268,7 +267,6 @@ export function useMapViewControls(mapInstance: Map): UseMapViewControls {
 		centerFullWorldView: () => transitionToLocation(DEFAULT_VIEW_CENTER, MIN_ZOOM),
 		fitToAllFeatures,
 		getUserCurrentLocation: () => userCurrentLocation.value,
-		hasCurrentLocationFeature: () => !!userCurrentLocationFeature.value,
 		stopWatchingCurrentLocation,
 		watchCurrentLocation,
 	};

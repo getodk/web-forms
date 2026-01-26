@@ -25,12 +25,11 @@ const props = defineProps<{
 	singleFeatureType?: SingleFeatureType;
 	isCapturing: boolean;
 	canRemove: boolean;
-	canSave: boolean;
 	canViewDetails: boolean;
 	canOpenAdvancedPanel: boolean;
 }>();
 
-const emit = defineEmits(['discard', 'toggle-advanced-panel', 'save', 'view-details']);
+const emit = defineEmits(['discard', 'toggle-advanced-panel', 'view-details']);
 
 const LINE_ICON = 'mdiVectorPolyline';
 const POLYGON_ICON = 'mdiVectorPolygon';
@@ -175,12 +174,6 @@ const savedStatus = computed<StatusDetails | null>(() => {
 				<!-- TODO: translations -->
 				<span>{{ noSavedStatus.message }}</span>
 			</div>
-			<Button v-if="canSave" @click="emit('save')">
-				<IconSVG name="mdiCheckboxMarkedCircleOutline" size="sm" variant="inverted" />
-				<!-- TODO: translations -->
-				<span class="mobile-only">Save</span>
-				<span class="desktop-only">Save point</span>
-			</Button>
 		</div>
 
 		<Button
