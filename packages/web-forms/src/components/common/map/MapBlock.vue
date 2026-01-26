@@ -52,7 +52,7 @@ const mapHandler = useMapBlock(
 );
 
 const advancedPanelCoords = computed<Coordinate | null>(() => {
-	if (!mapHandler.canOpenAdvacedPanel()) {
+	if (!mapHandler.canOpenAdvancedPanel()) {
 		return null;
 	}
 	return selectedVertex.value?.length ? toLonLat(selectedVertex.value) : null;
@@ -188,7 +188,7 @@ const saveAdvancedPanelCoords = (newCoords: Coordinate) => {
 			</div>
 
 			<MapStatusBar
-				:can-open-advanced-panel="!disabled && mapHandler.canOpenAdvacedPanel()"
+				:can-open-advanced-panel="!disabled && mapHandler.canOpenAdvancedPanel()"
 				:can-remove="!disabled && mapHandler.canRemoveCurrentLocation()"
 				:can-view-details="mapHandler.canViewProperties()"
 				:single-feature-type="singleFeatureType"
@@ -202,7 +202,7 @@ const saveAdvancedPanelCoords = (newCoords: Coordinate) => {
 			/>
 
 			<MapAdvancedPanel
-				v-if="!disabled && mapHandler.canOpenAdvacedPanel()"
+				v-if="!disabled && mapHandler.canOpenAdvancedPanel()"
 				:is-open="isAdvancedPanelOpen"
 				:coordinates="advancedPanelCoords"
 				@open-paste-dialog="isUpdateCoordsDialogOpen = true"

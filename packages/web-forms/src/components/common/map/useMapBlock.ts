@@ -305,7 +305,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 			return;
 		}
 
-		mapInteractions?.savePreviousFeatureState(feature);
+		mapInteractions?.pushUndoState(feature);
 		updateVertexCoordinate(feature, vertexIndex, newCoords);
 		updateAndSaveFeature(feature);
 		mapViewControls?.fitToAllFeatures(featuresSource);
@@ -332,6 +332,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 			return;
 		}
 
+		mapInteractions?.pushUndoState(null);
 		featuresSource.addFeature(newFeature);
 		updateAndSaveFeature(newFeature);
 	};
@@ -342,7 +343,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 			return;
 		}
 
-		mapInteractions?.savePreviousFeatureState(feature);
+		mapInteractions?.pushUndoState(feature);
 		geometry.setCoordinates(coords, COORDINATE_LAYOUT_XYZM);
 		updateAndSaveFeature(feature);
 		unselectFeature();
@@ -472,7 +473,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 		return longPress && (dragFeature || dragFeatureAndVertex);
 	};
 
-	const canOpenAdvacedPanel = () => {
+	const canOpenAdvancedPanel = () => {
 		const { singleFeatureType: type } = config;
 		if (type !== SINGLE_FEATURE_TYPES.SHAPE && type !== SINGLE_FEATURE_TYPES.TRACE) {
 			return false;
@@ -555,7 +556,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 
 		canLongPressAndDrag,
 		canViewProperties: () => currentMode.capabilities.canViewProperties,
-		canOpenAdvacedPanel,
+		canOpenAdvancedPanel,
 		shouldShowMapOverlay,
 	};
 }
