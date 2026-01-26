@@ -201,7 +201,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 			);
 		}
 
-		if (currentMode.interactions.longPress) {
+		if (currentMode.interactions.tapToAdd) {
 			mapInteractions.setupTapToAddVertex(featuresSource, (feature) =>
 				handlePointPlacement(feature)
 			);
@@ -470,9 +470,9 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 		return currentMode.capabilities.canRemoveCurrentLocation && !!mapFeatures?.getSavedFeature();
 	};
 
-	const canLongPressAndDrag = () => {
-		const { longPress, dragFeature, dragFeatureAndVertex } = currentMode.interactions;
-		return longPress && (dragFeature || dragFeatureAndVertex);
+	const canTapToAddAndDrag = () => {
+		const { tapToAdd, dragFeature, dragFeatureAndVertex } = currentMode.interactions;
+		return tapToAdd && (dragFeature || dragFeatureAndVertex);
 	};
 
 	const canOpenAdvancedPanel = () => {
@@ -556,7 +556,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 		selectSavedFeature: () => mapFeatures?.selectFeature(mapFeatures?.getSavedFeature()),
 		unselectFeature,
 
-		canLongPressAndDrag,
+		canTapToAddAndDrag,
 		canViewProperties: () => currentMode.capabilities.canViewProperties,
 		canOpenAdvancedPanel,
 		shouldShowMapOverlay,
