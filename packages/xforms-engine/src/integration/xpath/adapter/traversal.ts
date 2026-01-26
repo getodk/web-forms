@@ -4,10 +4,10 @@ import { XPathFunctionalityPendingError } from '../../../error/XPathFunctionalit
 import type { AnyNode } from '../../../instance/hierarchy.ts';
 import type { AnyStaticNode, StaticNodeParent } from '../static-dom/StaticNode.ts';
 import type {
+	EngineXPathAttribute,
 	EngineXPathDocument,
 	EngineXPathElement,
 	EngineXPathNode,
-	PrimaryInstanceXPathAttribute,
 	PrimaryInstanceXPathChildNode,
 	XFormsXPathChildNode,
 } from './kind.ts';
@@ -17,8 +17,11 @@ export const getContainingEngineXPathDocument = (node: EngineXPathNode): EngineX
 	return node.rootDocument;
 };
 
-export const getAttributes = (node: EngineXPathNode): readonly PrimaryInstanceXPathAttribute[] => {
-	if (node.nodeType !== 'static-element' && isEngineXPathElement(node)) {
+export const getAttributes = (node: EngineXPathNode): readonly EngineXPathAttribute[] => {
+	if (node.nodeType === 'static-element') {
+		return node.attributes;
+	}
+	if (isEngineXPathElement(node)) {
 		return node.getAttributes();
 	}
 	return [];
