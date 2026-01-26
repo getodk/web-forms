@@ -54,7 +54,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | geopoint                   |    ✅    |
 | geotrace                   |    ✅    |
 | geoshape                   |    ✅    |
-| start-geopoint             |          |
+| start-geopoint             |    ✅    |
 | range                      |    ✅    |
 | image                      |    ✅    |
 | barcode                    |          |
@@ -346,6 +346,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | indexed-repeat(node-set arg, node-set<br/>repeat1, number index1, [node-set<br/>repeatN, number indexN]{0,2}) |    ✅    |
 | area(node-set ns\|geoshape gs)                                                                                |    ✅    |
 | distance(node-set ns\|geoshape<br/>gs\|geotrace gt\|(geopoint\|string) arg\*)                                 |    ✅    |
+| geofence(geopoint p, geoshape gs)                                                                             |    ✅    |
 | base64-decode(base64Binary input)                                                                             |    ✅    |
 
 </details>

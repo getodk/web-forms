@@ -1,4 +1,8 @@
-import type { ModeCapabilities } from '@/components/common/map/getModeConfig.ts';
+import {
+	type ModeCapabilities,
+	SINGLE_FEATURE_TYPES,
+	type SingleFeatureType,
+} from '@/components/common/map/getModeConfig.ts';
 import { getPhantomPointStyle } from '@/components/common/map/map-styles.ts';
 import {
 	IS_SELECTED_PROPERTY,
@@ -23,17 +27,11 @@ import type { Pixel } from 'ol/pixel';
 import type VectorSource from 'ol/source/Vector';
 import { shallowRef } from 'vue';
 
-export const DRAW_FEATURE_TYPES = {
-	SHAPE: 'shape',
-	TRACE: 'trace',
-} as const;
-export type DrawFeatureType = (typeof DRAW_FEATURE_TYPES)[keyof typeof DRAW_FEATURE_TYPES];
-
 export interface UseMapInteractions {
-	hasPreviousFeatureState: () => boolean;
-	popPreviousFeatureState: () => Feature | null | undefined;
+	hasUndoHistory: () => boolean;
+	popUndoState: () => Feature | null | undefined;
 	removeMapInteractions: () => void;
-	savePreviousFeatureState: (feature: Feature | null) => void;
+	pushUndoState: (feature: Feature | null) => void;
 	setupFeatureDrag: (layer: VectorLayer, onDrag: (feature: Feature) => void) => void;
 	setupLongPressPoint: (source: VectorSource, onLongPress: (feature: Feature) => void) => void;
 	setupMapVisibilityObserver: (mapContainer: HTMLElement, onMapNotVisible: () => void) => void;
@@ -52,13 +50,13 @@ const SELECT_HIT_TOLERANCE = 15;
 export function useMapInteractions(
 	mapInstance: Map,
 	capabilities: ModeCapabilities,
-	drawFeatureType: DrawFeatureType | undefined
+	singleFeatureType: SingleFeatureType | undefined
 ): UseMapInteractions {
 	const currentLocationObserver = shallowRef<IntersectionObserver | undefined>();
 	const pointerInteraction = shallowRef<PointerInteraction | undefined>();
 	const translateInteraction = shallowRef<Translate | undefined>();
 	const modifyInteraction = shallowRef<Modify | undefined>();
-	const previousFeatureState = shallowRef<Feature | null | undefined>();
+	const undoStack = shallowRef<Array<Feature | null>>([]);
 
 	const setupMapVisibilityObserver = (mapContainer: HTMLElement, onMapNotVisible: () => void) => {
 		if ('IntersectionObserver' in window) {
@@ -170,11 +168,11 @@ export function useMapInteractions(
 		resolution: number,
 		feature: Feature | undefined
 	) => {
-		if (drawFeatureType === DRAW_FEATURE_TYPES.SHAPE) {
+		if (singleFeatureType === SINGLE_FEATURE_TYPES.SHAPE) {
 			return addShapeVertex(resolution, coordinate, feature, LONG_PRESS_HIT_TOLERANCE);
 		}
 
-		if (drawFeatureType === DRAW_FEATURE_TYPES.TRACE) {
+		if (singleFeatureType === SINGLE_FEATURE_TYPES.TRACE) {
 			return addTraceVertex(resolution, coordinate, feature, LONG_PRESS_HIT_TOLERANCE);
 		}
 
@@ -188,10 +186,10 @@ export function useMapInteractions(
 	) => {
 		const resolution = mapInstance.getView().getResolution() ?? 1;
 		const feature = source.getFeatures()?.[0];
-		savePreviousFeatureState(feature ?? null);
+		pushUndoState(feature ?? null);
 		const updatedFeature = resolveFeatureForLongPress(coordinate, resolution, feature)!;
 
-		if (!drawFeatureType && !source.isEmpty()) {
+		if (singleFeatureType === SINGLE_FEATURE_TYPES.POINT && !source.isEmpty()) {
 			source.clear(true);
 		}
 
@@ -303,7 +301,7 @@ export function useMapInteractions(
 
 		modifyInteraction.value.on('modifystart', () => {
 			setCursor('grab');
-			savePreviousFeatureState(source.getFeatures()?.[0] ?? null);
+			pushUndoState(source.getFeatures()?.[0] ?? null);
 		});
 		modifyInteraction.value.on('modifyend', (event) => onDragFeature(event.features, onDrag));
 		mapInstance.addInteraction(modifyInteraction.value);
@@ -323,41 +321,48 @@ export function useMapInteractions(
 		}
 	};
 
-	const savePreviousFeatureState = (feature: Feature | null) => {
+	const pushUndoState = (feature: Feature | null) => {
 		if (!capabilities.canUndoLastChange) {
 			return;
 		}
 
-		if (!feature) {
-			previousFeatureState.value = null;
+		// Here null is a valid state representing clearing the map
+		const snapshot: Feature | null = feature?.clone() ?? null;
+		if (snapshot) {
+			snapshot.unset(SELECTED_VERTEX_INDEX_PROPERTY);
+			snapshot.unset(IS_SELECTED_PROPERTY);
+		}
+
+		undoStack.value = [...undoStack.value, snapshot];
+	};
+
+	const popUndoState = () => {
+		if (!undoStack.value.length) {
 			return;
 		}
 
-		previousFeatureState.value = feature.clone();
-		previousFeatureState.value.unset(SELECTED_VERTEX_INDEX_PROPERTY);
-		previousFeatureState.value.unset(IS_SELECTED_PROPERTY);
-	};
+		const newStack = [...undoStack.value];
+		const feature = newStack.pop();
+		undoStack.value = newStack;
 
-	const popPreviousFeatureState = () => {
-		const feature = previousFeatureState.value;
-		previousFeatureState.value = undefined; // Undefined means no state to restore.
 		return feature;
 	};
 
-	const hasPreviousFeatureState = () => previousFeatureState.value !== undefined;
+	const hasUndoHistory = () => undoStack.value.length > 0;
 
 	const teardownMap = () => {
 		currentLocationObserver.value?.disconnect();
 		currentLocationObserver.value = undefined;
+		undoStack.value = [];
 		removeMapInteractions();
 		mapInstance.getViewport().removeEventListener('contextmenu', preventContextMenu);
 	};
 
 	return {
-		hasPreviousFeatureState,
-		popPreviousFeatureState,
+		hasUndoHistory,
+		popUndoState,
 		removeMapInteractions,
-		savePreviousFeatureState,
+		pushUndoState,
 		setupFeatureDrag,
 		setupLongPressPoint,
 		setupMapVisibilityObserver,

@@ -1,4 +1,11 @@
-import { getModeConfig, type Mode, MODES } from '@/components/common/map/getModeConfig.ts';
+import { toGeoJsonCoordinateArray } from '@/components/common/map/geojson-parsers.ts';
+import {
+	getModeConfig,
+	type Mode,
+	MODES,
+	SINGLE_FEATURE_TYPES,
+	type SingleFeatureType,
+} from '@/components/common/map/getModeConfig.ts';
 import { formatODKValue, isWebGLAvailable } from '@/components/common/map/map-helpers.ts';
 import {
 	getDrawStyles,
@@ -16,7 +23,6 @@ import {
 	type UseMapFeatures,
 } from '@/components/common/map/useMapFeatures.ts';
 import {
-	type DrawFeatureType,
 	useMapInteractions,
 	type UseMapInteractions,
 } from '@/components/common/map/useMapInteractions.ts';
@@ -30,13 +36,14 @@ import {
 import {
 	deleteVertexFromFeature,
 	getVertexByIndex,
+	updateVertexCoordinate,
 } from '@/components/common/map/vertex-geometry.ts';
 import type { FeatureCollection, Feature as GeoJsonFeature } from 'geojson';
 import { Map, View } from 'ol';
 import { Attribution, Zoom } from 'ol/control';
 import type { Coordinate } from 'ol/coordinate';
 import Feature from 'ol/Feature';
-import { LineString, Point, Polygon } from 'ol/geom';
+import { LineString, Polygon, SimpleGeometry } from 'ol/geom';
 import TileLayer from 'ol/layer/Tile';
 import VectorLayer from 'ol/layer/Vector';
 import WebGLVectorLayer from 'ol/layer/WebGLVector';
@@ -59,12 +66,12 @@ export const ODK_VALUE_PROPERTY = 'odk_value';
 
 interface MapBlockConfig {
 	mode: Mode;
-	drawFeatureType?: DrawFeatureType;
+	singleFeatureType?: SingleFeatureType;
 }
 
 interface MapBlockEvents {
 	onFeaturePlacement: () => void;
-	onVertexSelect: (vertex: Coordinate) => void;
+	onVertexSelect: (vertex: Coordinate | undefined) => void;
 }
 
 export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
@@ -132,7 +139,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 		mapInteractions = useMapInteractions(
 			mapInstance,
 			currentMode.capabilities,
-			config.drawFeatureType
+			config.singleFeatureType
 		);
 		mapFeatures = useMapFeatures(
 			mapInstance,
@@ -164,7 +171,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 			return;
 		}
 
-		const feature = mapFeatures?.createFeature(savedFeatureValue);
+		const feature = mapFeatures?.createFeatureFromGeoJSON(savedFeatureValue);
 		loadAndSaveSingleFeature(feature);
 	};
 
@@ -206,6 +213,9 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 	const updateAndSaveFeature = (feature: Feature) => {
 		feature.set(ODK_VALUE_PROPERTY, formatODKValue(feature));
 		mapFeatures?.saveFeature(feature);
+		// Refresh selected vertex.
+		const vertexIndex = feature.get(SELECTED_VERTEX_INDEX_PROPERTY) as number | undefined;
+		events.onVertexSelect(getVertexByIndex(feature, vertexIndex));
 	};
 
 	const handlePointPlacement = (feature: Feature) => {
@@ -226,10 +236,11 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 			return;
 		}
 
-		mapInteractions?.savePreviousFeatureState(feature);
+		mapInteractions?.pushUndoState(feature);
 		const coordsLeft = deleteVertexFromFeature(feature, vertexIndex);
 		if (coordsLeft > 0) {
 			updateAndSaveFeature(feature);
+			unselectFeature();
 			return;
 		}
 
@@ -239,7 +250,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 	const deleteFeature = () => {
 		const feature = mapFeatures?.getSelectedFeature();
 		if (canDeleteFeatureOrVertex() && feature) {
-			mapInteractions?.savePreviousFeatureState(feature);
+			mapInteractions?.pushUndoState(feature);
 			clearMap();
 		}
 	};
@@ -256,17 +267,18 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 
 	const canUndoChange = () => {
 		const { canUndoLastChange, canLoadMultiFeatures } = currentMode.capabilities;
-		const hasState = !!mapInteractions?.hasPreviousFeatureState();
+		const hasState = !!mapInteractions?.hasUndoHistory();
 		return hasState && canUndoLastChange && !canLoadMultiFeatures;
 	};
 
 	const undoLastChange = () => {
 		if (canUndoChange()) {
 			clearMap();
-			const previousFeatureState = mapInteractions?.popPreviousFeatureState();
+			const previousFeatureState = mapInteractions?.popUndoState();
 			if (previousFeatureState) {
 				featuresSource.addFeature(previousFeatureState);
 				updateAndSaveFeature(previousFeatureState);
+				unselectFeature();
 			}
 		}
 	};
@@ -282,6 +294,61 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 		mapFeatures?.findAndSaveFeature(featuresSource, savedFeature, true);
 	};
 
+	const updateVertexCoords = (newCoords: Coordinate) => {
+		if (!newCoords.length || !currentMode.capabilities.canUpdateVertexCoordinates) {
+			return;
+		}
+
+		const feature = mapFeatures?.getSavedFeature() as Feature<LineString | Polygon>;
+		const vertexIndex = feature?.get(SELECTED_VERTEX_INDEX_PROPERTY) as number;
+		if (vertexIndex === undefined) {
+			return;
+		}
+
+		mapInteractions?.pushUndoState(feature);
+		updateVertexCoordinate(feature, vertexIndex, newCoords);
+		updateAndSaveFeature(feature);
+		mapViewControls?.fitToAllFeatures(featuresSource);
+	};
+
+	const updateFeatureCoordinates = (newCoords: Coordinate[] | Coordinate[][]) => {
+		if (!newCoords.length || !currentMode.capabilities.canUpdateFeatureCoordinates) {
+			return;
+		}
+
+		const existingFeature = featuresSource.getFeatures()?.[0];
+		if (existingFeature) {
+			modifyExistingFeature(existingFeature, newCoords);
+		} else {
+			createNewFeature(newCoords);
+		}
+
+		mapViewControls?.fitToAllFeatures(featuresSource);
+	};
+
+	const createNewFeature = (coords: Coordinate[] | Coordinate[][]) => {
+		const newFeature = mapFeatures?.createFeatureFromType(config.singleFeatureType, coords);
+		if (!newFeature) {
+			return;
+		}
+
+		mapInteractions?.pushUndoState(null);
+		featuresSource.addFeature(newFeature);
+		updateAndSaveFeature(newFeature);
+	};
+
+	const modifyExistingFeature = (feature: Feature, coords: Coordinate[] | Coordinate[][]) => {
+		const geometry = feature.getGeometry() as SimpleGeometry | undefined;
+		if (!geometry) {
+			return;
+		}
+
+		mapInteractions?.pushUndoState(feature);
+		geometry.setCoordinates(coords, COORDINATE_LAYOUT_XYZM);
+		updateAndSaveFeature(feature);
+		unselectFeature();
+	};
+
 	const loadAndSaveSingleFeature = (feature: Feature | undefined) => {
 		if (!mapInstance || currentMode.capabilities.canLoadMultiFeatures || !feature) {
 			return;
@@ -289,6 +356,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 
 		currentState.value = STATES.LOADING;
 		mapFeatures?.loadAndSaveSingleFeature(featuresSource, feature);
+		events.onFeaturePlacement?.();
 		currentState.value = STATES.READY;
 	};
 
@@ -311,24 +379,26 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 
 	const saveCurrentLocation = () => {
 		const location = mapViewControls?.getUserCurrentLocation();
-		if (!currentMode.capabilities.canSaveCurrentLocation || !location) {
+		const { canSaveCurrentLocation } = currentMode.capabilities;
+		if (!canSaveCurrentLocation || mapFeatures?.getSavedFeature() || !location) {
 			return;
 		}
 
-		const coords = [location.longitude, location.latitude];
-		if (location.altitude != null) {
-			coords.push(location.altitude);
-		}
+		const coords = toGeoJsonCoordinateArray(
+			location.longitude,
+			location.latitude,
+			location.altitude,
+			location.accuracy
+		);
+		const feature = mapFeatures?.createFeatureFromType(
+			SINGLE_FEATURE_TYPES.POINT,
+			fromLonLat(coords)
+		);
 
-		if (location.accuracy != null) {
-			coords.push(location.accuracy);
+		if (feature) {
+			feature.set(ODK_VALUE_PROPERTY, formatODKValue(feature));
+			loadAndSaveSingleFeature(feature);
 		}
-
-		const feature = new Feature({
-			geometry: new Point(fromLonLat(coords), COORDINATE_LAYOUT_XYZM),
-		});
-		feature.set(ODK_VALUE_PROPERTY, formatODKValue(feature));
-		loadAndSaveSingleFeature(feature);
 	};
 
 	const discardSavedFeature = () => {
@@ -336,10 +406,17 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 			clearSavedFeature();
 			return;
 		}
+
 		clearMap();
+		if (currentMode.capabilities.canSaveCurrentLocation) {
+			mapViewControls?.stopWatchingCurrentLocation();
+		}
 	};
 
-	const unselectFeature = () => mapFeatures?.selectFeature(undefined);
+	const unselectFeature = () => {
+		mapFeatures?.selectFeature(undefined);
+		events.onVertexSelect(undefined);
+	};
 
 	const clearSavedFeature = () => mapFeatures?.saveFeature(undefined);
 
@@ -377,7 +454,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 
 	const shouldShowMapOverlay = () => {
 		const { canShowMapOverlayOnError, canShowMapOverlay } = currentMode.capabilities;
-		const hasLocationFeature = mapViewControls?.hasCurrentLocationFeature();
+		const hasLocationFeature = !!mapViewControls?.getUserCurrentLocation();
 		const hasNoRelevantFeature = !hasLocationFeature && !mapFeatures?.getSavedFeature();
 
 		if (currentState.value === STATES.ERROR) {
@@ -385,11 +462,6 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 		}
 
 		return currentState.value === STATES.READY && canShowMapOverlay && hasNoRelevantFeature;
-	};
-
-	const canSaveCurrentLocation = () => {
-		const hasLocationFeature = !!mapViewControls?.hasCurrentLocationFeature();
-		return currentMode.capabilities.canSaveCurrentLocation && hasLocationFeature;
 	};
 
 	const canRemoveCurrentLocation = () => {
@@ -401,11 +473,24 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 		return longPress && (dragFeature || dragFeatureAndVertex);
 	};
 
+	const canOpenAdvancedPanel = () => {
+		const { singleFeatureType: type } = config;
+		if (type !== SINGLE_FEATURE_TYPES.SHAPE && type !== SINGLE_FEATURE_TYPES.TRACE) {
+			return false;
+		}
+
+		const { canUpdateFeatureCoordinates, canUpdateVertexCoordinates } = currentMode.capabilities;
+		return canUpdateFeatureCoordinates || canUpdateVertexCoordinates;
+	};
+
 	const watchCurrentLocation = () => {
 		currentState.value = STATES.CAPTURING;
 
 		mapViewControls?.watchCurrentLocation(
-			() => (currentState.value = STATES.READY),
+			() => {
+				currentState.value = STATES.READY;
+				saveCurrentLocation();
+			},
 			() => {
 				currentState.value = STATES.ERROR;
 				// TODO: translations
@@ -441,17 +526,17 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 		initMap,
 		teardownMap,
 		updateFeatureCollection,
+		updateVertexCoords,
+		updateFeatureCoordinates,
 		setupMapInteractions,
 
 		isMapEmpty: () => featuresSource.isEmpty(),
 		fitToAllFeatures: () => mapViewControls?.fitToAllFeatures(featuresSource),
 		watchCurrentLocation,
-		canSaveCurrentLocation,
 		canRemoveCurrentLocation,
 
 		discardSavedFeature,
 		saveSelectedFeature: () => mapFeatures?.saveSelectedFeature(),
-		saveCurrentLocation,
 		findAndSaveFeature,
 		getSavedFeature: () => mapFeatures?.getSavedFeature()?.clone(),
 		getSavedFeatureValue: () => mapFeatures?.getSavedFeatureValue(),
@@ -471,6 +556,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 
 		canLongPressAndDrag,
 		canViewProperties: () => currentMode.capabilities.canViewProperties,
+		canOpenAdvancedPanel,
 		shouldShowMapOverlay,
 	};
 }
