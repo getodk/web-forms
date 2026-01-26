@@ -173,7 +173,7 @@ const getLocation = async (): Promise<string> => {
 	let point = '';
 	try {
 		geolocationErrorMessage.value = '';
-		point = await geolocationService.getBestGeopoint();
+		point = await geolocationService.getCurrentPosition();
 	} catch (error) {
 		// eslint-disable-next-line no-console -- Skip silently to match Collect behaviour.
 		console.warn('Error occurred while retrieving background location.', error);

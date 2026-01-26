@@ -16,7 +16,7 @@ class GeolocationService {
 	 * @param timeoutSeconds - The maximum time allowed to obtain a location before a TIMEOUT error.
 	 * @returns A promise resolving to an ODK geopoint string.
 	 */
-	public async getBestGeopoint(timeoutSeconds = 20): Promise<string> {
+	public getCurrentPosition(timeoutSeconds = 20): Promise<string> {
 		if (this.activePromise) {
 			return this.activePromise;
 		}
