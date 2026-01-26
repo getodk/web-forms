@@ -133,6 +133,19 @@ const savedStatus = computed<StatusDetails | null>(() => {
 
 	return { message: 'Point saved', icon: 'mdiCheckCircle', highlight: true };
 });
+
+const displayState = computed(() => {
+	const baseState = savedStatus.value ?? noSavedStatus.value;
+	const displayText = selectedVertexInfo.value.length
+		? selectedVertexInfo.value
+		: baseState.message;
+
+	return {
+		icon: baseState.icon,
+		highlight: !!baseState.highlight,
+		text: displayText,
+	};
+});
 </script>
 
 <template>
@@ -145,16 +158,16 @@ const savedStatus = computed<StatusDetails | null>(() => {
 			</div>
 		</div>
 
-		<div v-else-if="savedStatus" class="map-status-container">
-			<div v-if="selectedVertexInfo.length" class="map-status">
-				<IconSVG :name="savedStatus.icon" :variant="savedStatus.highlight ? 'success' : 'base'" />
-				<span>{{ selectedVertexInfo }}</span>
+		<div class="map-status-container">
+			<div class="map-status">
+				<IconSVG
+					:name="displayState.icon"
+					:variant="displayState.highlight ? 'success' : 'base'"
+				/>
+				<span>{{ displayState.text }}</span>
 			</div>
-			<div v-else class="map-status">
-				<IconSVG :name="savedStatus.icon" :variant="savedStatus.highlight ? 'success' : 'base'" />
-				<span>{{ savedStatus.message }}</span>
-			</div>
-			<div class="map-status-buttons">
+
+			<div v-if="savedStatus" class="map-status-buttons">
 				<Button v-if="canRemove" outlined severity="contrast" @click="emit('discard')">
 					<span>–</span>
 					<!-- TODO: translations -->
@@ -165,14 +178,6 @@ const savedStatus = computed<StatusDetails | null>(() => {
 					<!-- TODO: translations -->
 					<span>View details</span>
 				</Button>
-			</div>
-		</div>
-
-		<div v-else class="map-status-container">
-			<div class="map-status">
-				<IconSVG :name="noSavedStatus.icon" />
-				<!-- TODO: translations -->
-				<span>{{ noSavedStatus.message }}</span>
 			</div>
 		</div>
 
