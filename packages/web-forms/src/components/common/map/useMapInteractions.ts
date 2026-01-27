@@ -117,7 +117,6 @@ export function useMapInteractions(
 		onSelect: (feature: Feature | undefined, selectedVertexIndex: number | undefined) => void
 	): void => {
 		const hitFeatures = getVectorFeaturesAtPixel(event.pixel);
-
 		const targetFeature = hitFeatures?.find((item) => {
 			const geometry = item.getGeometry();
 			return geometry instanceof Polygon || geometry instanceof LineString;
@@ -128,23 +127,22 @@ export function useMapInteractions(
 			return;
 		}
 
-		const isSinglePoint = getFlatCoordinates(targetFeature.getGeometry()).length === 1;
-		const hitVertexFeature = hitFeatures.find((item) => {
-			return item.getGeometry() instanceof Point;
+		const hitVertexGeometry = hitFeatures.find((item) => {
+			return item.getGeometry() instanceof Point; // Vertex geometry is always a Point
 		}) as Feature<Point> | undefined;
+		const hasOneVertex = getFlatCoordinates(targetFeature.getGeometry()).length === 1;
+		const hitVertexIndex = hasOneVertex ? 0 : getVertexIndex(targetFeature, hitVertexGeometry);
 
-		const targetVertexIndex = isSinglePoint ? 0 : getVertexIndex(targetFeature, hitVertexFeature);
-		const isTapOnVertex = targetVertexIndex != null;
-		const currentVertexIndex = targetFeature.get(SELECTED_VERTEX_INDEX_PROPERTY) as number;
-		const isSameVertex = isTapOnVertex && currentVertexIndex === targetVertexIndex;
+		const currentSelectedVertex = targetFeature.get(SELECTED_VERTEX_INDEX_PROPERTY) as number;
+		const isSameSelectedVertex = hitVertexIndex != null && currentSelectedVertex === hitVertexIndex;
 
-		const isCurrentFeatureSelected = !!targetFeature.get(IS_SELECTED_PROPERTY);
-		const isSameBody = !isTapOnVertex && isCurrentFeatureSelected;
+		const isFeatureSelected = !!targetFeature.get(IS_SELECTED_PROPERTY);
+		const isInsideFeature = hitVertexIndex == null && isFeatureSelected;
 
-		if (isSameVertex || isSameBody) {
+		if (isSameSelectedVertex || isInsideFeature) {
 			onSelect?.(undefined, undefined);
 		} else {
-			onSelect?.(targetFeature, targetVertexIndex);
+			onSelect?.(targetFeature, hitVertexIndex);
 		}
 	};
 

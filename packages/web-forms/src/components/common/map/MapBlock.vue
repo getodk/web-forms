@@ -47,7 +47,7 @@ const showErrorStyle = inject<ComputedRef<boolean>>(
 const mapHandler = useMapBlock(
 	{ mode: props.mode, singleFeatureType: props.singleFeatureType },
 	{
-		onFeaturePlacement: () => emitSavedFeature(),
+		onFeaturePlacement: () => onFeaturePlacement(),
 		onVertexSelect: (vertex) => (selectedVertex.value = vertex),
 	}
 );
@@ -99,6 +99,11 @@ watch(
 	(newValue) => mapHandler.setupMapInteractions(newValue)
 );
 
+const onFeaturePlacement = () => {
+	pointPlaced.value = true;
+	emitSavedFeature();
+};
+
 const handleEscapeKey = (event: KeyboardEvent) => {
 	if (event.key === 'Escape' && isFullScreen.value) {
 		isFullScreen.value = false;
@@ -106,7 +111,6 @@ const handleEscapeKey = (event: KeyboardEvent) => {
 };
 
 const emitSavedFeature = () => {
-	pointPlaced.value = true;
 	emit('save', mapHandler.getSavedFeatureValue() ?? '');
 };
 

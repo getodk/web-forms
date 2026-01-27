@@ -136,15 +136,10 @@ const savedStatus = computed<StatusDetails | null>(() => {
 
 const displayState = computed(() => {
 	const baseState = savedStatus.value ?? noSavedStatus.value;
-	const displayText = selectedVertexInfo.value.length
-		? selectedVertexInfo.value
-		: baseState.message;
-
-	return {
-		icon: baseState.icon,
-		highlight: !!baseState.highlight,
-		text: displayText,
-	};
+	if (selectedVertexInfo.value.length) {
+		return { ...baseState, message: selectedVertexInfo.value };
+	}
+	return { ...baseState };
 });
 </script>
 
@@ -164,7 +159,7 @@ const displayState = computed(() => {
 					:name="displayState.icon"
 					:variant="displayState.highlight ? 'success' : 'base'"
 				/>
-				<span>{{ displayState.text }}</span>
+				<span>{{ displayState.message }}</span>
 			</div>
 
 			<div v-if="savedStatus" class="map-status-buttons">
