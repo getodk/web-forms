@@ -189,6 +189,26 @@ const createCalculation = (
 	setRelevantValue: SimpleAtomicStateSetter<string>,
 	computation: ActionComputationExpression<'string'> | BindComputationExpression<'calculate'>
 ): void => {
+	const calculate = createComputedExpression(context, computation);
+	createComputed(() => {
+		if (context.isAttached() && context.isRelevant()) {
+			const calculated = calculate();
+			const value = context.decodeInstanceValue(calculated);
+			setRelevantValue(value);
+		}
+	});
+};
+
+/**
+ * Runs the computation without maintaining a reactive listener, so
+ * actions that should run only at a specific time are not triggered
+ * when referenced elements are updated.
+ */
+const createActionCalculation = (
+	context: ValueContext,
+	setRelevantValue: SimpleAtomicStateSetter<string>,
+	computation: ActionComputationExpression<'string'>
+): void => {
 	createComputed(() => {
 		if (context.isAttached()) {
 			// use untrack so the expression evaluation isn't reactive
@@ -241,17 +261,17 @@ const registerAction = (
 ) => {
 	if (action.events.includes(XFORM_EVENT.odkInstanceFirstLoad)) {
 		if (isInstanceFirstLoad(context)) {
-			createCalculation(context, setValue, action.computation);
+			createActionCalculation(context, setValue, action.computation);
 		}
 	}
 	if (action.events.includes(XFORM_EVENT.odkInstanceLoad)) {
 		if (!isAddingRepeatChild(context)) {
-			createCalculation(context, setValue, action.computation);
+			createActionCalculation(context, setValue, action.computation);
 		}
 	}
 	if (action.events.includes(XFORM_EVENT.odkNewRepeat)) {
 		if (isAddingRepeatChild(context)) {
-			createCalculation(context, setValue, action.computation);
+			createActionCalculation(context, setValue, action.computation);
 		}
 	}
 	if (action.events.includes(XFORM_EVENT.xformsValueChanged)) {
