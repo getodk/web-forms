@@ -212,8 +212,12 @@ const createActionCalculation = (
 	computation: ActionComputationExpression<'string'>
 ): void => {
 	createComputed(() => {
-		if (context.isAttached() && context.isRelevant()) {
+		if (context.isAttached()) {
 			// use untrack so the expression evaluation isn't reactive
+			const relevant = untrack(() => context.isRelevant());
+			if (!relevant) {
+				return;
+			}
 			const calculated = untrack(() => {
 				return context.evaluator.evaluateString(computation.expression, context);
 			});
