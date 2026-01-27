@@ -534,4 +534,3 @@ Use this process to release critical bug fixes from a dedicated release branch w
    5. Commit these changes (e.g., `chore: sync patch-release-0.18.2`)
 
 > **WARNING:** If `package.json` on `main` has diverged significantly (e.g., new dependencies added that aren't in the patch), manually update the version numbers in `package.json` instead of using the `git checkout` command to avoid overwriting new changes.
-
