@@ -13,7 +13,10 @@ import type { XFormsXPathElement } from '../integration/xpath/adapter/XFormsXPat
 import type { StaticLeafElement } from '../integration/xpath/static-dom/StaticElement.ts';
 import type { RuntimeInputValue, RuntimeValue } from '../lib/codecs/getSharedValueCodec.ts';
 import { getSharedValueCodec } from '../lib/codecs/getSharedValueCodec.ts';
-import { createAttributeState } from '../lib/reactivity/createAttributeState.ts';
+import {
+	createAttributeState,
+	type AttributeState,
+} from '../lib/reactivity/createAttributeState.ts';
 import type { CurrentState } from '../lib/reactivity/node-state/createCurrentState.ts';
 import type { EngineState } from '../lib/reactivity/node-state/createEngineState.ts';
 import type { SharedNodeState } from '../lib/reactivity/node-state/createSharedNodeState.ts';
@@ -104,6 +107,7 @@ export class InputControl<V extends ValueType = ValueType>
 	// InstanceNode
 	protected readonly state: SharedNodeState<InputControlStateSpec<V>>;
 	protected readonly engineState: EngineState<InputControlStateSpec<V>>;
+	readonly attributeState: AttributeState;
 
 	// InputNode
 	readonly nodeType = 'input';
@@ -122,7 +126,7 @@ export class InputControl<V extends ValueType = ValueType>
 
 		this.appearances = definition.bodyElement.appearances;
 		this.nodeOptions = nodeOptionsFactoryByType[definition.valueType](definition.bodyElement);
-		const attributeState = createAttributeState(this.scope);
+		this.attributeState = createAttributeState(this.scope);
 
 		const state = createSharedNodeState(
 			this.scope,
@@ -135,7 +139,7 @@ export class InputControl<V extends ValueType = ValueType>
 				label: createNodeLabel(this, definition),
 				hint: createFieldHint(this, definition),
 				children: null,
-				attributes: attributeState.getAttributes,
+				attributes: this.attributeState.getAttributes,
 				valueOptions: null,
 				value: this.valueState,
 				instanceValue: this.getInstanceValue,
@@ -143,7 +147,7 @@ export class InputControl<V extends ValueType = ValueType>
 			this.instanceConfig
 		);
 
-		attributeState.setAttributes(buildAttributes(this));
+		this.attributeState.setAttributes(buildAttributes(this));
 
 		this.state = state;
 		this.engineState = state.engineState;
@@ -154,6 +158,10 @@ export class InputControl<V extends ValueType = ValueType>
 		this.setValueState(value);
 
 		return this.root;
+	}
+
+	override getAttributes(): readonly Attribute[] {
+		return this.attributeState.getAttributes();
 	}
 }
 
