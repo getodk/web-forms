@@ -189,10 +189,16 @@ const createCalculation = (
 	setRelevantValue: SimpleAtomicStateSetter<string>,
 	computation: ActionComputationExpression<'string'> | BindComputationExpression<'calculate'>
 ): void => {
-	const calculate = createComputedExpression(context, computation);
 	createComputed(() => {
-		if (context.isAttached() && context.isRelevant()) {
-			const calculated = calculate();
+		if (context.isAttached()) {
+			// use untrack so the expression evaluation isn't reactive
+			const relevant = untrack(() => context.isRelevant());
+			if (!relevant) {
+				return;
+			}
+			const calculated = untrack(() => {
+				return context.evaluator.evaluateString(computation.expression, context);
+			});
 			const value = context.decodeInstanceValue(calculated);
 			setRelevantValue(value);
 		}
