@@ -213,7 +213,10 @@ const createActionCalculation = (
 ): void => {
 	createComputed(() => {
 		if (context.isAttached() && context.isRelevant()) {
-			const calculated = untrack(() => context.evaluator.evaluateString(computation.expression));
+			// use untrack so the expression evaluation isn't reactive
+			const calculated = untrack(() => {
+				return context.evaluator.evaluateString(computation.expression, context);
+			});
 			const value = context.decodeInstanceValue(calculated);
 			setRelevantValue(value);
 		}
