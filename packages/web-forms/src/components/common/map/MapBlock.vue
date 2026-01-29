@@ -262,10 +262,6 @@ const saveAdvancedPanelCoords = (newCoords: Coordinate) => {
 	border: 1px solid var(--odk-border-color);
 	border-radius: var(--odk-radius);
 	overflow: hidden;
-	// Prevent background scroll-chaining in mobile
-	overscroll-behavior: none;
-	// Hand touch gestures (zoom/pan) exclusively to the map engine when in mobile
-	touch-action: none;
 	// iPhone - fixes select issues on map
 	-webkit-user-select: none;
 	user-select: none;
@@ -307,6 +303,11 @@ const saveAdvancedPanelCoords = (newCoords: Coordinate) => {
 	height: 100dvh;
 	z-index: var(--odk-z-index-topmost);
 	background: var(--odk-base-background-color);
+
+	// Prevent background scroll-chaining
+	overscroll-behavior: none;
+	// Hand touch gestures (zoom/pan) exclusively to the map engine
+	touch-action: none;
 
 	// iPhone safe area
 	padding-bottom: env(safe-area-inset-bottom);
