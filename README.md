@@ -502,12 +502,35 @@ Contact maintainers with questions. Happy contributing!
 
 ## Releases
 
-If you'd like to try the functionality available on `main`, see the preview [on the ODK website](https://getodk.org/web-forms-preview/) which is updated daily. We try to release frequently and if there's functionality on `main` that you need but isn't released yet, please file an issue to request a release!
+If you'd like to try the functionality available on `main`, see the preview [on the ODK website](https://getodk.org/web-forms-preview/), which is updated daily. We try to release frequently; if there's functionality on `main` that you need but isn't released yet, please file an issue to request a release!
 
-### Release process
+### Standard release process
 
-1. Run `yarn changeset version` to generate changelog files and version bumps from the changeset files
-1. Run `yarn install` to update yarn.lock with the new versions
-1. Verify that the changelogs look good, commit changes, open a PR, merge the PR
-1. Push tags for each package in the format `@getodk/<package>@x.x.x`. A Github action will publish the packages on NPM
-1. Update dependencies to kick off the new release cycle. We do this so that dependency updates get verified implicitly during development.
+1. Run `yarn changeset version` to generate changelog files and version bumps from the changeset files.
+2. Run `yarn install` to update `yarn.lock` with the new versions.
+3. Verify that the changelogs look good, commit changes, open a PR, and merge the PR.
+4. Push tags for each package in the format `@getodk/<package>@x.x.x`. A GitHub action will publish the packages on NPM.
+5. Update dependencies to kick off the new release cycle.
+
+### Patch release process
+
+Use this process to release critical bug fixes from a dedicated release branch when the `main` branch contains unreleased features (or regressions) that should not be published yet.
+
+1. Create a branch from the latest production tag or checkout the existing version branch (e.g., `git checkout 0.18.x`)
+2. Create a patch branch from the branch created in step 1 (e.g., `git checkout -b patch-release-0.18.2`)
+3. Cherry-pick the specific bug-fix commits from `main` into your patch branch (`patch-release-0.18.2`), for example: `git cherry-pick <hash1> <hash2> ... <hash6>`
+   1. Resolve any conflicts caused by diverging codebases
+4. Generate the version bump and commit the changes
+   1. Run `yarn changeset version` to generate changelogs and version bump in the packages. If the cherry-picked commits don't have the necessary patch changesets, create one now by running `yarn changeset` and selecting `patch`.
+   2. Run `yarn install` to refresh `yarn.lock`
+   3. Commit these changes (e.g., `chore: release v0.18.2`)
+5. Open a PR that targets the release branch (e.g., `0.18.x`) and merge it after approval
+6. Push tags for each package in the format `@getodk/<package>@x.x.x`. A GitHub action will publish the packages on NPM
+7. Sync changelog and package versions back to `main`. To avoid regressions, do **not** merge the patch branch back to `main`. Instead, do this:
+   1. Switch to `main` branch
+   2. Pull package.json and CHANGELOG.md files from the patch branch: `git checkout patch-release-0.18.2 -- 'packages/*/package.json' 'packages/*/CHANGELOG.md'`
+   3. Delete the **specific** `.md` files in the `.changeset/` folder that were just released to prevent "double-bumping" in the next standard release.
+   4. Run `yarn install` to refresh `yarn.lock`
+   5. Commit these changes (e.g., `chore: sync patch-release-0.18.2`)
+
+> **WARNING:** If `package.json` on `main` has diverged significantly (e.g., new dependencies added that aren't in the patch), manually update the version numbers in `package.json` instead of using the `git checkout` command to avoid overwriting new changes.
