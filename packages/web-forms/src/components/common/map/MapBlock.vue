@@ -153,7 +153,20 @@ const saveAdvancedPanelCoords = (newCoords: Coordinate) => {
 	<div class="map-block-component">
 		<div :class="{ 'map-container': true, 'map-full-screen': isFullScreen }">
 			<div ref="mapElement" class="map-block">
-				<div v-if="mapHandler.shouldShowMapOverlay()" class="map-overlay">
+				<div
+					v-if="!isFullScreen"
+					class="map-overlay full-screen-overlay"
+					@click="isFullScreen = true"
+				/>
+				<div v-if="mapHandler.shouldShowMapOverlay()" class="map-overlay get-location-overlay">
+					<Button
+						severity="secondary"
+						outlined
+						class="close-full-screen"
+						@click="isFullScreen = false"
+					>
+						<IconSVG name="mdiClose" size="sm" />
+					</Button>
 					<Button outlined severity="contrast" @click="mapHandler.watchCurrentLocation">
 						<IconSVG name="mdiCrosshairsGps" />
 						<!-- TODO: translations -->
@@ -281,8 +294,22 @@ const saveAdvancedPanelCoords = (newCoords: Coordinate) => {
 		align-items: center;
 		width: 100%;
 		height: 100%;
+	}
+
+	.map-overlay.get-location-overlay {
 		background-color: rgba(from var(--odk-muted-background-color) r g b / 0.9);
 		z-index: var(--odk-z-index-overlay);
+
+		.close-full-screen {
+			display: none;
+			position: absolute;
+			top: var(--odk-map-controls-spacing);
+			left: var(--odk-map-controls-spacing);
+			background: var(--odk-base-background-color);
+			border: 1px solid var(--odk-border-color);
+			width: 38px;
+			height: 38px;
+		}
 
 		.p-button.p-button-contrast.p-button-outlined {
 			background: var(--odk-base-background-color);
@@ -291,6 +318,12 @@ const saveAdvancedPanelCoords = (newCoords: Coordinate) => {
 				background: var(--odk-muted-background-color);
 			}
 		}
+	}
+
+	.map-overlay.full-screen-overlay {
+		display: none;
+		// Cover get-location-overlay
+		z-index: calc(var(--odk-z-index-overlay) + 10);
 	}
 }
 
@@ -392,20 +425,27 @@ const saveAdvancedPanelCoords = (newCoords: Coordinate) => {
 		height: fit-content;
 	}
 
-	.map-block-component .map-block {
-		--map-status-bar-min-height: 60px;
-		--map-label-min-height: 60px;
-		height: calc(100vh - var(--map-status-bar-min-height) - var(--map-label-min-height));
-
+	.map-container {
 		:deep(.ol-zoom) {
-			top: 195px;
-			bottom: unset;
+			display: none;
+		}
+
+		.map-overlay.full-screen-overlay {
+			display: flex;
 		}
 	}
 
-	.map-block-component :deep(.ol-zoom) {
-		right: var(--odk-map-controls-spacing);
-		bottom: var(--odk-map-controls-spacing);
+	.map-container.map-full-screen {
+		.map-overlay.get-location-overlay .close-full-screen {
+			display: block;
+		}
+
+		:deep(.ol-zoom) {
+			display: flex;
+			top: 195px;
+			right: var(--odk-map-controls-spacing);
+			bottom: var(--odk-map-controls-spacing);
+		}
 	}
 
 	.map-message.above-secondary-controls {
