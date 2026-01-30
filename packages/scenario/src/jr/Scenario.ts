@@ -3,6 +3,7 @@ import { xmlElement } from '@getodk/common/test/fixtures/xform-dsl/index.ts';
 import type {
 	AnyFormInstance,
 	AnyNode,
+	EditFormInstanceInput,
 	FormResource,
 	InstancePayload,
 	InstancePayloadOptions,
@@ -182,6 +183,37 @@ export class Scenario {
 			editInstance: overrideOptions?.editInstance ?? null,
 		};
 	}
+
+	static async gareth<This extends typeof Scenario>(
+		this: This,
+		formDefinition: FormDefinitionResource,
+		overrideOptions?: Partial<TestFormOptions>
+	): Promise<This['prototype']> {
+
+		let formMeta: ScenarioFormMeta = {
+			formElement: xmlElement(formDefinition.textContents),
+			formName: formDefinition.formName,
+			formOptions: this.getTestFormOptions(overrideOptions),
+		};
+		
+		const { dispose, owner, form, instanceRoot } = await initializeTestForm(
+			formMeta.formElement.asXml() satisfies FormResource,
+			formMeta.formOptions
+		);
+
+		return runInSolidScope(owner, () => {
+			return new this(
+				{
+					...formMeta,
+					owner,
+					dispose,
+				},
+				form,
+				instanceRoot
+			);
+		});
+	}
+
 
 	static async init<This extends typeof Scenario>(
 		this: This,
@@ -1104,6 +1136,12 @@ export class Scenario {
 		return runInSolidScope(this.config.owner, () => {
 			return new this.constructor(this.config, this.form, instance.root);
 		});
+	}
+
+	async editWebFormsInstanceState(payload: EditFormInstanceInput): Promise<this> {
+		const instance = await this.form.editInstance(payload, this.config.formOptions);
+
+		return this.fork(instance);
 	}
 
 	async restoreWebFormsInstanceState(payload: RestoreFormInstanceInput): Promise<this> {
