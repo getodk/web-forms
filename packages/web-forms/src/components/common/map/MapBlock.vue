@@ -303,16 +303,12 @@ const saveAdvancedPanelCoords = (newCoords: Coordinate) => {
 	height: 100dvh;
 	z-index: var(--odk-z-index-topmost);
 	background: var(--odk-base-background-color);
+	border-radius: 0;
 
 	// Prevent background scroll-chaining
 	overscroll-behavior: none;
 	// Hand touch gestures (zoom/pan) exclusively to the map engine
 	touch-action: none;
-
-	// iPhone safe area
-	padding-bottom: env(safe-area-inset-bottom);
-	padding-left: env(safe-area-inset-left);
-	padding-right: env(safe-area-inset-right);
 
 	.map-block {
 		flex: 1 1 0;
