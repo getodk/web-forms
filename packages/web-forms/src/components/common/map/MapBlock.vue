@@ -243,7 +243,8 @@ const saveAdvancedPanelCoords = (newCoords: Coordinate) => {
 
 		<div
 			v-if="mapHandler.errorMessage.value && (!isFullScreen || !hideErrorFullScreen)"
-			:class="{ 'map-block-error': true, 'stack-errors': showErrorStyle && !isFullScreen, 'in-full-screen': isFullScreen }"
+			class="map-block-error"
+			:class="{ 'stack-errors': showErrorStyle && !isFullScreen, 'top-position': isFullScreen }"
 		>
 			<div class="error-message">
 				<strong>{{ mapHandler.errorMessage.value.title }}</strong>
@@ -418,7 +419,7 @@ const saveAdvancedPanelCoords = (newCoords: Coordinate) => {
 		border-radius: 0;
 	}
 
-	&.in-full-screen {
+	&.top-position {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
