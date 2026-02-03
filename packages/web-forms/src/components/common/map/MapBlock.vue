@@ -428,6 +428,7 @@ const saveAdvancedPanelCoords = (newCoords: Coordinate) => {
 		left: var(--odk-map-controls-spacing);
 		right: var(--odk-map-controls-spacing);
 		z-index: var(--odk-z-index-topmost);
+		margin-top: 0;
 	}
 
 	.clear-error {
