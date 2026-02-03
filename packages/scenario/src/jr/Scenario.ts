@@ -184,37 +184,6 @@ export class Scenario {
 		};
 	}
 
-	static async gareth<This extends typeof Scenario>(
-		this: This,
-		formDefinition: FormDefinitionResource,
-		overrideOptions?: Partial<TestFormOptions>
-	): Promise<This['prototype']> {
-
-		let formMeta: ScenarioFormMeta = {
-			formElement: xmlElement(formDefinition.textContents),
-			formName: formDefinition.formName,
-			formOptions: this.getTestFormOptions(overrideOptions),
-		};
-		
-		const { dispose, owner, form, instanceRoot } = await initializeTestForm(
-			formMeta.formElement.asXml() satisfies FormResource,
-			formMeta.formOptions
-		);
-
-		return runInSolidScope(owner, () => {
-			return new this(
-				{
-					...formMeta,
-					owner,
-					dispose,
-				},
-				form,
-				instanceRoot
-			);
-		});
-	}
-
-
 	static async init<This extends typeof Scenario>(
 		this: This,
 		...args: ScenarioStaticInitParameters
