@@ -38,6 +38,7 @@ const isAdvancedPanelOpen = ref(false);
 const confirmDeleteAction = ref(false);
 const isUpdateCoordsDialogOpen = ref(false);
 const selectedVertex = ref<Coordinate | undefined>();
+const hideErrorFullScreen = ref(false);
 const showErrorStyle = inject<ComputedRef<boolean>>(
 	QUESTION_HAS_ERROR,
 	computed(() => false)
@@ -96,6 +97,11 @@ watch(
 watch(
 	() => props.disabled,
 	(newValue) => mapHandler.setupMapInteractions(newValue)
+);
+
+watch(
+	() => mapHandler.errorMessage.value,
+	() => (hideErrorFullScreen.value = false)
 );
 
 const handleEscapeKey = (event: KeyboardEvent) => {
@@ -236,12 +242,15 @@ const saveAdvancedPanelCoords = (newCoords: Coordinate) => {
 		</div>
 
 		<div
-			v-if="mapHandler.errorMessage.value"
-			:class="{ 'map-block-error': true, 'stack-errors': showErrorStyle }"
+			v-if="mapHandler.errorMessage.value && (!isFullScreen || !hideErrorFullScreen)"
+			:class="{ 'map-block-error': true, 'stack-errors': showErrorStyle && !isFullScreen, 'in-full-screen': isFullScreen }"
 		>
-			<strong>{{ mapHandler.errorMessage.value.title }}</strong>
-			&nbsp;
-			<span>{{ mapHandler.errorMessage.value.message }}</span>
+			<div class="error-message">
+				<strong>{{ mapHandler.errorMessage.value.title }}</strong>
+				&nbsp;
+				<span>{{ mapHandler.errorMessage.value.message }}</span>
+			</div>
+			<IconSVG v-if="isFullScreen" class="clear-error" name="mdiClose" variant="error" size="sm" @click="hideErrorFullScreen = true" />
 		</div>
 	</div>
 
@@ -407,6 +416,21 @@ const saveAdvancedPanelCoords = (newCoords: Coordinate) => {
 		padding: 20px 0 5px 0;
 		margin-top: 0;
 		border-radius: 0;
+	}
+
+	&.in-full-screen {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		position: fixed;
+		top: var(--odk-map-controls-spacing);
+		left: var(--odk-map-controls-spacing);
+		right: var(--odk-map-controls-spacing);
+		z-index: var(--odk-z-index-topmost);
+	}
+
+	.clear-error {
+		cursor: pointer;
 	}
 }
 
