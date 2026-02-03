@@ -112,6 +112,19 @@ export function useMapInteractions(
 		}
 	};
 
+	const shouldSelectNewTarget = (
+		targetFeature: Feature,
+		hitVertexIndex: number | null | undefined
+	): boolean => {
+		if (hitVertexIndex != null) {
+			const currentSelectedVertex = targetFeature.get(SELECTED_VERTEX_INDEX_PROPERTY) as number;
+			return currentSelectedVertex !== hitVertexIndex;
+		}
+
+		const isFeatureSelected = !!targetFeature.get(IS_SELECTED_PROPERTY);
+		return !isFeatureSelected;
+	};
+
 	const onSelectFeatureOrVertex = (
 		event: MapBrowserEvent,
 		onSelect: (feature: Feature | undefined, selectedVertexIndex: number | undefined) => void
@@ -133,16 +146,10 @@ export function useMapInteractions(
 		const hasOneVertex = getFlatCoordinates(targetFeature.getGeometry()).length === 1;
 		const hitVertexIndex = hasOneVertex ? 0 : getVertexIndex(targetFeature, hitVertexGeometry);
 
-		const currentSelectedVertex = targetFeature.get(SELECTED_VERTEX_INDEX_PROPERTY) as number;
-		const isSameSelectedVertex = hitVertexIndex != null && currentSelectedVertex === hitVertexIndex;
-
-		const isFeatureSelected = !!targetFeature.get(IS_SELECTED_PROPERTY);
-		const isInsideFeature = hitVertexIndex == null && isFeatureSelected;
-
-		if (isSameSelectedVertex || isInsideFeature) {
-			onSelect?.(undefined, undefined);
-		} else {
+		if (shouldSelectNewTarget(targetFeature, hitVertexIndex)) {
 			onSelect?.(targetFeature, hitVertexIndex);
+		} else {
+			onSelect?.(undefined, undefined);
 		}
 	};
 
