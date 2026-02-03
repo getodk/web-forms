@@ -99,10 +99,7 @@ watch(
 	(newValue) => mapHandler.setupMapInteractions(newValue)
 );
 
-const onFeaturePlacement = () => {
-	pointPlaced.value = true;
-	emitSavedFeature();
-};
+const onFeaturePlacement = () => emitSavedFeature();
 
 const handleEscapeKey = (event: KeyboardEvent) => {
 	if (event.key === 'Escape' && isFullScreen.value) {
@@ -111,7 +108,9 @@ const handleEscapeKey = (event: KeyboardEvent) => {
 };
 
 const emitSavedFeature = () => {
-	emit('save', mapHandler.getSavedFeatureValue() ?? '');
+	const value = mapHandler.getSavedFeatureValue() ?? '';
+	pointPlaced.value = !!value.length;
+	emit('save', value);
 };
 
 const saveSelection = () => {
@@ -188,7 +187,7 @@ const saveAdvancedPanelCoords = (newCoords: Coordinate) => {
 					:class="{ 'map-message': true, 'above-secondary-controls': showSecondaryControls }"
 				>
 					<!-- TODO: translations -->
-					<span v-if="pointPlaced">Press and drag to move a point</span>
+					<span v-if="pointPlaced">Drag or tap to move the point</span>
 					<span v-else>Tap to place a point</span>
 				</Message>
 			</div>
