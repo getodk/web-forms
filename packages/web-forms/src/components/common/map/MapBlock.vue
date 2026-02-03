@@ -187,7 +187,7 @@ const saveAdvancedPanelCoords = (newCoords: Coordinate) => {
 					:class="{ 'map-message': true, 'above-secondary-controls': showSecondaryControls }"
 				>
 					<!-- TODO: translations -->
-					<span v-if="pointPlaced">Drag or tap to move the point</span>
+					<span v-if="pointPlaced">Drag or tap to move a point</span>
 					<span v-else>Tap to place a point</span>
 				</Message>
 			</div>
