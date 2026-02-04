@@ -16,6 +16,7 @@
     "test": "true"
   },
   "devDependencies": {
+    "@inquirer/prompts": "^8.2.0",
     "mustache": "4.2.0"
   }
 }
