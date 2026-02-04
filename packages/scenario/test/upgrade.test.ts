@@ -9,20 +9,22 @@ const { INSTANCE_FILE_NAME, INSTANCE_FILE_TYPE } = constants;
 import { XFormAttachmentFixture } from '@getodk/common/fixtures/xform-attachments.ts';
 import { xmlElement } from '@getodk/common/test/fixtures/xform-dsl/index.ts';
 // eslint-disable-next-line no-restricted-imports
+import type { JRResourceURLString } from '@getodk/common/jr-resources/JRResourceURL.ts';
 import { readdir, readFile } from 'fs/promises';
 
 // ~/src/getodk/web-forms/packages/scenario$ npx vitest test/upgrade.test.ts --silent=false
 
+const ROOT_PATH = __dirname + '/../../../.upgrade-checker-cache';
+
 const getFixtures = async () => {
 	const result = [];
-	const source = __dirname + '/upgrade';
 
-	const dirs = await readdir(source, { withFileTypes: true });
+	const dirs = await readdir(ROOT_PATH, { withFileTypes: true });
 	for (const dir of dirs) {
 		if (!dir.isDirectory()) {
 			continue;
 		}
-		result.push(`${source}/${dir.name}`);
+		result.push(`${ROOT_PATH}/${dir.name}`);
 	}
 	return result;
 };
@@ -39,10 +41,17 @@ const initResourceService = async (fixturePath: string) => {
 			const fixture = new XFormAttachmentFixture(`${resourcePath}/${resource.name}`, () =>
 				Promise.resolve('fake')
 			);
+			console.log('activating', resource.name, fixture.mimeType);
+			let url: JRResourceURLString;
+			if (fixture.mimeType === 'text/csv') {
+				url = `jr://file-csv/${resource.name}`;
+			} else {
+				url = `jr://file/${resource.name}`;
+			}
 			resourceService.activateResource(
 				{
 					fileName: resource.name,
-					url: `jr://file/${resource.name}`,
+					url,
 					mimeType: fixture.mimeType,
 				},
 				resourceContent
@@ -75,8 +84,12 @@ const mockXML = (input: Document, edited: Scenario, xpath: string, action: MockA
 	const nodeName = editedNode.definition.qualifiedName.localName;
 	let value;
 	if (action === 'clone') {
-		const originalValue = input.evaluate(xpath, input, null, XPathResult.STRING_TYPE);
-		value = `<${nodeName}>${originalValue.stringValue}</${nodeName}>`;
+		const originalValue = input.evaluate(xpath, input, null, XPathResult.STRING_TYPE).stringValue;
+		if (originalValue) {
+			value = `<${nodeName}>${originalValue}</${nodeName}>`;
+		} else {
+			value = `<${nodeName}/>`;
+		}
 	} else if (action === 'delete') {
 		value = '';
 	} else {
@@ -114,7 +127,8 @@ describe('Upgrade test', async () => {
 
 	for (const fixture of fixtures) {
 		const formPath = `${fixture}/form.xml`;
-		describe(`form ${formPath}`, async () => {
+		const relativeFormPath = formPath.substring(ROOT_PATH.length);
+		describe(`form ${relativeFormPath}`, async () => {
 			const formXml = await readFile(formPath, { encoding: 'utf8' });
 			const form = xmlElement(formXml);
 			const actionRefs = getActionReferences(parser, formXml);
@@ -124,30 +138,30 @@ describe('Upgrade test', async () => {
 			const submissions = await findSubmissions(fixture);
 
 			for (const submission of submissions) {
-				it(`can edit submission ${submission}`, async () => {
+				const relativeSubmissionPath = submission.substring(ROOT_PATH.length);
+				it(`can edit submission ${relativeSubmissionPath}`, async () => {
 					const submissionXml = await readFile(submission, { encoding: 'utf8' });
 
 					const inputDocument = parser.parseFromString(submissionXml, 'text/xml');
 
-					const originalScenario = await Scenario.init('upgrade form', form, { resourceService });
 					const instanceXML = `<?xml version="1.0" encoding="UTF-8"?> ${submissionXml}`;
 					const instanceFile = new File([instanceXML], INSTANCE_FILE_NAME, {
 						type: INSTANCE_FILE_TYPE,
 					});
 					const instanceData = new FormData();
 					instanceData.set(INSTANCE_FILE_NAME, instanceFile);
-					const editedScenario = await originalScenario.editWebFormsInstanceState({
+					const scenario = await Scenario.init('upgrade form', form, { resourceService, editInstance: {
 						inputType: 'FORM_INSTANCE_INPUT_RESOLVED',
 						data: [instanceData as InstanceData],
-					});
-					mockXML(inputDocument, editedScenario, '/data/meta/instanceID', 'clone');
-					mockXML(inputDocument, editedScenario, '/data/meta/deprecatedID', 'delete');
+					} });
+					mockXML(inputDocument, scenario, '/data/meta/instanceID', 'clone');
+					mockXML(inputDocument, scenario, '/data/meta/deprecatedID', 'delete');
 
 					actionRefs.forEach((ref) => {
-						mockXML(inputDocument, editedScenario, ref, 'clone');
+						mockXML(inputDocument, scenario, ref, 'clone');
 					});
 
-					const editedResult = editedScenario.proposed_serializeInstance();
+					const editedResult = scenario.proposed_serializeInstance();
 					expect(editedResult).toBe(submissionXml);
 				});
 			}
