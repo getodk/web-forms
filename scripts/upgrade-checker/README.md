@@ -9,7 +9,6 @@ WARNING: This should not be merged into main - it's a short lived branch that ca
 1. Checkout this branch
 2. Run `yarn && yarn build`
 
-
 ### Downloading forms
 
 Run the script which will prompt for the server, login email, and password. This downloads forms, submissions, and attachments to the `.upgrade-checker-cache` in the web-forms root directory.

@@ -12,19 +12,24 @@ import { xmlElement } from '@getodk/common/test/fixtures/xform-dsl/index.ts';
 import type { JRResourceURLString } from '@getodk/common/jr-resources/JRResourceURL.ts';
 import { readdir, readFile } from 'fs/promises';
 
-// ~/src/getodk/web-forms/packages/scenario$ npx vitest test/upgrade.test.ts --silent=false
-
 const ROOT_PATH = __dirname + '/../../../.upgrade-checker-cache';
 
 const getFixtures = async () => {
 	const result = [];
 
-	const dirs = await readdir(ROOT_PATH, { withFileTypes: true });
-	for (const dir of dirs) {
-		if (!dir.isDirectory()) {
+	const projects = await readdir(ROOT_PATH, { withFileTypes: true });
+	for (const project of projects) {
+		if (!project.isDirectory()) {
 			continue;
 		}
-		result.push(`${ROOT_PATH}/${dir.name}`);
+		const projectPath = `${ROOT_PATH}/${project.name}`;
+		const forms = await readdir(projectPath, { withFileTypes: true });
+		for (const form of forms) {
+			if (!form.isDirectory()) {
+				continue;
+			}
+			result.push(`${projectPath}/${form.name}`);
+		}
 	}
 	return result;
 };
@@ -41,7 +46,6 @@ const initResourceService = async (fixturePath: string) => {
 			const fixture = new XFormAttachmentFixture(`${resourcePath}/${resource.name}`, () =>
 				Promise.resolve('fake')
 			);
-			console.log('activating', resource.name, fixture.mimeType);
 			let url: JRResourceURLString;
 			if (fixture.mimeType === 'text/csv') {
 				url = `jr://file-csv/${resource.name}`;
@@ -101,8 +105,27 @@ const mockXML = (input: Document, edited: Scenario, xpath: string, action: MockA
 	});
 };
 
-const getActionReferences = (parser: DOMParser, formXml: string) => {
-	const formDocument = parser.parseFromString(formXml, 'text/xml');
+const getSubmissionVersion = (submissionDocument: Document) => {
+	const version = submissionDocument.evaluate(
+		'/*/@version',
+		submissionDocument,
+		null,
+		XPathResult.STRING_TYPE
+	);
+	return version.stringValue;
+};
+
+const getFormVersion = (formDocument: Document) => {
+	const version = formDocument.evaluate(
+		'//instance[1]/*[@id]/@version',
+		formDocument,
+		null,
+		XPathResult.STRING_TYPE
+	);
+	return version.stringValue;
+};
+
+const getActionReferences = (formDocument: Document) => {
 	const actions = formDocument.evaluate(
 		'//*[@event]',
 		formDocument,
@@ -131,7 +154,9 @@ describe('Upgrade test', async () => {
 		describe(`form ${relativeFormPath}`, async () => {
 			const formXml = await readFile(formPath, { encoding: 'utf8' });
 			const form = xmlElement(formXml);
-			const actionRefs = getActionReferences(parser, formXml);
+			const formDocument = parser.parseFromString(formXml, 'text/xml');
+			const formVersion = getFormVersion(formDocument);
+			const actionRefs = getActionReferences(formDocument);
 
 			const resourceService = await initResourceService(fixture);
 
@@ -139,21 +164,30 @@ describe('Upgrade test', async () => {
 
 			for (const submission of submissions) {
 				const relativeSubmissionPath = submission.substring(ROOT_PATH.length);
+				const submissionXml = await readFile(submission, { encoding: 'utf8' });
+
+				const inputDocument = parser.parseFromString(submissionXml, 'text/xml');
+				const submissionVersion = getSubmissionVersion(inputDocument);
+				if (submissionVersion !== formVersion) {
+					console.log(
+						`ignoring ${relativeSubmissionPath} it was submitted with a different form version`
+					);
+					continue;
+				}
 				it(`can edit submission ${relativeSubmissionPath}`, async () => {
-					const submissionXml = await readFile(submission, { encoding: 'utf8' });
-
-					const inputDocument = parser.parseFromString(submissionXml, 'text/xml');
-
 					const instanceXML = `<?xml version="1.0" encoding="UTF-8"?> ${submissionXml}`;
 					const instanceFile = new File([instanceXML], INSTANCE_FILE_NAME, {
 						type: INSTANCE_FILE_TYPE,
 					});
 					const instanceData = new FormData();
 					instanceData.set(INSTANCE_FILE_NAME, instanceFile);
-					const scenario = await Scenario.init('upgrade form', form, { resourceService, editInstance: {
-						inputType: 'FORM_INSTANCE_INPUT_RESOLVED',
-						data: [instanceData as InstanceData],
-					} });
+					const scenario = await Scenario.init('upgrade form', form, {
+						resourceService,
+						editInstance: {
+							inputType: 'FORM_INSTANCE_INPUT_RESOLVED',
+							data: [instanceData as InstanceData],
+						},
+					});
 					mockXML(inputDocument, scenario, '/data/meta/instanceID', 'clone');
 					mockXML(inputDocument, scenario, '/data/meta/deprecatedID', 'delete');
 
