@@ -28,7 +28,7 @@ export class ModelDefinition {
 	constructor(readonly form: XFormDefinition) {
 		const submission = new SubmissionDefinition(form.xformDOM);
 
-		this.binds = ModelBindMap.fromModel(this);
+		this.binds = ModelBindMap.fromModel(this, form.xformDOM.instanceID);
 		this.actions = ModelActionMap.fromModel(this);
 		this.instance = parseStaticDocumentFromDOMSubtree(form.xformDOM.primaryInstanceRoot, {
 			nodesetPrefix: '/',
