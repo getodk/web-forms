@@ -19,7 +19,16 @@ import type { Coordinate } from 'ol/coordinate';
 import { toLonLat } from 'ol/proj';
 import Button from 'primevue/button';
 import Message from 'primevue/message';
-import { computed, type ComputedRef, inject, onMounted, onUnmounted, ref, watch } from 'vue';
+import {
+	computed,
+	type ComputedRef,
+	inject,
+	nextTick,
+	onMounted,
+	onUnmounted,
+	ref,
+	watch,
+} from 'vue';
 
 interface MapBlockProps {
 	featureCollection: FeatureCollection;
@@ -182,6 +191,21 @@ const saveAdvancedPanelCoords = (newCoords: Coordinate) => {
 	mapHandler.updateVertexCoords(newCoords);
 	emitSavedFeature();
 };
+
+const enterFullScreen = () => {
+	isFullScreen.value = true;
+	if (mapHandler.shouldShowMapOverlay()) {
+		mapHandler.watchCurrentLocation();
+	}
+};
+
+const toggleFullScreen = async () => {
+	isFullScreen.value = !isFullScreen.value;
+	if (!isFullScreen.value) {
+		await nextTick();
+		mapHandler.fitToAllFeatures();
+	}
+};
 </script>
 
 <template>
@@ -191,7 +215,7 @@ const saveAdvancedPanelCoords = (newCoords: Coordinate) => {
 				<div
 					v-if="!isFullScreen"
 					class="map-overlay full-screen-overlay"
-					@click="isFullScreen = true"
+					@click="enterFullScreen"
 				/>
 				<div v-if="mapHandler.shouldShowMapOverlay()" class="map-overlay get-location-overlay">
 					<Button
@@ -215,7 +239,7 @@ const saveAdvancedPanelCoords = (newCoords: Coordinate) => {
 					:disable-undo="!mapHandler.canUndoChange()"
 					:disable-delete="!mapHandler.isFeatureSelected()"
 					:show-secondary-controls="showSecondaryControls"
-					@toggle-full-screen="isFullScreen = !isFullScreen"
+					@toggle-full-screen="toggleFullScreen"
 					@fit-all-features="mapHandler.fitToAllFeatures"
 					@watch-current-location="mapHandler.watchCurrentLocation"
 					@trigger-delete="triggerDelete"
@@ -279,7 +303,14 @@ const saveAdvancedPanelCoords = (newCoords: Coordinate) => {
 				&nbsp;
 				<span>{{ mapHandler.errorMessage.value.message }}</span>
 			</div>
-			<IconSVG v-if="isFullScreen" class="clear-error" name="mdiClose" variant="error" size="sm" @click="showErrorFullScreen = false" />
+			<IconSVG
+				v-if="isFullScreen"
+				class="clear-error"
+				name="mdiClose"
+				variant="error"
+				size="sm"
+				@click="showErrorFullScreen = false"
+			/>
 		</div>
 	</div>
 
