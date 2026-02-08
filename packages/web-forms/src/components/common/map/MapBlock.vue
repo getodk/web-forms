@@ -39,7 +39,7 @@ const confirmDeleteAction = ref(false);
 const isUpdateCoordsDialogOpen = ref(false);
 const pointPlaced = ref(false);
 const selectedVertex = ref<Coordinate | undefined>();
-const hideErrorFullScreen = ref(false);
+const showErrorFullScreen = ref(false);
 const showErrorStyle = inject<ComputedRef<boolean>>(
 	QUESTION_HAS_ERROR,
 	computed(() => false)
@@ -128,7 +128,7 @@ const onFeaturePlacement = () => emitSavedFeature();
 
 watch(
 	() => mapHandler.errorMessage.value,
-	() => (hideErrorFullScreen.value = false)
+	() => (showErrorFullScreen.value = !!mapHandler.errorMessage.value)
 );
 
 const handleEscapeKey = (event: KeyboardEvent) => {
@@ -270,7 +270,7 @@ const saveAdvancedPanelCoords = (newCoords: Coordinate) => {
 		</div>
 
 		<div
-			v-if="mapHandler.errorMessage.value && (!isFullScreen || !hideErrorFullScreen)"
+			v-if="mapHandler.errorMessage.value && (!isFullScreen || showErrorFullScreen)"
 			class="map-block-error"
 			:class="{ 'stack-errors': showErrorStyle && !isFullScreen, 'top-position': isFullScreen }"
 		>
@@ -279,7 +279,7 @@ const saveAdvancedPanelCoords = (newCoords: Coordinate) => {
 				&nbsp;
 				<span>{{ mapHandler.errorMessage.value.message }}</span>
 			</div>
-			<IconSVG v-if="isFullScreen" class="clear-error" name="mdiClose" variant="error" size="sm" @click="hideErrorFullScreen = true" />
+			<IconSVG v-if="isFullScreen" class="clear-error" name="mdiClose" variant="error" size="sm" @click="showErrorFullScreen = false" />
 		</div>
 	</div>
 
@@ -299,6 +299,7 @@ const saveAdvancedPanelCoords = (newCoords: Coordinate) => {
 <style scoped lang="scss">
 @use 'primeflex/core/_variables.scss' as pf;
 @use '../../../assets/styles/map-block' as mb;
+@use '../../../assets/styles/buttons' as btn;
 
 .map-block-component {
 	position: relative;
@@ -339,14 +340,10 @@ const saveAdvancedPanelCoords = (newCoords: Coordinate) => {
 		z-index: var(--odk-z-index-overlay);
 
 		.close-full-screen {
+			@include btn.clear-button;
 			display: none;
-			position: absolute;
 			top: var(--odk-map-controls-spacing);
 			left: var(--odk-map-controls-spacing);
-			background: var(--odk-base-background-color);
-			border: 1px solid var(--odk-border-color);
-			width: 38px;
-			height: 38px;
 		}
 
 		.p-button.p-button-contrast.p-button-outlined {
@@ -360,8 +357,7 @@ const saveAdvancedPanelCoords = (newCoords: Coordinate) => {
 
 	.map-overlay.full-screen-overlay {
 		display: none;
-		// Cover get-location-overlay
-		z-index: calc(var(--odk-z-index-overlay) + 10);
+		z-index: var(--odk-z-index-top-overlay);
 	}
 }
 
