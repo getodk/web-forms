@@ -161,7 +161,7 @@ describe('`jr:preload`', () => {
 			);
 			const originalValue = scenario.answerOf('/data/element').toString();
 
-			const edited = await scenario.proposed_editCurrentInstanceState(); // TODO rename this stupid function
+			const edited = await scenario.editCurrentInstance();
 			expect(edited.answerOf('/data/element').toString()).to.equal(originalValue);
 		});
 	});
