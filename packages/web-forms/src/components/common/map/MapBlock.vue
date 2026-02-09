@@ -251,7 +251,7 @@ const toggleFullScreen = async () => {
 					severity="contrast"
 					closable
 					size="small"
-					:class="{ 'map-message': true, 'above-secondary-controls': showSecondaryControls }"
+					:class="{ 'map-message': true, 'above-secondary-controls': isFullScreen && showSecondaryControls }"
 				>
 					<span v-if="pointPlaced">{{ instructionMessage.placed }}</span>
 					<span v-else>{{ instructionMessage.default }}</span>
@@ -264,6 +264,7 @@ const toggleFullScreen = async () => {
 				:can-view-details="mapHandler.canViewProperties()"
 				:single-feature-type="singleFeatureType"
 				:is-capturing="mapHandler.currentState.value === STATES.CAPTURING"
+				:is-full-screen="isFullScreen"
 				:saved-feature-value="savedFeatureValue"
 				:selected-vertex="selectedVertex"
 				class="map-status-bar-component"
