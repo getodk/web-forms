@@ -28,13 +28,13 @@ describe('external-instance-csv-parser', () => {
 	}
 
 	it('errors when given no columns', () => {
-		expect(() => parseItems(url, '')).to.throw(
-			'Failed to parse CSV external secondary instance jr://csv/mock.csv'
-		);
+		expect(() => parseItems(url, '')).to.throw('Failed to parse CSV jr://csv/mock.csv');
 	});
 
 	it('errors when given null character in header', () => {
-		expect(() => parseItems(url, 'f\0o,bar')).to.throw('Failed to parse CSV: null character');
+		expect(() => parseItems(url, 'f\0o,bar')).to.throw(
+			'Failed to parse CSV jr://csv/mock.csv: null character'
+		);
 	});
 
 	it('parses csv with rows with extra columns that are empty', () => {
@@ -61,7 +61,7 @@ a,1,,,,,,
 a,1,q
 `;
 		expect(() => parseItems(url, csv)).to.throw(
-			'Failed to parse CSV row 1: expected 2 columns, got 3'
+			'Failed to parse CSV jr://csv/mock.csv: row 1, expected 2 columns, got 3'
 		);
 	});
 
@@ -88,7 +88,7 @@ c,2
 		expect(actual).to.deep.equal(expected);
 	});
 
-	it.fails('gracefully handles empty rows', () => {
+	it('gracefully handles empty rows', () => {
 		const csv = `name,value
 a,1
 ,

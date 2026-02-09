@@ -4,7 +4,7 @@ import { ErrorProductionDesignPendingError } from '../../../../error/ErrorProduc
 
 type CSVColumn = string;
 type CSVRow = readonly CSVColumn[];
-type AssertCSVRow = (columns: unknown) => asserts columns is CSVRow;
+type AssertCSVRow = (resourceURL: JRResourceURL, columns: unknown) => asserts columns is CSVRow;
 
 interface ParsedCSVHeader {
 	readonly columns: CSVRow;
@@ -35,9 +35,11 @@ type CSVExternalSecondaryInstanceItem = readonly CSVExternalSecondaryInstanceIte
  *
  * Central performs this check for header and rows. A comment is included there for the header check, but the logic is the same in both cases.
  */
-const rejectNullCharacters = (cell: string) => {
+const rejectNullCharacters = (resourceURL: JRResourceURL, cell: string) => {
 	if (cell.includes('\0')) {
-		throw new ErrorProductionDesignPendingError(`Failed to parse CSV: null character`);
+		throw new ErrorProductionDesignPendingError(
+			`Failed to parse CSV ${resourceURL.href}: null character`
+		);
 	}
 };
 
@@ -51,17 +53,21 @@ const stripTrailingEmptyCells = (columns: CSVRow, row: CSVRow): CSVRow => {
 	return result;
 };
 
-const assertCSVRow: AssertCSVRow = (columns) => {
+const assertCSVRow: AssertCSVRow = (resourceURL: JRResourceURL, columns) => {
 	if (!Array.isArray(columns)) {
-		throw new ErrorProductionDesignPendingError('Failed to parse CSV columns');
+		throw new ErrorProductionDesignPendingError(
+			`Failed to parse CSV ${resourceURL.href}: invalid columns`
+		);
 	}
 
 	for (const [index, column] of columns.entries()) {
 		if (typeof column !== 'string') {
-			throw new ErrorProductionDesignPendingError(`Failed to parse CSV column at index ${index}`);
+			throw new ErrorProductionDesignPendingError(
+				`Failed to parse CSV ${resourceURL.href}: invalid column at ${index}`
+			);
 		}
 
-		rejectNullCharacters(column);
+		rejectNullCharacters(resourceURL, column);
 	}
 };
 
@@ -73,10 +79,9 @@ type AssertPapaparseSuccess = (
 const assertPapaparseSuccess: AssertPapaparseSuccess = (resourceURL, errors) => {
 	if (errors.length > 0) {
 		const cause = new AggregateError(errors);
-		throw new ErrorProductionDesignPendingError(
-			`Failed to parse CSV external secondary instance ${resourceURL.href}`,
-			{ cause }
-		);
+		throw new ErrorProductionDesignPendingError(`Failed to parse CSV ${resourceURL.href}`, {
+			cause,
+		});
 	}
 };
 
@@ -97,43 +102,24 @@ const parseCSVRows = (
 	assertPapaparseSuccess(resourceURL, errors);
 
 	const rowData = data.slice(1);
-	const lastRowIndex = rowData.length - 1;
-
-	let stripLastRow = false;
 
 	const rows = rowData.map((values, index) => {
-		assertCSVRow(values);
+		assertCSVRow(resourceURL, values);
 
 		const rowIndex = index + 1;
 
 		// Central: Remove trailing empty cells.
 		const row = stripTrailingEmptyCells(columns, values);
 
-		// Central: Skip trailing empty rows and do not check them for warnings.
-		// Throw for an empty row that is not trailing.
-		if (row.every((cell) => cell === '')) {
-			if (index === lastRowIndex) {
-				stripLastRow = true;
-			} else {
-				throw new ErrorProductionDesignPendingError(
-					`Failed to parse CSV row ${rowIndex}: unexpected empty row`
-				);
-			}
-		}
-
 		// Central: Throw if there are too many cells.
 		if (row.length > columns.length) {
 			throw new ErrorProductionDesignPendingError(
-				`Failed to parse CSV row ${rowIndex}: expected ${columns.length} columns, got ${row.length}`
+				`Failed to parse CSV ${resourceURL.href}: row ${rowIndex}, expected ${columns.length} columns, got ${row.length}`
 			);
 		}
 
 		return row;
 	});
-
-	if (stripLastRow) {
-		rows.pop();
-	}
 
 	return {
 		errors,
@@ -175,7 +161,7 @@ const parseCSVHeader = (resourceURL: JRResourceURL, csvData: string): ParsedCSVH
 	});
 	const [columns = []] = data;
 
-	assertCSVRow(columns);
+	assertCSVRow(resourceURL, columns);
 	assertPapaparseSuccess(resourceURL, errors);
 
 	return {
