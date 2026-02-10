@@ -14,14 +14,24 @@ import { readdir, readFile } from 'fs/promises';
 
 const ROOT_PATH = __dirname + '/../../../.upgrade-checker-cache';
 
+const START = 0;
+const END = Infinity;
+
 const getFixtures = async () => {
 	const result = [];
 
 	const projects = await readdir(ROOT_PATH, { withFileTypes: true });
+	let i = 0;
 	for (const project of projects) {
 		if (!project.isDirectory()) {
 			continue;
 		}
+		if (i < START || i >= END) {
+			// pagination
+			i++;
+			continue;
+		}
+		i++;
 		const projectPath = `${ROOT_PATH}/${project.name}`;
 		const forms = await readdir(projectPath, { withFileTypes: true });
 		for (const form of forms) {
@@ -175,8 +185,7 @@ describe('Upgrade test', async () => {
 					continue;
 				}
 				it(`can edit submission ${relativeSubmissionPath}`, async () => {
-					const instanceXML = `<?xml version="1.0" encoding="UTF-8"?> ${submissionXml}`;
-					const instanceFile = new File([instanceXML], INSTANCE_FILE_NAME, {
+					const instanceFile = new File([submissionXml], INSTANCE_FILE_NAME, {
 						type: INSTANCE_FILE_TYPE,
 					});
 					const instanceData = new FormData();
@@ -196,7 +205,8 @@ describe('Upgrade test', async () => {
 					});
 
 					const editedResult = scenario.proposed_serializeInstance();
-					expect(editedResult).toBe(submissionXml);
+					const expected = submissionXml.replace(/<\?xml\s+[^?]*\?>\s*/, '');
+					expect(editedResult).toBe(expected);
 				});
 			}
 		});
