@@ -14,6 +14,7 @@ WARNING: This should not be merged into main - it's a short lived branch that ca
 Run the script which will prompt for the server, login email, and password. This downloads forms, submissions, and attachments to the `.upgrade-checker-cache` in the web-forms root directory.
 
 ```sh
+cd scripts/upgrade-checker
 node index.js
 ```
 
@@ -25,5 +26,5 @@ Now run the test suite over the cached forms.
 
 ```sh
 cd packages/scenario
-npx vitest test/upgrade.test.ts --silent=false --passWithNoTests
+npx vitest test/upgrade.test.ts --silent=false --passWithNoTests --testTimeout=60000
 ```

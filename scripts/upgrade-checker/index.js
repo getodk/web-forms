@@ -70,12 +70,13 @@ const getProjects = async (server, token) => {
 };
 
 const getFormXml = async (server, token, form) => {
-	const path = `/v1/projects/${form.projectId}/forms/${form.xmlFormId}.xml`;
+	encodeURIComponent();
+	const path = `/v1/projects/${encodeURIComponent(form.projectId)}/forms/${encodeURIComponent(form.xmlFormId)}.xml`;
 	return xmlRequest({ server, token, path });
 };
 
 const getAttachments = async (server, token, form) => {
-	const path = `/v1/projects/${form.projectId}/forms/${form.xmlFormId}/attachments`;
+	const path = `/v1/projects/${encodeURIComponent(form.projectId)}/forms/${encodeURIComponent(form.xmlFormId)}/attachments`;
 	return await jsonRequest({
 		server,
 		token,
@@ -84,7 +85,7 @@ const getAttachments = async (server, token, form) => {
 };
 
 const getAttachmentFile = async (server, token, form, attachment) => {
-	const path = `/v1/projects/${form.projectId}/forms/${form.xmlFormId}/attachments/${attachment.name}`;
+	const path = `/v1/projects/${encodeURIComponent(form.projectId)}/forms/${encodeURIComponent(form.xmlFormId)}/attachments/${encodeURIComponent(attachment.name)}`;
 	const response = await request({
 		server,
 		token,
@@ -94,7 +95,7 @@ const getAttachmentFile = async (server, token, form, attachment) => {
 };
 
 const getSubmissions = async (server, token, form) => {
-	const path = `/v1/projects/${form.projectId}/forms/${form.xmlFormId}/submissions`;
+	const path = `/v1/projects/${encodeURIComponent(form.projectId)}/forms/${encodeURIComponent(form.xmlFormId)}/submissions`;
 	return await jsonRequest({
 		server,
 		token,
@@ -103,7 +104,7 @@ const getSubmissions = async (server, token, form) => {
 };
 
 const getSubmissionFile = async (server, token, form, submission) => {
-	const path = `/v1/projects/${form.projectId}/forms/${form.xmlFormId}/submissions/${submission.instanceId}.xml`;
+	const path = `/v1/projects/${encodeURIComponent(form.projectId)}/forms/${encodeURIComponent(form.xmlFormId)}/submissions/${encodeURIComponent(submission.instanceId)}.xml`;
 	return xmlRequest({ server, token, path });
 };
 
@@ -140,6 +141,8 @@ const writeSubmissionFiles = async (server, token, formDir, form) => {
 	}
 };
 
+const escapeFileName = (fileName) => fileName.replaceAll('/', '-slash-').substring(0, 100);
+
 try {
 	await mkdir(OUTPUT_DIR);
 } catch {
@@ -148,7 +151,7 @@ try {
 	);
 }
 
-const server = await input({ message: 'Central instance to check?' });
+const server = await input({ message: 'Central instance to check? Enter the URL without a trailing "/", eg: "https://dev.getodk.cloud"' });
 const email = await input({ message: 'Email login?' });
 const pass = await password({ message: 'Password?' });
 
@@ -158,11 +161,21 @@ const token = await auth(server, email, pass);
 console.log('getting projects');
 const projects = await getProjects(server, token);
 
+const PROJECTS_TO_SKIP = [];
+
 for (const project of projects) {
-	const projectDir = OUTPUT_DIR + project.name;
+	if (project.archived) {
+		console.log(`Skipping archived project ${project.name}`);
+		continue;
+	}
+	if (PROJECTS_TO_SKIP.includes(project.name)) {
+		console.log(`Skipping ${project.name}`);
+		continue;
+	}
+	const projectDir = OUTPUT_DIR + escapeFileName(project.name);
 	await mkdir(projectDir);
 	for (const form of project.formList) {
-		const formDir = projectDir + '/' + form.xmlFormId;
+		const formDir = projectDir + '/' + escapeFileName(form.xmlFormId);
 		console.log(`----- getting form ${project.name} ${form.name}`);
 		await writeFormXml(server, token, formDir, form);
 		await writeAttachmentFiles(server, token, formDir, form);
