@@ -3,7 +3,6 @@ import { xmlElement } from '@getodk/common/test/fixtures/xform-dsl/index.ts';
 import type {
 	AnyFormInstance,
 	AnyNode,
-	EditFormInstanceInput,
 	FormResource,
 	InstancePayload,
 	InstancePayloadOptions,
@@ -1105,12 +1104,6 @@ export class Scenario {
 		return runInSolidScope(this.config.owner, () => {
 			return new this.constructor(this.config, this.form, instance.root);
 		});
-	}
-
-	async editWebFormsInstanceState(payload: EditFormInstanceInput): Promise<this> {
-		const instance = await this.form.editInstance(payload, this.config.formOptions);
-
-		return this.fork(instance);
 	}
 
 	async restoreWebFormsInstanceState(payload: RestoreFormInstanceInput): Promise<this> {
