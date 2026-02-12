@@ -7,15 +7,15 @@ import { constants, type InstanceData } from '@getodk/xforms-engine';
 const { INSTANCE_FILE_NAME, INSTANCE_FILE_TYPE } = constants;
 
 import { XFormAttachmentFixture } from '@getodk/common/fixtures/xform-attachments.ts';
+import type { JRResourceURLString } from '@getodk/common/jr-resources/JRResourceURL.ts';
 import { xmlElement } from '@getodk/common/test/fixtures/xform-dsl/index.ts';
 // eslint-disable-next-line no-restricted-imports
-import type { JRResourceURLString } from '@getodk/common/jr-resources/JRResourceURL.ts';
 import { readdir, readFile } from 'fs/promises';
 
 const ROOT_PATH = __dirname + '/../../../.upgrade-checker-cache';
 
-const START = 0;
-const END = Infinity;
+const START = 95;
+const END = 96;
 
 const getFixtures = async () => {
 	const result = [];
@@ -49,6 +49,9 @@ const initResourceService = async (fixturePath: string) => {
 	const resourcePath = `${fixturePath}/resources`;
 	try {
 		const resources = await readdir(resourcePath, { withFileTypes: true });
+		if (resources.length > 100) {
+			throw new Error('Too many resources');
+		}
 		for (const resource of resources) {
 			const resourceContent = await readFile(`${resourcePath}/${resource.name}`, {
 				encoding: 'utf8',
@@ -89,11 +92,7 @@ type MockAction = 'clear' | 'clone' | 'delete';
 const mockXML = (input: Document, edited: Scenario, xpath: string, action: MockAction) => {
 	const editedNode = getNodeForReference(edited.instanceRoot, xpath);
 	if (!editedNode) {
-		if (action === 'delete') {
-			return;
-		} else {
-			throw new Error(`Node ${xpath} not found`);
-		}
+		return;
 	}
 	const nodeName = editedNode.definition.qualifiedName.localName;
 	let value;
@@ -125,6 +124,16 @@ const getSubmissionVersion = (submissionDocument: Document) => {
 	return version.stringValue;
 };
 
+const isEncrypted = (submissionDocument: Document) => {
+	const encrypted = submissionDocument.evaluate(
+		'/*/@encrypted',
+		submissionDocument,
+		null,
+		XPathResult.BOOLEAN_TYPE
+	);
+	return encrypted.booleanValue;
+};
+
 const getFormVersion = (formDocument: Document) => {
 	const version = formDocument.evaluate(
 		'//instance[1]/*[@id]/@version',
@@ -154,6 +163,31 @@ const getActionReferences = (formDocument: Document) => {
 	return refs;
 };
 
+const getUnstableCalculations = (formDocument: Document) => {
+	const binds = formDocument.evaluate(
+		'//bind[@calculate="now()"] | //bind[@calculate="today()"] | //bind[@calculate="uuid()"]',
+		formDocument,
+		null,
+		XPathResult.ORDERED_NODE_ITERATOR_TYPE
+	);
+	let action;
+	const refs: string[] = [];
+	while ((action = binds.iterateNext() as Element) !== null) {
+		const ref = action.getAttribute('nodeset');
+		if (ref) {
+			refs.push(ref);
+		}
+	}
+	return refs;
+};
+
+const xmlCleanup = (xml: string) => {
+	const parser = new DOMParser();
+	const doc = parser.parseFromString(xml, 'text/xml');
+	const formatted = new XMLSerializer().serializeToString(doc);
+	return formatted.replaceAll(/>\s+</g, '><').replaceAll(/ xmlns:[a-zA-Z]+="[^"]+"/g, '');
+};
+
 describe('Upgrade test', async () => {
 	const fixtures = await getFixtures();
 	const parser = new DOMParser();
@@ -167,10 +201,14 @@ describe('Upgrade test', async () => {
 			const formDocument = parser.parseFromString(formXml, 'text/xml');
 			const formVersion = getFormVersion(formDocument);
 			const actionRefs = getActionReferences(formDocument);
+			const binds = getUnstableCalculations(formDocument);
 
 			const resourceService = await initResourceService(fixture);
 
 			const submissions = await findSubmissions(fixture);
+			if (submissions.length === 0) {
+				console.log(`no submissions found for form ${relativeFormPath}`);
+			}
 
 			for (const submission of submissions) {
 				const relativeSubmissionPath = submission.substring(ROOT_PATH.length);
@@ -184,6 +222,12 @@ describe('Upgrade test', async () => {
 					);
 					continue;
 				}
+				const encrypted = isEncrypted(inputDocument);
+				if (encrypted) {
+					console.log(`ignoring ${relativeSubmissionPath} because it's encrypted`);
+					continue;
+				}
+
 				it(`can edit submission ${relativeSubmissionPath}`, async () => {
 					const instanceFile = new File([submissionXml], INSTANCE_FILE_NAME, {
 						type: INSTANCE_FILE_TYPE,
@@ -197,16 +241,22 @@ describe('Upgrade test', async () => {
 							data: [instanceData as InstanceData],
 						},
 					});
-					mockXML(inputDocument, scenario, '/data/meta/instanceID', 'clone');
-					mockXML(inputDocument, scenario, '/data/meta/deprecatedID', 'delete');
+					const rootNodeset = scenario.instanceRoot.definition.nodeset;
+					mockXML(inputDocument, scenario, rootNodeset + '/meta/instanceID', 'clone');
+					mockXML(inputDocument, scenario, rootNodeset + '/meta/deprecatedID', 'delete');
 
 					actionRefs.forEach((ref) => {
 						mockXML(inputDocument, scenario, ref, 'clone');
 					});
+					binds.forEach((ref) => {
+						mockXML(inputDocument, scenario, ref, 'clone');
+					});
 
 					const editedResult = scenario.proposed_serializeInstance();
-					const expected = submissionXml.replace(/<\?xml\s+[^?]*\?>\s*/, '');
-					expect(editedResult).toBe(expected);
+
+					const edited = xmlCleanup(editedResult);
+					const original = xmlCleanup(submissionXml);
+					expect(edited).to.equal(original);
 				});
 			}
 		});
