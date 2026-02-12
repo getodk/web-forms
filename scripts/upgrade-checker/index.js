@@ -151,7 +151,10 @@ try {
 	);
 }
 
-const server = await input({ message: 'Central instance to check? Enter the URL without a trailing "/", eg: "https://dev.getodk.cloud"' });
+const server = await input({
+	message:
+		'Central instance to check? Enter the URL without a trailing "/", eg: "https://dev.getodk.cloud"',
+});
 const email = await input({ message: 'Email login?' });
 const pass = await password({ message: 'Password?' });
 
