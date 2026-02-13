@@ -25,8 +25,8 @@ export class ModelActionMap extends Map<string, ActionDefinition[]> {
 		this.addAll(model, model.form.xformDOM.setGeopoints, SET_GEOPOINT_LOCAL_NAME);
 	}
 
-	override get(ref: string): ActionDefinition[] {
-		return super.get(ModelActionMap.getKey(ref)) ?? [];
+	override get(ref: string): ActionDefinition[] | undefined {
+		return super.get(ModelActionMap.getKey(ref));
 	}
 
 	private addAll(
@@ -46,7 +46,7 @@ export class ModelActionMap extends Map<string, ActionDefinition[]> {
 	add(action: ActionDefinition) {
 		const key = ModelActionMap.getKey(action.ref);
 		if (this.has(key)) {
-			this.get(key).push(action);
+			this.get(key)!.push(action);
 		} else {
 			this.set(key, [action]);
 		}
