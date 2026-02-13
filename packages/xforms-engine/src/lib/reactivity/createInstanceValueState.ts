@@ -346,8 +346,8 @@ export const createInstanceValueState = (context: ValueContext): InstanceValueSt
 			createCalculation(context, setValue, calculate);
 		}
 
-		const action = context.definition.model.actions.get(context.contextReference());
-		if (action) {
+		const actions = context.definition.model.actions.get(context.contextReference());
+		for (const action of actions) {
 			dispatchAction(context, setValue, action);
 		}
 
