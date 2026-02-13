@@ -34,3 +34,4 @@ packages/*/test-results
 # Generated fixtures/etc
 packages/**/test/**/fixtures/generated/**
 /scripts/.yarn/
+.upgrade-checker-cache/

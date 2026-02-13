@@ -14,24 +14,14 @@ import { readdir, readFile } from 'fs/promises';
 
 const ROOT_PATH = __dirname + '/../../../.upgrade-checker-cache';
 
-const START = 95;
-const END = 96;
-
 const getFixtures = async () => {
 	const result = [];
 
 	const projects = await readdir(ROOT_PATH, { withFileTypes: true });
-	let i = 0;
 	for (const project of projects) {
 		if (!project.isDirectory()) {
 			continue;
 		}
-		if (i < START || i >= END) {
-			// pagination
-			i++;
-			continue;
-		}
-		i++;
 		const projectPath = `${ROOT_PATH}/${project.name}`;
 		const forms = await readdir(projectPath, { withFileTypes: true });
 		for (const form of forms) {
@@ -87,26 +77,28 @@ const findSubmissions = async (fixturePath: string) => {
 	);
 };
 
-type MockAction = 'clear' | 'clone' | 'delete';
-
-const mockXML = (input: Document, edited: Scenario, xpath: string, action: MockAction) => {
+const mockXML = (input: Document, edited: Scenario, xpath: string) => {
 	const editedNode = getNodeForReference(edited.instanceRoot, xpath);
 	if (!editedNode) {
 		return;
 	}
 	const nodeName = editedNode.definition.qualifiedName.localName;
 	let value;
-	if (action === 'clone') {
+	const count = input.evaluate(
+		'count(' + xpath + ')',
+		input,
+		null,
+		XPathResult.NUMBER_TYPE
+	).numberValue;
+	if (count === 0) {
+		value = '';
+	} else {
 		const originalValue = input.evaluate(xpath, input, null, XPathResult.STRING_TYPE).stringValue;
 		if (originalValue) {
 			value = `<${nodeName}>${originalValue}</${nodeName}>`;
 		} else {
 			value = `<${nodeName}/>`;
 		}
-	} else if (action === 'delete') {
-		value = '';
-	} else {
-		value = `<${nodeName}/>`;
 	}
 	Object.defineProperty(editedNode.instanceState, 'instanceXML', {
 		value,
@@ -207,6 +199,7 @@ describe('Upgrade test', async () => {
 
 			const submissions = await findSubmissions(fixture);
 			if (submissions.length === 0) {
+				// eslint-disable-next-line no-console
 				console.log(`no submissions found for form ${relativeFormPath}`);
 			}
 
@@ -217,6 +210,7 @@ describe('Upgrade test', async () => {
 				const inputDocument = parser.parseFromString(submissionXml, 'text/xml');
 				const submissionVersion = getSubmissionVersion(inputDocument);
 				if (submissionVersion !== formVersion) {
+					// eslint-disable-next-line no-console
 					console.log(
 						`ignoring ${relativeSubmissionPath} it was submitted with a different form version`
 					);
@@ -224,6 +218,7 @@ describe('Upgrade test', async () => {
 				}
 				const encrypted = isEncrypted(inputDocument);
 				if (encrypted) {
+					// eslint-disable-next-line no-console
 					console.log(`ignoring ${relativeSubmissionPath} because it's encrypted`);
 					continue;
 				}
@@ -242,14 +237,14 @@ describe('Upgrade test', async () => {
 						},
 					});
 					const rootNodeset = scenario.instanceRoot.definition.nodeset;
-					mockXML(inputDocument, scenario, rootNodeset + '/meta/instanceID', 'clone');
-					mockXML(inputDocument, scenario, rootNodeset + '/meta/deprecatedID', 'delete');
+					mockXML(inputDocument, scenario, rootNodeset + '/meta/instanceID');
+					mockXML(inputDocument, scenario, rootNodeset + '/meta/deprecatedID');
 
 					actionRefs.forEach((ref) => {
-						mockXML(inputDocument, scenario, ref, 'clone');
+						mockXML(inputDocument, scenario, ref);
 					});
 					binds.forEach((ref) => {
-						mockXML(inputDocument, scenario, ref, 'clone');
+						mockXML(inputDocument, scenario, ref);
 					});
 
 					const editedResult = scenario.proposed_serializeInstance();
