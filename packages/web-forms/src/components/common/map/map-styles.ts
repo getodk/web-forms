@@ -1,11 +1,15 @@
 import type { Coordinate } from 'ol/coordinate';
+import type { FeatureLike } from 'ol/Feature';
 import { LineString, MultiPoint, Point, type Polygon } from 'ol/geom';
+import Projection from 'ol/proj/Projection';
 import { Fill, Stroke, Style } from 'ol/style';
 import CircleStyle from 'ol/style/Circle';
 import type { Rule } from 'ol/style/flat';
 import mapLocationIcon from '@/assets/images/map-location.svg';
 import type { StyleFunction } from 'ol/style/Style';
 import { getFlatCoordinates } from '@/components/common/map/vertex-geometry.ts';
+import { Map } from 'ol';
+import { getPointResolution } from 'ol/proj';
 
 const HIGHLIGHT_DRAW_COLOR = '#3488AF';
 const DEFAULT_DRAW_LINE_COLOR = '#82C3E0';
@@ -13,6 +17,7 @@ const DEFAULT_VERTEX_FILL_COLOR = '#FFFFFF';
 const DEFAULT_POLYGON_FILL_COLOR = 'rgba(233, 248, 255, 0.8)';
 const DEFAULT_STROKE_COLOR = '#3E9FCC';
 const DEFAULT_STROKE_WIDTH = 4;
+const CLEAR_STROKE_COLOR = '#FFFFFF';
 
 const ICON_ANCHOR = {
 	'icon-anchor': [0.5, 0.95],
@@ -79,11 +84,15 @@ const LINE_HIT_TOLERANCE = {
 	'stroke-color': LINE_HIT_TOLERANCE_COLOR,
 };
 
-const getVertexStyle = (borderColor: string, fillColor: string, size = 8) => {
+const LOCATION_POINT_FILL = '#6393F2';
+const ACCURACY_FILL = 'rgba(99, 147, 242, 0.3)';
+const ACCURACY_STROKE = 'rgba(99, 147, 242, 0.1)';
+
+const getCircleStyle = (fillColor: string, strokeColor: string, radius = 8, strokeSize = 2) => {
 	return new CircleStyle({
-		radius: size,
+		radius: radius,
 		fill: new Fill({ color: fillColor }),
-		stroke: new Stroke({ color: borderColor, width: 2 }),
+		stroke: new Stroke({ color: strokeColor, width: strokeSize }),
 	});
 };
 
@@ -163,14 +172,14 @@ const createFeatureDrawStyle = (featureColor: string) => {
 
 const createUnselectedVertexDrawStyle = (featureColor: string, coords: Coordinate[]) => {
 	return new Style({
-		image: getVertexStyle(featureColor, DEFAULT_VERTEX_FILL_COLOR),
+		image: getCircleStyle(DEFAULT_VERTEX_FILL_COLOR, featureColor),
 		geometry: () => (coords.length > 1 ? new MultiPoint(coords.slice(0, -1)) : undefined),
 	});
 };
 
 const createSelectedVertexDrawStyle = (vertexIndex: number | undefined, coords: Coordinate[]) => {
 	return new Style({
-		image: getVertexStyle('#FFFFFF', HIGHLIGHT_DRAW_COLOR),
+		image: getCircleStyle(HIGHLIGHT_DRAW_COLOR, CLEAR_STROKE_COLOR),
 		geometry: () => {
 			if (vertexIndex === undefined) {
 				return;
@@ -185,7 +194,7 @@ const createSelectedVertexDrawStyle = (vertexIndex: number | undefined, coords: 
 
 const createLastVertexDrawStyle = (offset: number, coords: Coordinate[]) => {
 	return new Style({
-		image: getVertexStyle(HIGHLIGHT_DRAW_COLOR, DEFAULT_VERTEX_FILL_COLOR),
+		image: getCircleStyle(DEFAULT_VERTEX_FILL_COLOR, HIGHLIGHT_DRAW_COLOR),
 		geometry: () => {
 			const firstCoordinate = coords[0];
 			if (coords.length === 1 && firstCoordinate) {
@@ -235,7 +244,7 @@ export function getDrawStyles(
 }
 
 export function getPhantomPointStyle(): Style | undefined {
-	const vertex = getVertexStyle(HIGHLIGHT_DRAW_COLOR, HIGHLIGHT_DRAW_COLOR, DEFAULT_STROKE_WIDTH);
+	const vertex = getCircleStyle(HIGHLIGHT_DRAW_COLOR, HIGHLIGHT_DRAW_COLOR, 4);
 
 	// Make it transparent on touch devices to suppress phantom visibility
 	const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
@@ -244,4 +253,48 @@ export function getPhantomPointStyle(): Style | undefined {
 	}
 
 	return new Style({ image: vertex });
+}
+
+const createAccuracyStyle = (feature: FeatureLike, resolution: number, projection: Projection) => {
+	const geometry = feature.getGeometry() as Point;
+	const accuracy = feature.get('accuracy') as number | undefined;
+	if (!geometry || !accuracy) {
+		return;
+	}
+
+	// Meters in 1 pixel at this exact coordinate
+	const pointResolution = getPointResolution(
+		projection,
+		resolution,
+		geometry.getCoordinates(),
+		'm'
+	);
+	if (pointResolution <= 0) {
+		return;
+	}
+
+	const radiusInPixels = accuracy / pointResolution;
+	return new Style({
+		image: getCircleStyle(ACCURACY_FILL, ACCURACY_STROKE, radiusInPixels, 1),
+		zIndex: 1, // Draw behind the current location point
+	});
+};
+
+export function createCurrentLocationStyle(map: Map): StyleFunction {
+	return (feature: FeatureLike, resolution: number) => {
+		const styles = [];
+		const accStyle = createAccuracyStyle(feature, resolution, map.getView().getProjection());
+		if (accStyle) {
+			styles.push(accStyle);
+		}
+
+		styles.push(
+			new Style({
+				image: getCircleStyle(LOCATION_POINT_FILL, CLEAR_STROKE_COLOR, 13, DEFAULT_STROKE_WIDTH),
+				zIndex: 2,
+			})
+		);
+
+		return styles;
+	};
 }

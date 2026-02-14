@@ -1,4 +1,6 @@
 import { toGeoJsonCoordinateArray } from '@/components/common/map/geojson-parsers.ts';
+import { createCurrentLocationStyle } from '@/components/common/map/map-styles.ts';
+import type { TimerID } from '@getodk/common/types/timers.ts';
 import { Map, type View } from 'ol';
 import type { Coordinate } from 'ol/coordinate';
 import { easeOut } from 'ol/easing';
@@ -9,10 +11,7 @@ import VectorLayer from 'ol/layer/Vector';
 import { fromLonLat, toLonLat } from 'ol/proj';
 import VectorSource from 'ol/source/Vector';
 import { getDistance } from 'ol/sphere';
-import { Icon, Style } from 'ol/style';
 import { shallowRef, watch } from 'vue';
-import type { TimerID } from '@getodk/common/types/timers.ts';
-import locationIcon from '@/assets/images/location-icon.svg';
 
 type LocationWatchID = ReturnType<typeof navigator.geolocation.watchPosition>;
 
@@ -58,7 +57,7 @@ export function useMapViewControls(mapInstance: Map): UseMapViewControls {
 	const currentLocationSource = new VectorSource();
 	const currentLocationLayer = new VectorLayer({
 		source: currentLocationSource,
-		style: new Style({ image: new Icon({ src: locationIcon }) }),
+		style: createCurrentLocationStyle(mapInstance),
 	});
 	mapInstance.addLayer(currentLocationLayer);
 
@@ -254,6 +253,8 @@ export function useMapViewControls(mapInstance: Map): UseMapViewControls {
 			userCurrentLocationFeature.value = new Feature({
 				geometry: new Point(parsedCoords, COORDINATE_LAYOUT_XYZM),
 			});
+			userCurrentLocationFeature.value.set('accuracy', newLocation.accuracy);
+
 			currentLocationSource.addFeature(userCurrentLocationFeature.value);
 
 			if (canCenterView) {
