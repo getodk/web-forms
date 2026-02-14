@@ -6,6 +6,7 @@ import { Fill, Stroke, Style } from 'ol/style';
 import CircleStyle from 'ol/style/Circle';
 import type { Rule } from 'ol/style/flat';
 import mapLocationIcon from '@/assets/images/map-location.svg';
+import mapSavedLocationIcon from '@/assets/images/map-saved-location.svg';
 import type { StyleFunction } from 'ol/style/Style';
 import { getFlatCoordinates } from '@/components/common/map/vertex-geometry.ts';
 import { Map } from 'ol';
@@ -32,6 +33,11 @@ const DEFAULT_POINT_STYLE = {
 	...ICON_ANCHOR,
 };
 
+const SAVED_POINT_STYLE = {
+	...DEFAULT_POINT_STYLE,
+	'icon-src': mapSavedLocationIcon,
+};
+
 const DEFAULT_FEATURE_STYLE = {
 	'stroke-width': DEFAULT_STROKE_WIDTH,
 	'stroke-color': DEFAULT_STROKE_COLOR,
@@ -39,10 +45,14 @@ const DEFAULT_FEATURE_STYLE = {
 };
 
 const SCALE_POINT_STYLE = {
-	'icon-src': mapLocationIcon,
+	...DEFAULT_POINT_STYLE,
 	'icon-width': 50,
 	'icon-height': 50,
-	...ICON_ANCHOR,
+};
+
+const SCALE_SAVED_POINT_STYLE = {
+	...SCALE_POINT_STYLE,
+	'icon-src': mapSavedLocationIcon,
 };
 
 const SCALE_FEATURE_STYLE = {
@@ -64,16 +74,9 @@ const BLUE_GLOW_FEATURE_STYLE = {
 	'fill-color': 'transparent',
 };
 
-const GREEN_GLOW_COLOR = 'rgba(34, 197, 94, 0.6)';
-const GREEN_GLOW_POINT_STYLE = {
-	'circle-radius': 30,
-	'circle-fill-color': GREEN_GLOW_COLOR,
-	'circle-displacement': [0, 22],
-};
-
 const GREEN_GLOW_FEATURE_STYLE = {
 	'stroke-width': OUTLINE_STROKE_WIDTH,
-	'stroke-color': GREEN_GLOW_COLOR,
+	'stroke-color': 'rgba(34, 197, 94, 0.6)',
 	'fill-color': 'transparent',
 };
 
@@ -154,7 +157,7 @@ export function getSavedStyles(featureIdProp: string, savedPropName: string): Ru
 	return [
 		{
 			filter: makeFilter(['Point'], [filter]),
-			style: [GREEN_GLOW_POINT_STYLE, DEFAULT_POINT_STYLE, SCALE_POINT_STYLE],
+			style: [SAVED_POINT_STYLE, DEFAULT_POINT_STYLE, SCALE_SAVED_POINT_STYLE],
 		},
 		{
 			filter: makeFilter(['LineString', 'Polygon'], [filter]),
