@@ -44,6 +44,7 @@ const INTERMEDIATE_ZOOM = 4;
 const LONG_DISTANCE_THRESHOLD_METERS = 50 * 1000;
 const SHORT_DISTANCE_THRESHOLD_METERS = 1000;
 const GEOLOCATION_TIMEOUT_MS = 30 * 1000; // Field environments need more time and reduces false “no signal” warnings.
+const GEOLOCATION_CACHE_MS = 1000; // Reduces map accuracy and location indicator refreshes.
 const ANIMATION_TIME_MS = 1000;
 const DEBOUNCE_DELAY_MS = 500;
 const SMALL_DEVICE_WIDTH = 576;
@@ -131,7 +132,11 @@ export function useMapViewControls(mapInstance: Map): UseMapViewControls {
 		watchLocation.value = navigator.geolocation.watchPosition(
 			(position) => onGeolocationSuccess(position, onSuccess),
 			() => onGeolocationError(onError),
-			{ enableHighAccuracy: true, timeout: GEOLOCATION_TIMEOUT_MS }
+			{
+				enableHighAccuracy: true,
+				timeout: GEOLOCATION_TIMEOUT_MS,
+				maximumAge: GEOLOCATION_CACHE_MS,
+			}
 		);
 	};
 

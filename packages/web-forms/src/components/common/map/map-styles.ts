@@ -1,7 +1,6 @@
 import type { Coordinate } from 'ol/coordinate';
 import type { FeatureLike } from 'ol/Feature';
 import { LineString, MultiPoint, Point, type Polygon } from 'ol/geom';
-import Projection from 'ol/proj/Projection';
 import { Fill, Stroke, Style } from 'ol/style';
 import CircleStyle from 'ol/style/Circle';
 import type { Rule } from 'ol/style/flat';
@@ -258,46 +257,59 @@ export function getPhantomPointStyle(): Style | undefined {
 	return new Style({ image: vertex });
 }
 
-const createAccuracyStyle = (feature: FeatureLike, resolution: number, projection: Projection) => {
-	const geometry = feature.getGeometry() as Point;
-	const accuracy = feature.get('accuracy') as number | undefined;
-	if (!geometry || !accuracy) {
-		return;
-	}
-
-	// Meters in 1 pixel at this exact coordinate
-	const pointResolution = getPointResolution(
-		projection,
-		resolution,
-		geometry.getCoordinates(),
-		'm'
-	);
-	if (pointResolution <= 0) {
-		return;
-	}
-
-	const radiusInPixels = accuracy / pointResolution;
-	return new Style({
-		image: getCircleStyle(ACCURACY_FILL, ACCURACY_STROKE, radiusInPixels, 1),
-		zIndex: 1, // Draw behind the current location point
-	});
-};
+const LOCATION_DOT_SIZE = 13;
+const LOCATION_DOT_STYLE = new Style({
+	image: new CircleStyle({
+		radius: LOCATION_DOT_SIZE,
+		fill: new Fill({ color: LOCATION_POINT_FILL }),
+		stroke: new Stroke({ color: CLEAR_STROKE_COLOR, width: DEFAULT_STROKE_WIDTH }),
+	}),
+	zIndex: 2,
+});
+const ACCURACY_FILL_STYLE = new Fill({ color: ACCURACY_FILL });
+const ACCURACY_STROKE_STYLE = new Stroke({ color: ACCURACY_STROKE, width: 1 });
+const STYLE_UPDATE_TOLERANCE_PX = 5;
 
 export function createCurrentLocationStyle(map: Map): StyleFunction {
-	return (feature: FeatureLike, resolution: number) => {
-		const styles = [];
-		const accStyle = createAccuracyStyle(feature, resolution, map.getView().getProjection());
-		if (accStyle) {
-			styles.push(accStyle);
+	const DOT_ONLY = [LOCATION_DOT_STYLE];
+	const projection = map.getView().getProjection();
+	let lastRadius = 0;
+	let lastStyles = DOT_ONLY;
+
+	return (feature: FeatureLike, resolution: number): Style[] => {
+		const accuracy = feature.get('accuracy') as number | undefined;
+		const geometry = feature.getGeometry() as Point;
+
+		let targetRadius = 0;
+		if (accuracy && geometry) {
+			const mPerPixel = getPointResolution(projection, resolution, geometry.getCoordinates(), 'm');
+			if (mPerPixel > 0) {
+				targetRadius = accuracy / mPerPixel;
+			}
 		}
 
-		styles.push(
-			new Style({
-				image: getCircleStyle(LOCATION_POINT_FILL, CLEAR_STROKE_COLOR, 13, DEFAULT_STROKE_WIDTH),
-				zIndex: 2,
-			})
-		);
+		if (Math.abs(targetRadius - lastRadius) < STYLE_UPDATE_TOLERANCE_PX) {
+			return lastStyles;
+		}
 
-		return styles;
+		lastRadius = targetRadius;
+		if (targetRadius < LOCATION_DOT_SIZE) {
+			lastStyles = DOT_ONLY;
+			return lastStyles;
+		}
+
+		lastStyles = [
+			new Style({
+				image: new CircleStyle({
+					radius: targetRadius,
+					fill: ACCURACY_FILL_STYLE,
+					stroke: ACCURACY_STROKE_STYLE,
+				}),
+				zIndex: 1,
+			}),
+			LOCATION_DOT_STYLE,
+		];
+
+		return lastStyles;
 	};
 }
