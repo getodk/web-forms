@@ -45,6 +45,7 @@ const rows = computed(() => {
 			:model-value="node.currentState.value"
 			:feedback="false"
 			fluid
+			toggleMask
 			@update:model-value="setValue"
 		/>
 	</template>
