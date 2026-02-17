@@ -396,6 +396,8 @@ export default tseslint.config(
 			'eol-last': ['error', 'always'],
 			'no-trailing-spaces': 'error',
 			'no-mixed-spaces-and-tabs': 'error',
+
+			'vue/attribute-hyphenation': 'error', // upgrade from a warning
 		},
 	},
 
