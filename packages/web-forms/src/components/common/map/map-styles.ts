@@ -257,10 +257,10 @@ export function getPhantomPointStyle(): Style | undefined {
 	return new Style({ image: vertex });
 }
 
-const LOCATION_DOT_SIZE = 13;
+const LOCATION_DOT_RADIUS = 13;
 const LOCATION_DOT_STYLE = new Style({
 	image: new CircleStyle({
-		radius: LOCATION_DOT_SIZE,
+		radius: LOCATION_DOT_RADIUS,
 		fill: new Fill({ color: LOCATION_POINT_FILL }),
 		stroke: new Stroke({ color: CLEAR_STROKE_COLOR, width: DEFAULT_STROKE_WIDTH }),
 	}),
@@ -294,7 +294,7 @@ export function createCurrentLocationStyle(map: Map): StyleFunction {
 
 		lastRadius = targetRadius;
 		const mapWidth = map.getSize()?.[0] ?? 0;
-		if (targetRadius < LOCATION_DOT_SIZE || targetRadius * 2 > mapWidth) {
+		if (targetRadius < LOCATION_DOT_RADIUS || targetRadius * 2 > mapWidth) {
 			lastStyles = DOT_ONLY;
 			return lastStyles;
 		}
