@@ -1,8 +1,8 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { input, password } from '@inquirer/prompts';
 import { mkdir, writeFile } from 'fs/promises';
+import servers from './servers.json' with { type: 'json' };
 
 const SESSIONS_API = '/v1/sessions';
 const PROJECTS_API = '/v1/projects';
@@ -151,37 +151,31 @@ try {
 	);
 }
 
-const server = await input({
-	message:
-		'Central instance to check? Enter the URL without a trailing "/", eg: "https://dev.getodk.cloud"',
-});
-const email = await input({ message: 'Email login?' });
-const pass = await password({ message: 'Password?' });
+for (const server of servers) {
+	const { name, url, email, pass } = server;
 
-console.log('logging in');
-const token = await auth(server, email, pass);
+	console.log('logging in to ' + name);
+	const token = await auth(url, email, pass);
 
-console.log('getting projects');
-const projects = await getProjects(server, token);
+	console.log('getting projects');
+	const projects = await getProjects(url, token);
 
-const PROJECTS_TO_SKIP = [];
+	const serverDir = OUTPUT_DIR + escapeFileName(name);
+	await mkdir(serverDir);
 
-for (const project of projects) {
-	if (project.archived) {
-		console.log(`Skipping archived project ${project.name}`);
-		continue;
-	}
-	if (PROJECTS_TO_SKIP.includes(project.name)) {
-		console.log(`Skipping ${project.name}`);
-		continue;
-	}
-	const projectDir = OUTPUT_DIR + escapeFileName(project.name);
-	await mkdir(projectDir);
-	for (const form of project.formList) {
-		const formDir = projectDir + '/' + escapeFileName(form.xmlFormId);
-		console.log(`----- getting form ${project.name} ${form.name}`);
-		await writeFormXml(server, token, formDir, form);
-		await writeAttachmentFiles(server, token, formDir, form);
-		await writeSubmissionFiles(server, token, formDir, form);
+	for (const project of projects) {
+		if (project.archived) {
+			console.log(`Skipping archived project ${project.name}`);
+			continue;
+		}
+		const projectDir = serverDir + '/' + escapeFileName(project.name);
+		await mkdir(projectDir);
+		for (const form of project.formList) {
+			const formDir = projectDir + '/' + escapeFileName(form.xmlFormId);
+			console.log(`----- getting form ${project.name} ${form.name}`);
+			await writeFormXml(url, token, formDir, form);
+			await writeAttachmentFiles(url, token, formDir, form);
+			await writeSubmissionFiles(url, token, formDir, form);
+		}
 	}
 }

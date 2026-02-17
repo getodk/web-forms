@@ -11,14 +11,15 @@ WARNING: This should not be merged into main - it's a short lived branch that ca
 
 ### Downloading forms
 
-Run the script which will prompt for the server, login email, and password. This downloads forms, submissions, and attachments to the `.upgrade-checker-cache` in the web-forms root directory.
+Modify the `servers.json` file to have an array of the servers you want to test.
+Run the script to download forms, submissions, and attachments to the `.upgrade-checker-cache` in the web-forms root directory.
 
 ```sh
 cd scripts/upgrade-checker
 node index.js
 ```
 
-The cache directory must be manually deleted before testing the next server.
+The cache directory must be manually deleted before downloading more files.
 
 ### Running tests
 
