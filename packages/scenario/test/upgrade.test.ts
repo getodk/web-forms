@@ -14,24 +14,21 @@ import { readdir, readFile } from 'fs/promises';
 
 const ROOT_PATH = __dirname + '/../../../.upgrade-checker-cache';
 
-const getFixtures = async () => {
-	const result = [];
+const getServers = async () => {
+	const servers = await readdir(ROOT_PATH, { withFileTypes: true });
+	return servers.filter((server) => server.isDirectory());
+};
 
-	const projects = await readdir(ROOT_PATH, { withFileTypes: true });
-	for (const project of projects) {
-		if (!project.isDirectory()) {
-			continue;
-		}
-		const projectPath = `${ROOT_PATH}/${project.name}`;
-		const forms = await readdir(projectPath, { withFileTypes: true });
-		for (const form of forms) {
-			if (!form.isDirectory()) {
-				continue;
-			}
-			result.push(`${projectPath}/${form.name}`);
-		}
-	}
-	return result;
+const getProjects = async (server: any) => {
+	const path = `${ROOT_PATH}/${server.name}`;
+	const projects = await readdir(path, { withFileTypes: true });
+	return projects.filter((project) => project.isDirectory());
+};
+
+const getForms = async (server: any, project: any) => {
+	const path = `${ROOT_PATH}/${server.name}/${project.name}`;
+	const forms = await readdir(path, { withFileTypes: true });
+	return forms.filter((form) => form.isDirectory());
 };
 
 const initResourceService = async (fixturePath: string) => {
@@ -181,77 +178,87 @@ const xmlCleanup = (xml: string) => {
 };
 
 describe('Upgrade test', async () => {
-	const fixtures = await getFixtures();
+	const servers = await getServers();
 	const parser = new DOMParser();
 
-	for (const fixture of fixtures) {
-		const formPath = `${fixture}/form.xml`;
-		const relativeFormPath = formPath.substring(ROOT_PATH.length);
-		describe(`form ${relativeFormPath}`, async () => {
-			const formXml = await readFile(formPath, { encoding: 'utf8' });
-			const form = xmlElement(formXml);
-			const formDocument = parser.parseFromString(formXml, 'text/xml');
-			const formVersion = getFormVersion(formDocument);
-			const actionRefs = getActionReferences(formDocument);
-			const binds = getUnstableCalculations(formDocument);
+	for (const server of servers) {
+		describe(`server: ${server.name}`, async () => {
+			const projects = await getProjects(server);
+			for (const project of projects) {
+				describe(`project: ${project.name}`, async () => {
+					const forms = await getForms(server, project);
+					for (const formDir of forms) {
+						describe(`form: ${formDir.name}`, async () => {
+							const fixturePath = `${ROOT_PATH}/${server.name}/${project.name}/${formDir.name}`;
+							const formPath = `${fixturePath}/form.xml`;
+							const formXml = await readFile(formPath, { encoding: 'utf8' });
+							const form = xmlElement(formXml);
+							const formDocument = parser.parseFromString(formXml, 'text/xml');
+							const formVersion = getFormVersion(formDocument);
+							const actionRefs = getActionReferences(formDocument);
+							const binds = getUnstableCalculations(formDocument);
 
-			const resourceService = await initResourceService(fixture);
+							const resourceService = await initResourceService(fixturePath);
 
-			const submissions = await findSubmissions(fixture);
-			if (submissions.length === 0) {
-				// eslint-disable-next-line no-console
-				console.log(`no submissions found for form ${relativeFormPath}`);
-			}
+							const submissions = await findSubmissions(fixturePath);
+							if (submissions.length === 0) {
+								// eslint-disable-next-line no-console
+								console.log(`no submissions found for form ${formDir.name}`);
+							}
 
-			for (const submission of submissions) {
-				const relativeSubmissionPath = submission.substring(ROOT_PATH.length);
-				const submissionXml = await readFile(submission, { encoding: 'utf8' });
+							for (const submission of submissions) {
+								const relativeSubmissionPath = submission.substring(fixturePath.length);
+								const submissionXml = await readFile(submission, { encoding: 'utf8' });
 
-				const inputDocument = parser.parseFromString(submissionXml, 'text/xml');
-				const submissionVersion = getSubmissionVersion(inputDocument);
-				if (submissionVersion !== formVersion) {
-					// eslint-disable-next-line no-console
-					console.log(
-						`ignoring ${relativeSubmissionPath} it was submitted with a different form version`
-					);
-					continue;
-				}
-				const encrypted = isEncrypted(inputDocument);
-				if (encrypted) {
-					// eslint-disable-next-line no-console
-					console.log(`ignoring ${relativeSubmissionPath} because it's encrypted`);
-					continue;
-				}
+								const inputDocument = parser.parseFromString(submissionXml, 'text/xml');
+								const submissionVersion = getSubmissionVersion(inputDocument);
+								if (submissionVersion !== formVersion) {
+									// eslint-disable-next-line no-console
+									console.log(
+										`ignoring ${relativeSubmissionPath} it was submitted with a different form version`
+									);
+									continue;
+								}
+								const encrypted = isEncrypted(inputDocument);
+								if (encrypted) {
+									// eslint-disable-next-line no-console
+									console.log(`ignoring ${relativeSubmissionPath} because it's encrypted`);
+									continue;
+								}
 
-				it(`can edit submission ${relativeSubmissionPath}`, async () => {
-					const instanceFile = new File([submissionXml], INSTANCE_FILE_NAME, {
-						type: INSTANCE_FILE_TYPE,
-					});
-					const instanceData = new FormData();
-					instanceData.set(INSTANCE_FILE_NAME, instanceFile);
-					const scenario = await Scenario.init('upgrade form', form, {
-						resourceService,
-						editInstance: {
-							inputType: 'FORM_INSTANCE_INPUT_RESOLVED',
-							data: [instanceData as InstanceData],
-						},
-					});
-					const rootNodeset = scenario.instanceRoot.definition.nodeset;
-					mockXML(inputDocument, scenario, rootNodeset + '/meta/instanceID');
-					mockXML(inputDocument, scenario, rootNodeset + '/meta/deprecatedID');
+								it(`submission: ${relativeSubmissionPath}`, async () => {
+									const instanceFile = new File([submissionXml], INSTANCE_FILE_NAME, {
+										type: INSTANCE_FILE_TYPE,
+									});
+									const instanceData = new FormData();
+									instanceData.set(INSTANCE_FILE_NAME, instanceFile);
+									const scenario = await Scenario.init('upgrade form', form, {
+										resourceService,
+										editInstance: {
+											inputType: 'FORM_INSTANCE_INPUT_RESOLVED',
+											data: [instanceData as InstanceData],
+										},
+									});
+									const rootNodeset = scenario.instanceRoot.definition.nodeset;
+									mockXML(inputDocument, scenario, rootNodeset + '/meta/instanceID');
+									mockXML(inputDocument, scenario, rootNodeset + '/meta/deprecatedID');
 
-					actionRefs.forEach((ref) => {
-						mockXML(inputDocument, scenario, ref);
-					});
-					binds.forEach((ref) => {
-						mockXML(inputDocument, scenario, ref);
-					});
+									actionRefs.forEach((ref) => {
+										mockXML(inputDocument, scenario, ref);
+									});
+									binds.forEach((ref) => {
+										mockXML(inputDocument, scenario, ref);
+									});
 
-					const editedResult = scenario.proposed_serializeInstance();
+									const editedResult = scenario.proposed_serializeInstance();
 
-					const edited = xmlCleanup(editedResult);
-					const original = xmlCleanup(submissionXml);
-					expect(edited).to.equal(original);
+									const edited = xmlCleanup(editedResult);
+									const original = xmlCleanup(submissionXml);
+									expect(edited).to.equal(original);
+								});
+							}
+						});
+					}
 				});
 			}
 		});
