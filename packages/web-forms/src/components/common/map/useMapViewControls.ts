@@ -2,11 +2,12 @@ import { toGeoJsonCoordinateArray } from '@/components/common/map/geojson-parser
 import { Map, type View } from 'ol';
 import type { Coordinate } from 'ol/coordinate';
 import { easeOut } from 'ol/easing';
-import { getCenter, isEmpty as isExtendEmpty } from 'ol/extent';
+import { getCenter, isEmpty as isExtendEmpty, type Extent } from 'ol/extent';
 import Feature from 'ol/Feature';
 import { Point } from 'ol/geom';
 import VectorLayer from 'ol/layer/Vector';
 import { fromLonLat, toLonLat } from 'ol/proj';
+import type { Size } from 'ol/size';
 import VectorSource from 'ol/source/Vector';
 import { getDistance } from 'ol/sphere';
 import { Icon, Style } from 'ol/style';
@@ -146,27 +147,43 @@ export function useMapViewControls(mapInstance: Map): UseMapViewControls {
 		}
 	};
 
+	const resolveTargetViewSettings = (extent: Extent, view: View, size: Size) => {
+		const ZOOM_BUFFER = 1;
+		const currentResolution = view.getResolutionForExtent(extent, size);
+		const currentZoom = view.getZoomForResolution(currentResolution) ?? 0;
+		let targetZoom = currentZoom - ZOOM_BUFFER; // For better aesthetics.
+		targetZoom = targetZoom > 1 ? Math.min(targetZoom, MAX_ZOOM) : MAX_ZOOM;
+
+		return {
+			zoom: targetZoom,
+			resolution: view.getResolutionForZoom(targetZoom),
+		};
+	};
+
 	const centerFeatureLocation = (feature: Feature): void => {
 		const geometry = feature.getGeometry();
 		const view = mapInstance.getView();
-		const mapWidth = mapInstance.getSize()?.[0];
-		if (!geometry || !view || mapWidth == null) {
+		const size = mapInstance.getSize();
+		const extent = geometry?.getExtent() ?? [];
+		if (!geometry || !view || !size || isExtendEmpty(extent)) {
 			return;
 		}
 
+		const mapWidth = size[0] ?? 0;
 		const pixelOffsetY = mapWidth < SMALL_DEVICE_WIDTH ? -130 : 0;
 		const pixelOffsetX = mapWidth < SMALL_DEVICE_WIDTH ? 0 : -70;
 
-		const zoomResolution = view.getResolution() ?? 1;
-		const xOffsetInMapUnits = -pixelOffsetX * zoomResolution;
-		const yOffsetInMapUnits = -pixelOffsetY * zoomResolution;
+		const { zoom, resolution } = resolveTargetViewSettings(extent, view, size);
+
+		const xOffsetInMapUnits = -pixelOffsetX * resolution;
+		const yOffsetInMapUnits = -pixelOffsetY * resolution;
 
 		// Turning angles into usable numbers
 		const rotation = view.getRotation();
 		const cosRotation = Math.cos(rotation);
 		const sinRotation = Math.sin(rotation);
 
-		const [featureCenterLong, featureCenterLat] = getCenter(geometry.getExtent());
+		const [featureCenterLong, featureCenterLat] = getCenter(extent);
 		if (!featureCenterLong || !featureCenterLat) {
 			return;
 		}
@@ -175,8 +192,6 @@ export function useMapViewControls(mapInstance: Map): UseMapViewControls {
 			featureCenterLat - xOffsetInMapUnits * sinRotation - yOffsetInMapUnits * cosRotation,
 		];
 
-		const targetZoom = view.getZoomForResolution(zoomResolution);
-		const zoom = targetZoom ? Math.min(targetZoom, MAX_ZOOM) : MAX_ZOOM;
 		transitionToLocation(targetCoordinates, zoom);
 	};
 
