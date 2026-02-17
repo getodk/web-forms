@@ -347,11 +347,7 @@ export const createInstanceValueState = (context: ValueContext): InstanceValueSt
 		}
 
 		const actions = context.definition.model.actions.get(context.contextReference());
-		if (actions) {
-			for (const action of actions) {
-				dispatchAction(context, setValue, action);
-			}
-		}
+		actions?.forEach((action) => dispatchAction(context, setValue, action));
 
 		return guardDownstreamReadonlyWrites(context, relevantValueState);
 	});
