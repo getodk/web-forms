@@ -293,7 +293,8 @@ export function createCurrentLocationStyle(map: Map): StyleFunction {
 		}
 
 		lastRadius = targetRadius;
-		if (targetRadius < LOCATION_DOT_SIZE) {
+		const mapWidth = map.getSize()?.[0] ?? 0;
+		if (targetRadius < LOCATION_DOT_SIZE || targetRadius * 2 > mapWidth) {
 			lastStyles = DOT_ONLY;
 			return lastStyles;
 		}
