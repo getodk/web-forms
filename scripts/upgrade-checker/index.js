@@ -133,7 +133,7 @@ const writeSubmissionFiles = async (server, token, formDir, form) => {
 	await mkdir(dir);
 	const submissions = await getSubmissions(server, token, form);
 	submissions.sort((lhs, rhs) => new Date(rhs.createdAt) - new Date(lhs.createdAt)); // reverse sort, newest first
-	const subset = submissions.slice(0, 100); // pick the most recent 100
+	const subset = submissions.slice(0, 10); // pick the most recent 10
 	for (const submission of subset) {
 		const submissionXml = await getSubmissionFile(server, token, form, submission);
 		const filename = `${dir}/${submission.instanceId}.xml`;

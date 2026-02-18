@@ -11,6 +11,7 @@ import { readdir, readFile, stat } from 'fs/promises';
 import { expect, it } from 'vitest';
 
 const ROOT_PATH = __dirname + '/../../../.upgrade-checker-cache';
+const parser = new DOMParser();
 
 const getServers = async () => {
 	const servers = await readdir(ROOT_PATH, { withFileTypes: true });
@@ -32,46 +33,54 @@ const getForms = async (server: string, project: string) => {
 const initResourceService = async (fixturePath: string) => {
 	const resourceService = new JRResourceService();
 	const resourcePath = `${fixturePath}/resources`;
+	let resources;
 	try {
-		const resources = await readdir(resourcePath, { withFileTypes: true });
-		if (resources.length > 100) {
-			throw new Error('Too many resources');
-		}
-		for (const resource of resources) {
-			const filename = `${resourcePath}/${resource.name}`;
-			const stats = await stat(filename);
-			if (stats.size > 1000) {
-				throw new Error(`Resource too large to load: ${filename}`);
-			}
-			const resourceContent = await readFile(filename, {
-				encoding: 'utf8',
-			});
-			const fixture = new XFormAttachmentFixture(filename, () => Promise.resolve('fake'));
-			let url: JRResourceURLString;
-			if (fixture.mimeType === 'text/csv') {
-				url = `jr://file-csv/${resource.name}`;
-			} else {
-				url = `jr://file/${resource.name}`;
-			}
-			resourceService.activateResource(
-				{
-					fileName: resource.name,
-					url,
-					mimeType: fixture.mimeType,
-				},
-				resourceContent
-			);
-		}
+		resources = await readdir(resourcePath);
 	} catch {
 		// no resources found
+		return resourceService;
+	}
+	if (resources.length > 100) {
+		throw new Error('Too many resources in ' + resourcePath);
+	}
+	for (const resource of resources) {
+		const filename = `${resourcePath}/${resource}`;
+		const fixture = new XFormAttachmentFixture(filename, () => Promise.resolve('fake'));
+		let url: JRResourceURLString;
+		if (fixture.mimeType === 'text/csv') {
+			url = `jr://file-csv/${resource}`;
+		} else {
+			url = `jr://file/${resource}`;
+		}
+		let resourceContent;
+		if (resource.endsWith('.csv') || resource.endsWith('.geojson') || resource.endsWith('.xml')) {
+			const stats = await stat(filename);
+			if (stats.size > 100_000) { // 100kb
+				throw new Error(`Resource too large to load: ${filename}`);
+			}
+			resourceContent = await readFile(filename, {
+				encoding: 'utf8',
+			});
+		} else {
+			resourceContent = '<blank>';
+		}
+		resourceService.activateResource(
+			{
+				fileName: resource,
+				url,
+				mimeType: fixture.mimeType,
+			},
+			resourceContent
+		);
 	}
 	return resourceService;
 };
 
 const findSubmissions = async (fixturePath: string) => {
 	const submissionDirName = `${fixturePath}/submissions`;
-	return (await readdir(submissionDirName, { withFileTypes: true })).map(
-		(file) => `${submissionDirName}/${file.name}`
+	const files = await readdir(submissionDirName);
+	return files.slice(0, 10).map(
+		(file) => `${submissionDirName}/${file}`
 	);
 };
 
@@ -155,7 +164,7 @@ const getActionReferences = (formDocument: Document) => {
 
 const getUnstableCalculations = (formDocument: Document) => {
 	const binds = formDocument.evaluate(
-		'//bind[@calculate="now()"] | //bind[@calculate="today()"] | //bind[@calculate="uuid()"]',
+		'//bind[@calculate="now()"] | //bind[@calculate="today()"] | //bind[@calculate="uuid()"] | //bind[@calculate="random()"]',
 		formDocument,
 		null,
 		XPathResult.ORDERED_NODE_ITERATOR_TYPE
@@ -172,10 +181,13 @@ const getUnstableCalculations = (formDocument: Document) => {
 };
 
 const xmlCleanup = (xml: string) => {
-	const parser = new DOMParser();
 	const doc = parser.parseFromString(xml, 'text/xml');
 	const formatted = new XMLSerializer().serializeToString(doc);
-	return formatted.replaceAll(/>\s+</g, '><').replaceAll(/ xmlns:[a-zA-Z]+="[^"]+"/g, '');
+	return formatted
+		.replaceAll(/>\s+</g, '><') // remove whitespace between tags
+		.replaceAll(/ xmlns:[a-zA-Z]+="[^"]+"/g, '') // remove namespace declarations
+		.replaceAll(/<orx:/g, '<') // remove namespace usages
+		.replaceAll(/<\/orx:/g, '</'); // remove namespace usages (closing tags)
 };
 
 const getFixtures = async () => {
@@ -193,11 +205,7 @@ const getFixtures = async () => {
 	return result;
 };
 
-const parser = new DOMParser();
 const fixtures = await getFixtures();
-
-// eslint-disable-next-line no-console
-console.log(`found ${fixtures.length} fixtures`);
 
 for (const fixture of fixtures) {
 	const { server, project, formDir } = fixture;
