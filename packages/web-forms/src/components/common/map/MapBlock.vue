@@ -421,6 +421,10 @@ const toggleFullScreen = async () => {
 	:deep(.advanced-panel) {
 		flex-shrink: 0;
 	}
+
+	.map-overlay.get-location-overlay .close-full-screen {
+		display: block;
+	}
 }
 
 .map-block-component :deep(.ol-zoom) {
@@ -520,10 +524,6 @@ const toggleFullScreen = async () => {
 	}
 
 	.map-container.map-full-screen {
-		.map-overlay.get-location-overlay .close-full-screen {
-			display: block;
-		}
-
 		:deep(.ol-zoom) {
 			display: flex;
 			top: 195px;
