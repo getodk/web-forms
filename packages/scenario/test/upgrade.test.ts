@@ -55,7 +55,8 @@ const initResourceService = async (fixturePath: string) => {
 		let resourceContent;
 		if (resource.endsWith('.csv') || resource.endsWith('.geojson') || resource.endsWith('.xml')) {
 			const stats = await stat(filename);
-			if (stats.size > 100_000) { // 100kb
+			if (stats.size > 100_000) {
+				// 100kb
 				throw new Error(`Resource too large to load: ${filename}`);
 			}
 			resourceContent = await readFile(filename, {
@@ -79,9 +80,7 @@ const initResourceService = async (fixturePath: string) => {
 const findSubmissions = async (fixturePath: string) => {
 	const submissionDirName = `${fixturePath}/submissions`;
 	const files = await readdir(submissionDirName);
-	return files.slice(0, 10).map(
-		(file) => `${submissionDirName}/${file}`
-	);
+	return files.slice(0, 10).map((file) => `${submissionDirName}/${file}`);
 };
 
 const mockXML = (input: Document, edited: Scenario, xpath: string) => {
