@@ -426,6 +426,7 @@ const toggleFullScreen = async () => {
 .map-block-component :deep(.ol-zoom) {
 	@include mb.map-control-bar-vertical;
 	bottom: 35px;
+	height: fit-content;
 
 	button,
 	button:hover,
@@ -528,6 +529,7 @@ const toggleFullScreen = async () => {
 			top: 195px;
 			right: var(--odk-map-controls-spacing);
 			bottom: var(--odk-map-controls-spacing);
+			height: fit-content;
 		}
 	}
 
