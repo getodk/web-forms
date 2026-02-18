@@ -17,7 +17,7 @@ const REPEAT_INDEX_REGEX = /([^[]*)(\[[0-9]+\])/g;
 type ValueContext = AttributeContext | InstanceValueContext;
 
 const isInstanceFirstLoad = (context: ValueContext) => {
-	return context.rootDocument.initializationMode === 'create';
+	return context.rootDocument.initializationMode === 'create' && !isAddingRepeatChild(context);
 };
 
 const isAddingRepeatChild = (context: ValueContext) => {
@@ -28,7 +28,7 @@ const isAddingRepeatChild = (context: ValueContext) => {
  * Special case, does not correspond to any event.
  */
 const isEditInitialLoad = (context: ValueContext) => {
-	return context.rootDocument.initializationMode === 'edit';
+	return context.rootDocument.initializationMode === 'edit' && !isAddingRepeatChild(context);
 };
 
 const getInitialValue = (context: ValueContext): string => {
@@ -223,14 +223,8 @@ const createActionCalculation = (
 const resolveAndSetValueChanged = (
 	context: ValueContext,
 	setRelevantValue: SimpleAtomicStateSetter<string>,
-	expression: string,
-	candidateValue?: string
+	expression: string
 ): void => {
-	if (candidateValue?.length) {
-		setRelevantValue(candidateValue);
-		return;
-	}
-
 	const calc = context.evaluator.evaluateString(expression, context);
 	const value = context.decodeInstanceValue(calc);
 	setRelevantValue(value);
@@ -246,22 +240,21 @@ const createValueChangedCalculation = (
 		// No element to listen to
 		return;
 	}
-	let previous = '';
+	let previous: string;
 	const sourceElementExpression = new ActionComputationExpression('string', source);
 	const calculateValueSource = createComputedExpression(context, sourceElementExpression); // Registers listener
 	createComputed(() => {
 		if (context.isAttached() && context.isRelevant()) {
 			const valueSource = calculateValueSource();
-			if (previous !== valueSource && referencesCurrentNode(context, ref)) {
+			if (
+				previous !== undefined &&
+				previous !== valueSource &&
+				referencesCurrentNode(context, ref)
+			) {
 				// Only update if value has changed
 				if (action.element.nodeName === SET_GEOPOINT_LOCAL_NAME) {
 					getGeopointValue(context, (point) => {
-						resolveAndSetValueChanged(
-							context,
-							setRelevantValue,
-							action.computation.expression,
-							point
-						);
+						setRelevantValue(point);
 					});
 				} else {
 					resolveAndSetValueChanged(context, setRelevantValue, action.computation.expression);
@@ -346,10 +339,8 @@ export const createInstanceValueState = (context: ValueContext): InstanceValueSt
 			createCalculation(context, setValue, calculate);
 		}
 
-		const action = context.definition.model.actions.get(context.contextReference());
-		if (action) {
-			dispatchAction(context, setValue, action);
-		}
+		const actions = context.definition.model.actions.get(context.contextReference());
+		actions?.forEach((action) => dispatchAction(context, setValue, action));
 
 		return guardDownstreamReadonlyWrites(context, relevantValueState);
 	});

@@ -9,12 +9,17 @@ import type {
 	MissingResourceBehavior,
 	OpaqueReactiveObjectFactory,
 	PreloadProperties,
+	ResolvedFormInstanceInputType,
 	RootNode,
 } from '@getodk/xforms-engine';
-import { createInstance } from '@getodk/xforms-engine';
+import { createInstance, editInstance } from '@getodk/xforms-engine';
 import type { Owner } from 'solid-js';
 import { createRoot } from 'solid-js';
 import { getAssertedOwner, runInSolidScope } from './solid-helpers.ts';
+
+import { constants, type InstanceData } from '@getodk/xforms-engine';
+
+const { INSTANCE_FILE_NAME, INSTANCE_FILE_TYPE } = constants;
 
 /**
  * @todo Currently we stub resource fetching. We can address this as needed
@@ -31,6 +36,7 @@ export interface TestFormOptions {
 	readonly instanceAttachments: InstanceAttachmentsConfig;
 	readonly preloadProperties: PreloadProperties;
 	readonly geolocationProvider: GeolocationProvider;
+	readonly editInstance: string | null;
 }
 
 const defaultConfig = {
@@ -57,7 +63,7 @@ export const initializeTestForm = async (
 		const owner = getAssertedOwner();
 
 		const { formResult: form, root: instanceRoot } = await runInSolidScope(owner, async () => {
-			return createInstance(formResource, {
+			const initOptions = {
 				form: {
 					...defaultConfig,
 					fetchFormAttachment: options.resourceService.handleRequest,
@@ -69,7 +75,20 @@ export const initializeTestForm = async (
 					preloadProperties: options.preloadProperties,
 					geolocationProvider: options.geolocationProvider,
 				},
-			});
+			};
+			if (options.editInstance) {
+				const instanceFile = new File([options.editInstance], INSTANCE_FILE_NAME, {
+					type: INSTANCE_FILE_TYPE,
+				});
+				const instanceData = new FormData();
+				instanceData.set(INSTANCE_FILE_NAME, instanceFile);
+				const instance = {
+					inputType: 'FORM_INSTANCE_INPUT_RESOLVED' as ResolvedFormInstanceInputType,
+					data: [instanceData as InstanceData] as const,
+				};
+				return editInstance(formResource, instance, initOptions);
+			}
+			return createInstance(formResource, initOptions);
 		});
 
 		return {
