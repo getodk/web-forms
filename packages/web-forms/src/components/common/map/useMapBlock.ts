@@ -135,6 +135,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 			}),
 			controls: [new Zoom(), new Attribution({ collapsible: false })],
 			interactions: defaultInteractions({ doubleClickZoom: false }),
+			moveTolerance: 8, // Prevents micro-panning from suppressing click events
 		});
 
 		mapViewControls = useMapViewControls(mapInstance);
