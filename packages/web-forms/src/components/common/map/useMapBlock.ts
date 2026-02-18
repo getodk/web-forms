@@ -152,9 +152,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 		);
 
 		initLayer(geoJSON, savedFeatureValue);
-		mapInteractions.setupMapVisibilityObserver(mapContainer, () =>
-			mapViewControls?.stopWatchingCurrentLocation()
-		);
+		mapInteractions.setupMapVisibilityObserver(mapContainer, () => stopWatchingCurrentLocation());
 		currentState.value = STATES.READY;
 	};
 
@@ -411,7 +409,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 		}
 
 		if (currentMode.capabilities.canSaveCurrentLocation) {
-			mapViewControls?.stopWatchingCurrentLocation();
+			stopWatchingCurrentLocation();
 		}
 		clearMap();
 	};
@@ -424,7 +422,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 	const clearSavedFeature = () => mapFeatures?.saveFeature(undefined);
 
 	const teardownMap = () => {
-		mapViewControls?.stopWatchingCurrentLocation();
+		stopWatchingCurrentLocation();
 		mapViewControls = undefined;
 		mapInteractions?.teardownMap();
 		mapInteractions = undefined;
@@ -509,6 +507,11 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 		);
 	};
 
+	const stopWatchingCurrentLocation = () => {
+		currentState.value = STATES.READY;
+		mapViewControls?.stopWatchingCurrentLocation();
+	};
+
 	const findAndSaveFeature = (feature: GeoJsonFeature | undefined) => {
 		return mapFeatures?.findAndSaveFeature(
 			featuresSource,
@@ -539,7 +542,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 		isMapEmpty: () => featuresSource.isEmpty(),
 		fitToAllFeatures: () => mapViewControls?.fitToAllFeatures(featuresSource),
 		watchCurrentLocation,
-		stopWatchingCurrentLocation: () => mapViewControls?.stopWatchingCurrentLocation(),
+		stopWatchingCurrentLocation,
 		canRemoveCurrentLocation,
 
 		discardSavedFeature,
