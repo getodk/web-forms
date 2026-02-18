@@ -103,6 +103,9 @@ export function useMapViewControls(mapInstance: Map): UseMapViewControls {
 			clearTimeout(debounceTimer.value);
 		}
 		debounceTimer.value = setTimeout(() => {
+			if (!watchLocation.value) {
+				return;
+			}
 			const { latitude, longitude, altitude, accuracy } = position.coords;
 			userCurrentLocation.value = { latitude, longitude, altitude, accuracy };
 			onSuccess();
@@ -142,13 +145,18 @@ export function useMapViewControls(mapInstance: Map): UseMapViewControls {
 	};
 
 	const stopWatchingCurrentLocation = () => {
-		currentLocationSource.clear(true);
-		userCurrentLocation.value = undefined;
+		if (debounceTimer.value) {
+			clearTimeout(debounceTimer.value);
+			debounceTimer.value = undefined;
+		}
 
 		if (watchLocation.value) {
 			navigator.geolocation.clearWatch(watchLocation.value);
 			watchLocation.value = undefined;
 		}
+
+		userCurrentLocation.value = undefined;
+		currentLocationSource.clear(true);
 	};
 
 	const resolveTargetViewSettings = (extent: Extent, view: View, size: Size) => {

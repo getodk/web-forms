@@ -410,10 +410,10 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 			return;
 		}
 
-		clearMap();
 		if (currentMode.capabilities.canSaveCurrentLocation) {
 			mapViewControls?.stopWatchingCurrentLocation();
 		}
+		clearMap();
 	};
 
 	const unselectFeature = () => {
