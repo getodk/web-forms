@@ -1,34 +1,32 @@
-import { describe, expect, it } from 'vitest';
 import { getNodeForReference } from '../src/client/traversal.ts';
 import { Scenario } from '../src/jr/Scenario.ts';
 
 import { JRResourceService } from '@getodk/common/jr-resources/JRResourceService.ts';
-import { constants, type InstanceData } from '@getodk/xforms-engine';
-const { INSTANCE_FILE_NAME, INSTANCE_FILE_TYPE } = constants;
 
 import { XFormAttachmentFixture } from '@getodk/common/fixtures/xform-attachments.ts';
 import type { JRResourceURLString } from '@getodk/common/jr-resources/JRResourceURL.ts';
 import { xmlElement } from '@getodk/common/test/fixtures/xform-dsl/index.ts';
 // eslint-disable-next-line no-restricted-imports
 import { readdir, readFile } from 'fs/promises';
+import { expect, it } from 'vitest';
 
 const ROOT_PATH = __dirname + '/../../../.upgrade-checker-cache';
 
 const getServers = async () => {
 	const servers = await readdir(ROOT_PATH, { withFileTypes: true });
-	return servers.filter((server) => server.isDirectory());
+	return servers.filter((server) => server.isDirectory()).map((dir) => dir.name);
 };
 
-const getProjects = async (server: any) => {
-	const path = `${ROOT_PATH}/${server.name}`;
+const getProjects = async (server: string) => {
+	const path = `${ROOT_PATH}/${server}`;
 	const projects = await readdir(path, { withFileTypes: true });
-	return projects.filter((project) => project.isDirectory());
+	return projects.filter((project) => project.isDirectory()).map((dir) => dir.name);
 };
 
-const getForms = async (server: any, project: any) => {
-	const path = `${ROOT_PATH}/${server.name}/${project.name}`;
+const getForms = async (server: string, project: string) => {
+	const path = `${ROOT_PATH}/${server}/${project}`;
 	const forms = await readdir(path, { withFileTypes: true });
-	return forms.filter((form) => form.isDirectory());
+	return forms.filter((form) => form.isDirectory()).map((dir) => dir.name);
 };
 
 const initResourceService = async (fixturePath: string) => {
@@ -177,90 +175,89 @@ const xmlCleanup = (xml: string) => {
 	return formatted.replaceAll(/>\s+</g, '><').replaceAll(/ xmlns:[a-zA-Z]+="[^"]+"/g, '');
 };
 
-describe('Upgrade test', async () => {
+const getFixtures = async () => {
+	const result = [];
 	const servers = await getServers();
-	const parser = new DOMParser();
-
 	for (const server of servers) {
-		describe(`server: ${server.name}`, async () => {
-			const projects = await getProjects(server);
-			for (const project of projects) {
-				describe(`project: ${project.name}`, async () => {
-					const forms = await getForms(server, project);
-					for (const formDir of forms) {
-						describe(`form: ${formDir.name}`, async () => {
-							const fixturePath = `${ROOT_PATH}/${server.name}/${project.name}/${formDir.name}`;
-							const formPath = `${fixturePath}/form.xml`;
-							const formXml = await readFile(formPath, { encoding: 'utf8' });
-							const form = xmlElement(formXml);
-							const formDocument = parser.parseFromString(formXml, 'text/xml');
-							const formVersion = getFormVersion(formDocument);
-							const actionRefs = getActionReferences(formDocument);
-							const binds = getUnstableCalculations(formDocument);
-
-							const resourceService = await initResourceService(fixturePath);
-
-							const submissions = await findSubmissions(fixturePath);
-							if (submissions.length === 0) {
-								// eslint-disable-next-line no-console
-								console.log(`no submissions found for form ${formDir.name}`);
-							}
-
-							for (const submission of submissions) {
-								const relativeSubmissionPath = submission.substring(fixturePath.length);
-								const submissionXml = await readFile(submission, { encoding: 'utf8' });
-
-								const inputDocument = parser.parseFromString(submissionXml, 'text/xml');
-								const submissionVersion = getSubmissionVersion(inputDocument);
-								if (submissionVersion !== formVersion) {
-									// eslint-disable-next-line no-console
-									console.log(
-										`ignoring ${relativeSubmissionPath} it was submitted with a different form version`
-									);
-									continue;
-								}
-								const encrypted = isEncrypted(inputDocument);
-								if (encrypted) {
-									// eslint-disable-next-line no-console
-									console.log(`ignoring ${relativeSubmissionPath} because it's encrypted`);
-									continue;
-								}
-
-								it(`submission: ${relativeSubmissionPath}`, async () => {
-									const instanceFile = new File([submissionXml], INSTANCE_FILE_NAME, {
-										type: INSTANCE_FILE_TYPE,
-									});
-									const instanceData = new FormData();
-									instanceData.set(INSTANCE_FILE_NAME, instanceFile);
-									const scenario = await Scenario.init('upgrade form', form, {
-										resourceService,
-										editInstance: {
-											inputType: 'FORM_INSTANCE_INPUT_RESOLVED',
-											data: [instanceData as InstanceData],
-										},
-									});
-									const rootNodeset = scenario.instanceRoot.definition.nodeset;
-									mockXML(inputDocument, scenario, rootNodeset + '/meta/instanceID');
-									mockXML(inputDocument, scenario, rootNodeset + '/meta/deprecatedID');
-
-									actionRefs.forEach((ref) => {
-										mockXML(inputDocument, scenario, ref);
-									});
-									binds.forEach((ref) => {
-										mockXML(inputDocument, scenario, ref);
-									});
-
-									const editedResult = scenario.proposed_serializeInstance();
-
-									const edited = xmlCleanup(editedResult);
-									const original = xmlCleanup(submissionXml);
-									expect(edited).to.equal(original);
-								});
-							}
-						});
-					}
-				});
+		const projects = await getProjects(server);
+		for (const project of projects) {
+			const forms = await getForms(server, project);
+			for (const formDir of forms) {
+				result.push({ server, project, formDir });
 			}
-		});
+		}
 	}
-});
+	return result;
+};
+
+const parser = new DOMParser();
+const fixtures = await getFixtures();
+
+// eslint-disable-next-line no-console
+console.log(`found ${fixtures.length} fixtures`);
+
+for (const fixture of fixtures) {
+	it(`server: ${fixture.server} > project: ${fixture.project} > form: ${fixture.formDir}`, async () => {
+		const { server, project, formDir } = fixture;
+		const fixturePath = `${ROOT_PATH}/${server}/${project}/${formDir}`;
+
+		const submissions = await findSubmissions(fixturePath);
+		if (submissions.length === 0) {
+			// eslint-disable-next-line no-console
+			console.log(`SKIP : no submissions found for form ${formDir}`);
+			return;
+		}
+		const formPath = `${fixturePath}/form.xml`;
+		const formXml = await readFile(formPath, { encoding: 'utf8' });
+		const form = xmlElement(formXml);
+		const formDocument = parser.parseFromString(formXml, 'text/xml');
+		const formVersion = getFormVersion(formDocument);
+		const actionRefs = getActionReferences(formDocument);
+		const binds = getUnstableCalculations(formDocument);
+		const resourceService = await initResourceService(fixturePath);
+
+		for (const submission of submissions) {
+			const relativeSubmissionPath = submission.substring(fixturePath.length);
+			const testName = `server: ${server} > project: ${project} > form: ${formDir} > submission: ${relativeSubmissionPath}`;
+			// eslint-disable-next-line no-console
+			console.log('running', testName);
+
+			const submissionXml = await readFile(submission, { encoding: 'utf8' });
+
+			const inputDocument = parser.parseFromString(submissionXml, 'text/xml');
+			const submissionVersion = getSubmissionVersion(inputDocument);
+			if (submissionVersion !== formVersion) {
+				// eslint-disable-next-line no-console
+				console.log('SKIP : it was submitted with a different form version');
+				continue;
+			}
+			const encrypted = isEncrypted(inputDocument);
+			if (encrypted) {
+				// eslint-disable-next-line no-console
+				console.log('SKIP : because it is encrypted');
+				continue;
+			}
+
+			const scenario = await Scenario.init('upgrade form', form, {
+				resourceService,
+				editInstance: submissionXml,
+			});
+			const rootNodeset = scenario.instanceRoot.definition.nodeset;
+			mockXML(inputDocument, scenario, rootNodeset + '/meta/instanceID');
+			mockXML(inputDocument, scenario, rootNodeset + '/meta/deprecatedID');
+
+			actionRefs.forEach((ref) => {
+				mockXML(inputDocument, scenario, ref);
+			});
+			binds.forEach((ref) => {
+				mockXML(inputDocument, scenario, ref);
+			});
+
+			const editedResult = scenario.proposed_serializeInstance();
+
+			const edited = xmlCleanup(editedResult);
+			const original = xmlCleanup(submissionXml);
+			expect(edited).to.equal(original);
+		}
+	});
+}

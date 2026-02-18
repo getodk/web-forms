@@ -145,23 +145,34 @@ const escapeFileName = (fileName) => fileName.replaceAll('/', '-slash-').substri
 
 try {
 	await mkdir(OUTPUT_DIR);
-} catch {
-	throw new Error(
-		`Error making the output dir. If this directory already exists, delete it and try again: ${OUTPUT_DIR}`
-	);
+} catch (err) {
+	if (err.code === 'EEXIST') {
+		console.log('output directory exists -- skipping creation');
+	} else {
+		throw err;
+	}
 }
 
 for (const server of servers) {
 	const { name, url, email, pass } = server;
+
+	const serverDir = OUTPUT_DIR + escapeFileName(name);
+	try {
+		await mkdir(serverDir);
+	} catch (err) {
+		if (err.code === 'EEXIST') {
+			console.log(`output directory for server "${name}" exists -- skipping server`);
+			continue;
+		} else {
+			throw err;
+		}
+	}
 
 	console.log('logging in to ' + name);
 	const token = await auth(url, email, pass);
 
 	console.log('getting projects');
 	const projects = await getProjects(url, token);
-
-	const serverDir = OUTPUT_DIR + escapeFileName(name);
-	await mkdir(serverDir);
 
 	for (const project of projects) {
 		if (project.archived) {
