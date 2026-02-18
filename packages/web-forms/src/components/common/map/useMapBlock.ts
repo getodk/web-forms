@@ -539,6 +539,7 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 		isMapEmpty: () => featuresSource.isEmpty(),
 		fitToAllFeatures: () => mapViewControls?.fitToAllFeatures(featuresSource),
 		watchCurrentLocation,
+		stopWatchingCurrentLocation: () => mapViewControls?.stopWatchingCurrentLocation(),
 		canRemoveCurrentLocation,
 
 		discardSavedFeature,

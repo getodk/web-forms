@@ -143,6 +143,7 @@ watch(
 const handleEscapeKey = (event: KeyboardEvent) => {
 	if (event.key === 'Escape' && isFullScreen.value) {
 		isFullScreen.value = false;
+		void onExitFullScreen();
 	}
 };
 
@@ -199,12 +200,17 @@ const enterFullScreen = () => {
 	}
 };
 
-const toggleFullScreen = async () => {
+const onExitFullScreen = async () => {
+	await nextTick();
+	isAdvancedPanelOpen.value = false;
+	mapHandler.fitToAllFeatures();
+	mapHandler.stopWatchingCurrentLocation();
+};
+
+const toggleFullScreen = () => {
 	isFullScreen.value = !isFullScreen.value;
 	if (!isFullScreen.value) {
-		await nextTick();
-		isAdvancedPanelOpen.value = false;
-		mapHandler.fitToAllFeatures();
+		void onExitFullScreen();
 	}
 };
 </script>
