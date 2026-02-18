@@ -2,4 +2,4 @@
 '@getodk/web-forms': patch
 ---
 
-Fix vertex addition failing on mobile due to micro-panning
+Fix micro-panning interference, optimize full-screen UI and location tracking
