@@ -151,13 +151,8 @@ export function useMapViewControls(mapInstance: Map): UseMapViewControls {
 		const ZOOM_BUFFER = 1;
 		const currentResolution = view.getResolutionForExtent(extent, size);
 		const currentZoom = view.getZoomForResolution(currentResolution) ?? 0;
-		let targetZoom = currentZoom - ZOOM_BUFFER; // For better aesthetics.
-		targetZoom = targetZoom > 1 ? Math.min(targetZoom, MAX_ZOOM) : MAX_ZOOM;
-
-		return {
-			zoom: targetZoom,
-			resolution: view.getResolutionForZoom(targetZoom),
-		};
+		const targetZoom = currentZoom - ZOOM_BUFFER; // For better aesthetics.
+		return targetZoom > 1 ? Math.min(targetZoom, MAX_ZOOM) : MAX_ZOOM;
 	};
 
 	const centerFeatureLocation = (feature: Feature): void => {
@@ -173,7 +168,8 @@ export function useMapViewControls(mapInstance: Map): UseMapViewControls {
 		const pixelOffsetY = mapWidth < SMALL_DEVICE_WIDTH ? -130 : 0;
 		const pixelOffsetX = mapWidth < SMALL_DEVICE_WIDTH ? 0 : -70;
 
-		const { zoom, resolution } = resolveTargetViewSettings(extent, view, size);
+		const zoom = resolveTargetViewSettings(extent, view, size);
+		const resolution = view.getResolutionForZoom(zoom);
 
 		const xOffsetInMapUnits = -pixelOffsetX * resolution;
 		const yOffsetInMapUnits = -pixelOffsetY * resolution;
