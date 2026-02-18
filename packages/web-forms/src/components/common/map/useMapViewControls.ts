@@ -76,13 +76,14 @@ export function useMapViewControls(mapInstance: Map): UseMapViewControls {
 		const view = mapInstance.getView();
 		const center = getCenter(extent);
 		const distance = evaluateDistance(view, center);
+		const padding = [70, 70, 70, 70];
 		if (distance === DISTANCE_CATEGORY.LONG) {
 			view.animate(
 				{ zoom: INTERMEDIATE_ZOOM, duration: ANIMATION_TIME_MS, easing: easeOut },
 				{ center: center, duration: ANIMATION_TIME_MS, easing: easeOut },
 				() => {
 					view.fit(extent, {
-						padding: [50, 50, 50, 50],
+						padding,
 						duration: 0,
 						maxZoom: MAX_ZOOM,
 					});
@@ -92,7 +93,7 @@ export function useMapViewControls(mapInstance: Map): UseMapViewControls {
 		}
 
 		view.fit(extent, {
-			padding: [50, 50, 50, 50],
+			padding,
 			duration: getZoomDuration(distance),
 			maxZoom: MAX_ZOOM,
 		});
