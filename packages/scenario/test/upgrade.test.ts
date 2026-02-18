@@ -7,7 +7,7 @@ import { XFormAttachmentFixture } from '@getodk/common/fixtures/xform-attachment
 import type { JRResourceURLString } from '@getodk/common/jr-resources/JRResourceURL.ts';
 import { xmlElement } from '@getodk/common/test/fixtures/xform-dsl/index.ts';
 // eslint-disable-next-line no-restricted-imports
-import { readdir, readFile } from 'fs/promises';
+import { readdir, readFile, stat } from 'fs/promises';
 import { expect, it } from 'vitest';
 
 const ROOT_PATH = __dirname + '/../../../.upgrade-checker-cache';
@@ -38,12 +38,15 @@ const initResourceService = async (fixturePath: string) => {
 			throw new Error('Too many resources');
 		}
 		for (const resource of resources) {
-			const resourceContent = await readFile(`${resourcePath}/${resource.name}`, {
+			const filename = `${resourcePath}/${resource.name}`;
+			const stats = await stat(filename);
+			if (stats.size > 1000) {
+				throw new Error(`Resource too large to load: ${filename}`);
+			}
+			const resourceContent = await readFile(filename, {
 				encoding: 'utf8',
 			});
-			const fixture = new XFormAttachmentFixture(`${resourcePath}/${resource.name}`, () =>
-				Promise.resolve('fake')
-			);
+			const fixture = new XFormAttachmentFixture(filename, () => Promise.resolve('fake'));
 			let url: JRResourceURLString;
 			if (fixture.mimeType === 'text/csv') {
 				url = `jr://file-csv/${resource.name}`;
@@ -197,8 +200,11 @@ const fixtures = await getFixtures();
 console.log(`found ${fixtures.length} fixtures`);
 
 for (const fixture of fixtures) {
-	it(`server: ${fixture.server} > project: ${fixture.project} > form: ${fixture.formDir}`, async () => {
-		const { server, project, formDir } = fixture;
+	const { server, project, formDir } = fixture;
+	const testName = `server: ${server} > project: ${project} > form: ${formDir}`;
+	it(testName, async () => {
+		// eslint-disable-next-line no-console
+		console.log('~~~~~~~~~~~ running test', testName);
 		const fixturePath = `${ROOT_PATH}/${server}/${project}/${formDir}`;
 
 		const submissions = await findSubmissions(fixturePath);
@@ -217,11 +223,6 @@ for (const fixture of fixtures) {
 		const resourceService = await initResourceService(fixturePath);
 
 		for (const submission of submissions) {
-			const relativeSubmissionPath = submission.substring(fixturePath.length);
-			const testName = `server: ${server} > project: ${project} > form: ${formDir} > submission: ${relativeSubmissionPath}`;
-			// eslint-disable-next-line no-console
-			console.log('running', testName);
-
 			const submissionXml = await readFile(submission, { encoding: 'utf8' });
 
 			const inputDocument = parser.parseFromString(submissionXml, 'text/xml');
