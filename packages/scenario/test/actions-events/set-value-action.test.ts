@@ -182,7 +182,7 @@ describe('setvalue action', () => {
 	});
 
 	describe('region repeats', () => {
-		describe('[`setvalue`] source in repeat', () => {
+		describe('`setvalue` source in repeat', () => {
 			// ported from: https://github.com/getodk/javarosa/blob/2dd8e15e9f3110a86f8d7d851efc98627ae5692e/src/test/java/org/javarosa/core/model/actions/SetValueActionTest.java#L251
 			it('updates destination in the same repeat instance', async () => {
 				const scenario = await Scenario.init(
@@ -576,6 +576,27 @@ describe('setvalue action', () => {
 			expect(scenario.answerOf('/data/output')).toEqualAnswer(stringAnswer(''));
 		});
 
+		it('odk-instance-first-load does not update on repeat add', async () => {
+			const scenario = await Scenario.init(
+				'Setvalue repeat',
+				html(
+					head(
+						title('Setvalue multiple'),
+						model(
+							mainInstance(t('data id="setvalue-multiple"', t('repeat id=""', t('source')))),
+							setvalueLiteral('odk-instance-first-load', '/data/repeat/source', 'first')
+						)
+					),
+					body(repeat('/data/repeat', input('/data/repeat/source')))
+				)
+			);
+
+			expect(scenario.answerOf('/data/repeat[1]/source').getValue()).toBe('first');
+			scenario.createNewRepeat('/data/repeat');
+			expect(scenario.answerOf('/data/repeat[1]/source').getValue()).toBe('first');
+			expect(scenario.answerOf('/data/repeat[2]/source').getValue()).toBe('');
+		});
+
 		// ported from: https://github.com/getodk/javarosa/blob/2dd8e15e9f3110a86f8d7d851efc98627ae5692e/src/test/java/org/javarosa/core/model/actions/SetValueActionTest.java#L468
 		describe('with inner empty string', () => {
 			it('clears the `ref` target', async () => {
@@ -684,6 +705,35 @@ describe('setvalue action', () => {
 
 			expect(scenario.answerOf('/data/destination')).toEqualAnswer(intAnswer(24));
 		});
+
+		it('is not triggered when loading form for editing', async () => {
+			const originalDate = '2025-01-01T10:23:28.822+13:00';
+			const instanceXML = `<data id="xforms-value-changed-event">
+	<source>5</source>
+	<destination>${originalDate}</destination>
+	<meta>
+		<instanceID>uuid:c0b9c932-e78b-474b-8568-48980113a7ac</instanceID>
+	</meta>
+</data>`;
+			const form = html(
+				head(
+					title('Value changed event'),
+					model(
+						mainInstance(t('data id="xforms-value-changed-event"', t('source'), t('destination'))),
+						bind('/data/destination').type('dateTime')
+					)
+				),
+				body(input('/data/source', setvalue('xforms-value-changed', '/data/destination', 'now()')))
+			);
+			const scenario = await Scenario.init('upgrade form', form, {
+				editInstance: instanceXML,
+			});
+
+			expect(scenario.answerOf('/data/destination')).toEqualAnswer(stringAnswer(originalDate));
+
+			scenario.answer('/data/source', 12);
+			expect(scenario.answerOf('/data/destination')).not.toEqualAnswer(stringAnswer(originalDate));
+		});
 	});
 
 	describe('`setvalue`', () => {
@@ -727,5 +777,33 @@ describe('setvalue action', () => {
 			const newInstance = cached.newInstance();
 			expect(newInstance.attributeOf('/data/element', 'attr').getValue()).toBe('7');
 		});
+	});
+
+	it('allows multiple `setvalue` elements with the same `ref`', async () => {
+		const scenario = await Scenario.init(
+			'Setvalue multiple',
+			html(
+				head(
+					title('Setvalue multiple'),
+					model(
+						mainInstance(t('data id="setvalue-multiple"', t('repeat id=""', t('source')))),
+						setvalueLiteral('odk-instance-first-load', '/data/repeat/source', 'first')
+					)
+				),
+				body(
+					repeat(
+						'/data/repeat',
+						input(
+							'/data/repeat/source',
+							setvalueLiteral('odk-new-repeat', '/data/repeat/source', 'second')
+						)
+					)
+				)
+			)
+		);
+		expect(scenario.answerOf('/data/repeat[1]/source').getValue()).toBe('first');
+		scenario.createNewRepeat('/data/repeat');
+		expect(scenario.answerOf('/data/repeat[1]/source').getValue()).toBe('first');
+		expect(scenario.answerOf('/data/repeat[2]/source').getValue()).toBe('second');
 	});
 });
