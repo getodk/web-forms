@@ -2,7 +2,6 @@
 /// <reference types="vite/client" />
 
 import type { CollectionValues } from '@getodk/common/types/collections/CollectionValues.ts';
-import { playwright } from '@vitest/browser-playwright';
 import { resolve } from 'path';
 import { defineConfig } from 'vitest/config';
 
@@ -69,7 +68,7 @@ export default defineConfig(({ mode }) => {
 			browser: {
 				enabled: BROWSER_ENABLED,
 				instances: BROWSER_NAME != null ? [{ browser: BROWSER_NAME }] : [],
-				provider: playwright(),
+				provider: 'playwright',
 				headless: true,
 				screenshotFailures: false,
 			},

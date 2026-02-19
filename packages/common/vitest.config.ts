@@ -4,7 +4,6 @@
 // TODO: much of this may be a good candidate for sharing from this internal package!
 
 import type { CollectionValues } from '@getodk/common/types/collections/CollectionValues.ts';
-import { playwright } from '@vitest/browser-playwright';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig(() => {
@@ -47,7 +46,7 @@ export default defineConfig(() => {
 			browser: {
 				enabled: BROWSER_ENABLED,
 				instances: BROWSER_NAME != null ? [{ browser: BROWSER_NAME }] : [],
-				provider: playwright(),
+				provider: 'playwright',
 				headless: true,
 				screenshotFailures: false,
 			},
