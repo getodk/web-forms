@@ -9,6 +9,8 @@ import type {
 	MissingResourceBehavior,
 	OpaqueReactiveObjectFactory,
 	PreloadProperties,
+	ResolvableFormInstanceInputType,
+	ResolvableInstanceAttachmentsMap,
 	ResolvedFormInstanceInputType,
 	RootNode,
 } from '@getodk/xforms-engine';
@@ -33,6 +35,7 @@ export interface TestFormOptions {
 	readonly resourceService: JRResourceService;
 	readonly missingResourceBehavior: MissingResourceBehavior;
 	readonly stateFactory: OpaqueReactiveObjectFactory;
+	readonly resolvableAttachments: ResolvableInstanceAttachmentsMap | null;
 	readonly instanceAttachments: InstanceAttachmentsConfig;
 	readonly preloadProperties: PreloadProperties;
 	readonly geolocationProvider: GeolocationProvider;
@@ -77,15 +80,24 @@ export const initializeTestForm = async (
 				},
 			};
 			if (options.editInstance) {
-				const instanceFile = new File([options.editInstance], INSTANCE_FILE_NAME, {
-					type: INSTANCE_FILE_TYPE,
-				});
-				const instanceData = new FormData();
-				instanceData.set(INSTANCE_FILE_NAME, instanceFile);
-				const instance = {
-					inputType: 'FORM_INSTANCE_INPUT_RESOLVED' as ResolvedFormInstanceInputType,
-					data: [instanceData as InstanceData] as const,
-				};
+				let instance;
+				if (options.resolvableAttachments) {
+					instance = {
+						inputType: 'FORM_INSTANCE_INPUT_RESOLVABLE' as ResolvableFormInstanceInputType,
+						resolveInstance: () => Promise.resolve(options.editInstance!),
+						attachments: options.resolvableAttachments,
+					};
+				} else {
+					const instanceFile = new File([options.editInstance], INSTANCE_FILE_NAME, {
+						type: INSTANCE_FILE_TYPE,
+					});
+					const instanceData = new FormData();
+					instanceData.set(INSTANCE_FILE_NAME, instanceFile);
+					instance = {
+						inputType: 'FORM_INSTANCE_INPUT_RESOLVED' as ResolvedFormInstanceInputType,
+						data: [instanceData as InstanceData] as const,
+					};
+				}
 				return editInstance(formResource, instance, initOptions);
 			}
 			return createInstance(formResource, initOptions);

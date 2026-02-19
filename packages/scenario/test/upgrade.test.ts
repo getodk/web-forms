@@ -87,8 +87,11 @@ const initResourceService = async (fixturePath: string) => {
 
 const findSubmissions = async (fixturePath: string) => {
 	const submissionDirName = `${fixturePath}/submissions`;
-	const files = await readdir(submissionDirName);
-	return files.slice(0, 10).map((file) => `${submissionDirName}/${file}`);
+	const files = await readdir(submissionDirName, { withFileTypes: true });
+	return files
+		.filter((form) => form.isDirectory())
+		.slice(0, 10)
+		.map((dir) => dir.name);
 };
 
 const mockXML = (input: Document, edited: Scenario, xpath: string) => {
@@ -187,6 +190,24 @@ const getUnstableCalculations = (formDocument: Document) => {
 	return refs;
 };
 
+const getAttachments = async (submissionPath: string) => {
+	let attachmentsFile;
+	try {
+		attachmentsFile = await readFile(submissionPath + '/attachments.json', { encoding: 'utf8' });
+	} catch {
+		// no attachments found
+		return;
+	}
+	const resolvableAttachments = new Map();
+	const attachments = JSON.parse(attachmentsFile);
+	for (const attachment of attachments) {
+		resolvableAttachments.set(attachment.name, () =>
+			Promise.resolve({ blob: () => new Response('mock response') })
+		);
+	}
+	return resolvableAttachments;
+};
+
 const xmlCleanup = (xml: string) => {
 	const doc = parser.parseFromString(xml, 'text/xml');
 	const formatted = new XMLSerializer().serializeToString(doc);
@@ -238,9 +259,10 @@ for (const fixture of fixtures) {
 		const resourceService = await initResourceService(fixturePath);
 
 		for (const submission of submissions) {
-			const submissionXml = await readFile(submission, { encoding: 'utf8' });
+			const submissionPath = `${fixturePath}/submissions/${submission}`;
+			const editInstance = await readFile(`${submissionPath}/instance.xml`, { encoding: 'utf8' });
 
-			const inputDocument = parser.parseFromString(submissionXml, 'text/xml');
+			const inputDocument = parser.parseFromString(editInstance, 'text/xml');
 			const submissionVersion = getSubmissionVersion(inputDocument);
 			if (submissionVersion !== formVersion) {
 				// eslint-disable-next-line no-console
@@ -254,9 +276,11 @@ for (const fixture of fixtures) {
 				continue;
 			}
 
+			const attachments = await getAttachments(submissionPath);
 			const scenario = await Scenario.init('upgrade form', form, {
 				resourceService,
-				editInstance: submissionXml,
+				editInstance,
+				resolvableAttachments: attachments ?? null,
 			});
 			const rootNodeset = scenario.instanceRoot.definition.nodeset;
 			mockXML(inputDocument, scenario, rootNodeset + '/meta/instanceID');
@@ -272,7 +296,7 @@ for (const fixture of fixtures) {
 			const editedResult = scenario.proposed_serializeInstance();
 
 			const edited = xmlCleanup(editedResult);
-			const original = xmlCleanup(submissionXml);
+			const original = xmlCleanup(editInstance);
 			expect(edited).to.equal(original);
 		}
 	});

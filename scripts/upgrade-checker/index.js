@@ -128,6 +128,11 @@ const writeAttachmentFiles = async (server, token, formDir, form) => {
 	}
 };
 
+const getInstanceAttachmentFile = async (server, token, form, submission) => {
+	const path = `/v1/projects/${encodeURIComponent(form.projectId)}/forms/${encodeURIComponent(form.xmlFormId)}/submissions/${encodeURIComponent(submission.instanceId)}/attachments`;
+	return jsonRequest({ server, token, path });
+};
+
 const writeSubmissionFiles = async (server, token, formDir, form) => {
 	const dir = formDir + '/submissions';
 	await mkdir(dir);
@@ -135,9 +140,14 @@ const writeSubmissionFiles = async (server, token, formDir, form) => {
 	submissions.sort((lhs, rhs) => new Date(rhs.createdAt) - new Date(lhs.createdAt)); // reverse sort, newest first
 	const subset = submissions.slice(0, 10); // pick the most recent 10
 	for (const submission of subset) {
+		const instanceDir = dir + '/' + submission.instanceId;
+		await mkdir(instanceDir);
 		const submissionXml = await getSubmissionFile(server, token, form, submission);
-		const filename = `${dir}/${submission.instanceId}.xml`;
-		await writeFile(filename, submissionXml, 'utf8');
+		await writeFile(`${instanceDir}/instance.xml`, submissionXml, 'utf8');
+		const attachments = await getInstanceAttachmentFile(server, token, form, submission);
+		if (attachments.length) {
+			await writeFile(`${instanceDir}/attachments.json`, JSON.stringify(attachments), 'utf8');
+		}
 	}
 };
 

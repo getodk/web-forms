@@ -176,6 +176,7 @@ export class Scenario {
 				fileNameFactory: ({ basename, extension }) => `${basename}${extension ?? ''}`,
 				...overrideOptions?.instanceAttachments,
 			},
+			resolvableAttachments: overrideOptions?.resolvableAttachments ?? null,
 			preloadProperties: overrideOptions?.preloadProperties ?? {},
 			geolocationProvider: overrideOptions?.geolocationProvider ?? {
 				getLocation: () => Promise.resolve(''),
