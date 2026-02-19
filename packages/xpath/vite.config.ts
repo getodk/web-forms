@@ -2,6 +2,7 @@
 /// <reference types="vitest" />
 
 import type { CollectionValues } from '@getodk/common/types/collections/CollectionValues';
+import { playwright } from '@vitest/browser-playwright';
 import { resolve as resolvePath } from 'node:path';
 import babel from 'vite-plugin-babel';
 import dts from 'vite-plugin-dts';
@@ -132,7 +133,7 @@ export default defineConfig(({ mode }) => {
 			browser: {
 				enabled: BROWSER_ENABLED,
 				instances: BROWSER_NAME != null ? [{ browser: BROWSER_NAME }] : [],
-				provider: 'playwright',
+				provider: playwright(),
 				headless: true,
 				screenshotFailures: false,
 			},
