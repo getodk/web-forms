@@ -32,6 +32,14 @@ const getForms = async (server: string, project: string) => {
 
 const initResourceService = async (fixturePath: string) => {
 	const resourceService = new JRResourceService();
+	resourceService.activateResource(
+		{
+			fileName: 'last-saved',
+			url: 'jr://instance/last-saved',
+			mimeType: 'text/xml',
+		},
+		'<root/>'
+	);
 	const resourcePath = `${fixturePath}/resources`;
 	let resources;
 	try {
