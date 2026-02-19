@@ -133,6 +133,15 @@ watch(
 	(newValue) => mapHandler.setupMapInteractions(newValue)
 );
 
+watch(isFullScreen, async (newValue) => {
+	if (!newValue) {
+		await nextTick();
+		isAdvancedPanelOpen.value = false;
+		mapHandler.fitToAllFeatures();
+		mapHandler.stopWatchingCurrentLocation();
+	}
+});
+
 const onFeaturePlacement = () => emitSavedFeature();
 
 watch(
@@ -143,7 +152,6 @@ watch(
 const handleEscapeKey = (event: KeyboardEvent) => {
 	if (event.key === 'Escape' && isFullScreen.value) {
 		isFullScreen.value = false;
-		void onExitFullScreen();
 	}
 };
 
@@ -200,18 +208,8 @@ const enterFullScreen = () => {
 	}
 };
 
-const onExitFullScreen = async () => {
-	await nextTick();
-	isAdvancedPanelOpen.value = false;
-	mapHandler.fitToAllFeatures();
-	mapHandler.stopWatchingCurrentLocation();
-};
-
 const toggleFullScreen = () => {
 	isFullScreen.value = !isFullScreen.value;
-	if (!isFullScreen.value) {
-		void onExitFullScreen();
-	}
 };
 </script>
 
