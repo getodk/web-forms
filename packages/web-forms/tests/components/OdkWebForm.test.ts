@@ -14,13 +14,7 @@ import type {
 import { flushPromises, mount } from '@vue/test-utils';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import packageJson from '../../package.json' with { type: 'json' };
-import {
-	type ElementMethodName,
-	getFormXml,
-	getWebFormsTestFixture,
-	globalMountOptions,
-	mockElementPrototypeMethod,
-} from '../helpers';
+import { getFormXml, getWebFormsTestFixture, globalMountOptions } from '../helpers';
 
 interface MountComponentOptions {
 	readonly overrideProps?: Partial<OdkWebFormsProps>;
@@ -50,27 +44,27 @@ const mountComponent = (formXML: string, options?: MountComponentOptions) => {
 
 describe('OdkWebForm', () => {
 	let formXML: string;
-	let elementKeysAdded: ElementMethodName[];
+	// let elementKeysAdded: ElementMethodName[];
 
 	beforeEach(async () => {
 		formXML = await getFormXml('2-simple-required.xml');
 
-		elementKeysAdded = [];
-		mockElementPrototypeMethod('scrollTo', () => {
-			/* Do nothing */
+		// elementKeysAdded = [];
+		vi.spyOn(HTMLElement.prototype, 'scrollTo').mockImplementation(function () {
+			// Do nothing
 		});
-		mockElementPrototypeMethod('showPopover', function () {
+		vi.spyOn(HTMLElement.prototype, 'showPopover').mockImplementation(function (this: HTMLElement) {
 			this.style.display = 'block';
 		});
-		mockElementPrototypeMethod('hidePopover', function () {
+		vi.spyOn(HTMLElement.prototype, 'scrollTo').mockImplementation(function (this: HTMLElement) {
 			this.style.display = 'none';
 		});
 	});
 
 	afterEach(() => {
-		elementKeysAdded.forEach((methodName) => {
-			delete HTMLElement.prototype[methodName];
-		});
+		// elementKeysAdded.forEach((methodName) => {
+		// 	delete HTMLElement.prototype[methodName];
+		// });
 		vi.restoreAllMocks();
 	});
 
