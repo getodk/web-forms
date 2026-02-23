@@ -1,5 +1,4 @@
 import type { Awaitable } from '../../types/helpers.d.ts';
-import { IS_NODE_RUNTIME } from '../env/detection.ts';
 
 interface GlobURLFetchResponse {
 	text(): Promise<string>;
@@ -8,34 +7,34 @@ interface GlobURLFetchResponse {
 
 type FetchGlobURL = (globURL: string) => Awaitable<GlobURLFetchResponse>;
 
-let fetchGlobURL: FetchGlobURL;
+const fetchGlobURL: FetchGlobURL = fetch;
 
-if (IS_NODE_RUNTIME) {
-	const { readFile } = await import('node:fs/promises');
+// if (IS_NODE_RUNTIME) {
+// 	const { readFile } = await import('node:fs/promises');
 
-	class NodeGlobURLFetchResponse {
-		readonly fsPath: string;
+// 	class NodeGlobURLFetchResponse {
+// 		readonly fsPath: string;
 
-		constructor(globURL: string) {
-			this.fsPath = globURL.replace('/@fs/', '/');
-		}
+// 		constructor(globURL: string) {
+// 			this.fsPath = globURL.replace('/@fs/', '/');
+// 		}
 
-		text(): Promise<string> {
-			return readFile(this.fsPath, 'utf-8');
-		}
+// 		text(): Promise<string> {
+// 			return readFile(this.fsPath, 'utf-8');
+// 		}
 
-		async blob(): Promise<Blob> {
-			const buffer = await readFile(this.fsPath);
-			return new Blob([new Uint8Array(buffer)]);
-		}
-	}
+// 		async blob(): Promise<Blob> {
+// 			const buffer = await readFile(this.fsPath);
+// 			return new Blob([new Uint8Array(buffer)]);
+// 		}
+// 	}
 
-	fetchGlobURL = (globURL) => {
-		return new NodeGlobURLFetchResponse(globURL);
-	};
-} else {
-	fetchGlobURL = fetch;
-}
+// 	fetchGlobURL = (globURL) => {
+// 		return new NodeGlobURLFetchResponse(globURL);
+// 	};
+// } else {
+// fetchGlobURL = fetch;
+// }
 
 type ImportMetaGlobURLRecord = Readonly<Record<string, string>>;
 

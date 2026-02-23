@@ -1,4 +1,3 @@
-
 // TODO: much of this may be a good candidate for sharing from this internal package!
 
 import type { CollectionValues } from '@getodk/common/types/collections/CollectionValues.ts';
