@@ -6,18 +6,13 @@ const ISO_DATE_LIKE_SUBPATTERN = '\\d{4}-\\d{2}-\\d{2}';
 
 export const ISO_DATE_LIKE_PATTERN = new RegExp(`^${ISO_DATE_LIKE_SUBPATTERN}(?=T|$)`);
 
-const STRICT_TIME_FORMATS = [
-	'\\d{2}:\\d{2}:\\d{2}\\.\\d+',
-	'\\d{2}:\\d{2}:\\d{2}',
-];
+const STRICT_TIME_FORMATS = ['\\d{2}:\\d{2}:\\d{2}\\.\\d+', '\\d{2}:\\d{2}:\\d{2}'];
 
-const STRICT_ISO_TIME_SUBPATTERN = `(${[ ...STRICT_TIME_FORMATS ].join('|')})`;
+const STRICT_ISO_TIME_SUBPATTERN = `(${[...STRICT_TIME_FORMATS].join('|')})`;
 
-const ISO_TIME_LIKE_SUBPATTERN = `(${[
-	...STRICT_TIME_FORMATS,
-	'\\d{2}:\\d{2}',
-	'\\d{2}',
-].join('|')})`;
+const ISO_TIME_LIKE_SUBPATTERN = `(${[...STRICT_TIME_FORMATS, '\\d{2}:\\d{2}', '\\d{2}'].join(
+	'|'
+)})`;
 
 export const ISO_TIME_LIKE_PATTERN = new RegExp(`^${ISO_TIME_LIKE_SUBPATTERN}$`);
 
@@ -58,10 +53,5 @@ export const ISO_DATE_OR_DATE_TIME_NO_OFFSET_PATTERN = new RegExp(
 );
 
 export const ISO_TIME_WITH_OPTIONAL_OFFSET_PATTERN = new RegExp(
-	[
-		'^',
-		STRICT_ISO_TIME_SUBPATTERN,
-		`(${ISO_OFFSET_SUBPATTERN})?`,
-		'$',
-	].join('')
+	['^', STRICT_ISO_TIME_SUBPATTERN, `(${ISO_OFFSET_SUBPATTERN})?`, '$'].join('')
 );
