@@ -64,7 +64,7 @@
     "@babel/core": "^7.28.5",
     "@getodk/tree-sitter-xpath": "0.2.2",
     "@getodk/xpath": "0.10.0",
-    "@playwright/test": "^1.57.0",
+    "@playwright/test": "^1.58.2",
     "@types/papaparse": "^5.5.0",
     "babel-plugin-transform-jsbi-to-bigint": "^1.4.2",
     "http-server": "^14.1.1",

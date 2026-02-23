@@ -1309,7 +1309,7 @@ __metadata:
     "@fontsource/roboto": "npm:^5.2.9"
     "@getodk/xforms-engine": "npm:0.17.0"
     "@mdi/js": "npm:^7.4.47"
-    "@playwright/test": "npm:^1.57.0"
+    "@playwright/test": "npm:^1.58.2"
     "@primeuix/themes": "npm:1.0.3"
     "@types/ramda": "npm:^0.31.1"
     "@vitejs/plugin-vue": "npm:^6.0.4"
@@ -1345,7 +1345,7 @@ __metadata:
     "@babel/core": "npm:^7.28.5"
     "@getodk/tree-sitter-xpath": "npm:0.2.2"
     "@getodk/xpath": "npm:0.10.0"
-    "@playwright/test": "npm:^1.57.0"
+    "@playwright/test": "npm:^1.58.2"
     "@types/papaparse": "npm:^5.5.0"
     babel-plugin-transform-jsbi-to-bigint: "npm:^1.4.2"
     bin-packer: "npm:1.7.0"
@@ -1379,7 +1379,7 @@ __metadata:
     "@babel/core": "npm:^7.28.5"
     "@getodk/common": "npm:0.12.0"
     "@getodk/tree-sitter-xpath": "npm:0.2.2"
-    "@playwright/test": "npm:^1.57.0"
+    "@playwright/test": "npm:^1.58.2"
     "@types/crypto-js": "npm:^4.2.2"
     babel-plugin-transform-jsbi-to-bigint: "npm:^1.4.2"
     crypto-js: "npm:^4.2.0"
@@ -1874,14 +1874,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@playwright/test@npm:^1.57.0":
-  version: 1.57.0
-  resolution: "@playwright/test@npm:1.57.0"
+"@playwright/test@npm:^1.58.2":
+  version: 1.58.2
+  resolution: "@playwright/test@npm:1.58.2"
   dependencies:
-    playwright: "npm:1.57.0"
+    playwright: "npm:1.58.2"
   bin:
     playwright: cli.js
-  checksum: 10c0/35ba4b28be72bf0a53e33dbb11c6cff848fb9a37f49e893ce63a90675b5291ec29a1ba82c8a3b043abaead129400f0589623e9ace2e6a1c8eaa409721ecc3774
+  checksum: 10c0/2164c03ad97c3653ff02e8818a71f3b2bbc344ac07924c9d8e31cd57505d6d37596015a41f51396b3ed8de6840f59143eaa9c21bf65515963da20740119811da
   languageName: node
   linkType: hard
 
@@ -6842,15 +6842,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:1.57.0":
-  version: 1.57.0
-  resolution: "playwright-core@npm:1.57.0"
-  bin:
-    playwright-core: cli.js
-  checksum: 10c0/798e35d83bf48419a8c73de20bb94d68be5dde68de23f95d80a0ebe401e3b83e29e3e84aea7894d67fa6c79d2d3d40cc5bcde3e166f657ce50987aaa2421b6a9
-  languageName: node
-  linkType: hard
-
 "playwright-core@npm:1.58.2":
   version: 1.58.2
   resolution: "playwright-core@npm:1.58.2"
@@ -6860,22 +6851,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright@npm:1.57.0":
-  version: 1.57.0
-  resolution: "playwright@npm:1.57.0"
-  dependencies:
-    fsevents: "npm:2.3.2"
-    playwright-core: "npm:1.57.0"
-  dependenciesMeta:
-    fsevents:
-      optional: true
-  bin:
-    playwright: cli.js
-  checksum: 10c0/ab03c99a67b835bdea9059f516ad3b6e42c21025f9adaa161a4ef6bc7ca716dcba476d287140bb240d06126eb23f889a8933b8f5f1f1a56b80659d92d1358899
-  languageName: node
-  linkType: hard
-
-"playwright@npm:^1.58.2":
+"playwright@npm:1.58.2, playwright@npm:^1.58.2":
   version: 1.58.2
   resolution: "playwright@npm:1.58.2"
   dependencies:
@@ -7337,7 +7313,7 @@ __metadata:
     "@changesets/changelog-github": "npm:^0.5.1"
     "@changesets/cli": "npm:^2.29.7"
     "@eslint/js": "npm:^9.39.1"
-    "@playwright/test": "npm:^1.57.0"
+    "@playwright/test": "npm:^1.58.2"
     "@tsconfig/node20": "npm:^20.1.8"
     "@types/eslint": "npm:^9.6.1"
     "@types/eslint-config-prettier": "npm:^6.11.3"
