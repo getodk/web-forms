@@ -56,7 +56,7 @@ describe('OdkWebForm', () => {
 		vi.spyOn(HTMLElement.prototype, 'showPopover').mockImplementation(function (this: HTMLElement) {
 			this.style.display = 'block';
 		});
-		vi.spyOn(HTMLElement.prototype, 'scrollTo').mockImplementation(function (this: HTMLElement) {
+		vi.spyOn(HTMLElement.prototype, 'hidePopover').mockImplementation(function (this: HTMLElement) {
 			this.style.display = 'none';
 		});
 	});

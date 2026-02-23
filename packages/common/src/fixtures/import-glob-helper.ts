@@ -11,7 +11,6 @@ type FetchGlobURL = (globURL: string) => Awaitable<GlobURLFetchResponse>;
 let fetchGlobURL: FetchGlobURL;
 
 if (IS_NODE_RUNTIME) {
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 	const { readFile } = await import('node:fs/promises');
 
 	class NodeGlobURLFetchResponse {
@@ -22,12 +21,10 @@ if (IS_NODE_RUNTIME) {
 		}
 
 		text(): Promise<string> {
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
 			return readFile(this.fsPath, 'utf-8');
 		}
 
 		async blob(): Promise<Blob> {
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
 			const buffer = await readFile(this.fsPath);
 			return new Blob([new Uint8Array(buffer)]);
 		}
