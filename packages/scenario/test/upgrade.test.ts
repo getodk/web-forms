@@ -199,7 +199,7 @@ const getAttachments = async (submissionPath: string) => {
 		return;
 	}
 	const resolvableAttachments = new Map();
-	const attachments = JSON.parse(attachmentsFile);
+	const attachments = JSON.parse(attachmentsFile) as ReadonlyArray<{ name: string }>;
 	for (const attachment of attachments) {
 		resolvableAttachments.set(attachment.name, () =>
 			Promise.resolve({ blob: () => new Response('mock response') })
@@ -216,6 +216,35 @@ const xmlCleanup = (xml: string) => {
 		.replaceAll(/ xmlns:[a-zA-Z]+="[^"]+"/g, '') // remove namespace declarations
 		.replaceAll(/<orx:/g, '<') // remove namespace usages
 		.replaceAll(/<\/orx:/g, '</'); // remove namespace usages (closing tags)
+};
+
+const CLOSING_TAG_REGEX = /^\/[^>]+>/;
+const SELF_CLOSING_TAG_REGEX = /^[^>]+\/>$/;
+
+const xmlFormat = (xml: string) => {
+	let indent = 0;
+	return (
+		xmlCleanup(xml)
+			.split('<')
+			.map((t) => {
+				if (!t) {
+					return '';
+				}
+				const isClosing = CLOSING_TAG_REGEX.test(t);
+				const isSelfClosing = SELF_CLOSING_TAG_REGEX.test(t);
+
+				if (isClosing && indent > 0) {
+					indent--;
+				}
+				const indented = `${'  '.repeat(indent)}<${t}`;
+				if (!isClosing && !isSelfClosing) {
+					indent++;
+					indented.replace('>', '>\n');
+				}
+				return indented;
+			})
+			.join('\n') + '\n'
+	);
 };
 
 const getFixtures = async () => {
@@ -295,8 +324,8 @@ for (const fixture of fixtures) {
 
 			const editedResult = scenario.proposed_serializeInstance();
 
-			const edited = xmlCleanup(editedResult);
-			const original = xmlCleanup(editInstance);
+			const edited = xmlFormat(editedResult);
+			const original = xmlFormat(editInstance);
 			expect(edited).to.equal(original);
 		}
 	});
