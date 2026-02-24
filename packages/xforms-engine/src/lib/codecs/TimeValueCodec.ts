@@ -35,7 +35,8 @@ const parseZonedDateTimeToString = (value: Temporal.ZonedDateTime): string => {
 	if (!value) {
 		return '';
 	}
-	const time = value.toPlainTime().toString();
+	const MILLISECONDS = 3;
+	const time = value.toPlainTime().toString({ fractionalSecondDigits: MILLISECONDS });
 	const offset = value.offset;
 	return `${time}${offset === '+00:00' ? 'Z' : offset}`;
 };

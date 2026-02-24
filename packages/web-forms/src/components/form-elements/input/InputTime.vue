@@ -26,6 +26,11 @@ const value = computed({
 		return new Date(`${yyyy}-${mm}-${dd}T${temporalValue}`);
 	},
 	set: (newTime) => {
+		// Clear seconds and milliseconds to match Collect and Enketo behavior (a client's responsibility).
+		if (newTime) {
+			newTime.setMilliseconds(0);
+			newTime.setSeconds(0);
+		}
 		props.question.setValue(newTime);
 	},
 });
