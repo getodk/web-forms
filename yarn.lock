@@ -1901,21 +1901,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@primeuix/styled@npm:^0.7.3":
-  version: 0.7.4
-  resolution: "@primeuix/styled@npm:0.7.4"
-  dependencies:
-    "@primeuix/utils": "npm:^0.6.1"
-  checksum: 10c0/e1ed3e6c4a36bd5a6722b8fcd3e79d9fd60a36f174e5d822fd2fa0ecace49508c548228462ff8033961e1aa1bece6ec87c04879097c3691044314629120e968c
-  languageName: node
-  linkType: hard
-
 "@primeuix/styles@npm:^1.0.0":
-  version: 1.2.5
-  resolution: "@primeuix/styles@npm:1.2.5"
+  version: 1.0.2
+  resolution: "@primeuix/styles@npm:1.0.2"
   dependencies:
-    "@primeuix/styled": "npm:^0.7.3"
-  checksum: 10c0/49d8f5fca435e095c13bc7004187ee1d741004cf2696ed615e6a72d6732d928c55670f0f98700c3e040058746669d11abc7906f16c9b2f5631635d1260d01212
+    "@primeuix/styled": "npm:^0.5.1"
+  checksum: 10c0/2e3237ac3db5fcb484fcf6206f97e70b238d6cf2fc4b679c52a65c0ddb03a5a8865693b511a2d8dcf2e94a2b4e222a29e54b3e34cfab602bec2218fd99b8e867
   languageName: node
   linkType: hard
 
@@ -1939,13 +1930,6 @@ __metadata:
   version: 0.5.3
   resolution: "@primeuix/utils@npm:0.5.3"
   checksum: 10c0/a856aedcb07ca6f8301c2d86ce28a38c0552fd938a0a839cf39230043ede9233349206a9eaf85aa9cef08d8af1aae5549d6a3f86bdb14a79c0e9e11883d24c65
-  languageName: node
-  linkType: hard
-
-"@primeuix/utils@npm:^0.6.1":
-  version: 0.6.4
-  resolution: "@primeuix/utils@npm:0.6.4"
-  checksum: 10c0/ee5f284c1cd3a5070c5eed6c45d803313574e0db95c45b6fc822ddb76416bbeb86986105ec4912a9d9964cb9bf7736e4b5f316c5406ec3fc16ba8012ba91a9fe
   languageName: node
   linkType: hard
 
