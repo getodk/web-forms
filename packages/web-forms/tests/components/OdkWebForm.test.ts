@@ -41,7 +41,21 @@ const mountComponent = (formXML: string, options?: MountComponentOptions) => {
 
 	return component;
 };
+/*
+if (methodName in HTMLElement.prototype) {
+		const mock = vi.spyOn<HTMLElement, MethodName>(
+			HTMLElement.prototype,
+			methodName
+		) as MockInstance<HTMLElement[MethodName]>;
 
+		return mock.mockImplementation(mockImplementation);
+	}
+	const mock = vi.fn(mockImplementation);
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
+	HTMLElement.prototype[methodName] = mock as any;
+	return mock;
+*/
+declare const mockElement: HTMLElement;
 describe('OdkWebForm', () => {
 	let formXML: string;
 	// let elementKeysAdded: ElementMethodName[];
@@ -49,16 +63,41 @@ describe('OdkWebForm', () => {
 	beforeEach(async () => {
 		formXML = await getFormXml('2-simple-required.xml');
 
-		// elementKeysAdded = [];
-		vi.spyOn(HTMLElement.prototype, 'scrollTo').mockImplementation(function () {
-			// Do nothing
-		});
-		vi.spyOn(HTMLElement.prototype, 'showPopover').mockImplementation(function (this: HTMLElement) {
-			this.style.display = 'block';
-		});
-		vi.spyOn(HTMLElement.prototype, 'hidePopover').mockImplementation(function (this: HTMLElement) {
-			this.style.display = 'none';
-		});
+		if ('scrollTo' in HTMLElement.prototype) {
+			const mock = vi.spyOn<HTMLElement, 'scrollTo'>(HTMLElement.prototype, 'scrollTo');
+			return mock.mockImplementation(function () {
+				// Do nothing
+			});
+		} else {
+			const mock = vi.fn(function () {
+				// Do nothing
+			});
+			mockElement.scrollTo = mock;
+		}
+
+		if ('showPopover' in HTMLElement.prototype) {
+			const mock = vi.spyOn<HTMLElement, 'showPopover'>(HTMLElement.prototype, 'showPopover');
+			return mock.mockImplementation(function (this: HTMLElement) {
+				this.style.display = 'block';
+			});
+		} else {
+			const mock = vi.fn(function (this: HTMLElement) {
+				this.style.display = 'block';
+			});
+			mockElement.showPopover = mock;
+		}
+
+		if ('hidePopover' in HTMLElement.prototype) {
+			const mock = vi.spyOn<HTMLElement, 'hidePopover'>(HTMLElement.prototype, 'hidePopover');
+			return mock.mockImplementation(function (this: HTMLElement) {
+				this.style.display = 'none';
+			});
+		} else {
+			const mock = vi.fn(function (this: HTMLElement) {
+				this.style.display = 'none';
+			});
+			mockElement.hidePopover = mock;
+		}
 	});
 
 	afterEach(() => {

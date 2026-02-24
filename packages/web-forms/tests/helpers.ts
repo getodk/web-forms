@@ -108,7 +108,7 @@ export const mockDocumentGetter = <PropertyName extends DocumentPropertyName>(
 
 // type StringKeyOfHTMLElement = StringKeyOf<HTMLElement>;
 
-// prettier-ignore
+// // prettier-ignore
 // export type ElementMethodName = {
 // 	[PropertyName in StringKeyOfHTMLElement]:
 // 		HTMLElement[PropertyName] extends AnyFunction
@@ -118,7 +118,7 @@ export const mockDocumentGetter = <PropertyName extends DocumentPropertyName>(
 
 // type ElementMethodMock<MethodName extends ElementMethodName> = (
 // 	this: HTMLElement,
-// 	...args: Parameters<HTMLElement[MethodName]>
+// 	...args: any[]
 // ) => ReturnType<HTMLElement[MethodName]>;
 
 // export const mockElementPrototypeMethod = <MethodName extends ElementMethodName>(
