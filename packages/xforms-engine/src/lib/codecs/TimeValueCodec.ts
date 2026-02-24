@@ -1,4 +1,7 @@
-import { ISO_TIME_WITH_OPTIONAL_OFFSET_PATTERN } from '@getodk/common/constants/datetime.ts';
+import {
+	ISO_TIME_WITH_OPTIONAL_OFFSET_PATTERN,
+	VALID_OFFSET_VALUE,
+} from '@getodk/common/constants/datetime.ts';
 import { Temporal } from 'temporal-polyfill';
 import { type CodecDecoder, type CodecEncoder, ValueCodec } from './ValueCodec.ts';
 
@@ -13,11 +16,19 @@ export type TimeInputValue =
 	| null;
 
 const validateTimeString = (value: string): TimeRuntimeValue => {
-	if (value == null || !ISO_TIME_WITH_OPTIONAL_OFFSET_PATTERN.test(value)) {
+	const match = ISO_TIME_WITH_OPTIONAL_OFFSET_PATTERN.exec(value ?? '');
+	if (!match?.length) {
 		return null;
 	}
 
-	return value;
+	try {
+		const [, timeOnly = '', offset] = match;
+		// Delegate bounds checking to Temporal
+		Temporal.PlainTime.from(timeOnly);
+		return offset && !VALID_OFFSET_VALUE.test(offset) ? null : value;
+	} catch {
+		return null;
+	}
 };
 
 const parseZonedDateTimeToString = (value: Temporal.ZonedDateTime): string => {

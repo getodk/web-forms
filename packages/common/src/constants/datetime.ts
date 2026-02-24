@@ -26,7 +26,7 @@ const ISO_OFFSET_SUBPATTERN = `(${TIMEZONE_OFFSET_SUBPATTERN}|Z)`;
  * Validates a timezone offset (e.g., "+01:00", "-12:30") in the format ±HH:MM.
  * Ensures hours are between 00 and 14, and minutes are between 00 and 59, matching standard timezone offset ranges.
  */
-export const VALID_OFFSET_VALUE = new RegExp('^[+-]([0][0-9]|1[0-4]):([0-5][0-9])$');
+export const VALID_OFFSET_VALUE = new RegExp('^([+-]([0][0-9]|1[0-4]):([0-5][0-9])|Z)$', 'i');
 
 export const ISO_DATE_TIME_LIKE_PATTERN = new RegExp(
 	[
