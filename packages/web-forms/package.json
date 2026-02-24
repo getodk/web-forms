@@ -59,7 +59,7 @@
     "@fontsource/hanken-grotesk": "^5.2.8",
     "@fontsource/roboto": "^5.2.9",
     "@getodk/xforms-engine": "0.17.0",
-    "@playwright/test": "^1.57.0",
+    "@playwright/test": "^1.58.2",
     "@primeuix/themes": "1.0.3",
     "@types/ramda": "^0.31.1",
     "@vitejs/plugin-vue": "^6.0.4",
@@ -76,7 +76,7 @@
     "vite": "^7.3.1",
     "vite-plugin-css-injected-by-js": "^3.5.2",
     "vite-plugin-static-copy": "^3.2.0",
-    "vitest": "^3.2.4",
+    "vitest": "^4.0.18",
     "vue": "^3.5.28",
     "vue-router": "^4.6.3",
     "vue-tsc": "^3.1.5"

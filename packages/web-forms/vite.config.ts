@@ -1,6 +1,7 @@
 import { CollectionValues } from '@getodk/common/types/collections/CollectionValues';
 import vue from '@vitejs/plugin-vue';
 import vueJsx from '@vitejs/plugin-vue-jsx';
+import { playwright } from '@vitest/browser-playwright';
 import { execSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -175,7 +176,7 @@ export default defineConfig(({ mode }) => {
 			browser: {
 				enabled: BROWSER_ENABLED,
 				instances: BROWSER_NAME != null ? [{ browser: BROWSER_NAME }] : [],
-				provider: 'playwright',
+				provider: playwright(),
 				fileParallelism: false,
 				headless: true,
 				screenshotFailures: false,
