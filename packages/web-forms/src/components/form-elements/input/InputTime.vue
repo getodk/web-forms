@@ -34,10 +34,3 @@ const value = computed({
 <template>
 	<DatePicker v-model="value" time-only hour-format="12" :disabled="isDisabled" />
 </template>
-
-<style lang="scss">
-.p-datepicker-input:disabled,
-.p-datepicker-input:disabled + .p-datepicker-input-icon-container {
-	cursor: not-allowed;
-}
-</style>
