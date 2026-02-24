@@ -25,7 +25,7 @@ const imageURL = computed((previous: ObjectURL | null = null) => {
 		return null;
 	}
 
-	return URL.createObjectURL(file) satisfies string as ObjectURL;;
+	return URL.createObjectURL(file) satisfies string as ObjectURL;
 });
 </script>
 
