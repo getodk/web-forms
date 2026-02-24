@@ -26,6 +26,7 @@ const tableLayout = computed(() => {
 
 <style scoped lang="scss">
 .table-layout {
+	width: max-content;
 	min-width: 50%;
 	display: table;
 	max-width: 100%;
