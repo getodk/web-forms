@@ -105,36 +105,3 @@ export const mockDocumentGetter = <PropertyName extends DocumentPropertyName>(
 	});
 	return mock;
 };
-
-// type StringKeyOfHTMLElement = StringKeyOf<HTMLElement>;
-
-// // prettier-ignore
-// export type ElementMethodName = {
-// 	[PropertyName in StringKeyOfHTMLElement]:
-// 		HTMLElement[PropertyName] extends AnyFunction
-// 			? PropertyName
-// 			: never;
-// }[keyof HTMLElement];
-
-// type ElementMethodMock<MethodName extends ElementMethodName> = (
-// 	this: HTMLElement,
-// 	...args: any[]
-// ) => ReturnType<HTMLElement[MethodName]>;
-
-// export const mockElementPrototypeMethod = <MethodName extends ElementMethodName>(
-// 	methodName: MethodName,
-// 	mockImplementation: ElementMethodMock<MethodName>
-// ) => {
-// 	if (methodName in HTMLElement.prototype) {
-// 		const mock = vi.spyOn<HTMLElement, MethodName>(
-// 			HTMLElement.prototype,
-// 			methodName
-// 		) as MockInstance<HTMLElement[MethodName]>;
-
-// 		return mock.mockImplementation(mockImplementation);
-// 	}
-// 	const mock = vi.fn(mockImplementation);
-// 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
-// 	HTMLElement.prototype[methodName] = mock as any;
-// 	return mock;
-// };

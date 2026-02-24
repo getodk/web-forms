@@ -41,23 +41,9 @@ const mountComponent = (formXML: string, options?: MountComponentOptions) => {
 
 	return component;
 };
-/*
-if (methodName in HTMLElement.prototype) {
-		const mock = vi.spyOn<HTMLElement, MethodName>(
-			HTMLElement.prototype,
-			methodName
-		) as MockInstance<HTMLElement[MethodName]>;
 
-		return mock.mockImplementation(mockImplementation);
-	}
-	const mock = vi.fn(mockImplementation);
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
-	HTMLElement.prototype[methodName] = mock as any;
-	return mock;
-*/
 describe('OdkWebForm', () => {
 	let formXML: string;
-	// let elementKeysAdded: ElementMethodName[];
 
 	beforeEach(async () => {
 		formXML = await getFormXml('2-simple-required.xml');
@@ -103,9 +89,6 @@ describe('OdkWebForm', () => {
 	});
 
 	afterEach(() => {
-		// elementKeysAdded.forEach((methodName) => {
-		// 	delete HTMLElement.prototype[methodName];
-		// });
 		vi.restoreAllMocks();
 	});
 
