@@ -55,7 +55,6 @@ if (methodName in HTMLElement.prototype) {
 	HTMLElement.prototype[methodName] = mock as any;
 	return mock;
 */
-declare const mockElement: HTMLElement;
 describe('OdkWebForm', () => {
 	let formXML: string;
 	// let elementKeysAdded: ElementMethodName[];
@@ -72,7 +71,8 @@ describe('OdkWebForm', () => {
 			const mock = vi.fn(function () {
 				// Do nothing
 			});
-			mockElement.scrollTo = mock;
+			// eslint-disable-next-line @typescript-eslint/dot-notation
+			HTMLElement.prototype['scrollTo'] = mock as never;
 		}
 
 		if ('showPopover' in HTMLElement.prototype) {
@@ -84,7 +84,8 @@ describe('OdkWebForm', () => {
 			const mock = vi.fn(function (this: HTMLElement) {
 				this.style.display = 'block';
 			});
-			mockElement.showPopover = mock;
+			// eslint-disable-next-line @typescript-eslint/dot-notation
+			HTMLElement.prototype['showPopover'] = mock as never;
 		}
 
 		if ('hidePopover' in HTMLElement.prototype) {
@@ -96,7 +97,8 @@ describe('OdkWebForm', () => {
 			const mock = vi.fn(function (this: HTMLElement) {
 				this.style.display = 'none';
 			});
-			mockElement.hidePopover = mock;
+			// eslint-disable-next-line @typescript-eslint/dot-notation
+			HTMLElement.prototype['hidePopover'] = mock as never;
 		}
 	});
 
