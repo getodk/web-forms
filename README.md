@@ -35,7 +35,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  ##### Question types (basic functionality)<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜ 76\%
+  ##### Question types (basic functionality)<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜ 79\%
 
   </summary>
   <br/>
@@ -67,7 +67,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | datetime                   |          |
 | rank                       |    ✅    |
 | csv-external               |    ✅    |
-| acknowledge                |    🚧    |
+| acknowledge                |    ✅    |
 | start                      |    ✅    |
 | end                        |    ✅    |
 | today                      |    ✅    |
@@ -143,7 +143,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  ##### Parameters<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜ 70\%
+  ##### Parameters<br/>🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜ 58\%
 
   </summary>
   <br/>
@@ -160,6 +160,8 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | image max-pixels                                                                                                                   |          |
 | audio quality                                                                                                                      |          |
 | Audit: location-priority,<br/>location-min-interval, location-max-age,<br/>track-changes, track-changes-reasons,<br/>identify-user |          |
+| geotrace/shape incremental=true                                                                                                    |          |
+| range labels, placeholder                                                                                                          |          |
 
 </details>
 
@@ -167,7 +169,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  ##### Form Logic<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜ 92\%
+  ##### Form logic<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩 100\%
 
   </summary>
   <br/>
@@ -184,7 +186,6 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | dynamic defaults (including trigger<br/>column) |    ✅    |
 | choice filter                                   |    ✅    |
 | default                                         |    ✅    |
-| query parameter                                 |          |
 | repeat_count                                    |    ✅    |
 | create or update Entities                       |    ✅    |
 
@@ -194,7 +195,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  ##### Descriptions and Annotations<br/>🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜ 42\%
+  ##### Descriptions and annotations<br/>🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜ 50\%
 
   </summary>
   <br/>
@@ -208,12 +209,10 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | form translations with ref to other<br/>field |    ✅    |
 | Markdown                                      |    ✅    |
 | Inline HTML                                   |    ✅    |
-| Form attachments                              |          |
 | image                                         |    🚧    |
 | big-image                                     |          |
-| audio                                         |          |
-| video                                         |          |
-| secondary instance (last saved)               |          |
+| audio                                         |    🚧    |
+| video                                         |    🚧    |
 | autoplay                                      |          |
 
 </details>
@@ -222,7 +221,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  ##### Theme and Layouts<br/>🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 18\%
+  ##### Theme and layouts<br/>🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 30\%
 
   </summary>
   <br/>
@@ -234,12 +233,11 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | logo                       |          |
 | application translations   |          |
 | theme color                |          |
-| Submissions                |          |
-| preview                    |    ✅    |
-| send                       |    ✅    |
-| view                       |          |
-| edit                       |          |
-| attachments                |          |
+| preview form               |    ✅    |
+| send instance              |    ✅    |
+| view instance              |          |
+| edit instance              |    ✅    |
+| table of contents          |          |
 
 </details>
 
@@ -247,27 +245,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  ##### Offline capabilities<br/>⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 0\%
-
-  </summary>
-  <br/>
-
-| Feature <img width=250px/>   | Progress |
-| ---------------------------- | :------: |
-| List of projects & forms     |          |
-| local persistence (single)   |          |
-| save as draft                |          |
-| offline entities             |          |
-| MBtiles / offline map layers |          |
-| Data encryption              |          |
-
-</details>
-
-<details>
-  <summary>
-
-<!-- prettier-ignore -->
-  ##### XPath<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩 100\%
+  ##### XPath<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜ 98\%
 
   </summary>
   <br/>
@@ -348,6 +326,30 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | distance(node-set ns\|geoshape<br/>gs\|geotrace gt\|(geopoint\|string) arg\*)                                 |    ✅    |
 | geofence(geopoint p, geoshape gs)                                                                             |    ✅    |
 | base64-decode(base64Binary input)                                                                             |    ✅    |
+| intersects(geoshape gs\|geotrace gt)                                                                          |          |
+
+</details>
+
+<details>
+  <summary>
+
+<!-- prettier-ignore -->
+  ##### Misc<br/>⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 0\%
+
+  </summary>
+  <br/>
+
+| Feature <img width=250px/>        | Progress |
+| --------------------------------- | :------: |
+| defaults from last saved instance |          |
+| defaults from query parameters    |          |
+| multi-form app-like experience    |          |
+| prevent multiple submissions      |          |
+| configure end of form experience  |          |
+| save as draft                     |          |
+| offline entities                  |          |
+| MBtiles / offline map layers      |          |
+| data encryption                   |          |
 
 </details>
 
