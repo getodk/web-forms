@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import IconSVG from '@/components/common/IconSVG.vue';
 import { ISO_TIME_WITH_OPTIONAL_OFFSET_PATTERN } from '@getodk/common/constants/datetime.ts';
 import type { TimeInputNode } from '@getodk/xforms-engine';
 import DatePicker from 'primevue/datepicker';
@@ -37,5 +38,9 @@ const value = computed({
 </script>
 
 <template>
-	<DatePicker v-model="value" time-only hour-format="12" :disabled="isDisabled" />
+	<DatePicker v-model="value" time-only hour-format="12" :disabled="isDisabled" show-icon icon-display="input">
+		<template #inputicon="slotProps">
+			<IconSVG name="mdiClockTimeThreeOutline" variant="light-muted" @click="slotProps.clickCallback"/>
+		</template>
+	</DatePicker>
 </template>
