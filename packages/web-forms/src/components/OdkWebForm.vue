@@ -86,6 +86,7 @@ const hostSubmissionResultCallbackFactory = (
 	};
 
 	return (hostResult) => {
+		resetComponentState();
 		void handleHostSubmissionResult(hostResult);
 	};
 };
@@ -200,6 +201,14 @@ const floatingErrorActive = ref(false);
 const showValidationError = ref(false);
 const geolocationErrorMessage = ref<string | null>(null);
 
+const resetComponentState = () => {
+	submitPressed.value = false;
+	floatingErrorActive.value = false;
+	showValidationError.value = false;
+	geolocationErrorMessage.value = null;
+	geolocationService.teardown();
+};
+
 const init = async () => {
 	state.value = await loadFormState(props.formXml, {
 		form: formOptions,
@@ -254,7 +263,7 @@ watchEffect(() => {
 });
 
 onUnmounted(() => {
-	geolocationService.teardown();
+	resetComponentState();
 });
 </script>
 <!--
