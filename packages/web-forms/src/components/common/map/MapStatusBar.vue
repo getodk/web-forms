@@ -213,6 +213,7 @@ const displayState = computed(() => {
 .map-status-container {
 	justify-content: space-between;
 	width: 100%;
+	gap: 10px;
 }
 
 .map-status-bar :deep(.p-button).p-button-contrast.p-button-outlined {
