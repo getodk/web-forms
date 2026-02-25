@@ -9,6 +9,8 @@ const PROJECTS_API = '/v1/projects';
 
 const OUTPUT_DIR = import.meta.dirname + '/../../.upgrade-checker-cache/';
 
+const delay = () => new Promise((resolve) => setTimeout(() => resolve(), 1000));
+
 const request = async (options) => {
 	const { server, path, method = 'GET', body, token, params, headers = {} } = options;
 	let url = server + path;
@@ -20,16 +22,28 @@ const request = async (options) => {
 	if (token) {
 		headers['Authorization'] = `Bearer ${token}`;
 	}
-	const response = await fetch(url, {
+	const fetchOptions = {
 		method,
 		headers,
 		body: body && JSON.stringify(body),
+	};
+
+	let retries = 5;
+	return new Promise((resolve, reject) => {
+		const wrapper = () => {
+			fetch(url, fetchOptions)
+				.then((res) => resolve(res))
+				.catch(async (err) => {
+					if (--retries > 0) {
+						await delay();
+						wrapper();
+					} else {
+						reject(err);
+					}
+				});
+		};
+		wrapper();
 	});
-	if (!response.ok) {
-		const text = await response.text();
-		throw new Error(`HTTP error status: ${response.status} ${text}`);
-	}
-	return response;
 };
 
 const jsonRequest = async (options) => {
