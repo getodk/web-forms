@@ -10,12 +10,16 @@ import { xmlElement } from '@getodk/common/test/fixtures/xform-dsl/index.ts';
 import { readdir, readFile, stat } from 'fs/promises';
 import { expect, it } from 'vitest';
 
+const SERVER_TO_RUN = process.env.SERVER;
+
 const ROOT_PATH = __dirname + '/../../../.upgrade-checker-cache';
 const parser = new DOMParser();
 
 const getServers = async () => {
 	const servers = await readdir(ROOT_PATH, { withFileTypes: true });
-	return servers.filter((server) => server.isDirectory()).map((dir) => dir.name);
+	return servers
+		.filter((server) => server.isDirectory() && (!SERVER_TO_RUN || server.name === SERVER_TO_RUN))
+		.map((dir) => dir.name);
 };
 
 const getProjects = async (server: string) => {

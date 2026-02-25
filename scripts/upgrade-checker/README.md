@@ -29,3 +29,10 @@ Now run the test suite over the cached forms.
 cd packages/scenario
 npx vitest test/upgrade.test.ts --silent=false --passWithNoTests --testTimeout=60000
 ```
+
+Run tests on only a single server by setting a `SERVER` environment variable, eg:
+
+```sh
+cd packages/scenario
+SERVER='dev' npx vitest test/upgrade.test.ts --silent=false --passWithNoTests --testTimeout=60000
+```
