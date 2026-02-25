@@ -21,24 +21,25 @@ const validateTimeString = (value: string): TimeRuntimeValue => {
 		return null;
 	}
 
+	const [, timeOnly = '', offset] = match;
 	try {
-		const [, timeOnly = '', offset] = match;
 		// Delegate bounds checking to Temporal
 		Temporal.PlainTime.from(timeOnly);
-		return offset && !VALID_OFFSET_VALUE.test(offset) ? null : value;
 	} catch {
 		return null;
 	}
+
+	return offset && !VALID_OFFSET_VALUE.test(offset) ? null : value;
 };
 
 const parseZonedDateTimeToString = (value: Temporal.ZonedDateTime): string => {
 	if (!value) {
 		return '';
 	}
+
 	const MILLISECONDS = 3;
 	const time = value.toPlainTime().toString({ fractionalSecondDigits: MILLISECONDS });
-	const offset = value.offset;
-	return `${time}${offset === '+00:00' ? 'Z' : offset}`;
+	return `${time}${value.offset}`;
 };
 
 /**
