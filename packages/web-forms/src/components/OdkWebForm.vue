@@ -38,7 +38,6 @@ import {
 	provide,
 	readonly,
 	ref,
-	shallowRef,
 	watchEffect,
 } from 'vue';
 
@@ -66,9 +65,6 @@ export interface OdkWebFormsProps {
 }
 
 const props = defineProps<OdkWebFormsProps>();
-
-const isFormEditMode = shallowRef(false);
-provide(IS_FORM_EDIT_MODE, readonly(isFormEditMode));
 
 const hostSubmissionResultCallbackFactory = (
 	currentState: FormStateSuccessResult
@@ -200,6 +196,8 @@ const submitPressed = ref(false);
 const floatingErrorActive = ref(false);
 const showValidationError = ref(false);
 const geolocationErrorMessage = ref<string | null>(null);
+const isFormEditMode = computed(() => state.value.instance?.mode === 'edit');
+provide(IS_FORM_EDIT_MODE, readonly(isFormEditMode));
 
 const resetComponentState = () => {
 	submitPressed.value = false;
@@ -216,10 +214,6 @@ const init = async () => {
 		preloadProperties: props.preloadProperties,
 		trackDevice: props.trackDevice,
 	});
-
-	if (state.value.instance?.mode === 'edit') {
-		isFormEditMode.value = true;
-	}
 };
 
 void init();
