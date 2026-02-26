@@ -245,8 +245,9 @@ describe('OdkNewRepeatEventTest.java', () => {
 					)
 				),
 				body(
-					t(
-						'repeat nodeset="/data/repeat" jr:count="/data/count"',
+					repeat(
+						'/data/repeat',
+						'/data/count',
 						input('/data/repeat/destination'),
 						setvalueLiteral('odk-new-repeat', '/data/repeat/destination', '5000')
 					)

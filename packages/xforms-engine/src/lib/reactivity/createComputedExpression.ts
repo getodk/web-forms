@@ -51,7 +51,7 @@ const expressionEvaluator = <Type extends DependentExpressionResultType>(
 		case 'number':
 			return ((defaultValue) => {
 				const result = evaluator.evaluateNumber(expression, options);
-				if (Number.isNaN(result)) {
+				if (defaultValue && Number.isNaN(result)) {
 					return defaultValue;
 				}
 				return result;
