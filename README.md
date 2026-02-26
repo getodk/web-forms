@@ -35,7 +35,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  ##### Question types (basic functionality)<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜ 82\%
+  ##### Question types (basic functionality)<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜ 85\%
 
   </summary>
   <br/>
@@ -63,7 +63,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | video                                                  |    ✅    |
 | [file](https://github.com/getodk/web-forms/issues/370) |          |
 | date                                                   |    ✅    |
-| time                                                   |          |
+| time                                                   |    ✅    |
 | datetime                                               |          |
 | rank                                                   |    ✅    |
 | csv-external                                           |    ✅    |
