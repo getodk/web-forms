@@ -35,47 +35,47 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  ##### Question types (basic functionality)<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜ 76\%
+  ##### Question types (basic functionality)<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜ 82\%
 
   </summary>
   <br/>
 
-| Feature <img width=250px/> | Progress |
-| -------------------------- | :------: |
-| text                       |    ✅    |
-| integer                    |    ✅    |
-| decimal                    |    ✅    |
-| note                       |    ✅    |
-| select_one                 |    ✅    |
-| select_multiple            |    ✅    |
-| select\_\*\_from_file      |    ✅    |
-| repeat                     |    ✅    |
-| group                      |    ✅    |
-| geopoint                   |    ✅    |
-| geotrace                   |    ✅    |
-| geoshape                   |    ✅    |
-| start-geopoint             |    ✅    |
-| range                      |    ✅    |
-| image                      |    ✅    |
-| barcode                    |          |
-| audio                      |    ✅    |
-| background-audio           |          |
-| video                      |    ✅    |
-| file                       |          |
-| date                       |    🚧    |
-| time                       |          |
-| datetime                   |          |
-| rank                       |    ✅    |
-| csv-external               |    ✅    |
-| acknowledge                |    🚧    |
-| start                      |    ✅    |
-| end                        |    ✅    |
-| today                      |    ✅    |
-| deviceid                   |    ✅    |
-| username                   |    ✅    |
-| phonenumber                |    ✅    |
-| email                      |    ✅    |
-| audit                      |          |
+| Feature <img width=250px/>                             | Progress |
+| ------------------------------------------------------ | :------: |
+| text                                                   |    ✅    |
+| integer                                                |    ✅    |
+| decimal                                                |    ✅    |
+| note                                                   |    ✅    |
+| select_one                                             |    ✅    |
+| select_multiple                                        |    ✅    |
+| select\_\*\_from_file                                  |    ✅    |
+| repeat                                                 |    ✅    |
+| group                                                  |    ✅    |
+| geopoint                                               |    ✅    |
+| geotrace                                               |    ✅    |
+| geoshape                                               |    ✅    |
+| start-geopoint                                         |    ✅    |
+| range                                                  |    ✅    |
+| image                                                  |    ✅    |
+| barcode                                                |          |
+| audio                                                  |    ✅    |
+| background-audio                                       |          |
+| video                                                  |    ✅    |
+| [file](https://github.com/getodk/web-forms/issues/370) |          |
+| date                                                   |    ✅    |
+| time                                                   |          |
+| datetime                                               |          |
+| rank                                                   |    ✅    |
+| csv-external                                           |    ✅    |
+| acknowledge                                            |    ✅    |
+| start                                                  |    ✅    |
+| end                                                    |    ✅    |
+| today                                                  |    ✅    |
+| deviceid                                               |    ✅    |
+| username                                               |    ✅    |
+| phonenumber                                            |    ✅    |
+| email                                                  |    ✅    |
+| audit                                                  |          |
 
 </details>
 
@@ -88,54 +88,54 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   </summary>
   <br/>
 
-| Feature <img width=250px/> | Progress |
-| -------------------------- | :------: |
-| numbers                    |    ✅    |
-| multiline                  |    ✅    |
-| url                        |          |
-| ex:                        |          |
-| thousands-sep              |    ✅    |
-| bearing                    |          |
-| vertical                   |          |
-| no-ticks                   |          |
-| picker                     |          |
-| rating                     |          |
-| new                        |          |
-| new-front                  |          |
-| draw                       |          |
-| annotate                   |          |
-| signature                  |          |
-| no-calendar                |          |
-| month-year                 |          |
-| year                       |          |
-| ethiopian                  |          |
-| coptic                     |          |
-| islamic                    |          |
-| bikram-sambat              |          |
-| myanmar                    |          |
-| persian                    |          |
-| placement-map              |    ✅    |
-| maps                       |    ✅    |
-| hide-input                 |          |
-| minimal                    |    ✅    |
-| search / autocomplete      |    ✅    |
-| quick                      |          |
-| columns-pack               |    ✅    |
-| columns                    |    ✅    |
-| columns-n                  |    ✅    |
-| no-buttons                 |    ✅    |
-| image-map                  |          |
-| likert                     |    ✅    |
-| map                        |    ✅    |
-| field-list                 |    ✅    |
-| label                      |    ✅    |
-| list-nolabel               |    ✅    |
-| list                       |    ✅    |
-| table-list                 |    ✅    |
-| counter                    |          |
-| hidden-answer              |          |
-| printer                    |          |
-| masked                     |    ✅    |
+| Feature <img width=250px/>                                      | Progress |
+| --------------------------------------------------------------- | :------: |
+| numbers                                                         |    ✅    |
+| multiline                                                       |    ✅    |
+| url                                                             |          |
+| ex:                                                             |          |
+| thousands-sep                                                   |    ✅    |
+| bearing                                                         |          |
+| [vertical](https://github.com/getodk/web-forms/issues/271)      |          |
+| [no-ticks](https://github.com/getodk/web-forms/issues/271)      |          |
+| picker                                                          |          |
+| rating                                                          |          |
+| new                                                             |          |
+| new-front                                                       |          |
+| draw                                                            |          |
+| [annotate](https://github.com/getodk/web-forms/issues/15)       |          |
+| signature                                                       |          |
+| [no-calendar](https://github.com/getodk/web-forms/issues/304)   |          |
+| [month-year](https://github.com/getodk/web-forms/issues/304)    |          |
+| [year](https://github.com/getodk/web-forms/issues/304)          |          |
+| [ethiopian](https://github.com/getodk/web-forms/issues/315)     |          |
+| [coptic](https://github.com/getodk/web-forms/issues/315)        |          |
+| [islamic](https://github.com/getodk/web-forms/issues/315)       |          |
+| [bikram-sambat](https://github.com/getodk/web-forms/issues/315) |          |
+| [myanmar](https://github.com/getodk/web-forms/issues/315)       |          |
+| [persian](https://github.com/getodk/web-forms/issues/315)       |          |
+| placement-map                                                   |    ✅    |
+| maps                                                            |    ✅    |
+| hide-input                                                      |          |
+| minimal                                                         |    ✅    |
+| search / autocomplete                                           |    ✅    |
+| [quick](https://github.com/getodk/web-forms/issues/515)         |          |
+| columns-pack                                                    |    ✅    |
+| columns                                                         |    ✅    |
+| columns-n                                                       |    ✅    |
+| no-buttons                                                      |    ✅    |
+| image-map                                                       |          |
+| likert                                                          |    ✅    |
+| map                                                             |    ✅    |
+| field-list                                                      |    ✅    |
+| label                                                           |    ✅    |
+| list-nolabel                                                    |    ✅    |
+| list                                                            |    ✅    |
+| table-list                                                      |    ✅    |
+| counter                                                         |          |
+| hidden-answer                                                   |          |
+| printer                                                         |          |
+| masked                                                          |    ✅    |
 
 </details>
 
@@ -143,7 +143,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  ##### Parameters<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜ 70\%
+  ##### Parameters<br/>🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜ 58\%
 
   </summary>
   <br/>
@@ -157,9 +157,11 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | rows                                                                                                                               |    ✅    |
 | geopoint capture-accuracy,<br/>warning-accuracy, allow-mock-accuracy                                                               |    ✅    |
 | range start, end, step                                                                                                             |    ✅    |
-| image max-pixels                                                                                                                   |          |
+| [image max-pixels](https://github.com/getodk/web-forms/issues/397)                                                                 |          |
 | audio quality                                                                                                                      |          |
 | Audit: location-priority,<br/>location-min-interval, location-max-age,<br/>track-changes, track-changes-reasons,<br/>identify-user |          |
+| [geotrace/shape incremental=true](https://github.com/getodk/web-forms/issues/562)                                                  |          |
+| range labels, placeholder                                                                                                          |          |
 
 </details>
 
@@ -167,7 +169,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  ##### Form Logic<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜ 92\%
+  ##### Form logic<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩 100\%
 
   </summary>
   <br/>
@@ -184,7 +186,6 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | dynamic defaults (including trigger<br/>column) |    ✅    |
 | choice filter                                   |    ✅    |
 | default                                         |    ✅    |
-| query parameter                                 |          |
 | repeat_count                                    |    ✅    |
 | create or update Entities                       |    ✅    |
 
@@ -194,27 +195,25 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  ##### Descriptions and Annotations<br/>🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜ 42\%
+  ##### Descriptions and annotations<br/>🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜ 50\%
 
   </summary>
   <br/>
 
-| Feature <img width=250px/>                    | Progress |
-| --------------------------------------------- | :------: |
-| label                                         |    ✅    |
-| hint                                          |    ✅    |
-| guidance hint                                 |          |
-| form translations                             |    ✅    |
-| form translations with ref to other<br/>field |    ✅    |
-| Markdown                                      |    ✅    |
-| Inline HTML                                   |    ✅    |
-| Form attachments                              |          |
-| image                                         |    🚧    |
-| big-image                                     |          |
-| audio                                         |          |
-| video                                         |          |
-| secondary instance (last saved)               |          |
-| autoplay                                      |          |
+| Feature <img width=250px/>                                     | Progress |
+| -------------------------------------------------------------- | :------: |
+| label                                                          |    ✅    |
+| hint                                                           |    ✅    |
+| [guidance hint](https://github.com/getodk/web-forms/issues/53) |          |
+| form translations                                              |    ✅    |
+| form translations with ref to other<br/>field                  |    ✅    |
+| Markdown                                                       |    ✅    |
+| Inline HTML                                                    |    ✅    |
+| [image](https://github.com/getodk/web-forms/issues/30)         |    🚧    |
+| big-image                                                      |          |
+| [audio](https://github.com/getodk/web-forms/issues/30)         |    🚧    |
+| [video](https://github.com/getodk/web-forms/issues/30)         |    🚧    |
+| autoplay                                                       |          |
 
 </details>
 
@@ -222,24 +221,23 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  ##### Theme and Layouts<br/>🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 18\%
+  ##### Theme and layouts<br/>🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 30\%
 
   </summary>
   <br/>
 
-| Feature <img width=250px/> | Progress |
-| -------------------------- | :------: |
-| grid                       |          |
-| pages                      |          |
-| logo                       |          |
-| application translations   |          |
-| theme color                |          |
-| Submissions                |          |
-| preview                    |    ✅    |
-| send                       |    ✅    |
-| view                       |          |
-| edit                       |          |
-| attachments                |          |
+| Feature <img width=250px/>                                                 | Progress |
+| -------------------------------------------------------------------------- | :------: |
+| [grid](https://github.com/getodk/web-forms/issues/16)                      |          |
+| [pages](https://github.com/getodk/web-forms/issues/254)                    |          |
+| [logo](https://github.com/getodk/web-forms/issues/353)                     |          |
+| [application translations](https://github.com/getodk/web-forms/issues/332) |          |
+| [theme color](https://github.com/getodk/web-forms/issues/43)               |          |
+| preview form                                                               |    ✅    |
+| send instance                                                              |    ✅    |
+| view instance                                                              |          |
+| edit instance                                                              |    ✅    |
+| table of contents                                                          |          |
 
 </details>
 
@@ -247,27 +245,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  ##### Offline capabilities<br/>⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 0\%
-
-  </summary>
-  <br/>
-
-| Feature <img width=250px/>   | Progress |
-| ---------------------------- | :------: |
-| List of projects & forms     |          |
-| local persistence (single)   |          |
-| save as draft                |          |
-| offline entities             |          |
-| MBtiles / offline map layers |          |
-| Data encryption              |          |
-
-</details>
-
-<details>
-  <summary>
-
-<!-- prettier-ignore -->
-  ##### XPath<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩 100\%
+  ##### XPath<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜ 98\%
 
   </summary>
   <br/>
@@ -345,9 +323,33 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | jr:itext(string id)                                                                                           |    ✅    |
 | indexed-repeat(node-set arg, node-set<br/>repeat1, number index1, [node-set<br/>repeatN, number indexN]{0,2}) |    ✅    |
 | area(node-set ns\|geoshape gs)                                                                                |    ✅    |
-| distance(node-set ns\|geoshape<br/>gs\|geotrace gt\|(geopoint\|string) arg\*)                                 |    ✅    |
+| distance(node-set ns\|geoshape<br/>gs\|geotrace gt\|(geopoint\|string)<br/>arg\*)                             |    ✅    |
 | geofence(geopoint p, geoshape gs)                                                                             |    ✅    |
 | base64-decode(base64Binary input)                                                                             |    ✅    |
+| [intersects(geoshape gs\|geotrace gt)](https://github.com/getodk/web-forms/issues/572)                        |          |
+
+</details>
+
+<details>
+  <summary>
+
+<!-- prettier-ignore -->
+  ##### Misc<br/>⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 0\%
+
+  </summary>
+  <br/>
+
+| Feature <img width=250px/>                                                       | Progress |
+| -------------------------------------------------------------------------------- | :------: |
+| [last saved instance](https://github.com/getodk/web-forms/issues/306)            |          |
+| [defaults from query parameters](https://github.com/getodk/web-forms/issues/464) |          |
+| multi-form app-like experience                                                   |          |
+| [prevent multiple submissions](https://github.com/getodk/web-forms/issues/461)   |          |
+| configure end of form experience                                                 |          |
+| save as draft                                                                    |          |
+| offline entities                                                                 |          |
+| MBtiles / offline map layers                                                     |          |
+| [submission encryption](https://github.com/getodk/web-forms/issues/448)          |          |
 
 </details>
 
