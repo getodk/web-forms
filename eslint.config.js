@@ -415,7 +415,6 @@ export default tseslint.config(
 			'packages/*/playwright.config.ts',
 			'packages/*/vite.config.ts',
 			'packages/*/vitest.config.ts',
-			'packages/common/src/lib/web-compat/url.ts',
 			'packages/tree-sitter-xpath/vite.config.mts',
 			'packages/xforms-engine/vite.*.config.ts',
 			'packages/*/tools/**/*',
