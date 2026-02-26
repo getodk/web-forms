@@ -129,7 +129,12 @@ export const createComputedExpression = <Type extends DependentExpressionResultT
 				return evaluateExpression();
 			}
 			const defaultValue = options?.defaultValue ?? defaultEvaluationsByType[resultType];
-			return evaluateExpression(defaultValue);
+			try {
+				return evaluateExpression(defaultValue);
+			} catch {
+				// likely because it's not yet attached - try again later
+				return defaultValue;
+			}
 		});
 	});
 };
