@@ -38,6 +38,7 @@ import {
 	provide,
 	readonly,
 	ref,
+	watch,
 	watchEffect,
 } from 'vue';
 
@@ -196,8 +197,16 @@ const submitPressed = ref(false);
 const floatingErrorActive = ref(false);
 const showValidationError = ref(false);
 const geolocationErrorMessage = ref<string | null>(null);
-const isFormEditMode = computed(() => state.value.instance?.mode === 'edit');
+const isFormEditMode = ref(false);
 provide(IS_FORM_EDIT_MODE, readonly(isFormEditMode));
+
+watch(
+	() => state.value,
+	(newState) => {
+		isFormEditMode.value = newState.instance?.mode === 'edit';
+	},
+	{ immediate: true }
+);
 
 const resetComponentState = () => {
 	submitPressed.value = false;
@@ -327,7 +336,7 @@ onUnmounted(() => {
 		<div class="powered-by-wrapper">
 			<a class="anchor" href="https://getodk.org" target="_blank">
 				<span class="caption">Powered by</span>
-				<img class="logo" src="../assets/images/odk-logo.svg" alt="ODK">
+				<img class="logo" src="../assets/images/odk-logo.svg" alt="ODK" />
 			</a>
 			<div class="version">
 				{{ webFormsVersion }}
