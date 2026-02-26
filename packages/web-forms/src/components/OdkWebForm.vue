@@ -336,7 +336,7 @@ onUnmounted(() => {
 		<div class="powered-by-wrapper">
 			<a class="anchor" href="https://getodk.org" target="_blank">
 				<span class="caption">Powered by</span>
-				<img class="logo" src="../assets/images/odk-logo.svg" alt="ODK" />
+				<img class="logo" src="../assets/images/odk-logo.svg" alt="ODK">
 			</a>
 			<div class="version">
 				{{ webFormsVersion }}
