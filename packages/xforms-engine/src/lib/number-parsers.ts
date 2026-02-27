@@ -1,6 +1,6 @@
 const DECIMAL_FORMATTER = new Intl.NumberFormat('en-US', {
 	minimumFractionDigits: 1,
-	maximumFractionDigits: 100,
+	maximumFractionDigits: 20, // This is the maximum under Node 20. Raise to 100 when we drop support.
 	useGrouping: false,
 });
 
