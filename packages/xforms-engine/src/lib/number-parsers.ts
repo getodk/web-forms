@@ -1,3 +1,8 @@
+const DECIMAL_FORMATTER = new Intl.NumberFormat('en-US', {
+	minimumFractionDigits: 1,
+	useGrouping: false,
+});
+
 export const parseToInteger = (value: string | null): number | null => {
 	if (value === null) {
 		return null;
@@ -22,4 +27,8 @@ export const parseToFloat = (value: string | null): number | null => {
 	}
 
 	return parsed;
+};
+
+export const formatDecimal = (value: number): string => {
+	return DECIMAL_FORMATTER.format(value);
 };
