@@ -33,11 +33,11 @@ test.describe('Geopoint Question Type', () => {
 			await formPage.text.expectLabel('Where are you filling out the survey?');
 			await formPage.text.expectHint('(No autosave)');
 			await formPage.geopoint.openDialog();
-			await formPage.geopoint.expectGeopointDialog('Finding your location', '10 m - Good accuracy');
+			await formPage.geopoint.expectGeopointDialog('Finding your location', '10.0 m - Good accuracy');
 			await formPage.geopoint.saveLocation();
 
 			await formPage.geopoint.expectGeopointFormattedValue(
-				['Accuracy: 10 m,', 'Latitude: 40.7128,', 'Longitude: -74.006.'],
+				['Accuracy: 10.0 m,', 'Latitude: 40.7128,', 'Longitude: -74.006.'],
 				'Good accuracy'
 			);
 		});
@@ -54,12 +54,12 @@ test.describe('Geopoint Question Type', () => {
 			await formPage.geopoint.openDialog();
 			await formPage.geopoint.expectGeopointDialog(
 				'Finding your location',
-				'500 m - Poor accuracy'
+				'500.0 m - Poor accuracy'
 			);
 			await formPage.geopoint.saveLocation();
 
 			await formPage.geopoint.expectGeopointFormattedValue(
-				['Accuracy: 500 m,', 'Latitude: 80.5128,', 'Longitude: -99.9099.'],
+				['Accuracy: 500.0 m,', 'Latitude: 80.5128,', 'Longitude: -99.9099.'],
 				'Poor accuracy'
 			);
 		});
@@ -80,7 +80,7 @@ test.describe('Geopoint Question Type', () => {
 			await formPage.geopoint.saveLocation();
 
 			await formPage.geopoint.expectGeopointFormattedValue(
-				['Accuracy: 350 m,', 'Latitude: 79.5128,', 'Longitude: -95.9099.'],
+				['Accuracy: 350.0 m,', 'Latitude: 79.5128,', 'Longitude: -95.9099.'],
 				'Poor accuracy'
 			);
 
@@ -96,7 +96,7 @@ test.describe('Geopoint Question Type', () => {
 			await formPage.geopoint.saveLocation();
 
 			await formPage.geopoint.expectGeopointFormattedValue(
-				['Accuracy: 7 m,', 'Latitude: 80.5128,', 'Longitude: -99.9099.'],
+				['Accuracy: 7.0 m,', 'Latitude: 80.5128,', 'Longitude: -99.9099.'],
 				'Good accuracy'
 			);
 		});

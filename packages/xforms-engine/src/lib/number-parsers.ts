@@ -1,5 +1,6 @@
 const DECIMAL_FORMATTER = new Intl.NumberFormat('en-US', {
 	minimumFractionDigits: 1,
+	maximumFractionDigits: 100,
 	useGrouping: false,
 });
 
