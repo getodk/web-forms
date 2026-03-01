@@ -6,7 +6,7 @@
         <h:title>Form with last-saved instance (blank)</h:title>
         <model>
             <instance>
-                <data>
+                <data id="data">
                     <item/>
                 </data>
             </instance>
