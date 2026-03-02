@@ -11,6 +11,8 @@ import { readdir, readFile, stat } from 'fs/promises';
 import { expect, it } from 'vitest';
 
 const SERVER_TO_RUN = process.env.SERVER;
+const FORM_START = process.env.FORM_START ? Number.parseInt(process.env.FORM_START) : 0;
+const FORM_LIMIT = process.env.FORM_LIMIT ? Number.parseInt(process.env.FORM_LIMIT) : Infinity;
 
 const ROOT_PATH = __dirname + '/../../../.upgrade-checker-cache';
 const parser = new DOMParser();
@@ -36,6 +38,7 @@ const getForms = async (server: string, project: string) => {
 
 const initResourceService = async (fixturePath: string) => {
 	const resourceService = new JRResourceService();
+	// TODO remove this once # 692 is merged
 	resourceService.activateResource(
 		{
 			fileName: 'last-saved',
@@ -263,7 +266,7 @@ const getFixtures = async () => {
 			}
 		}
 	}
-	return result;
+	return result.slice(FORM_START, FORM_START + FORM_LIMIT);
 };
 
 const fixtures = await getFixtures();

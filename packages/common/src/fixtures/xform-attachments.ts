@@ -33,6 +33,7 @@ const xformAttachmentFileExtensions = [
 	'.m4a',
 	'.wav',
 	'.3gp',
+	'.pdf',
 ] as const;
 
 type XFormAttachmentFileExtensions = typeof xformAttachmentFileExtensions;
@@ -131,6 +132,10 @@ export class XFormAttachmentFixture {
 
 			case '.3gp':
 				this.mimeType = 'video/3gpp';
+				break;
+
+			case '.pdf':
+				this.mimeType = 'application/pdf';
 				break;
 
 			default:

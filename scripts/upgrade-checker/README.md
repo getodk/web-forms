@@ -36,3 +36,10 @@ Run tests on only a single server by setting a `SERVER` environment variable, eg
 cd packages/scenario
 SERVER='dev' npx vitest test/upgrade.test.ts --silent=false --passWithNoTests --testTimeout=60000
 ```
+
+Run a limited number of forms (useful for large servers with many forms) by setting a combination of `FORM_LIMIT` and `FORM_START` environment variables, for example, to run the forms between the 25th and 35th:
+
+```sh
+cd packages/scenario
+FORM_LIMIT=10 FORM_START=25 npx vitest test/upgrade.test.ts --silent=false --passWithNoTests --testTimeout=60000
+```
