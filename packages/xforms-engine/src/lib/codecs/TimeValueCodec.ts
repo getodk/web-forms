@@ -75,7 +75,7 @@ const toTimeString = (value: TimeInputValue): string => {
 		}
 
 		return validateTimeString(value) ?? '';
-	} catch (error) {
+	} catch {
 		return '';
 	}
 };
