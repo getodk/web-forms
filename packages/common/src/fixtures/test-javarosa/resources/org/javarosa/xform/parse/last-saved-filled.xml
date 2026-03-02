@@ -8,6 +8,9 @@
             <instance>
                 <data id="last-saved-filled">
                     <item>Foo</item>
+                    <meta>
+                        <instanceID/>
+                    </meta>
                 </data>
             </instance>
             <instance id="last-saved" src="jr://instance/last-saved"/>
