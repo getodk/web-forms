@@ -38,15 +38,6 @@ const getForms = async (server: string, project: string) => {
 
 const initResourceService = async (fixturePath: string) => {
 	const resourceService = new JRResourceService();
-	// TODO remove this once # 692 is merged
-	resourceService.activateResource(
-		{
-			fileName: 'last-saved',
-			url: 'jr://instance/last-saved',
-			mimeType: 'text/xml',
-		},
-		'<root/>'
-	);
 	const resourcePath = `${fixturePath}/resources`;
 	let resources;
 	try {
