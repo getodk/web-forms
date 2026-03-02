@@ -76,8 +76,6 @@ const toTimeString = (value: TimeInputValue): string => {
 
 		return validateTimeString(value) ?? '';
 	} catch (error) {
-		// eslint-disable-next-line no-console
-		console.warn('Error parsing time value:', error);
 		return '';
 	}
 };
