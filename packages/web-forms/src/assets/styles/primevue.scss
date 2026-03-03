@@ -13,3 +13,27 @@
 		outline-offset: unset;
 	}
 }
+
+.p-dialog {
+	margin: 0 24px;
+
+	.p-dialog-header {
+		font-size: var(--odk-dialog-title-font-size);
+	}
+
+	.p-dialog-content *,
+	.p-dialog-footer * {
+		font-size: var(--odk-base-font-size);
+	}
+
+	.p-dialog-header,
+	.p-dialog-content,
+	.p-dialog-footer {
+		padding: 20px;
+	}
+
+	.p-dialog-content,
+	.p-dialog-footer {
+		padding-top: 0;
+	}
+}
