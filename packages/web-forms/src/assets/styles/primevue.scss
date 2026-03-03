@@ -1,6 +1,9 @@
 .odk-form {
 	.p-datepicker-input:disabled,
-	.p-datepicker-input:disabled + .p-datepicker-input-icon-container {
+	.p-datepicker-input:disabled + .p-datepicker-input-icon-container,
+	.p-inputtext:disabled,
+	.p-inputtext:read-only,
+	.p-button:disabled {
 		cursor: not-allowed;
 	}
 }
@@ -11,6 +14,10 @@
 	.p-button.p-button-secondary:focus-visible {
 		outline: none;
 		outline-offset: unset;
+	}
+
+	.p-button:disabled {
+		cursor: not-allowed;
 	}
 }
 
