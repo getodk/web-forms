@@ -41,6 +41,7 @@ interface RepeatInstanceStateSpec extends DescendantNodeSharedStateSpec {
 
 	readonly attributes: Accessor<readonly Attribute[]>;
 	readonly children: Accessor<readonly FormNodeID[]>;
+	readonly hasRelevantChildren: Accessor<boolean>;
 	readonly valueOptions: null;
 	readonly value: null;
 }
@@ -153,6 +154,7 @@ export class RepeatInstance
 				hint: null,
 				attributes: this.attributeState.getAttributes,
 				children: childrenState.childIds,
+				hasRelevantChildren: this.hasRelevantChildren,
 				valueOptions: null,
 				value: null,
 			},
