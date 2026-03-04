@@ -9,7 +9,7 @@ import type { AncestorNodeValidationState } from './validation.ts';
 export interface GroupNodeState extends BaseNodeState {
 	get hint(): null;
 	get children(): readonly GeneralChildNode[];
-	get hasRelevantChildren(): boolean;
+	get hasRelevantBodyNodes(): boolean;
 	get valueOptions(): null;
 	get value(): null;
 }

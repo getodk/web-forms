@@ -36,7 +36,7 @@ interface GroupStateSpec extends DescendantNodeSharedStateSpec {
 	readonly label: Accessor<TextRange<'label'> | null>;
 	readonly hint: null;
 	readonly children: Accessor<readonly FormNodeID[]>;
-	readonly hasRelevantChildren: Accessor<boolean>;
+	readonly hasRelevantBodyNodes: Accessor<boolean>;
 	readonly attributes: Accessor<readonly Attribute[]>;
 	readonly valueOptions: null;
 	readonly value: null;
@@ -92,7 +92,7 @@ export class Group
 				label: createNodeLabel(this, definition),
 				hint: null,
 				children: childrenState.childIds,
-				hasRelevantChildren: this.hasRelevantChildren,
+				hasRelevantBodyNodes: this.hasRelevantBodyNodes,
 				attributes: this.attributeState.getAttributes,
 				valueOptions: null,
 				value: null,

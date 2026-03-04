@@ -45,7 +45,7 @@ interface RootStateSpec {
 	readonly label: null;
 	readonly hint: null;
 	readonly children: Accessor<readonly FormNodeID[]>;
-	readonly hasRelevantChildren: Accessor<boolean>;
+	readonly hasRelevantBodyNodes: Accessor<boolean>;
 	readonly attributes: Accessor<readonly Attribute[]>;
 	readonly valueOptions: null;
 	readonly value: null;
@@ -122,7 +122,7 @@ export class Root
 				valueOptions: null,
 				value: null,
 				children: childrenState.childIds,
-				hasRelevantChildren: this.hasRelevantChildren,
+				hasRelevantBodyNodes: this.hasRelevantBodyNodes,
 				attributes: this.attributeState.getAttributes,
 			},
 			this.instanceConfig

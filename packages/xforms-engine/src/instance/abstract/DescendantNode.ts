@@ -106,7 +106,11 @@ export abstract class DescendantNode<
 		return this.isSelfRelevant();
 	};
 
-	readonly hasRelevantChildren: Accessor<boolean> = () => {
+	readonly hasRelevantBodyNodes: Accessor<boolean> = () => {
+		if (!this.isSelfRelevant()) {
+			return false;
+		}
+
 		const children = this.getChildren();
 		if (!children?.length) {
 			return false;
@@ -115,10 +119,7 @@ export abstract class DescendantNode<
 		return children
 			.filter((child) => child.nodeType !== 'model-value')
 			.some((child) => {
-				if (child.getChildren()?.length) {
-					return child.hasRelevantChildren() && child.isSelfRelevant();
-				}
-				return child.isSelfRelevant();
+				return child.getChildren()?.length ? child.hasRelevantBodyNodes() : child.isSelfRelevant();
 			});
 	};
 

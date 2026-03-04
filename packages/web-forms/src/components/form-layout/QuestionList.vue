@@ -45,14 +45,10 @@ const isControlNode = (node: NonStructuralNode): node is ControlNode => {
 	<template v-for="node in nodes" :key="node.nodeId">
 		<template v-if="node.currentState.relevant">
 			<!-- Render group nodes -->
-			<template v-if="isGroupNode(node)">
-				<FormGroup v-if="node.currentState.relevant && node.currentState.hasRelevantChildren" :node="node" />
-			</template>
+			<FormGroup v-if="isGroupNode(node)" :node="node" />
 
 			<!-- Render repeat nodes -->
-			<template v-else-if="isRepeatRangeNode(node)">
-				<RepeatRange v-if="node.currentState.relevant && node.currentState.hasRelevantChildren" :node="node" />
-			</template>
+			<RepeatRange v-else-if="isRepeatRangeNode(node)" :node="node" />
 
 			<!-- Render leaf nodes like string, select, etc -->
 			<FormQuestion v-else-if="isControlNode(node)" :question="node" />

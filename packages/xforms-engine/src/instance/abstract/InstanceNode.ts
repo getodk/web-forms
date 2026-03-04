@@ -146,7 +146,7 @@ export abstract class InstanceNode<
 	 * @package Exposed on every node type to facilitate inheritance, as well as
 	 * conditional behavior for value nodes.
 	 */
-	abstract readonly hasRelevantChildren: Accessor<boolean>;
+	abstract readonly hasRelevantBodyNodes: Accessor<boolean>;
 
 	// BaseNode: identity
 	readonly nodeId: FormNodeID;
