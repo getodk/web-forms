@@ -308,25 +308,17 @@ double line break`;
 	});
 
 	describe('handle indented code without support code blocks', () => {
-
 		it('four spaces are replaced', async () => {
-			await run('    code block', [
-				{ value: 'code block' },
-			]);
+			await run('    code block', [{ value: 'code block' }]);
 		});
 
 		it('many spaces are replaced', async () => {
-			await run('                       code block', [
-				{ value: 'code block' },
-			]);
+			await run('                       code block', [{ value: 'code block' }]);
 		});
 
 		it('tab is replaced', async () => {
-			await run('\tcode block', [
-				{ value: 'code block' },
-			]);
+			await run('\tcode block', [{ value: 'code block' }]);
 		});
-
 	});
 
 	it('should work with translated text', async () => {
