@@ -4,7 +4,7 @@
 	.p-inputtext:disabled,
 	.p-inputtext:read-only,
 	.p-button:disabled {
-		cursor: not-allowed;
+		cursor: default;
 	}
 }
 
@@ -17,7 +17,7 @@
 	}
 
 	.p-button:disabled {
-		cursor: not-allowed;
+		cursor: default;
 	}
 }
 
