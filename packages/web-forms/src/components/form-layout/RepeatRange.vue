@@ -12,22 +12,21 @@ const label = computed(() => props.node.currentState.label?.formatted);
 <template>
 	<template v-if="node.currentState.hasRelevantBodyNodes">
 		<RepeatInstance v-for="(instance, index) in node.currentState.children" :key="index" :instance="instance" :instance-index="index" />
-
-		<Button
-			v-if="node.nodeType === 'repeat-range:uncontrolled'"
-			outlined
-			severity="contrast"
-			class="button-add-instance"
-			@click="node.addInstances()"
-		>
-			<IconSVG name="mdiPlus" />
-			<!-- TODO: translations -->
-			<span>
-				Add
-				<MarkdownBlock v-for="elem in label" :key="elem.id" :elem="elem" />
-			</span>
-		</Button>
 	</template>
+	<Button
+		v-if="node.nodeType === 'repeat-range:uncontrolled'"
+		outlined
+		severity="contrast"
+		class="button-add-instance"
+		@click="node.addInstances()"
+	>
+		<IconSVG name="mdiPlus" />
+		<!-- TODO: translations -->
+		<span>
+			Add
+			<MarkdownBlock v-for="elem in label" :key="elem.id" :elem="elem" />
+		</span>
+	</Button>
 </template>
 
 <style scoped lang="scss">
