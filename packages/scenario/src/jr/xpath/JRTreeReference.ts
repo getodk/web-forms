@@ -1,5 +1,5 @@
 import type { CustomInspectable } from '../../assertion/vitest/shared-extension-types.ts';
-import type { JSONValue } from '../../types/JSONValue.ts';
+import type { JSONValue } from '../../../types/JSONValue.ts';
 
 /**
  * @todo Hopefully we can keep this interface extremely minimal. It currently
