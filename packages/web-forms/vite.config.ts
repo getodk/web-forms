@@ -109,12 +109,24 @@ export default defineConfig(({ mode }) => {
 
 	const versionSuffix = buildNumber && (isVueBundled || isDev) ? ` - ${buildNumber}` : '';
 
+	// Requests to forward to nginx
+	const proxyPaths = [
+		'/v1',
+		'/-',
+		'/enketo-passthrough',
+		'/client-config.json',
+		'/version.txt'
+	];
+
 	return {
 		define: {
 			__WEB_FORMS_VERSION__: `"v${version}${versionSuffix}"`,
 		},
 		base: './',
 		plugins: [vue(), vueJsx(), cssInjectedByJsPlugin(), ...extraPlugins],
+		server: {
+			proxy: Object.fromEntries(proxyPaths.map(path => [path, 'http://localhost:8686'])),
+		},
 		resolve: {
 			alias: {
 				'@getodk/common': resolve(__dirname, '../common/src'),
