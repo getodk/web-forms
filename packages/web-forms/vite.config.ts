@@ -125,7 +125,9 @@ export default defineConfig(({ mode }) => {
 		base: './',
 		plugins: [vue(), vueJsx(), cssInjectedByJsPlugin(), ...extraPlugins],
 		server: {
-			proxy: Object.fromEntries(proxyPaths.map(path => [path, 'http://localhost:8686'])),
+			// proxy: Object.fromEntries(proxyPaths.map(path => [path, 'http://localhost:8686'])),
+			proxy: Object.fromEntries(proxyPaths.map(path => [path, 'https://staging.getodk.cloud'])),
+			allowedHosts: [ '.ngrok-free.app' ]
 		},
 		resolve: {
 			alias: {

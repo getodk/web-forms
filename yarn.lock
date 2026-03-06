@@ -1311,14 +1311,17 @@ __metadata:
     "@mdi/js": "npm:^7.4.47"
     "@playwright/test": "npm:^1.58.2"
     "@primeuix/themes": "npm:1.0.3"
+    "@types/pako": "npm:^2"
     "@types/ramda": "npm:^0.31.1"
     "@vitejs/plugin-vue": "npm:^6.0.4"
     "@vitejs/plugin-vue-jsx": "npm:^5.1.4"
     "@vue/test-utils": "npm:^2.4.6"
     dompurify: "npm:^3.3.0"
+    html5-qrcode: "npm:^2.3.8"
     jsdom: "npm:^27.2.0"
     npm-run-all2: "npm:^8.0.4"
     ol: "npm:^10.7.0"
+    pako: "npm:^2.1.0"
     primeflex: "npm:^4.0.0"
     primevue: "npm:4.3.3"
     ramda: "npm:^0.32.0"
@@ -2426,6 +2429,13 @@ __metadata:
   dependencies:
     undici-types: "npm:~7.16.0"
   checksum: 10c0/d6bca7a78f550fbb376f236f92b405d676003a8a09a1b411f55920ef34286ee3ee51f566203920e835478784df52662b5b2af89159d9d319352e9ea21801c002
+  languageName: node
+  linkType: hard
+
+"@types/pako@npm:^2":
+  version: 2.0.4
+  resolution: "@types/pako@npm:2.0.4"
+  checksum: 10c0/5765bf8bc7e77ee141c454118f03e544b8f6cb51eb257d82dc5830feeab8cd00818af3a1eabefdfbe8dd3ae9916ed5403937bf1031a0ee51deea27fdf4dccdfb
   languageName: node
   linkType: hard
 
@@ -5127,6 +5137,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"html5-qrcode@npm:^2.3.8":
+  version: 2.3.8
+  resolution: "html5-qrcode@npm:2.3.8"
+  checksum: 10c0/3d7d0b3687e41a6fc0a06345f67e89ad3c7c00a3d0d8846d6fd31985e1ed2ac1c310e625f0b650dbc689f6b83469e3378417e7431ae5a9194178f1172bf6a93a
+  languageName: node
+  linkType: hard
+
 "http-cache-semantics@npm:^4.1.1":
   version: 4.2.0
   resolution: "http-cache-semantics@npm:4.2.0"
@@ -6612,7 +6629,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pako@npm:^2.0.4":
+"pako@npm:^2.0.4, pako@npm:^2.1.0":
   version: 2.1.0
   resolution: "pako@npm:2.1.0"
   checksum: 10c0/8e8646581410654b50eb22a5dfd71159cae98145bd5086c9a7a816ec0370b5f72b4648d08674624b3870a521e6a3daffd6c2f7bc00fdefc7063c9d8232ff5116
