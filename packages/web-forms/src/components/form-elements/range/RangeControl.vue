@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import type { AnyRangeNode } from '@getodk/xforms-engine';
+import Rating from 'primevue/rating';
 import { computed } from 'vue';
 import ControlText from '../ControlText.vue';
 import RangeSlider from './RangeSlider.vue';
@@ -43,24 +44,36 @@ const orientation = props.node.appearances.vertical ? 'vertical' : 'horizontal';
 <template>
 	<ControlText :question="node" />
 
-	<div :class="['range-control-container', orientation]">
-		<div class="range-bound range-min">
-			{{ min }}
-		</div>
-		<RangeSlider
+	<template v-if="props.node.appearances.rating">
+		<Rating
 			:id="node.nodeId"
 			:disabled="node.currentState.readonly"
-			:min="min"
-			:max="max"
-			:step="step"
-			:orientation="orientation"
 			:model-value="numberValue"
+			:stars="max"
 			@update:model-value="setValue"
 		/>
-		<div class="range-bound range-max">
-			{{ max }}
+	</template>
+
+	<template v-else>
+		<div :class="['range-control-container', orientation]">
+			<div class="range-bound range-min">
+				{{ min }}
+			</div>
+			<RangeSlider
+				:id="node.nodeId"
+				:disabled="node.currentState.readonly"
+				:min="min"
+				:max="max"
+				:step="step"
+				:orientation="orientation"
+				:model-value="numberValue"
+				@update:model-value="setValue"
+			/>
+			<div class="range-bound range-max">
+				{{ max }}
+			</div>
 		</div>
-	</div>
+	</template>
 </template>
 
 <style scoped lang="scss">
@@ -196,5 +209,9 @@ const orientation = props.node.appearances.vertical ? 'vertical' : 'horizontal';
 
 		z-index: var(--odk-z-index-form-content);
 	}
+}
+
+.p-rating {
+	--p-rating-icon-size: 28px;
 }
 </style>
