@@ -180,5 +180,10 @@ export const odkThemePreset = definePreset(Aura, {
 				},
 			},
 		},
+		rating: {
+			icon: {
+				size: '28px',
+			},
+		},
 	},
 });

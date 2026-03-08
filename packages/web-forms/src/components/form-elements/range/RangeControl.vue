@@ -14,8 +14,8 @@ const props = defineProps<RangeControlProps>();
 defineEmits(['update:modelValue', 'change']);
 
 const { bounds } = props.node.definition;
-const min = Number(bounds.min);
-const max = Number(bounds.max);
+const start = Number(bounds.start);
+const end = Number(bounds.end);
 const step = Number(bounds.step);
 
 const numberValue = computed((): number | undefined => {
@@ -49,7 +49,7 @@ const orientation = props.node.appearances.vertical ? 'vertical' : 'horizontal';
 			:id="node.nodeId"
 			:disabled="node.currentState.readonly"
 			:model-value="numberValue"
-			:stars="max"
+			:stars="end"
 			@update:model-value="setValue"
 		/>
 	</template>
@@ -57,20 +57,20 @@ const orientation = props.node.appearances.vertical ? 'vertical' : 'horizontal';
 	<template v-else>
 		<div :class="['range-control-container', orientation]">
 			<div class="range-bound range-min">
-				{{ min }}
+				{{ start }}
 			</div>
 			<RangeSlider
 				:id="node.nodeId"
 				:disabled="node.currentState.readonly"
-				:min="min"
-				:max="max"
+				:min="start"
+				:max="end"
 				:step="step"
 				:orientation="orientation"
 				:model-value="numberValue"
 				@update:model-value="setValue"
 			/>
 			<div class="range-bound range-max">
-				{{ max }}
+				{{ end }}
 			</div>
 		</div>
 	</template>
@@ -212,6 +212,6 @@ const orientation = props.node.appearances.vertical ? 'vertical' : 'horizontal';
 }
 
 .p-rating {
-	--p-rating-icon-size: 28px;
+	flex-wrap: wrap;
 }
 </style>
