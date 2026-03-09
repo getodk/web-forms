@@ -6,8 +6,6 @@ import ImageBlobReduce from 'image-blob-reduce';
 const IMAGE_QUALITY = 0.8;
 
 export const resize = async (file: File, max: number): Promise<File> => {
-	// TODO dynamic import for bundle size?
-
 	const reducer = ImageBlobReduce();
 
 	// This looks ugly but is actually the documented approach to setting image quality
