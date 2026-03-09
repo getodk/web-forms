@@ -58,6 +58,7 @@
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-prettier-vue": "^5.0.0",
     "eslint-plugin-vue": "^10.6.0",
+    "mdast-util-newline-to-break": "^2.0.0",
     "npm-run-all2": "^8.0.4",
     "only-allow": "^1.2.1",
     "organize-imports-cli": "^0.10.0",
