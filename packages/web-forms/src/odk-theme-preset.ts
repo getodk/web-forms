@@ -182,7 +182,7 @@ export const odkThemePreset = definePreset(Aura, {
 		},
 		rating: {
 			root: {
-				gap: '0.3rem'
+				gap: '0.3rem',
 			},
 			icon: {
 				size: '28px',
