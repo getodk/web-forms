@@ -143,7 +143,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  ##### Parameters<br/>🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜ 58\%
+  ##### Parameters<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜ 66\%
 
   </summary>
   <br/>
@@ -157,7 +157,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | rows                                                                                                                               |    ✅    |
 | geopoint capture-accuracy,<br/>warning-accuracy, allow-mock-accuracy                                                               |    ✅    |
 | range start, end, step                                                                                                             |    ✅    |
-| [image max-pixels](https://github.com/getodk/web-forms/issues/397)                                                                 |          |
+| [image max-pixels](https://github.com/getodk/web-forms/issues/397)                                                                 |    ✅    |
 | audio quality                                                                                                                      |          |
 | Audit: location-priority,<br/>location-min-interval, location-max-age,<br/>track-changes, track-changes-reasons,<br/>identify-user |          |
 | [geotrace/shape incremental=true](https://github.com/getodk/web-forms/issues/562)                                                  |          |
