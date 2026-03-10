@@ -77,7 +77,7 @@ export class ListItem extends ParentMarkdownNode {
 
 export class LineBreak implements LineBreakMarkdownNode {
 	readonly id: string;
-	readonly role = 'empty';
+	readonly role = 'line-break';
 	readonly elementName = 'br';
 	constructor() {
 		this.id = crypto.randomUUID();

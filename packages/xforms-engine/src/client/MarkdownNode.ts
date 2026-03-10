@@ -35,7 +35,7 @@ export interface ChildMarkdownNode {
 
 export interface LineBreakMarkdownNode {
 	readonly id: string;
-	readonly role: 'empty';
+	readonly role: 'line-break';
 	readonly elementName: 'br';
 }
 
