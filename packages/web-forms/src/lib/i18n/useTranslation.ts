@@ -1,7 +1,12 @@
 import { I18N_CONTEXT } from '@/lib/constants/injection-keys.ts';
-import { inject, shallowRef } from 'vue';
+import { inject, provide, type ShallowRef, shallowRef } from 'vue';
 import { IntlMessageFormat } from 'intl-messageformat';
-import type { I18nState, TranslationDictionary, TranslationItem } from './i18n.types';
+import {
+	createDefaultI18nState,
+	type I18nState,
+	type TranslationDictionary,
+	type TranslationItem,
+} from './i18n-context.ts';
 
 const isTranslationItem = (val: unknown): val is TranslationItem => {
 	return val !== null && typeof val === 'object' && 'string' in val;
@@ -20,15 +25,16 @@ const resolvePath = (
 	return isTranslationDictionary ? resolvePath(obj[first], rest) : undefined;
 };
 
-export function useTranslation(namespace: string, defaults: TranslationDictionary) {
-	const context = inject(
-		I18N_CONTEXT,
-		shallowRef<I18nState>({
-			locale: 'en',
-			translations: {} as Record<string, TranslationDictionary>,
-			cache: new Map<string, IntlMessageFormat>(),
-		})
-	);
+export function useTranslation(
+	namespace: string,
+	defaults: TranslationDictionary,
+	overrideState?: ShallowRef<I18nState>
+) {
+	if (overrideState) {
+		provide(I18N_CONTEXT, overrideState);
+	}
+
+	const context = overrideState ?? inject(I18N_CONTEXT, shallowRef(createDefaultI18nState()));
 
 	const t = (path: string, values?: Record<string, number | string>): string => {
 		const { locale, translations, cache } = context.value;

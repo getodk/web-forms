@@ -28,6 +28,36 @@ interface FormPreviewState {
 
 const formPreviewState = ref<FormPreviewState>();
 
+// TODO: REMOVE THIS MOCK. Temporal for testing translations
+const mockFetchTranslations = async (localeCode: string) => {
+	// Simulate network latency
+	await new Promise((resolve) => setTimeout(resolve, 300));
+
+	if (localeCode === 'es') {
+		return {
+			OdkWebForms: {
+				actions: {
+					submit: { string: 'Enviar', developer_comment: '' },
+				},
+				errors: {
+					locationUnavailable: { string: 'Ubicación no disponible.', developer_comment: '' },
+					validationSingle: { string: '1 pregunta con error.', developer_comment: '' },
+					validationMultiple: { string: '{count} preguntas con errores.', developer_comment: '' },
+				},
+				footer: {
+					poweredBy: { string: 'Desarrollado por', developer_comment: '' },
+				},
+			},
+			FormLoadFailureDialog: {
+				title: { string: 'Ocurrió un error al cargar este formulario', developer_comment: '' },
+				detailsSummary: { string: 'Detalles técnicos del error', developer_comment: '' },
+			},
+		};
+	}
+
+	throw new Error(`Locale ${localeCode} not found`);
+};
+
 let missingResourceBehavior: MissingResourceBehavior =
 	ENGINE_CONSTANTS.MISSING_RESOURCE_BEHAVIOR.DEFAULT;
 
@@ -92,6 +122,7 @@ const preloadProperties: PreloadProperties = {
 		<OdkWebForm
 			:form-xml="formPreviewState.formXML"
 			:fetch-form-attachment="formPreviewState.fetchFormAttachment"
+			:fetch-translations="mockFetchTranslations"
 			:missing-resource-behavior="formPreviewState.missingResourceBehavior"
 			:submission-max-size="Infinity"
 			:preload-properties="preloadProperties"

@@ -14,3 +14,16 @@ export interface I18nState {
 	translations: Record<string, TranslationDictionary | TranslationItem>;
 	cache: Map<string, IntlMessageFormat>;
 }
+
+export const FALLBACK_LOCALE = 'en';
+
+export const getFallbackLocaleData = () => ({
+	locale: FALLBACK_LOCALE,
+	translations: {} as Record<string, TranslationDictionary>,
+});
+
+export const createDefaultI18nState = (initialLocale = FALLBACK_LOCALE): I18nState => ({
+	...getFallbackLocaleData(),
+	locale: initialLocale,
+	cache: new Map<string, IntlMessageFormat>(),
+});
