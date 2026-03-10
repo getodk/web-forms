@@ -83,7 +83,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  ##### Appearances<br/>🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜ 41\%
+  ##### Appearances<br/>🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜ 43\%
 
   </summary>
   <br/>
@@ -99,7 +99,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | [vertical](https://github.com/getodk/web-forms/issues/271)      |          |
 | [no-ticks](https://github.com/getodk/web-forms/issues/271)      |          |
 | picker                                                          |          |
-| rating                                                          |          |
+| [rating](https://github.com/getodk/web-forms/issues/711)        |    ✅    |
 | new                                                             |          |
 | new-front                                                       |          |
 | draw                                                            |          |
