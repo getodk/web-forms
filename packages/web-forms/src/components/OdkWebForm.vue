@@ -3,6 +3,7 @@ import FormLoadFailureDialog from '@/components/FormLoadFailureDialog.vue';
 import IconSVG from '@/components/common/IconSVG.vue';
 import FormHeader from '@/components/form-layout/FormHeader.vue';
 import QuestionList from '@/components/form-layout/QuestionList.vue';
+import { defaultStrings } from '@/components/OdkWebForm.i18n.ts';
 import { waitAllTasksToFinish } from '@/lib/async/event-loop.ts';
 import {
 	FORM_MEDIA_CACHE,
@@ -10,6 +11,8 @@ import {
 	IS_FORM_EDIT_MODE,
 	SUBMIT_PRESSED,
 } from '@/lib/constants/injection-keys.ts';
+import { type FetchTranslationsCallback, useI18nSetup } from '@/lib/i18n/useI18nSetup.ts';
+import { useTranslation } from '@/lib/i18n/useTranslation.ts';
 import type { FormStateSuccessResult } from '@/lib/init/form-state.ts';
 import { initializeFormState } from '@/lib/init/initialize-form-state.ts';
 import { loadFormState } from '@/lib/init/load-form-state';
@@ -51,6 +54,7 @@ export interface OdkWebFormsProps {
 	readonly trackDevice?: boolean;
 	readonly preloadProperties?: PreloadProperties;
 	readonly missingResourceBehavior?: MissingResourceBehavior;
+	readonly fetchTranslations?: FetchTranslationsCallback;
 
 	/**
 	 * Note: this parameter must be set when subscribing to the
@@ -66,6 +70,9 @@ export interface OdkWebFormsProps {
 }
 
 const props = defineProps<OdkWebFormsProps>();
+
+const { i18nState, setLocale } = useI18nSetup(props.fetchTranslations);
+const { t } = useTranslation('OdkWebForms', defaultStrings, i18nState);
 
 const hostSubmissionResultCallbackFactory = (
 	currentState: FormStateSuccessResult
@@ -175,9 +182,7 @@ const getLocation = async (): Promise<string> => {
 	} catch (error) {
 		// eslint-disable-next-line no-console -- Skip silently to match Collect behaviour.
 		console.warn('Error occurred while retrieving background location.', error);
-		// TODO: translations
-		geolocationErrorMessage.value =
-			'Location unavailable. Enable GPS and browser permissions, then restart the form to try again.';
+		geolocationErrorMessage.value = t('errors.locationUnavailable');
 	}
 
 	floatingErrorActive.value = !!geolocationErrorMessage.value.length;
@@ -249,9 +254,13 @@ const validationErrorMessage = computed(() => {
 	const violationLength = state.value.root?.validationState.violations.length ?? 0;
 
 	// TODO: translations
-	if (violationLength === 0) return '';
-	else if (violationLength === 1) return '1 question with error.';
-	else return `${violationLength} questions with errors.`;
+	if (violationLength === 0) {
+		return '';
+	}
+	if (violationLength === 1) {
+		return t('errors.validationSingle');
+	}
+	return t('errors.validationMultiple', { count: violationLength });
 });
 
 watchEffect(() => {
@@ -336,7 +345,7 @@ onUnmounted(() => {
 		<div class="powered-by-wrapper">
 			<a class="anchor" href="https://getodk.org" target="_blank">
 				<span class="caption">Powered by</span>
-				<img class="logo" src="../assets/images/odk-logo.svg" alt="ODK">
+				<img class="logo" src="../assets/images/odk-logo.svg" alt="ODK" />
 			</a>
 			<div class="version">
 				{{ webFormsVersion }}

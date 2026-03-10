@@ -58,6 +58,7 @@
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-prettier-vue": "^5.0.0",
     "eslint-plugin-vue": "^10.6.0",
+    "intl-messageformat": "^11.1.2",
     "npm-run-all2": "^8.0.4",
     "only-allow": "^1.2.1",
     "organize-imports-cli": "^0.10.0",
