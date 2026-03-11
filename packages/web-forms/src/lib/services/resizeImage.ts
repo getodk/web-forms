@@ -1,3 +1,4 @@
+// disable linting to allow overwriting private functions from the library
 /* eslint-disable */
 // @ts-nocheck
 
