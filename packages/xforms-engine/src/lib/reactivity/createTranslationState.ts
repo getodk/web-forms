@@ -12,6 +12,34 @@ interface TranslationState {
 	readonly setActiveLanguage: SimpleAtomicStateSetter<FormLanguage>;
 }
 
+const extractLocale = (lang: string): Intl.Locale | undefined => {
+	if (!lang?.length) {
+		return;
+	}
+	const IANA_PATTERN = /[a-zA-Z]{2,3}(?:-[a-zA-Z]{4})?(?:-(?:[a-zA-Z]{2}|[0-9]{3}))?/;
+
+	// TODO check if all these cases are supported in the specs
+
+	// Case: "English (en-US)"
+	const parenMatch = (new RegExp(`\\((${IANA_PATTERN.source})\\)`).exec(lang))?.[1];
+	if (parenMatch) {
+		return new Intl.Locale(parenMatch.trim());
+	}
+
+	// Case: "English en-US"
+	const spaceMatch = (new RegExp(` (${IANA_PATTERN.source})$`).exec(lang))?.[1];
+	if (spaceMatch) {
+		return new Intl.Locale(spaceMatch.trim());
+	}
+
+	// Case: "en-US"
+	if (new RegExp(`^${IANA_PATTERN.source}$`).test(lang.trim())) {
+		return new Intl.Locale(lang.trim());
+	}
+
+	return;
+};
+
 /**
  * @todo It's been very silly all along that {@link XFormsXPathEvaluator} is
  * responsible for parsing translation languages, and maintaining the active
@@ -35,9 +63,9 @@ export const createTranslationState = (
 	} else {
 		const inactiveLanguages = languageNames
 			.filter((languageName) => languageName !== activeLanguageName)
-			.map((language) => ({ language }));
+			.map((language) => ({ language, locale: extractLocale(language) }));
 
-		defaultLanguage = { language: activeLanguageName };
+		defaultLanguage = { language: activeLanguageName, locale: extractLocale(activeLanguageName) };
 		languages = [defaultLanguage, ...inactiveLanguages];
 	}
 

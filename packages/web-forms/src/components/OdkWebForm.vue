@@ -16,6 +16,7 @@ import { loadFormState } from '@/lib/init/load-form-state';
 import type { EditInstanceOptions, FormOptions } from '@/lib/init/load-form-state.ts';
 import { updateSubmittedFormState } from '@/lib/init/update-submitted-form-state.ts';
 import { geolocationService } from '@/lib/services/geolocationService.ts';
+import { localeService } from '@/lib/services/localeService.ts';
 import type {
 	HostSubmissionResultCallback,
 	OptionalAwaitableHostSubmissionResult,
@@ -30,6 +31,7 @@ import type {
 } from '@getodk/xforms-engine';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
+import { usePrimeVue } from 'primevue/config';
 import Message from 'primevue/message';
 import {
 	computed,
@@ -66,6 +68,7 @@ export interface OdkWebFormsProps {
 }
 
 const props = defineProps<OdkWebFormsProps>();
+const primevue = usePrimeVue();
 
 const hostSubmissionResultCallbackFactory = (
 	currentState: FormStateSuccessResult
@@ -204,6 +207,9 @@ watch(
 	() => state.value,
 	(newState) => {
 		isFormEditMode.value = newState.instance?.mode === 'edit';
+		if (newState.root) {
+			localeService.init(newState.root, primevue.config);
+		}
 	},
 	{ immediate: true }
 );

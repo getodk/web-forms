@@ -7049,6 +7049,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"primelocale@npm:^2.3.1":
+  version: 2.3.1
+  resolution: "primelocale@npm:2.3.1"
+  checksum: 10c0/ff8c10267615cbb5eafe267bf89f4691d6f6d7fb22cf43351f5e9afa8a14516b5a48e12f5184149823bee1ded57b466ddd577e4a7823ba365e80836c78da6c4c
+  languageName: node
+  linkType: hard
+
 "primevue@npm:4.3.3":
   version: 4.3.3
   resolution: "primevue@npm:4.3.3"
@@ -7423,6 +7430,7 @@ __metadata:
     organize-imports-cli: "npm:^0.10.0"
     playwright: "npm:^1.58.2"
     prettier: "npm:^3.6.2"
+    primelocale: "npm:^2.3.1"
     rimraf: "npm:^6.1.3"
     turbo: "npm:^2.6.1"
     typescript: "npm:~5.9.3"

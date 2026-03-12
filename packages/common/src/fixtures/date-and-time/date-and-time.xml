@@ -24,7 +24,7 @@
             <value>What time is your first meal?</value>
           </text>
         </translation>
-        <translation lang="French (fr)">
+        <translation lang="French (fr)" default="true()">
           <text id="/data/dates/survey_date:label">
             <value>Quand allez-vous remplir ce questionnaire?</value>
           </text>
