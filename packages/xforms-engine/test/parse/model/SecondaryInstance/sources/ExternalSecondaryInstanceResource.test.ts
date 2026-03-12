@@ -41,6 +41,14 @@ describe('ExternalSecondaryInstanceResource', () => {
 		expect(actual.isBlank).to.equal(true);
 	});
 
+	it('throws an error for unknown content', async () => {
+		const url = JRResourceURL.create('file', 'name.xyz'); // unknown extension
+		const response = createResponse(200, 'a,b,c', 'marcel/marceau'); // unknown mime
+		await expect(() => load(url, response)).rejects.toThrowError(
+			'Failed to determine external secondary instance format for resource "jr://file/name.xyz", content type: "marcel/marceau"'
+		);
+	});
+
 	describe('detects format from content-type header', () => {
 		it('csv', async () => {
 			const url = JRResourceURL.create('file', 'name');

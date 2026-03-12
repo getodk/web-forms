@@ -55,7 +55,7 @@ const getFormat = (
 	const format = getFormatFromContentType(contentType) ?? getFormatFromFileExtension(url, data);
 	if (!format) {
 		throw new ErrorProductionDesignPendingError(
-			`Failed to infer external secondary instance format/content type for resource ${url} (response content type: ${contentType}, data: ${data})`
+			`Failed to determine external secondary instance format for resource "${url}", content type: "${contentType}"`
 		);
 	}
 	return format;
