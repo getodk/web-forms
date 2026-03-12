@@ -6,7 +6,6 @@ import eslint from '@eslint/js';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import jsdoc from 'eslint-plugin-jsdoc';
 import noOnlyTestsPlugin from 'eslint-plugin-no-only-tests';
-import prettierVuePlugin from 'eslint-plugin-prettier-vue';
 import vuePlugin from 'eslint-plugin-vue';
 import { defineConfig } from 'eslint/config';
 import { builtinModules } from 'node:module';
@@ -138,7 +137,6 @@ export default defineConfig(
 				},
 				plugins: {
 					vue: vuePlugin,
-					'prettier-vue': prettierVuePlugin,
 					'@typescript-eslint': tseslint.plugin,
 				},
 				processor: vuePlugin.processors.vue, // eslint-disable-line @typescript-eslint/no-unsafe-assignment
@@ -354,7 +352,6 @@ export default defineConfig(
 			'no-undef': 'off',
 
 			// Consistent with all other source code
-			'prettier-vue/prettier': 'error',
 			'vue/html-indent': ['error', 'tab'],
 			'vue/html-comment-indent': ['error', 'tab'],
 			'vue/script-indent': [
