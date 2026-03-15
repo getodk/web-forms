@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up npm registry
         uses: actions/setup-node@v6
@@ -30,7 +30,7 @@ jobs:
         run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
 
       - name: Cache Yarn dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ${{ steps.yarn-cache-dir-path.outputs.dir }}

@@ -15,13 +15,13 @@ jobs:
         browser: [chromium, firefox, webkit]
 
     steps:
-      - uses: 'actions/checkout@v4'
+      - uses: 'actions/checkout@v5'
 
       - uses: 'volta-cli/action@v4'
         with:
           node-version: '${{ matrix.node-version }}'
 
-      - uses: 'actions/cache@v4'
+      - uses: 'actions/cache@v5'
         id: cache-install
         with:
           path: |
@@ -30,7 +30,7 @@ jobs:
           key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
           fail-on-cache-miss: true
 
-      - uses: 'actions/cache@v4'
+      - uses: 'actions/cache@v5'
         id: cache-build
         with:
           path: |
@@ -65,13 +65,13 @@ jobs:
         browser: [chromium, firefox, webkit]
 
     steps:
-      - uses: 'actions/checkout@v4'
+      - uses: 'actions/checkout@v5'
 
       - uses: 'volta-cli/action@v4'
         with:
           node-version: '${{ matrix.node-version }}'
 
-      - uses: 'actions/cache@v4'
+      - uses: 'actions/cache@v5'
         id: cache-install
         with:
           path: |
@@ -80,7 +80,7 @@ jobs:
           key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
           fail-on-cache-miss: true
 
-      - uses: 'actions/cache@v4'
+      - uses: 'actions/cache@v5'
         id: cache-build
         with:
           path: |
