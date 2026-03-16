@@ -79,7 +79,7 @@ const processedMapActions = computed<MapAction[]>(() => {
 <template>
 	<div class="control-bar" :class="{ 'full-screen-active': isFullScreen }">
 		<div class="control-bar-vertical">
-			<button @click="emit('toggleFullScreen')">
+			<button class="fullscreen" @click="emit('toggleFullScreen')">
 				<IconSVG v-if="isFullScreen" :name="MAP_FULLSCREEN_ACTIONS.closeFullScreen.icon" />
 				<IconSVG v-else :name="MAP_FULLSCREEN_ACTIONS.openFullScreen.icon" />
 			</button>
