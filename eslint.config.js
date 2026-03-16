@@ -1,33 +1,13 @@
 // @ts-check
 
-// TODO: consider using any of the zillion "TypeScript at runtime in Node"
-// options so we can configure ESLint with a .ts file. Managing the types in JS
-// syntax is maddening and highly error prone.
-
-// TODO: look into a rule about aging TODOs. One from past usage required
-// annotating with a date, but it'd be nice if we could just derive that from
-// git history or whatever.
-
 /// <reference path="./vendor-types/@vue/eslint-config-typescript/index.d.ts" />
-/// <reference path="./vendor-types/eslint-plugin-no-only-tests.d.ts" />
-/// <reference path="./vendor-types/eslint-plugin-vue/lib/configs/base.d.ts" />
-/// <reference path="./vendor-types/eslint-plugin-vue/lib/configs/vue3-essential.d.ts" />
-/// <reference path="./vendor-types/eslint-plugin-vue/lib/configs/vue3-strongly-recommended.d.ts" />
-/// <reference path="./vendor-types/eslint-plugin-vue/lib/configs/vue3-recommended.d.ts" />
-/// <reference path="./vendor-types/eslint-plugin-vue/lib/index.d.ts" />
-/// <reference path="./vendor-types/eslint-plugin-vue/lib/processor.d.ts" />
 
 import eslint from '@eslint/js';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import jsdoc from 'eslint-plugin-jsdoc';
 import noOnlyTestsPlugin from 'eslint-plugin-no-only-tests';
-import prettierVuePlugin from 'eslint-plugin-prettier-vue';
 import vuePlugin from 'eslint-plugin-vue';
-import vueBase from 'eslint-plugin-vue/lib/configs/base.js';
-import vue3Essential from 'eslint-plugin-vue/lib/configs/vue3-essential.js';
-import vue3Recommended from 'eslint-plugin-vue/lib/configs/vue3-recommended.js';
-import vue3StronglyRecommended from 'eslint-plugin-vue/lib/configs/vue3-strongly-recommended.js';
-import vueProcessor from 'eslint-plugin-vue/lib/processor.js';
+import { defineConfig } from 'eslint/config';
 import { builtinModules } from 'node:module';
 import tseslint from 'typescript-eslint';
 import vueESLintParser from 'vue-eslint-parser';
@@ -65,11 +45,7 @@ const vueGlob = (pathSansExtensions) => {
 
 const vuePackageGlob = vueGlob('packages/web-forms/**/*');
 
-/**
- * @typedef {import('eslint').Linter.FlatConfig} FlatConfig
- */
-
-export default tseslint.config(
+export default defineConfig(
 	{
 		ignores: [
 			'.changeset',
@@ -161,10 +137,9 @@ export default tseslint.config(
 				},
 				plugins: {
 					vue: vuePlugin,
-					'prettier-vue': prettierVuePlugin,
 					'@typescript-eslint': tseslint.plugin,
 				},
-				processor: vueProcessor,
+				processor: vuePlugin.processors.vue, // eslint-disable-line @typescript-eslint/no-unsafe-assignment
 				settings: {
 					'prettier-vue': {
 						SFCBlocks: {
@@ -279,7 +254,7 @@ export default tseslint.config(
 		},
 
 		plugins: {
-			'no-only-tests': noOnlyTestsPlugin,
+			'no-only-tests': noOnlyTestsPlugin, // eslint-disable-line @typescript-eslint/no-unsafe-assignment
 		},
 
 		// Base rules, applied across project and throughout all packages (unless
@@ -368,16 +343,15 @@ export default tseslint.config(
 		 * run into issues.
 		 */
 		rules: {
-			...vueBase.rules,
-			...vue3Essential.rules,
-			...vue3StronglyRecommended.rules,
-			...vue3Recommended.rules,
+			...vuePlugin.configs.base.rules,
+			...vuePlugin.configs.essential.rules,
+			...vuePlugin.configs['strongly-recommended'].rules,
+			...vuePlugin.configs.recommended.rules,
 
 			// See explanation of typescript-eslint recommendation above
 			'no-undef': 'off',
 
 			// Consistent with all other source code
-			'prettier-vue/prettier': 'error',
 			'vue/html-indent': ['error', 'tab'],
 			'vue/html-comment-indent': ['error', 'tab'],
 			'vue/script-indent': [
