@@ -132,7 +132,8 @@ const orderedProps = computed(() => {
 	}
 }
 
-@media screen and (max-width: #{pf.$sm}) {
+@media screen and (max-width: #{pf.$sm}) and (orientation: portrait),
+screen and (orientation: landscape) and (max-height: #{pf.$sm}) {
 	.map-properties {
 		--odk-map-properties-spacing-md: 8px;
 	}

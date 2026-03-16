@@ -144,7 +144,8 @@ const processedMapActions = computed<MapAction[]>(() => {
 	}
 }
 
-@media screen and (max-width: #{pf.$sm}) {
+@media screen and (max-width: #{pf.$sm}) and (orientation: portrait),
+screen and (orientation: landscape) and (max-height: #{pf.$sm}) {
 	.control-bar {
 		top: var(--odk-map-controls-spacing);
 		right: var(--odk-map-controls-spacing);
@@ -157,6 +158,13 @@ const processedMapActions = computed<MapAction[]>(() => {
 		.control-bar-vertical .zoom-current-location {
 			display: none;
 		}
+	}
+}
+
+@media screen and (orientation: landscape) and (max-height: #{pf.$sm}) {
+	// Landscape doesn't have space for info-dialog button
+	.control-bar-vertical .info-dialog {
+		display: none;
 	}
 }
 </style>

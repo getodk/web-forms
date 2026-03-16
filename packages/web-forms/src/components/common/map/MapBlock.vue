@@ -44,6 +44,7 @@ const emit = defineEmits(['save']);
 const mapElement = ref<HTMLElement | undefined>();
 const isFullScreen = ref(false);
 const isAdvancedPanelOpen = ref(false);
+const isAdvancedPanelClosing = ref(false);
 const confirmDeleteAction = ref(false);
 const isUpdateCoordsDialogOpen = ref(false);
 const pointPlaced = ref(false);
@@ -263,28 +264,31 @@ const toggleFullScreen = () => {
 				</Message>
 			</div>
 
-			<MapStatusBar
-				:can-open-advanced-panel="!disabled && mapHandler.canOpenAdvancedPanel()"
-				:can-remove="!disabled && mapHandler.canRemoveCurrentLocation()"
-				:can-view-details="mapHandler.canViewProperties()"
-				:single-feature-type="singleFeatureType"
-				:is-capturing="mapHandler.currentState.value === STATES.CAPTURING"
-				:is-full-screen="isFullScreen"
-				:saved-feature-value="savedFeatureValue"
-				:selected-vertex="selectedVertex"
-				class="map-status-bar-component"
-				@discard="discardSavedFeature"
-				@view-details="mapHandler.selectSavedFeature"
-				@toggle-advanced-panel="isAdvancedPanelOpen = !isAdvancedPanelOpen"
-			/>
+			<div class="map-bottom-section" :class="{ 'is-advanced-panel-active': isAdvancedPanelOpen || isAdvancedPanelClosing } ">
+				<MapStatusBar
+					:can-open-advanced-panel="!disabled && mapHandler.canOpenAdvancedPanel()"
+					:can-remove="!disabled && mapHandler.canRemoveCurrentLocation()"
+					:can-view-details="mapHandler.canViewProperties()"
+					:single-feature-type="singleFeatureType"
+					:is-capturing="mapHandler.currentState.value === STATES.CAPTURING"
+					:is-full-screen="isFullScreen"
+					:saved-feature-value="savedFeatureValue"
+					:selected-vertex="selectedVertex"
+					class="map-status-bar-component"
+					@discard="discardSavedFeature"
+					@view-details="mapHandler.selectSavedFeature"
+					@toggle-advanced-panel="isAdvancedPanelOpen = !isAdvancedPanelOpen"
+				/>
 
-			<MapAdvancedPanel
-				v-if="!disabled && mapHandler.canOpenAdvancedPanel()"
-				:is-open="isAdvancedPanelOpen"
-				:coordinates="advancedPanelCoords"
-				@open-paste-dialog="isUpdateCoordsDialogOpen = true"
-				@save="saveAdvancedPanelCoords"
-			/>
+				<MapAdvancedPanel
+					v-if="!disabled && mapHandler.canOpenAdvancedPanel()"
+					:is-open="isAdvancedPanelOpen"
+					:coordinates="advancedPanelCoords"
+					@closing-panel="isAdvancedPanelClosing = $event"
+					@open-paste-dialog="isUpdateCoordsDialogOpen = true"
+					@save="saveAdvancedPanelCoords"
+				/>
+			</div>
 
 			<MapProperties
 				v-if="mapHandler.canViewProperties()"
@@ -512,7 +516,8 @@ const toggleFullScreen = () => {
 	transform: translate(-50%, -50%);
 }
 
-@media screen and (max-width: #{pf.$sm}) {
+@media screen and (max-width: #{pf.$sm}) and (orientation: portrait),
+screen and (orientation: landscape) and (max-height: #{pf.$sm}) {
 	.map-block-component {
 		height: fit-content;
 	}
@@ -531,6 +536,19 @@ const toggleFullScreen = () => {
 		:deep(.ol-zoom) {
 			display: flex;
 			height: fit-content;
+		}
+
+		.map-bottom-section {
+			position: relative;
+			width: 100vw;
+			background: var(--odk-base-background-color);
+			// Displays on top of map elements when it's mobile and fullscreen
+			&.is-advanced-panel-active {
+				position: absolute;
+				bottom: 0;
+				left: 0;
+				z-index: var(--odk-z-index-form-floating);
+			}
 		}
 	}
 
