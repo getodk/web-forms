@@ -171,10 +171,6 @@ onBeforeUnmount(cleanup);
 <style lang="scss">
 @use 'primeflex/core/_variables.scss' as pf;
 
-.geo-dialog {
-	--geo-spacing-xxl: 30px;
-}
-
 .geo-dialog-header {
 	display: flex;
 	justify-content: space-between;
@@ -219,7 +215,7 @@ onBeforeUnmount(cleanup);
 
 .geo-dialog-body {
 	align-items: flex-start;
-	padding: var(--geo-spacing-xxl);
+	padding: var(--odk-spacing-xxl);
 	max-width: 450px;
 	width: 80vw;
 }
@@ -243,7 +239,7 @@ onBeforeUnmount(cleanup);
 
 @media screen and (max-width: #{pf.$md}) {
 	.geo-dialog-body {
-		padding: var(--geo-spacing-xxl) var(--odk-spacing-xl);
+		padding: var(--odk-spacing-xxl) var(--odk-spacing-xl);
 	}
 }
 </style>
