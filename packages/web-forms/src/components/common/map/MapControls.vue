@@ -1,9 +1,15 @@
 <script setup lang="ts">
 import IconSVG from '@/components/common/IconSVG.vue';
 import MapInfoDialog from '@/components/common/map/MapInfoDialog.vue';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
-defineProps<{
+interface MapAction {
+	readonly icon: string;
+	readonly description: string;
+	infoClasses?: string[];
+}
+
+const props = defineProps<{
 	isFullScreen: boolean;
 	disableFitAllFeatures: boolean;
 	disableUndo: boolean;
@@ -19,16 +25,7 @@ const emit = defineEmits([
 	'undoLastChange',
 ]);
 
-const showActionsInfo = ref(false);
-const MAP_ACTIONS = {
-	openFullScreen: {
-		icon: 'mdiArrowExpand',
-		description: 'Expands to full screen',
-	},
-	closeFullScreen: {
-		icon: 'mdiArrowCollapse',
-		description: 'Exit full screen',
-	},
+const MAP_PRIMARY_ACTIONS = {
 	zoomFitAll: {
 		icon: 'mdiFullscreen',
 		description: 'Show all features on the map',
@@ -37,6 +34,8 @@ const MAP_ACTIONS = {
 		icon: 'mdiCrosshairsGps',
 		description: 'Find your location',
 	},
+};
+const MAP_SECONDARY_ACTIONS = {
 	undo: {
 		icon: 'mdiArrowULeftTop',
 		description: 'Undo last action',
@@ -50,22 +49,49 @@ const MAP_ACTIONS = {
 		infoClasses: ['mobile-only'],
 		description: 'Advanced manual edits',
 	},
-} as const;
-const MAP_ACTIONS_ARRAY = Object.values(MAP_ACTIONS);
+};
+const MAP_FULLSCREEN_ACTIONS = {
+	openFullScreen: {
+		icon: 'mdiArrowExpand',
+		description: 'Expands to full screen',
+	},
+	closeFullScreen: {
+		icon: 'mdiArrowCollapse',
+		description: 'Exit full screen',
+	},
+};
+
+const showActionsInfo = ref(false);
+const processedMapActions = computed<MapAction[]>(() => {
+	const actions: MapAction[] = props.isFullScreen
+		? [MAP_FULLSCREEN_ACTIONS.closeFullScreen]
+		: [MAP_FULLSCREEN_ACTIONS.openFullScreen];
+	actions.push(...Object.values(MAP_PRIMARY_ACTIONS));
+
+	if (props.showSecondaryControls) {
+		actions.push(...Object.values(MAP_SECONDARY_ACTIONS));
+	}
+
+	return actions;
+});
 </script>
 
 <template>
 	<div class="control-bar" :class="{ 'full-screen-active': isFullScreen }">
 		<div class="control-bar-vertical">
 			<button @click="emit('toggleFullScreen')">
-				<IconSVG v-if="isFullScreen" :name="MAP_ACTIONS.closeFullScreen.icon" />
-				<IconSVG v-else :name="MAP_ACTIONS.openFullScreen.icon" />
+				<IconSVG v-if="isFullScreen" :name="MAP_FULLSCREEN_ACTIONS.closeFullScreen.icon" />
+				<IconSVG v-else :name="MAP_FULLSCREEN_ACTIONS.openFullScreen.icon" />
 			</button>
-			<button class="zoom-fit-all" :disabled="disableFitAllFeatures" @click="emit('fitAllFeatures')">
-				<IconSVG :name="MAP_ACTIONS.zoomFitAll.icon" />
+			<button
+				class="zoom-fit-all"
+				:disabled="disableFitAllFeatures"
+				@click="emit('fitAllFeatures')"
+			>
+				<IconSVG :name="MAP_PRIMARY_ACTIONS.zoomFitAll.icon" />
 			</button>
 			<button class="zoom-current-location" @click="emit('watchCurrentLocation')">
-				<IconSVG :name="MAP_ACTIONS.currentLocation.icon" size="sm" />
+				<IconSVG :name="MAP_PRIMARY_ACTIONS.currentLocation.icon" size="sm" />
 			</button>
 			<button class="info-dialog" @click="showActionsInfo = true">
 				<IconSVG name="mdiInformationSlabCircleOutline" />
@@ -74,15 +100,15 @@ const MAP_ACTIONS_ARRAY = Object.values(MAP_ACTIONS);
 
 		<div v-if="showSecondaryControls" class="control-bar-horizontal">
 			<button :disabled="disableDelete" @click="emit('triggerDelete')">
-				<IconSVG :name="MAP_ACTIONS.delete.icon" />
+				<IconSVG :name="MAP_SECONDARY_ACTIONS.delete.icon" />
 			</button>
 			<button :disabled="disableUndo" @click="emit('undoLastChange')">
-				<IconSVG :name="MAP_ACTIONS.undo.icon" />
+				<IconSVG :name="MAP_SECONDARY_ACTIONS.undo.icon" />
 			</button>
 		</div>
 	</div>
 
-  <MapInfoDialog :actions-info="MAP_ACTIONS_ARRAY" v-model:visible="showActionsInfo" />
+	<MapInfoDialog v-model:visible="showActionsInfo" :actions-info="processedMapActions" />
 </template>
 
 <style scoped lang="scss">

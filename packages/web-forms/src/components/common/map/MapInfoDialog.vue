@@ -71,5 +71,4 @@ const emit = defineEmits(['update:visible']);
 		}
 	}
 }
-
 </style>
