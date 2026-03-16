@@ -157,11 +157,8 @@ watch(pasteValue, (newVal) => {
 				<!-- TODO: translations -->
 				<label for="paste-input">
 					<span>Paste data in ODK format</span>
-					<span
-						class="info-helper"
-						title="Enter as: Lat Long Alt Acc (e.g. 45.5 -122.6 15 2; 45.6 -122.7 12 3)"
-					>
-						&#9432;
+					<span class="info-helper">
+						Enter coordinates as: Lat Long Altitude Accuracy. Separate multiple points with a semicolon (;).
 					</span>
 				</label>
 				<Textarea
@@ -236,9 +233,10 @@ watch(pasteValue, (newVal) => {
 	}
 
 	.info-helper {
+		display: block;
 		font-size: var(--odk-hint-font-size);
-		font-weight: bold;
-		cursor: pointer;
+		color: var(--odk-muted-text-color);
+		font-weight: 300;
 	}
 
 	#paste-input {
