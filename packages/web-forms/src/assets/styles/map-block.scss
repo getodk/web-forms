@@ -11,7 +11,7 @@
 	background: none;
 	overflow: hidden;
 	gap: var(--odk-map-controls-spacing);
-	z-index: var(--odk-z-index-form-floating);
+	z-index: var(--odk-z-index-form-content);
 }
 
 @mixin map-control-bar-vertical {

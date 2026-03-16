@@ -67,7 +67,7 @@ const MAP_ACTIONS_ARRAY = Object.values(MAP_ACTIONS);
 			<button class="zoom-current-location" @click="emit('watchCurrentLocation')">
 				<IconSVG :name="MAP_ACTIONS.currentLocation.icon" size="sm" />
 			</button>
-			<button @click="showActionsInfo = true">
+			<button class="info-dialog" @click="showActionsInfo = true">
 				<IconSVG name="mdiInformationSlabCircleOutline" />
 			</button>
 		</div>
@@ -126,6 +126,7 @@ const MAP_ACTIONS_ARRAY = Object.values(MAP_ACTIONS);
 
 	.control-bar:not(.full-screen-active) {
 		.control-bar-horizontal,
+		.control-bar-vertical .info-dialog,
 		.control-bar-vertical .zoom-fit-all,
 		.control-bar-vertical .zoom-current-location {
 			display: none;

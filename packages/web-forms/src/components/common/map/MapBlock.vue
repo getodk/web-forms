@@ -530,9 +530,6 @@ const toggleFullScreen = () => {
 	.map-container.map-full-screen {
 		:deep(.ol-zoom) {
 			display: flex;
-			top: 195px;
-			right: var(--odk-map-controls-spacing);
-			bottom: var(--odk-map-controls-spacing);
 			height: fit-content;
 		}
 	}
