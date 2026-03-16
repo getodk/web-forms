@@ -259,7 +259,7 @@ const isDev = import.meta.env.DEV;
 		}
 
 		.intro-wrapper .intro-block {
-			margin-right: 20px;
+			margin-right: var(--odk-spacing-xl);
 		}
 
 		h1.demo-form-heading {

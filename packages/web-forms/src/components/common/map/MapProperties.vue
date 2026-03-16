@@ -57,21 +57,16 @@ const orderedProps = computed(() => {
 @use 'primeflex/core/_variables.scss' as pf;
 
 .map-properties {
-	--odk-map-properties-spacing-lg: 20px;
-	--odk-map-properties-spacing-md: 10px;
-}
-
-.map-properties {
 	background: var(--odk-base-background-color);
 	position: absolute;
-	top: var(--odk-map-properties-spacing-md);
-	left: var(--odk-map-properties-spacing-md);
-	padding: var(--odk-map-properties-spacing-lg);
+	top: var(--odk-spacing-m);
+	left: var(--odk-spacing-m);
+	padding: var(--odk-spacing-xl);
 	border: 1px solid var(--odk-border-color);
 	border-radius: var(--odk-radius);
 	display: flex;
 	flex-direction: column;
-	gap: var(--odk-map-properties-spacing-md);
+	gap: var(--odk-spacing-m);
 	width: 360px;
 	max-height: 370px;
 	box-shadow: 1px 2px 3px 0 rgba(0, 0, 0, 0.2);
@@ -83,7 +78,7 @@ const orderedProps = computed(() => {
 	flex-wrap: nowrap;
 	justify-content: space-between;
 	align-items: flex-start;
-	gap: var(--odk-map-properties-spacing-md);
+	gap: var(--odk-spacing-m);
 	padding: 0;
 	-webkit-user-select: text;
 	user-select: text;
@@ -95,7 +90,7 @@ const orderedProps = computed(() => {
 	.close-icon {
 		cursor: pointer;
 		margin-top: -12px;
-		padding: 5px 0;
+		padding: var(--odk-spacing-s) 0;
 		margin-right: -3px;
 	}
 }
@@ -107,7 +102,7 @@ const orderedProps = computed(() => {
 
 	.property-line {
 		display: block;
-		padding: 15px 0;
+		padding: var(--odk-spacing-l) 0;
 		-webkit-user-select: text;
 		user-select: text;
 
@@ -119,7 +114,7 @@ const orderedProps = computed(() => {
 
 		dt:after {
 			content: ':';
-			margin-right: 5px;
+			margin-right: var(--odk-spacing-s);
 		}
 
 		&:not(:last-child) {

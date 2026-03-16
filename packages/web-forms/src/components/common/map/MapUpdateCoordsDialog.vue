@@ -220,7 +220,7 @@ watch(pasteValue, (newVal) => {
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
-	gap: 10px;
+	gap: var(--odk-spacing-m);
 
 	label {
 		font-size: var(--odk-base-font-size);
@@ -232,7 +232,7 @@ watch(pasteValue, (newVal) => {
 	}
 
 	.upload-button {
-		margin-top: 10px;
+		margin-top: var(--odk-spacing-m);
 	}
 
 	.info-helper {
@@ -243,7 +243,7 @@ watch(pasteValue, (newVal) => {
 
 	#paste-input {
 		width: 100%;
-		padding: 10px;
+		padding: var(--odk-spacing-m);
 	}
 }
 
@@ -256,10 +256,10 @@ watch(pasteValue, (newVal) => {
 .file-added-container {
 	display: flex;
 	align-items: center;
-	gap: 10px;
+	gap: var(--odk-spacing-m);
 	border: 1px solid var(--odk-border-color);
 	border-radius: var(--odk-radius);
-	padding: 10px;
+	padding: var(--odk-spacing-m);
 
 	.file-name {
 		flex: 1 1 100px;

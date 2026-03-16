@@ -456,7 +456,7 @@ const toggleFullScreen = () => {
 
 	ul {
 		margin: 0;
-		padding: 5px;
+		padding: var(--odk-spacing-s);
 	}
 
 	li {
@@ -465,7 +465,7 @@ const toggleFullScreen = () => {
 
 	li,
 	a {
-		font-size: 10px;
+		font-size: var(--odk-spacing-m);
 		line-height: 14px;
 		color: var(--odk-muted-text-color);
 	}
@@ -476,11 +476,11 @@ const toggleFullScreen = () => {
 	color: var(--odk-error-text-color);
 	background-color: var(--odk-error-background-color);
 	border-radius: var(--odk-radius);
-	margin-top: 20px;
-	padding: 20px;
+	margin-top: var(--odk-spacing-xl);
+	padding: var(--odk-spacing-xl);
 
 	&.stack-errors {
-		padding: 20px 0 5px 0;
+		padding: var(--odk-spacing-xl) 0 var(--odk-spacing-s) 0;
 		margin-top: 0;
 		border-radius: 0;
 	}
