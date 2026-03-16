@@ -11,15 +11,19 @@
           <audio/>
           <video/>
           <doc/>
+          <anything/>
+          <disabled/>
           <meta>
             <instanceID/>
           </meta>
         </data>
       </instance>
 
-      <bind nodeset="/data/audio" type="binary" required="true()" />
-      <bind nodeset="/data/video" type="binary" required="true()" />
-      <bind nodeset="/data/doc" type="binary" required="true()" />
+      <bind nodeset="/data/audio" type="binary" />
+      <bind nodeset="/data/video" type="binary" />
+      <bind nodeset="/data/doc" type="binary" />
+      <bind nodeset="/data/anything" type="binary" required="true()" />
+      <bind nodeset="/data/disabled" type="binary" readonly="true()" />
     </model>
   </h:head>
   <h:body>
@@ -29,8 +33,14 @@
     <upload mediatype="video/*" ref="/data/video">
       <label>Upload video</label>
     </upload>
-    <upload accept=".pdf" ref="/data/doc">
-      <label>Upload PDF</label>
+    <upload accept=".pdf,.doc,.docx" ref="/data/doc">
+      <label>Upload PDF or Word doc</label>
+    </upload>
+    <upload ref="/data/anything">
+      <label>Upload any file</label>
+    </upload>
+    <upload ref="/data/disabled">
+      <label>Disabled upload</label>
     </upload>
   </h:body>
 </h:html>
