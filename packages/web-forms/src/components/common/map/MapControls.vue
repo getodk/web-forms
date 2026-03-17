@@ -25,6 +25,7 @@ const emit = defineEmits([
 	'undoLastChange',
 ]);
 
+// TODO translations
 const MAP_PRIMARY_ACTIONS = {
 	zoomFitAll: {
 		icon: 'mdiFullscreen',
@@ -44,7 +45,7 @@ const MAP_SECONDARY_ACTIONS = {
 		icon: 'mdiTrashCanOutline',
 		description: 'Delete one vertex or all vertices',
 	},
-	advanced: {
+	openAdvanced: {
 		icon: 'mdiCogOutline',
 		infoClasses: ['mobile-only'],
 		description: 'Advanced manual edits',
@@ -53,12 +54,18 @@ const MAP_SECONDARY_ACTIONS = {
 const MAP_FULLSCREEN_ACTIONS = {
 	openFullScreen: {
 		icon: 'mdiArrowExpand',
-		description: 'Expands to full screen',
+		description: 'Expand to full screen',
 	},
 	closeFullScreen: {
 		icon: 'mdiArrowCollapse',
 		description: 'Exit full screen',
 	},
+};
+const INFO_ACTION = {
+	openInfo: {
+		icon: 'mdiInformationSlabCircleOutline',
+		description: 'Show information of map actions',
+	}
 };
 
 const showActionsInfo = ref(false);
@@ -79,30 +86,51 @@ const processedMapActions = computed<MapAction[]>(() => {
 <template>
 	<div class="control-bar" :class="{ 'full-screen-active': isFullScreen }">
 		<div class="control-bar-vertical">
-			<button class="fullscreen" @click="emit('toggleFullScreen')">
+			<button
+				:aria-label="isFullScreen ? MAP_FULLSCREEN_ACTIONS.closeFullScreen.description : MAP_FULLSCREEN_ACTIONS.openFullScreen.description"
+				class="fullscreen"
+				@click="emit('toggleFullScreen')"
+			>
 				<IconSVG v-if="isFullScreen" :name="MAP_FULLSCREEN_ACTIONS.closeFullScreen.icon" />
 				<IconSVG v-else :name="MAP_FULLSCREEN_ACTIONS.openFullScreen.icon" />
 			</button>
 			<button
+				:aria-label="MAP_PRIMARY_ACTIONS.zoomFitAll.description"
 				class="zoom-fit-all"
 				:disabled="disableFitAllFeatures"
 				@click="emit('fitAllFeatures')"
 			>
 				<IconSVG :name="MAP_PRIMARY_ACTIONS.zoomFitAll.icon" />
 			</button>
-			<button class="zoom-current-location" @click="emit('watchCurrentLocation')">
+			<button
+				:aria-label="MAP_PRIMARY_ACTIONS.currentLocation.description"
+				class="zoom-current-location"
+				@click="emit('watchCurrentLocation')"
+			>
 				<IconSVG :name="MAP_PRIMARY_ACTIONS.currentLocation.icon" size="sm" />
 			</button>
-			<button class="info-dialog" @click="showActionsInfo = true">
-				<IconSVG name="mdiInformationSlabCircleOutline" />
+			<button
+				:aria-label="INFO_ACTION.openInfo.description"
+				class="info-dialog"
+				@click="showActionsInfo = true"
+			>
+				<IconSVG :name="INFO_ACTION.openInfo.icon" />
 			</button>
 		</div>
 
 		<div v-if="showSecondaryControls" class="control-bar-horizontal">
-			<button :disabled="disableDelete" @click="emit('triggerDelete')">
+			<button
+				:aria-label="MAP_SECONDARY_ACTIONS.delete.description"
+				:disabled="disableDelete"
+				@click="emit('triggerDelete')"
+			>
 				<IconSVG :name="MAP_SECONDARY_ACTIONS.delete.icon" />
 			</button>
-			<button :disabled="disableUndo" @click="emit('undoLastChange')">
+			<button
+				:aria-label="MAP_SECONDARY_ACTIONS.undo.description"
+				:disabled="disableUndo"
+				@click="emit('undoLastChange')"
+			>
 				<IconSVG :name="MAP_SECONDARY_ACTIONS.undo.icon" />
 			</button>
 		</div>

@@ -32,8 +32,8 @@ const orderedProps = computed(() => {
 			</button>
 		</div>
 
-		<dl class="map-properties-content">
-			<div v-for="[key = '', value = ''] in orderedProps" :key="key" class="property-line">
+		<dl class="odk-form-list">
+			<div v-for="[key = '', value = ''] in orderedProps" :key="key" class="odk-form-list-item">
 				<dt>{{ key }}</dt><dd>{{ value }}</dd>
 			</div>
 		</dl>
@@ -95,14 +95,10 @@ const orderedProps = computed(() => {
 	}
 }
 
-.map-properties-content {
+.odk-form-list {
 	flex-grow: 2;
-	overflow: auto;
-	margin: 0;
 
-	.property-line {
-		display: block;
-		padding: var(--odk-spacing-l) 0;
+	.odk-form-list-item {
 		-webkit-user-select: text;
 		user-select: text;
 
@@ -115,10 +111,6 @@ const orderedProps = computed(() => {
 		dt:after {
 			content: ':';
 			margin-right: var(--odk-spacing-s);
-		}
-
-		&:not(:last-child) {
-			border-bottom: 1px solid var(--odk-border-color);
 		}
 	}
 }

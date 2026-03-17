@@ -29,9 +29,9 @@ const emit = defineEmits(['update:visible']);
 		</template>
 
 		<template #default>
-			<ul class="map-info-dialog-list">
-				<li v-for="(action, index) in actionsInfo" :key="index" :class="action.infoClasses?.join(' ')">
-					<div class="map-info-description">
+			<ul class="odk-form-list">
+				<li v-for="(action, index) in actionsInfo" :key="index" class="odk-form-list-item" :class="action.infoClasses?.join(' ')">
+					<div class="map-action-description">
 						<IconSVG :name="action.icon" />
 						<span>{{ action.description }}</span>
 					</div>
@@ -47,28 +47,15 @@ const emit = defineEmits(['update:visible']);
 </template>
 
 <style scoped lang="scss">
-.map-info-dialog-list {
-	margin: 0;
-	padding: 0;
-	list-style: none;
+.odk-form-list {
+	.odk-form-list-item:first-child {
+		padding-top: 0;
+	}
 
-	li {
-		padding: var(--odk-spacing-xl) 0;
-		border-bottom: 1px solid var(--odk-border-color);
-
-		&:first-child {
-			padding-top: 0;
-		}
-
-		&:last-child {
-			border-bottom: none;
-		}
-
-		.map-info-description {
-			display: flex;
-			align-items: center;
-			gap: var(--odk-spacing-xl);
-		}
+	.map-action-description {
+		display: flex;
+		align-items: center;
+		gap: var(--odk-spacing-xl);
 	}
 }
 </style>

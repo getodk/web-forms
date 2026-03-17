@@ -140,3 +140,19 @@
 
 	@include toggle-visibility();
 }
+
+.odk-form-list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	overflow: auto;
+
+	.odk-form-list-item {
+		display: block;
+		padding: var(--odk-spacing-l) 0;
+
+		&:not(:last-child) {
+			border-bottom: 1px solid var(--odk-border-color);
+		}
+	}
+}
