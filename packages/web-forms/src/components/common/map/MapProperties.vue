@@ -68,7 +68,7 @@ const orderedProps = computed(() => {
 	flex-direction: column;
 	gap: var(--odk-spacing-m);
 	width: 360px;
-	max-height: 370px;
+	max-height: min(370px, 90vh);
 	box-shadow: 1px 2px 3px 0 rgba(0, 0, 0, 0.2);
 }
 
@@ -124,7 +124,7 @@ const orderedProps = computed(() => {
 	}
 }
 
-@media screen and (max-width: #{pf.$sm}) and (orientation: portrait) {
+@media screen and (max-width: #{pf.$sm}) {
 	.map-properties {
 		--odk-map-properties-spacing-md: 8px;
 	}
@@ -137,12 +137,6 @@ const orderedProps = computed(() => {
 		margin: 0 auto;
 		width: calc(100% - (var(--odk-map-properties-spacing-md) * 2));
 		max-height: 50%;
-	}
-}
-
-@media screen and (orientation: landscape) and (max-height: #{pf.$sm}) {
-	.map-properties {
-		max-height: 320px;
 	}
 }
 </style>

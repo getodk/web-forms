@@ -2,6 +2,12 @@
 	--odk-map-controls-spacing: 8px;
 }
 
+@mixin map-block-sm {
+	@container map-block (max-height: 333px) {
+		@content;
+	}
+}
+
 @mixin map-control-bar {
 	position: absolute;
 	display: flex;

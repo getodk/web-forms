@@ -238,8 +238,7 @@ const displayState = computed(() => {
 	gap: var(--odk-map-controls-spacing);
 }
 
-@media screen and (max-width: #{pf.$sm}) and (orientation: portrait),
-screen and (orientation: landscape) and (max-height: #{pf.$sm}) {
+@media screen and (max-width: #{pf.$sm}) {
 	.map-status-bar:not(.full-screen-active) {
 		.advanced-button {
 			display: none;

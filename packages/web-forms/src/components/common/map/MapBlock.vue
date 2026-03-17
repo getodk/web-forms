@@ -341,6 +341,7 @@ const toggleFullScreen = () => {
 @use 'primeflex/core/_variables.scss' as pf;
 @use '../../../assets/styles/map-block' as mb;
 @use '../../../assets/styles/buttons' as btn;
+@use '../../../assets/styles/style' as odk;
 
 .map-block-component {
 	position: relative;
@@ -361,6 +362,7 @@ const toggleFullScreen = () => {
 	-webkit-touch-callout: none;
 
 	.map-block {
+		container: map-block / size;
 		position: relative;
 		background: var(--odk-base-background-color);
 		width: 100%;
@@ -516,8 +518,7 @@ const toggleFullScreen = () => {
 	transform: translate(-50%, -50%);
 }
 
-@media screen and (max-width: #{pf.$sm}) and (orientation: portrait),
-screen and (orientation: landscape) and (max-height: #{pf.$sm}) {
+@media screen and (max-width: #{pf.$sm}) {
 	.map-block-component {
 		height: fit-content;
 	}
@@ -527,33 +528,34 @@ screen and (orientation: landscape) and (max-height: #{pf.$sm}) {
 			display: none;
 		}
 
+		&.map-full-screen :deep(.ol-zoom) {
+			display: flex;
+			height: fit-content;
+		}
+
 		.map-overlay.full-screen-overlay {
 			display: flex;
 		}
 	}
 
-	.map-container.map-full-screen {
-		:deep(.ol-zoom) {
-			display: flex;
-			height: fit-content;
-		}
-
-		.map-bottom-section {
-			position: relative;
-			width: 100vw;
-			background: var(--odk-base-background-color);
-			// Displays on top of map elements when it's mobile and fullscreen
-			&.is-advanced-panel-active {
-				position: absolute;
-				bottom: 0;
-				left: 0;
-				z-index: var(--odk-z-index-form-floating);
-			}
-		}
-	}
-
 	.map-message.above-secondary-controls {
 		bottom: 61px;
+	}
+}
+
+@include odk.sm-constrained {
+	// Displays on top of map elements when it's mobile and fullscreen
+	.map-container.map-full-screen .map-bottom-section {
+		position: relative;
+		width: 100vw;
+		background: var(--odk-base-background-color);
+
+		&.is-advanced-panel-active {
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			z-index: var(--odk-z-index-form-floating);
+		}
 	}
 }
 </style>

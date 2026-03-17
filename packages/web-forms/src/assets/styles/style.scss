@@ -115,6 +115,12 @@
 	}
 }
 
+@mixin sm-constrained {
+	@media (width <= #{pf.$sm}) and (orientation: portrait), (height <= #{pf.$sm}) and (orientation: landscape) {
+		@content;
+	}
+}
+
 .odk-form {
 	@keyframes shimmer {
 		0% {

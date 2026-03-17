@@ -172,8 +172,7 @@ const processedMapActions = computed<MapAction[]>(() => {
 	}
 }
 
-@media screen and (max-width: #{pf.$sm}) and (orientation: portrait),
-screen and (orientation: landscape) and (max-height: #{pf.$sm}) {
+@media screen and (max-width: #{pf.$sm}) {
 	.control-bar {
 		top: var(--odk-map-controls-spacing);
 		right: var(--odk-map-controls-spacing);
@@ -189,8 +188,7 @@ screen and (orientation: landscape) and (max-height: #{pf.$sm}) {
 	}
 }
 
-@media screen and (orientation: landscape) and (max-height: #{pf.$sm}) {
-	// Landscape doesn't have space for info-dialog button
+@include mb.map-block-sm {
 	.control-bar-vertical .info-dialog {
 		display: none;
 	}
