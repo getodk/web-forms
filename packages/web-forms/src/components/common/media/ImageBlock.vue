@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import MediaBlockBase from '@/components/common/media/MediaBlockBase.vue';
+import type { ObjectURL } from '@/components/OdkWebForm.vue';
 import type { JRResourceURL } from '@getodk/common/jr-resources/JRResourceURL.ts';
 import { computed, ref, triggerRef } from 'vue';
-
-type ObjectURL = `blob:${string}`;
 
 defineProps<{
 	readonly resourceUrl?: JRResourceURL;

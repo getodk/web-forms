@@ -43,7 +43,7 @@ import {
 } from 'vue';
 
 const webFormsVersion = __WEB_FORMS_VERSION__;
-type ObjectURL = `blob:${string}`;
+export type ObjectURL = `blob:${string}`;
 
 export interface OdkWebFormsProps {
 	readonly formXml: string;

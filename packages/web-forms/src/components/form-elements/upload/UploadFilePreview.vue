@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import IconSVG from '@/components/common/IconSVG.vue';
+import type { ObjectURL } from '@/components/OdkWebForm.vue';
 import Button from 'primevue/button';
-
-type ObjectURL = `blob:${string}`; // TODO this type is everywhere
 
 export interface UploadControlPreviewProps {
 	readonly fileName: string;

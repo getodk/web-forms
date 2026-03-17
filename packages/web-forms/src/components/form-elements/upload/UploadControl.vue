@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ControlText from '@/components/form-elements/ControlText.vue';
+import type { ObjectURL } from '@/components/OdkWebForm.vue';
 import type { UploadNode } from '@getodk/xforms-engine';
 import Message from 'primevue/message';
 import Panel from 'primevue/panel';
@@ -9,9 +10,9 @@ import UploadFilePreview from './UploadFilePreview.vue';
 import UploadImageHeader from './UploadImageHeader.vue';
 import UploadImagePreview from './UploadImagePreview.vue';
 
-// TODO the whole file upload thing should be a component - we're going to need it later
 // TODO dialog for deletion confirmation
 // TODO actually try a submission to central
+// TODO video upload: https://github.com/getodk/web-forms/issues/702
 
 // TODO design questions
 // - drag multiple just picks the first
@@ -23,8 +24,6 @@ import UploadImagePreview from './UploadImagePreview.vue';
 // - max size limit from central: https://github.com/getodk/central/blob/fd1777505d3dd4c4e343f8298d9cffb7d5b2d01b/files/nginx/odk.conf.template#L110
 
 const MAX_FILE_SIZE = 100_000_000; // 100MB
-
-type ObjectURL = `blob:${string}`; // TODO this type is everywhere
 
 export interface UploadControlProps {
 	readonly question: UploadNode;
