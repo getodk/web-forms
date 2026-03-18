@@ -1,42 +1,50 @@
 <script setup lang="ts">
 import IconSVG from '@/components/common/IconSVG.vue';
-import ImageBlock from '@/components/common/media/ImageBlock.vue';
 import Button from 'primevue/button';
+import { ref, watchEffect } from 'vue';
 
 type ObjectURL = `blob:${string}`;
 
-export interface UploadImagePreviewProps {
+export interface UploadVideoPreviewProps {
 	readonly isDisabled: boolean;
-	readonly image: ObjectURL | null;
+	readonly video: ObjectURL | null;
 }
 
+const mediaUrl = ref<ObjectURL | undefined>();
+
 defineEmits(['clear']);
-defineProps<UploadImagePreviewProps>();
+const props = defineProps<UploadVideoPreviewProps>();
+
+watchEffect(() => {
+	if (props.video != null) {
+		mediaUrl.value = props.video;
+		return;
+	}
+});
 </script>
 
 <template>
-	<div v-if="image" class="preview-captured-image">
+	<div v-if="video" class="preview-captured-video">
 		<Button v-if="!isDisabled" severity="secondary" outlined class="clear-button" @click="$emit('clear')">
 			<IconSVG name="mdiClose" variant="muted" size="sm" />
 		</Button>
-		<ImageBlock :blob-url="image" alt="Captured image preview" />
+		<video controls :src="mediaUrl" />
 	</div>
 </template>
 
 <style scoped lang="scss">
 @use '../../../assets/styles/buttons' as btn;
 
-.preview-captured-image {
+.preview-captured-video {
 	position: relative;
 	width: fit-content;
 	height: fit-content;
 	overflow: hidden;
-	border-radius: var(--odk-radius);
 
 	.clear-button {
 		@include btn.clear-button;
-		top: var(--odk-spacing-m);
-		right: var(--odk-spacing-m);
+		top: 10px;
+		right: 10px;
 		z-index: var(--odk-z-index-form-floating);
 	}
 
@@ -45,6 +53,12 @@ defineProps<UploadImagePreviewProps>();
 		min-width: var(--odk-image-container-size);
 		height: var(--odk-max-image-height);
 		justify-content: center;
+	}
+
+	video {
+		max-width: 100%;
+		max-height: var(--odk-max-image-height);
+		border-radius: var(--odk-radius);
 	}
 }
 

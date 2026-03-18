@@ -5,15 +5,15 @@ import Button from 'primevue/button';
 import type { HTMLInputElementEvent, Ref } from 'vue';
 import { ref, watchEffect } from 'vue';
 
-const selectFileInput = ref<HTMLInputElement | null>(null);
+const selectVideoInput = ref<HTMLInputElement | null>(null);
 
-export interface UploadFileHeaderProps {
+export interface UploadVideoHeaderProps {
 	readonly question: UploadNode;
 	readonly isDisabled: boolean;
 	readonly accept: string;
 }
 
-const props = defineProps<UploadFileHeaderProps>();
+const props = defineProps<UploadVideoHeaderProps>();
 
 const triggerInputField = (inputField: HTMLInputElement | null) => {
 	if (inputField == null) {
@@ -35,7 +35,7 @@ const onChange = (event: HTMLInputElementEvent) => {
 
 watchEffect(() => {
 	if (props.question.currentState.value == null) {
-		clearInputRefValue(selectFileInput);
+		clearInputRefValue(selectVideoInput);
 	}
 });
 
@@ -45,14 +45,14 @@ const emit = defineEmits(['change']);
 <template>
 	<Button
 		:disabled="isDisabled"
-		@click="triggerInputField(selectFileInput)"
+		@click="triggerInputField(selectVideoInput)"
 	>
-		<IconSVG name="mdiPaperclip" variant="inverted" />
+		<IconSVG name="mdiFileVideo" variant="inverted" />
 		<!-- TODO: translations -->
 		<span>Choose file</span>
 	</Button>
 	<input
-		ref="selectFileInput"
+		ref="selectVideoInput"
 		type="file"
 		:accept="accept"
 		style="display: none"

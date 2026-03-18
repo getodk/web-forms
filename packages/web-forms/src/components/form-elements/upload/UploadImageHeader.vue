@@ -21,6 +21,7 @@ const takePictureInput = ref<HTMLInputElement | null>(null);
 export interface UploadFileHeaderProps {
 	readonly question: UploadNode;
 	readonly isDisabled: boolean;
+	readonly accept: string;
 }
 
 const props = defineProps<UploadFileHeaderProps>();
@@ -72,43 +73,41 @@ const emit = defineEmits(['change']);
 </script>
 
 <template>
-	<div class="capture-buttons">
-		<template v-if="IS_CAPTURE_SUPPORTED">
-			<Button
-				class="take-picture-button"
-				:disabled="isDisabled"
-				@click="triggerInputField(takePictureInput)"
-			>
-				<IconSVG name="mdiCamera" variant="inverted" />
-				<!-- TODO: translations -->
-				<span>Take picture</span>
-			</Button>
-
-			<input
-				ref="takePictureInput"
-				type="file"
-				:accept="question.nodeOptions.media.accept"
-				capture="environment"
-				style="display: none"
-				@change="onChange"
-			>
-		</template>
-
+	<template v-if="IS_CAPTURE_SUPPORTED">
 		<Button
-			class="choose-image-button"
+			class="take-picture-button"
 			:disabled="isDisabled"
-			@click="triggerInputField(selectImageInput)"
+			@click="triggerInputField(takePictureInput)"
 		>
-			<IconSVG name="mdiImage" variant="inverted" />
+			<IconSVG name="mdiCamera" variant="inverted" />
 			<!-- TODO: translations -->
-			<span>Choose image</span>
+			<span>Take picture</span>
 		</Button>
+
 		<input
-			ref="selectImageInput"
+			ref="takePictureInput"
 			type="file"
-			:accept="question.nodeOptions.media.accept"
+			:accept="accept"
+			capture="environment"
 			style="display: none"
 			@change="onChange"
 		>
-	</div>
+	</template>
+
+	<Button
+		class="choose-image-button"
+		:disabled="isDisabled"
+		@click="triggerInputField(selectImageInput)"
+	>
+		<IconSVG name="mdiImage" variant="inverted" />
+		<!-- TODO: translations -->
+		<span>Choose image</span>
+	</Button>
+	<input
+		ref="selectImageInput"
+		type="file"
+		:accept="accept"
+		style="display: none"
+		@change="onChange"
+	>
 </template>

@@ -8,10 +8,11 @@ import UploadFileHeader from './UploadFileHeader.vue';
 import UploadFilePreview from './UploadFilePreview.vue';
 import UploadImageHeader from './UploadImageHeader.vue';
 import UploadImagePreview from './UploadImagePreview.vue';
+import UploadVideoHeader from './UploadVideoHeader.vue';
+import UploadVideoPreview from './UploadVideoPreview.vue';
 
 // TODO dialog for deletion confirmation
 // TODO actually try a submission to central
-// TODO video upload: https://github.com/getodk/web-forms/issues/702
 
 // TODO design questions
 // - drag multiple just picks the first
@@ -34,15 +35,16 @@ const props = defineProps<UploadControlProps>();
 const isDisabled = computed(() => props.question.currentState.readonly === true);
 const fileName = computed(() => props.question.currentState.value?.name ?? '');
 const accept = computed(() => props.question.nodeOptions.media.accept); // TODO does this work for image/video picker?
+const mediaType = computed(() => props.question.nodeOptions.media.type);
 const fileError = ref<string | null>(null);
 
-const imageURL = computed((previous: ObjectURL | null = null) => {
+const objectURL = computed((previous: ObjectURL | null = null) => {
 	if (previous != null) {
 		URL.revokeObjectURL(previous);
 	}
 
 	const file = props.question.currentState.value;
-	if (!file?.type.startsWith('image/')) {
+	if (!file?.type.startsWith('image/') && !file?.type.startsWith('video/')) {
 		return null;
 	}
 
@@ -121,9 +123,11 @@ const onDrop = (event: DragEvent) => {
 
 	<Panel>
 		<template #header>
-			<template v-if="question.nodeOptions.media.type === 'image'">
-				<!-- TODO compute this -->
-				<UploadImageHeader :question="question" :is-disabled="isDisabled" @change="onChange" />
+			<template v-if="mediaType === 'image'">
+				<UploadImageHeader :question="question" :accept="accept" :is-disabled="isDisabled" @change="onChange" />
+			</template>
+			<template v-else-if="mediaType === 'video'">
+				<UploadVideoHeader :question="question" :accept="accept" :is-disabled="isDisabled" @change="onChange" />
 			</template>
 			<template v-else>
 				<UploadFileHeader :question="question" :accept="accept" :is-disabled="isDisabled" @change="onChange" />
@@ -132,11 +136,14 @@ const onDrop = (event: DragEvent) => {
 		<template #default>
 			<div class="drag-and-drop" :class="{ 'disabled': isDisabled }" @drop.prevent.stop="onDrop" @dragover.prevent>
 				<div v-if="question.currentState.value" class="upload-content">
-					<template v-if="question.nodeOptions.media.type === 'image'">
-						<UploadImagePreview :is-disabled="isDisabled" :image="imageURL" @clear="clearValue" />
+					<template v-if="mediaType === 'image'">
+						<UploadImagePreview :is-disabled="isDisabled" :image="objectURL" @clear="clearValue" />
+					</template>
+					<template v-else-if="mediaType === 'video'">
+						<UploadVideoPreview :is-disabled="isDisabled" :video="objectURL" @clear="clearValue" />
 					</template>
 					<template v-else>
-						<UploadFilePreview :file-name="fileName" :image="imageURL" @clear="clearValue" />
+						<UploadFilePreview :file-name="fileName" :image="objectURL" @clear="clearValue" />
 					</template>
 				</div>
 				<!-- TODO: translations -->
@@ -165,6 +172,8 @@ const onDrop = (event: DragEvent) => {
 	:deep(.p-panel-header) {
 		border-radius: var(--odk-radius) var(--odk-radius) 0 0;
 		background: var(--odk-light-background-color);
+		justify-content: flex-start;
+		gap: 20px; // TODO replace with global variable once this is merged: https://github.com/getodk/web-forms/pull/737
 	}
 
 	:deep(.p-panel-content-container) {

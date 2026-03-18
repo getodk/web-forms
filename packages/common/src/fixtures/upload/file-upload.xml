@@ -8,6 +8,7 @@
     <model odk:xforms-version="1.0.0">
       <instance>
         <data id="file_upload" version="2025020401">
+          <image/>
           <audio/>
           <video/>
           <doc/>
@@ -19,6 +20,7 @@
         </data>
       </instance>
 
+      <bind nodeset="/data/image" type="binary" />
       <bind nodeset="/data/audio" type="binary" />
       <bind nodeset="/data/video" type="binary" />
       <bind nodeset="/data/doc" type="binary" />
@@ -27,6 +29,9 @@
     </model>
   </h:head>
   <h:body>
+    <upload mediatype="image/*" ref="/data/image">
+      <label>Upload image</label>
+    </upload>
     <upload mediatype="audio/*" ref="/data/audio">
       <label>Upload audio</label>
     </upload>
