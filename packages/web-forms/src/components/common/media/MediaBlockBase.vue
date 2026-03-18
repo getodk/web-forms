@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { ObjectURL } from '@/components/OdkWebForm.vue';
 import { FORM_MEDIA_CACHE, FORM_OPTIONS } from '@/lib/constants/injection-keys.ts';
 import type { FormOptions } from '@/lib/init/load-form-state.ts';
 import type {
@@ -7,6 +6,8 @@ import type {
 	JRResourceURLString,
 } from '@getodk/common/jr-resources/JRResourceURL.ts';
 import { computed, inject, ref, watchEffect } from 'vue';
+
+type ObjectURL = `blob:${string}`;
 
 const props = defineProps<{
 	readonly resourceUrl?: JRResourceURL;

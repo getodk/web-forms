@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import ControlText from '@/components/form-elements/ControlText.vue';
-import type { ObjectURL } from '@/components/OdkWebForm.vue';
 import type { UploadNode } from '@getodk/xforms-engine';
 import Message from 'primevue/message';
 import Panel from 'primevue/panel';
@@ -23,6 +22,7 @@ import UploadImagePreview from './UploadImagePreview.vue';
 // - rationale for not preserving file name: https://github.com/getodk/web-forms/blob/36713a68cf8a6d0369b1941d4ba193f0556ba628/packages/web-forms/src/lib/init/engine-config.ts#L19
 // - max size limit from central: https://github.com/getodk/central/blob/fd1777505d3dd4c4e343f8298d9cffb7d5b2d01b/files/nginx/odk.conf.template#L110
 
+type ObjectURL = `blob:${string}`;
 const MAX_FILE_SIZE = 100_000_000; // 100MB
 
 export interface UploadControlProps {
