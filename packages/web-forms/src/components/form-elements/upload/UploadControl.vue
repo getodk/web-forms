@@ -12,7 +12,6 @@ import UploadVideoHeader from './UploadVideoHeader.vue';
 import UploadVideoPreview from './UploadVideoPreview.vue';
 
 // TODO dialog for deletion confirmation
-// TODO actually try a submission to central
 
 // TODO design questions
 // - drag multiple just picks the first
