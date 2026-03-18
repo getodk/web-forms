@@ -96,21 +96,25 @@
 }
 
 @mixin toggle-visibility($display: inline-block) {
+	/**
+	 * The "!important" is intentional here. These visibility toggles must strictly enforce their state
+	 * and override any nested component styles.
+	 */
 	.desktop-only {
-		display: #{$display};
+		display: #{$display} !important;
 	}
 
 	.mobile-only {
-		display: none;
+		display: none !important;
 	}
 
 	@media screen and (max-width: #{pf.$sm}) {
 		.desktop-only {
-			display: none;
+			display: none !important;
 		}
 
 		.mobile-only {
-			display: #{$display};
+			display: #{$display} !important;
 		}
 	}
 }

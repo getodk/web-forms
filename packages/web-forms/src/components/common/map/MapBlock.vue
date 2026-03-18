@@ -45,6 +45,7 @@ const mapElement = ref<HTMLElement | undefined>();
 const isFullScreen = ref(false);
 const isAdvancedPanelOpen = ref(false);
 const isAdvancedPanelClosing = ref(false);
+const isAdvancedPanelActive = computed(() => isAdvancedPanelOpen.value || isAdvancedPanelClosing.value);
 const confirmDeleteAction = ref(false);
 const isUpdateCoordsDialogOpen = ref(false);
 const pointPlaced = ref(false);
@@ -264,7 +265,7 @@ const toggleFullScreen = () => {
 				</Message>
 			</div>
 
-			<div class="map-bottom-section" :class="{ 'is-advanced-panel-active': isAdvancedPanelOpen || isAdvancedPanelClosing } ">
+			<div class="map-bottom-section" :class="{ 'is-advanced-panel-active': isAdvancedPanelActive } ">
 				<MapStatusBar
 					:can-open-advanced-panel="!disabled && mapHandler.canOpenAdvancedPanel()"
 					:can-remove="!disabled && mapHandler.canRemoveCurrentLocation()"
@@ -289,6 +290,7 @@ const toggleFullScreen = () => {
 					@save="saveAdvancedPanelCoords"
 				/>
 			</div>
+			<div class="map-bottom-section-placeholder" :class="{ 'is-advanced-panel-active': isAdvancedPanelActive }" />
 
 			<MapProperties
 				v-if="mapHandler.canViewProperties()"
@@ -545,16 +547,23 @@ const toggleFullScreen = () => {
 
 @include odk.sm-constrained {
 	// Displays on top of map elements when it's mobile and fullscreen
-	.map-container.map-full-screen .map-bottom-section {
-		position: relative;
-		width: 100vw;
-		background: var(--odk-base-background-color);
+	.map-container.map-full-screen {
+		.map-bottom-section {
+			position: relative;
+			width: 100vw;
+			background: var(--odk-base-background-color);
 
-		&.is-advanced-panel-active {
-			position: absolute;
-			bottom: 0;
-			left: 0;
-			z-index: var(--odk-z-index-form-floating);
+			&.is-advanced-panel-active {
+				position: absolute;
+				bottom: 0;
+				left: 0;
+				z-index: var(--odk-z-index-form-floating);
+			}
+		}
+
+		.map-bottom-section-placeholder.is-advanced-panel-active {
+			width: 100vw;
+			height: var(--odk-map-bottom-placeholder-height);
 		}
 	}
 }
