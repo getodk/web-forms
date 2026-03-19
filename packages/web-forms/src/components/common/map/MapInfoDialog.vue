@@ -38,11 +38,6 @@ const emit = defineEmits(['update:visible']);
 				</li>
 			</ul>
 		</template>
-
-		<template #footer>
-			<!-- TODO: translations -->
-			<Button label="Done" @click="emit('update:visible', false)" />
-		</template>
 	</Dialog>
 </template>
 

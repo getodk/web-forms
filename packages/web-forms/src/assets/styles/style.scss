@@ -160,9 +160,11 @@
 	.odk-form-list-item {
 		display: block;
 		padding: var(--odk-spacing-l) 0;
+		width: 100%;
+		border: none;
 
-		&:not(:last-child) {
-			border-bottom: 1px solid var(--odk-border-color);
+		&:not(:first-child) {
+			border-top: 1px solid var(--odk-border-color);
 		}
 	}
 }
