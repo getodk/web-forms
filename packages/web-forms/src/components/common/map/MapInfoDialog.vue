@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import IconSVG from '@/components/common/IconSVG.vue';
-import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 
 defineProps<{
