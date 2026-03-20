@@ -24,7 +24,7 @@ const props = defineProps<UploadControlProps>();
 
 const isDisabled = computed(() => props.question.currentState.readonly === true);
 const fileName = computed(() => props.question.currentState.value?.name ?? '');
-const accept = computed(() => props.question.nodeOptions.media.accept); // TODO does this work for image/video picker?
+const accept = computed(() => props.question.nodeOptions.media.accept);
 const mediaType = computed(() => props.question.nodeOptions.media.type);
 const confirmDeleteAction = ref(false);
 const fileError = ref<string | null>(null);
