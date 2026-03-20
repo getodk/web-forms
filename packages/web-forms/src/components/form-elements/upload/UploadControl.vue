@@ -4,6 +4,7 @@ import type { UploadNode } from '@getodk/xforms-engine';
 import Message from 'primevue/message';
 import Panel from 'primevue/panel';
 import { computed, ref } from 'vue';
+import DeleteConfirmDialog from './DeleteConfirmDialog.vue';
 import UploadFileHeader from './UploadFileHeader.vue';
 import UploadFilePreview from './UploadFilePreview.vue';
 import UploadImageHeader from './UploadImageHeader.vue';
@@ -11,18 +12,8 @@ import UploadImagePreview from './UploadImagePreview.vue';
 import UploadVideoHeader from './UploadVideoHeader.vue';
 import UploadVideoPreview from './UploadVideoPreview.vue';
 
-// TODO dialog for deletion confirmation
-
-// TODO design questions
-// - drag multiple just picks the first
-// - uploading/dragging replaces selected file
-// - dimensions of thumbnail - 100px by 100px
-// - ignore file icons?
-// - spinner isn't needed - loading into the browser is instant even for 100MB files
-// - rationale for not preserving file name: https://github.com/getodk/web-forms/blob/36713a68cf8a6d0369b1941d4ba193f0556ba628/packages/web-forms/src/lib/init/engine-config.ts#L19
-// - max size limit from central: https://github.com/getodk/central/blob/fd1777505d3dd4c4e343f8298d9cffb7d5b2d01b/files/nginx/odk.conf.template#L110
-
 type ObjectURL = `blob:${string}`;
+
 const MAX_FILE_SIZE = 100_000_000; // 100MB
 
 export interface UploadControlProps {
@@ -35,7 +26,23 @@ const isDisabled = computed(() => props.question.currentState.readonly === true)
 const fileName = computed(() => props.question.currentState.value?.name ?? '');
 const accept = computed(() => props.question.nodeOptions.media.accept); // TODO does this work for image/video picker?
 const mediaType = computed(() => props.question.nodeOptions.media.type);
+const confirmDeleteAction = ref(false);
 const fileError = ref<string | null>(null);
+
+const getFileType = (type: string | undefined) => {
+	if (!type) {
+		return;
+	}
+	if (type.startsWith('image/')) {
+		return 'image';
+	}
+	if (type.startsWith('video/')) {
+		return 'video';
+	}
+	return '*';
+};
+
+const fileType = computed(() => getFileType(props.question.currentState.value?.type));
 
 const objectURL = computed((previous: ObjectURL | null = null) => {
 	if (previous != null) {
@@ -43,11 +50,13 @@ const objectURL = computed((previous: ObjectURL | null = null) => {
 	}
 
 	const file = props.question.currentState.value;
-	if (!file?.type.startsWith('image/') && !file?.type.startsWith('video/')) {
-		return null;
+	if (file) {
+		const type = getFileType(file.type);
+		if (type === 'image' || type === 'video') {
+			return URL.createObjectURL(file) satisfies string as ObjectURL;
+		}
 	}
-
-	return URL.createObjectURL(file) satisfies string as ObjectURL;
+	return null;
 });
 
 const validateFile = (file: File) => {
@@ -93,12 +102,17 @@ const updateValue = (file: File) => {
 	props.question.setValue(validateFile(file) ? file : null);
 };
 
+const clearValueConfirmed = () => {
+	confirmDeleteAction.value = false;
+	fileError.value = null;
+	props.question.setValue(null);
+};
+
 const clearValue = () => {
 	if (isDisabled.value) {
 		return;
 	}
-	fileError.value = null;
-	props.question.setValue(null);
+	confirmDeleteAction.value = true;
 };
 
 const onChange = (file: File | null) => {
@@ -135,14 +149,14 @@ const onDrop = (event: DragEvent) => {
 		<template #default>
 			<div class="drag-and-drop" :class="{ 'disabled': isDisabled }" @drop.prevent.stop="onDrop" @dragover.prevent>
 				<div v-if="question.currentState.value" class="upload-content">
-					<template v-if="mediaType === 'image'">
+					<template v-if="fileType === 'image'">
 						<UploadImagePreview :is-disabled="isDisabled" :image="objectURL" @clear="clearValue" />
 					</template>
-					<template v-else-if="mediaType === 'video'">
+					<template v-else-if="fileType === 'video'">
 						<UploadVideoPreview :is-disabled="isDisabled" :video="objectURL" @clear="clearValue" />
 					</template>
 					<template v-else>
-						<UploadFilePreview :file-name="fileName" :image="objectURL" @clear="clearValue" />
+						<UploadFilePreview :file-name="fileName" @clear="clearValue" />
 					</template>
 				</div>
 				<!-- TODO: translations -->
@@ -160,6 +174,11 @@ const onDrop = (event: DragEvent) => {
 			</div>
 		</template>
 	</Panel>
+
+	<DeleteConfirmDialog
+		v-model:visible="confirmDeleteAction"
+		@delete-file="clearValueConfirmed"
+	/>
 </template>
 
 <style scoped lang="scss">

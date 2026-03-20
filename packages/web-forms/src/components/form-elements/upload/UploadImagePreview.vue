@@ -51,7 +51,6 @@ defineProps<UploadImagePreviewProps>();
 /**
  * Below overrides PrimeVue style
  */
-
 .p-button.clear-button {
 	min-width: 0;
 	padding: 12px;
