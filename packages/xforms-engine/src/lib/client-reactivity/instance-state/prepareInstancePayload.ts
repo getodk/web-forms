@@ -14,6 +14,7 @@ import type { DescendantNodeViolationReference } from '../../../client/validatio
 import { ErrorProductionDesignPendingError } from '../../../error/ErrorProductionDesignPendingError.ts';
 import type { InstanceAttachmentsState } from '../../../instance/attachments/InstanceAttachmentsState.ts';
 import type { ClientReactiveSerializableInstance } from '../../../instance/internal-api/serialization/ClientReactiveSerializableInstance.ts';
+import { SubmissionManifestDefinition } from '../../../parse/model/SubmissionManifestDefinition.ts';
 
 const collectInstanceAttachmentFiles = (attachments: InstanceAttachmentsState): readonly File[] => {
 	const files = Array.from(attachments.entries()).map(([context, attachment]) => {
@@ -31,13 +32,89 @@ class InstanceFile extends File implements ClientInstanceFile {
 	override readonly name = INSTANCE_FILE_NAME;
 	override readonly type = INSTANCE_FILE_TYPE;
 
-	constructor(instanceRoot: ClientReactiveSerializableInstance) {
-		const { instanceXML } = instanceRoot.instanceState;
-
+	constructor(instanceXML: string) {
 		super([instanceXML], INSTANCE_FILE_NAME, {
 			type: INSTANCE_FILE_TYPE,
 		});
 	}
+
+}
+
+const encrypt = async (encryptionKey: string, data: string) => {
+	// const array = new Uint32Array(32);
+	// crypto.getRandomValues(array);
+	// crypto.subtle.encrypt({
+  //     name: "RSA-OAEP",
+  //   }, encryptionKey, data);
+
+	try {
+		const pem = `-----BEGIN PUBLIC KEY-----${encryptionKey}-----END PUBLIC KEY-----`;
+    const algorithm = { name: "RSA-OAEP" };
+    const symmetricKey = await crypto.subtle.generateKey(
+      {
+        name: "RSA-OAEP",
+        modulusLength: 2048,
+        publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
+        hash: "SHA-256"
+      },
+      true,
+      ["encrypt", "decrypt"]
+		);
+		const key = await crypto.subtle.importKey(
+			'pkcs8',
+			Buffer.from(pem),
+			algorithm,
+			false,
+			['encrypt', 'decrypt']
+		);
+    // const keyPair = await crypto.subtle.generateKey(
+    //   {
+    //     name: "RSA-OAEP",
+    //     modulusLength: 2048,
+    //     publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
+    //     hash: "SHA-256"
+    //   },
+    //   true,
+    //   ["encrypt", "decrypt"]
+    // );
+    const iv = crypto.getRandomValues(new Uint8Array(12)); // Generate 12-byte IV
+    const encodedMessage = new TextEncoder().encode(data);
+    // Encrypt the message using AES-GCM
+    const encryptedMessage = await crypto.subtle.encrypt(
+      { name: "AES-GCM", iv },
+      symmetricKey.publicKey,
+      encodedMessage
+    );
+    // Export and encrypt the symmetric key
+    const symmetricKeyBytes = await crypto.subtle.exportKey("raw", symmetricKey.publicKey);
+    const encryptedSymmetricKey = await crypto.subtle.encrypt(
+      { name: "RSA-OAEP" },
+      key,
+      symmetricKeyBytes
+    );
+
+		console.log({ encryptedMessage, encryptedSymmetricKey });
+	} catch(e) {
+		console.log(e);
+	}
+}
+
+const collectInstanceFiles = async (instanceRoot: ClientReactiveSerializableInstance, submissionMeta: SubmissionMeta) => {
+
+	if (submissionMeta.encryptionKey) {
+		await encrypt(submissionMeta.encryptionKey, instanceRoot.instanceState.instanceXML);
+		const payload = new File([instanceRoot.instanceState.instanceXML], 'submission.xml.enc');
+		const attachments = collectInstanceAttachmentFiles(instanceRoot.attachments);
+		const manifest = new SubmissionManifestDefinition(instanceRoot, submissionMeta, attachments);
+		const instanceFile = new InstanceFile(manifest.serialize());
+		// TODO need to encrypt payload and all the attachments
+		return { instanceFile, attachments: [ payload, ...attachments ] };
+	} else {
+		const instanceFile = new InstanceFile(instanceRoot.instanceState.instanceXML);
+		const attachments = collectInstanceAttachmentFiles(instanceRoot.attachments);
+		return { instanceFile, attachments };
+	}
+
 }
 
 type AssertFile = (value: FormDataEntryValue) => asserts value is File;
@@ -85,6 +162,8 @@ class InstanceData extends FormData {
 
 		attachments.forEach((attachment) => {
 			const { name } = attachment;
+
+			console.log('attachment', name);
 
 			if (name === INSTANCE_FILE_NAME && attachment !== instanceFile) {
 				throw new Error(`Failed to add conflicting attachment with name ${INSTANCE_FILE_NAME}`);
@@ -179,6 +258,8 @@ const partitionInstanceData = (
 		...tail
 	] = bins.map((bin) => InstanceData.from(instanceFile, bin));
 
+	console.log('head', head);
+	console.log('tail', tail);
 	return [head, ...tail];
 };
 
@@ -204,15 +285,15 @@ export interface PrepareInstancePayloadOptions<PayloadType extends InstancePaylo
 	readonly maxSize: number;
 }
 
-export const prepareInstancePayload = <PayloadType extends InstancePayloadType>(
+export const prepareInstancePayload = async <PayloadType extends InstancePayloadType> (
 	instanceRoot: ClientReactiveSerializableInstance,
 	options: PrepareInstancePayloadOptions<PayloadType>
-): InstancePayload<PayloadType> => {
+): Promise<InstancePayload<PayloadType>> => {
 	instanceRoot.root.parent.model.triggerXformsRevalidateListeners();
 	const validation = validateInstance(instanceRoot);
 	const submissionMeta = instanceRoot.definition.submission;
-	const instanceFile = new InstanceFile(instanceRoot);
-	const attachments = collectInstanceAttachmentFiles(instanceRoot.attachments);
+
+	const { instanceFile, attachments } = await collectInstanceFiles(instanceRoot, submissionMeta);
 
 	switch (options.payloadType) {
 		case 'chunked':

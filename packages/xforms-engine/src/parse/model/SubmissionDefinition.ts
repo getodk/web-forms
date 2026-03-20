@@ -40,5 +40,7 @@ export class SubmissionDefinition implements SubmissionMeta {
 		this.submissionAction = submissionAction;
 		this.submissionMethod = submissionMethod;
 		this.encryptionKey = encryptionKey;
+
+		console.log('KEY', encryptionKey);
 	}
 }
