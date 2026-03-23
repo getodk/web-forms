@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import MediaBlockBase from '@/components/common/media/MediaBlockBase.vue';
+import { FORMAT_MESSAGE } from '@/lib/constants/injection-keys.ts';
+import type { FormatMessage } from '@/lib/locale/useLocale.ts';
 import type { JRResourceURL } from '@getodk/common/jr-resources/JRResourceURL.ts';
+import { inject } from 'vue';
 
 defineProps<{
 	readonly resourceUrl: JRResourceURL;
 	readonly alt: string;
 }>();
+
+const formatMessage: FormatMessage = inject(FORMAT_MESSAGE)!;
 </script>
 
 <template>
@@ -22,7 +27,7 @@ defineProps<{
 			:src="mediaUrl"
 			:title="alt"
 			class="video-block"
-			@error="reportError(new Error(`Failed to load video. File: ${resourceUrl.href}`))"
+			@error="reportError(formatMessage({ id: 'video_block.load.error' }, { file: resourceUrl.href ?? '' }))"
 		/>
 	</MediaBlockBase>
 </template>

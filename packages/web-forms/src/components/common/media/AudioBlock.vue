@@ -1,14 +1,19 @@
 <script setup lang="ts">
 import IconSVG from '@/components/common/IconSVG.vue';
 import MediaBlockBase from '@/components/common/media/MediaBlockBase.vue';
+import { FORMAT_MESSAGE } from '@/lib/constants/injection-keys.ts';
+import type { FormatMessage } from '@/lib/locale/useLocale.ts';
 import type { JRResourceURL } from '@getodk/common/jr-resources/JRResourceURL.ts';
-import { ref } from 'vue';
+import { inject, ref } from 'vue';
 
 defineProps<{
 	readonly resourceUrl: JRResourceURL;
 	readonly alt: string;
 	readonly variant?: 'bar' | 'icons';
 }>();
+
+const formatMessage: FormatMessage = inject(FORMAT_MESSAGE)!;
+
 const audioRef = ref<HTMLAudioElement | null>(null);
 const isPlaying = ref(false);
 
@@ -51,7 +56,7 @@ const play = async () => {
 				:title="alt"
 				class="audio-block"
 				@ended="isPlaying = false"
-				@error="reportError(new Error(`Failed to load audio. File: ${resourceUrl.href}`))"
+				@error="reportError(formatMessage({ id: 'audio_block.load.error' }, { file: resourceUrl.href ?? '' }))"
 			/>
 			<template v-if="variant === 'icons'">
 				<IconSVG v-if="isPlaying" name="mdiStopCircleOutline" @click.stop.prevent="stop" />
