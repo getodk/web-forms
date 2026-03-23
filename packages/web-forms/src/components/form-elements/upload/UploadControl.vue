@@ -191,7 +191,7 @@ const onDrop = (event: DragEvent) => {
 		border-radius: var(--odk-radius) var(--odk-radius) 0 0;
 		background: var(--odk-light-background-color);
 		justify-content: flex-start;
-		gap: 20px; // TODO replace with global variable once this is merged: https://github.com/getodk/web-forms/pull/737
+		gap: var(--odk-spacing-xl);
 	}
 
 	:deep(.p-panel-content-container) {
@@ -206,9 +206,7 @@ const onDrop = (event: DragEvent) => {
 }
 
 .drag-and-drop {
-	--odk-file-upload-padding: 30px; // TODO replace with global variable once this is merged: https://github.com/getodk/web-forms/pull/737
-
-	padding: var(--odk-file-upload-padding);
+	padding: var(--odk-spacing-xxl);
 
 	&.disabled {
 		color: var(--odk-muted-text-color);

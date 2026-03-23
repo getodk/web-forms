@@ -23,7 +23,7 @@ defineEmits(['clear']);
 .file-preview-content {
 	display: flex;
 	align-items: center;
-	gap: 30px; // TODO replace with global variable once this is merged: https://github.com/getodk/web-forms/pull/737
+	gap: var(--odk-spacing-xxl);
 }
 .file-preview-content span {
 	flex-grow: 1;
