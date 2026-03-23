@@ -370,13 +370,13 @@ onUnmounted(() => {
 		flex-direction: column;
 		max-width: var(--odk-max-form-width);
 		margin: auto;
-		padding-top: 10px;
+		padding-top: var(--odk-spacing-m);
 
 		.questions-card {
 			border-radius: var(--odk-radius);
 			box-shadow: none;
 			border-top: none;
-			margin-top: 20px;
+			margin-top: var(--odk-spacing-xl);
 		}
 
 		.questions-card > :deep(.p-card-body) {
@@ -400,7 +400,7 @@ onUnmounted(() => {
 			top: 1rem;
 
 			:deep(.p-message-wrapper) {
-				padding: 8px 15px;
+				padding: 8px var(--odk-spacing-l);
 				flex-grow: 1;
 			}
 
@@ -411,7 +411,7 @@ onUnmounted(() => {
 			}
 
 			.odk-icon {
-				margin-right: 10px;
+				margin-right: var(--odk-spacing-m);
 			}
 
 			.form-error-text-wrap {
@@ -420,7 +420,7 @@ onUnmounted(() => {
 				padding: 0;
 
 				li:not(:last-child) {
-					margin-bottom: 10px;
+					margin-bottom: var(--odk-spacing-m);
 				}
 			}
 		}
@@ -467,7 +467,7 @@ onUnmounted(() => {
 			font-size: 14px;
 			font-weight: 300;
 			color: var(--odk-muted-text-color);
-			margin-top: 5px;
+			margin-top: var(--odk-spacing-s);
 		}
 	}
 }
@@ -505,7 +505,7 @@ onUnmounted(() => {
 			.footer {
 				order: 4;
 				button {
-					margin-right: 20px;
+					margin-right: var(--odk-spacing-xl);
 				}
 			}
 		}
