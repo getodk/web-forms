@@ -6,6 +6,14 @@ import type { EngineXPathEvaluator } from '../../integration/xpath/EngineXPathEv
 import type { ReactiveScope } from './scope.ts';
 import type { SimpleAtomicStateSetter } from './types.ts';
 
+const IANA_PATTERN = /[a-zA-Z]{2,3}(?:-[a-zA-Z]{4})?(?:-(?:[a-zA-Z]{2}|[0-9]{3}))?/;
+// Language definition in parentheses: "English (en)" -> extracts "en"
+const LOCALE_IN_PARENS_REGEX = new RegExp(`\\((${IANA_PATTERN.source})\\)`);
+// Forms missing parentheses: "English en-US" -> extracts "en-US"
+const LOCALE_AFTER_SPACE_REGEX = new RegExp(` (${IANA_PATTERN.source})$`);
+// Explicit language codes without human-readable labels: "en-US" -> matches "en-US"
+const EXACT_LOCALE_REGEX = new RegExp(`^${IANA_PATTERN.source}$`);
+
 interface TranslationState {
 	readonly languages: FormLanguages;
 	readonly getActiveLanguage: Accessor<ActiveLanguage>;
@@ -13,28 +21,24 @@ interface TranslationState {
 }
 
 const extractLocale = (lang: string): Intl.Locale | undefined => {
-	if (!lang?.length) {
+	const cleanLang = lang?.trim();
+	if (!cleanLang) {
 		return;
 	}
-	const IANA_PATTERN = /[a-zA-Z]{2,3}(?:-[a-zA-Z]{4})?(?:-(?:[a-zA-Z]{2}|[0-9]{3}))?/;
 
-	// TODO check if all these cases are supported in the specs
+	const match =
+		LOCALE_IN_PARENS_REGEX.exec(cleanLang)?.[1] ??
+		LOCALE_AFTER_SPACE_REGEX.exec(cleanLang)?.[1] ??
+		(EXACT_LOCALE_REGEX.test(cleanLang) ? cleanLang : undefined);
 
-	// Case: "English (en-US)"
-	const parenMatch = new RegExp(`\\((${IANA_PATTERN.source})\\)`).exec(lang)?.[1];
-	if (parenMatch) {
-		return new Intl.Locale(parenMatch.trim());
-	}
-
-	// Case: "English en-US"
-	const spaceMatch = new RegExp(` (${IANA_PATTERN.source})$`).exec(lang)?.[1];
-	if (spaceMatch) {
-		return new Intl.Locale(spaceMatch.trim());
-	}
-
-	// Case: "en-US"
-	if (new RegExp(`^${IANA_PATTERN.source}$`).test(lang.trim())) {
-		return new Intl.Locale(lang.trim());
+	if (match) {
+		try {
+			return new Intl.Locale(match.trim());
+		} catch {
+			// eslint-disable-next-line no-console
+			console.warn(`ODK XForms Engine: Could not parse locale from "${lang}"`);
+			return;
+		}
 	}
 
 	return;

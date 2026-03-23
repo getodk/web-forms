@@ -25,10 +25,10 @@ An easy way to remember: **who → where → kind** (which component? which feat
 
 ### Examples
 
-| Key                            | Description                 |
-| ------------------------------ | --------------------------- |
-| `odkWebForm.submit.label`      | Submit button label         |
-| `odkWebForm.validation.error`  | Validation error banner     |
+| Key                           | Description             |
+| ----------------------------- | ----------------------- |
+| `odkWebForm.submit.label`     | Submit button label     |
+| `odkWebForm.validation.error` | Validation error banner |
 
 ## Adding a string
 
