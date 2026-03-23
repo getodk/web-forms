@@ -1,17 +1,15 @@
 <script setup lang="ts">
-import { localeService } from '@/lib/services/localeService.ts';
 import {
 	type FormLanguage,
 	type RootNode,
 	type SyntheticDefaultLanguage,
 } from '@getodk/xforms-engine';
 import Card from 'primevue/card';
-import { usePrimeVue } from 'primevue/config';
 import { ref } from 'vue';
 import FormLanguageMenu from './FormLanguageMenu.vue';
 
 const props = defineProps<{ form: RootNode }>();
-const primevue = usePrimeVue();
+const emit = defineEmits<{ changeLanguage: [FormLanguage] }>();
 const languageDialogState = ref(false);
 
 const isFormLanguage = (lang: FormLanguage | SyntheticDefaultLanguage): lang is FormLanguage => {
@@ -32,7 +30,7 @@ if (languages.length > 0) {
 }
 
 const handleLanguageChange = (event: FormLanguage) => {
-	localeService.setLanguage(event, primevue.config);
+	emit('changeLanguage', event);
 };
 </script>
 

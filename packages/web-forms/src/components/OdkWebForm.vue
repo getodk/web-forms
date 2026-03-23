@@ -5,6 +5,7 @@ import FormHeader from '@/components/form-layout/FormHeader.vue';
 import QuestionList from '@/components/form-layout/QuestionList.vue';
 import { waitAllTasksToFinish } from '@/lib/async/event-loop.ts';
 import {
+	FORMAT_MESSAGE,
 	FORM_MEDIA_CACHE,
 	FORM_OPTIONS,
 	IS_FORM_EDIT_MODE,
@@ -16,7 +17,7 @@ import { loadFormState } from '@/lib/init/load-form-state';
 import type { EditInstanceOptions, FormOptions } from '@/lib/init/load-form-state.ts';
 import { updateSubmittedFormState } from '@/lib/init/update-submitted-form-state.ts';
 import { geolocationService } from '@/lib/services/geolocationService.ts';
-import { localeService } from '@/lib/services/localeService.ts';
+import { useLocale } from '@/lib/locale/useLocale.ts';
 import type {
 	HostSubmissionResultCallback,
 	OptionalAwaitableHostSubmissionResult,
@@ -31,7 +32,6 @@ import type {
 } from '@getodk/xforms-engine';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
-import { usePrimeVue } from 'primevue/config';
 import Message from 'primevue/message';
 import {
 	computed,
@@ -68,7 +68,6 @@ export interface OdkWebFormsProps {
 }
 
 const props = defineProps<OdkWebFormsProps>();
-const primevue = usePrimeVue();
 
 const hostSubmissionResultCallbackFactory = (
 	currentState: FormStateSuccessResult
@@ -178,9 +177,9 @@ const getLocation = async (): Promise<string> => {
 	} catch (error) {
 		// eslint-disable-next-line no-console -- Skip silently to match Collect behaviour.
 		console.warn('Error occurred while retrieving background location.', error);
-		// TODO: translations
-		geolocationErrorMessage.value =
-			'Location unavailable. Enable GPS and browser permissions, then restart the form to try again.';
+		geolocationErrorMessage.value = formatMessage({
+			id: 'odkWebForm.geolocation.error',
+		});
 	}
 
 	floatingErrorActive.value = !!geolocationErrorMessage.value.length;
@@ -202,14 +201,13 @@ const showValidationError = ref(false);
 const geolocationErrorMessage = ref<string | null>(null);
 const isFormEditMode = ref(false);
 provide(IS_FORM_EDIT_MODE, readonly(isFormEditMode));
+const { setLanguage, formatMessage } = useLocale(computed(() => state.value.root));
+provide(FORMAT_MESSAGE, formatMessage);
 
 watch(
 	() => state.value,
 	(newState) => {
 		isFormEditMode.value = newState.instance?.mode === 'edit';
-		if (newState.root) {
-			localeService.init(newState.root, primevue.config);
-		}
 	},
 	{ immediate: true }
 );
@@ -253,11 +251,11 @@ provide(SUBMIT_PRESSED, submitPressed);
 
 const validationErrorMessage = computed(() => {
 	const violationLength = state.value.root?.validationState.violations.length ?? 0;
-
-	// TODO: translations
 	if (violationLength === 0) return '';
-	else if (violationLength === 1) return '1 question with error.';
-	else return `${violationLength} questions with errors.`;
+	return formatMessage(
+		{ id: 'odkWebForm.validation.error' },
+		{ count: violationLength }
+	);
 });
 
 watchEffect(() => {
@@ -322,7 +320,7 @@ onUnmounted(() => {
 				</ul>
 			</Message>
 
-			<FormHeader :form="state.root" />
+			<FormHeader :form="state.root" @change-language="setLanguage" />
 
 			<Card class="questions-card">
 				<template #content>
@@ -335,7 +333,7 @@ onUnmounted(() => {
 			</Card>
 
 			<div class="footer flex justify-content-end flex-wrap gap-3">
-				<Button label="Send" @click="handleSubmit(state)" />
+				<Button :label="formatMessage({ id: 'odkWebForm.submit.label' })" @click="handleSubmit(state)" />
 			</div>
 		</div>
 

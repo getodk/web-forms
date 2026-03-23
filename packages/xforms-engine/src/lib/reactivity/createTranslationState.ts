@@ -21,13 +21,13 @@ const extractLocale = (lang: string): Intl.Locale | undefined => {
 	// TODO check if all these cases are supported in the specs
 
 	// Case: "English (en-US)"
-	const parenMatch = (new RegExp(`\\((${IANA_PATTERN.source})\\)`).exec(lang))?.[1];
+	const parenMatch = new RegExp(`\\((${IANA_PATTERN.source})\\)`).exec(lang)?.[1];
 	if (parenMatch) {
 		return new Intl.Locale(parenMatch.trim());
 	}
 
 	// Case: "English en-US"
-	const spaceMatch = (new RegExp(` (${IANA_PATTERN.source})$`).exec(lang))?.[1];
+	const spaceMatch = new RegExp(` (${IANA_PATTERN.source})$`).exec(lang)?.[1];
 	if (spaceMatch) {
 		return new Intl.Locale(spaceMatch.trim());
 	}
