@@ -1,22 +1,17 @@
 <script setup lang="ts">
+import { FORMAT_MESSAGE } from '@/lib/constants/injection-keys.ts';
+import type { FormatMessage } from '@/lib/locale/useLocale.ts';
 import Dialog from 'primevue/dialog';
 import Message from 'primevue/message';
-import { computed } from 'vue';
+import { computed, inject } from 'vue';
 import type { FormInitializationError } from '@/lib/error/FormInitializationError.ts';
-
-/**
- * @todo translations
- */
-const FORM_LOAD_ERROR_TEXT = {
-	DIALOG_TITLE: 'An error occurred while loading this form',
-	DETAILS_SUMMARY_LABEL: 'Technical error details',
-};
 
 interface FormLoadErrorProps {
 	readonly error: FormInitializationError;
 }
 
 const props = defineProps<FormLoadErrorProps>();
+const formatMessage: FormatMessage = inject(FORMAT_MESSAGE)!;
 
 interface FormLoadErrorDetail {
 	readonly stack: string | null;
@@ -41,7 +36,7 @@ const detail = computed((): FormLoadErrorDetail | null => {
 	<Dialog
 		class="form-load-failure-dialog"
 		:visible="detail != null"
-		:header="FORM_LOAD_ERROR_TEXT.DIALOG_TITLE"
+		:header="formatMessage({ id: 'formLoadFailureDialog.header.title' })"
 		:closable="false"
 		:draggable="false"
 		:keep-in-viewport="true"
@@ -52,7 +47,7 @@ const detail = computed((): FormLoadErrorDetail | null => {
 			</Message>
 
 			<details v-if="detail != null" class="initialize-form-failure-details">
-				<summary>{{ FORM_LOAD_ERROR_TEXT.DETAILS_SUMMARY_LABEL }}</summary>
+				<summary>{{ formatMessage({ id: 'formLoadFailureDialog.details.label' }) }}</summary>
 
 				<pre v-if="detail.unknownCauseDetail != null">{{ detail.unknownCauseDetail }}</pre>
 

@@ -7,6 +7,7 @@ import { computed, onUnmounted, shallowRef, watch } from 'vue';
 // English strings always available as language fallback
 import enRaw from '@locales/strings_en.json';
 
+export type FormatMessage = IntlShape['formatMessage'];
 type TransifexTranslation = Record<string, string | { string: string }>;
 type ICUMessage = Record<string, string>;
 
@@ -139,29 +140,36 @@ export const useLocale = (formRef: Ref<RootNode | null>) => {
 		}
 
 		const formLocale = formLanguage.locale?.baseName ?? FALLBACK;
-		const uiLocale = resolveLocale(formLocale, (lang) =>
-			Object.hasOwn(availableTranslations, `/locales/strings_${lang}.json`)
-		);
-		const primeLocaleKey = resolveLocale(formLocale, (lang) => Object.hasOwn(primeLocales, lang));
-
-		latestRequestedLocale.locale = formLocale;
-		document.documentElement.lang = formLocale;
+		applyLocale(formLocale);
 		formRef.value?.setLanguage(formLanguage);
+	};
+
+	const applyLocale = (newLocale: string) => {
+		latestRequestedLocale.locale = newLocale;
+		document.documentElement.lang = newLocale;
 		try {
-			localStorage.setItem(STORAGE_KEY, formLocale);
+			localStorage.setItem(STORAGE_KEY, newLocale);
 		} catch (error) {
 			// eslint-disable-next-line no-console
 			console.warn('Failed to save locale preference to localStorage:', error);
 		}
 
+		const primeLocaleKey = resolveLocale(newLocale, (lang) => Object.hasOwn(primeLocales, lang));
 		const primeLocale = primeLocales[primeLocaleKey as keyof typeof primeLocales];
 		if (primeLocale) {
 			primevue.config.locale = { ...primevue.config.locale, ...primeLocale };
 		}
 
-		void loadMessages(uiLocale).then((messages) => {
-			if (latestRequestedLocale.locale === formLocale) {
-				currentIntl.value = createIntl({ locale: uiLocale, messages, defaultLocale: FALLBACK });
+		const messagesLocale = resolveLocale(newLocale, (lang) => {
+			return Object.hasOwn(availableTranslations, `/locales/strings_${lang}.json`);
+		});
+		void loadMessages(messagesLocale).then((messages) => {
+			if (latestRequestedLocale.locale === newLocale) {
+				currentIntl.value = createIntl({
+					locale: messagesLocale,
+					messages,
+					defaultLocale: FALLBACK,
+				});
 			}
 		});
 	};
@@ -170,6 +178,9 @@ export const useLocale = (formRef: Ref<RootNode | null>) => {
 		formLanguages,
 		(langs) => {
 			if (!langs.length) {
+				// No form languages found (loading error or empty form)
+				// Using browser locale, skipping persisted locale, as user won't be able to change it without form context.
+				applyLocale(navigator.languages?.[0] ?? navigator.language ?? FALLBACK);
 				return;
 			}
 			const formLanguage =
@@ -184,7 +195,7 @@ export const useLocale = (formRef: Ref<RootNode | null>) => {
 		document.documentElement.lang = FALLBACK;
 	});
 
-	const formatMessage = (...args: Parameters<IntlShape['formatMessage']>) =>
+	const formatMessage = (...args: Parameters<FormatMessage>) =>
 		currentIntl.value.formatMessage(...args) as string;
 
 	return { setLanguage, formatMessage };
