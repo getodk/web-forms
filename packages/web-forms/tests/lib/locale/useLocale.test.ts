@@ -109,7 +109,7 @@ describe('useLocale', () => {
 
 			await flushPromises();
 
-			expect(getLocale().formatMessage({ id: 'odkWebForm.submit.label' })).toBe('Send');
+			expect(getLocale().formatMessage({ id: 'odk_web_forms.submit.label' })).toBe('Send');
 			expect(document.documentElement.lang).toBe('en-ZZ');
 		});
 
@@ -119,39 +119,39 @@ describe('useLocale', () => {
 
 			await flushPromises();
 
-			expect(getLocale().formatMessage({ id: 'odkWebForm.submit.label' })).toBe('Send');
+			expect(getLocale().formatMessage({ id: 'odk_web_forms.submit.label' })).toBe('Send');
 		});
 	});
 
 	describe('normalizeMessages - empty string handling', () => {
 		it('does not include empty translated strings', () => {
-			const result = normalizeMessages({ 'odkWebForm.submit.label': { string: '' } });
+			const result = normalizeMessages({ 'odk_web_forms.submit.label': { string: '' } });
 
-			expect(result['odkWebForm.submit.label']).toBeUndefined();
+			expect(result['odk_web_forms.submit.label']).toBeUndefined();
 		});
 
 		it('includes non-empty translated strings', () => {
 			const result = normalizeMessages({
-				'odkWebForm.geolocation.error': { string: 'Localisation indisponible.' },
+				'odk_web_forms.geolocation.error': { string: 'Localisation indisponible.' },
 			});
 
-			expect(result['odkWebForm.geolocation.error']).toBe('Localisation indisponible.');
+			expect(result['odk_web_forms.geolocation.error']).toBe('Localisation indisponible.');
 		});
 
 		it('empty strings do not override English fallback when merged', () => {
-			const enMessages = { 'odkWebForm.submit.label': 'Send' };
-			const frNormalized = normalizeMessages({ 'odkWebForm.submit.label': { string: '' } });
+			const enMessages = { 'odk_web_forms.submit.label': 'Send' };
+			const frNormalized = normalizeMessages({ 'odk_web_forms.submit.label': { string: '' } });
 			const merged = { ...enMessages, ...frNormalized };
 
-			expect(merged['odkWebForm.submit.label']).toBe('Send');
+			expect(merged['odk_web_forms.submit.label']).toBe('Send');
 		});
 
 		it('non-empty strings override English fallback when merged', () => {
-			const enMessages = { 'odkWebForm.submit.label': 'Send' };
-			const frNormalized = normalizeMessages({ 'odkWebForm.submit.label': { string: 'Envoyer' } });
+			const enMessages = { 'odk_web_forms.submit.label': 'Send' };
+			const frNormalized = normalizeMessages({ 'odk_web_forms.submit.label': { string: 'Envoyer' } });
 			const merged = { ...enMessages, ...frNormalized };
 
-			expect(merged['odkWebForm.submit.label']).toBe('Envoyer');
+			expect(merged['odk_web_forms.submit.label']).toBe('Envoyer');
 		});
 
 		it('normalizes plain string values', () => {
