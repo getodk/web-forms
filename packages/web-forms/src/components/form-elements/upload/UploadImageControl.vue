@@ -2,10 +2,12 @@
 import IconSVG from '@/components/common/IconSVG.vue';
 import ValidationMessage from '@/components/common/ValidationMessage.vue';
 import ControlText from '@/components/form-elements/ControlText.vue';
+import { FORMAT_MESSAGE } from '@/lib/constants/injection-keys.ts';
+import type { FormatMessage } from '@/lib/locale/useLocale.ts';
 import { resize } from '@/lib/services/resizeImage';
 import type { UploadNode } from '@getodk/xforms-engine';
 import Button from 'primevue/button';
-import type { HTMLInputElementEvent, Ref } from 'vue';
+import { type HTMLInputElementEvent, inject, type Ref } from 'vue';
 import { computed, ref, watchEffect } from 'vue';
 import UploadImagePreview from './UploadImagePreview.vue';
 
@@ -22,6 +24,7 @@ interface UploadImageControlProps {
 	readonly question: UploadNode;
 }
 
+const formatMessage: FormatMessage = inject(FORMAT_MESSAGE)!;
 const props = defineProps<UploadImageControlProps>();
 const isDisabled = computed(() => props.question.currentState.readonly === true);
 const selectImageInput = ref<HTMLInputElement | null>(null);
@@ -82,8 +85,7 @@ watchEffect(() => {
 				@click="triggerInputField(takePictureInput)"
 			>
 				<IconSVG name="mdiCamera" variant="inverted" />
-				<!-- TODO: translations -->
-				<span>Take picture</span>
+				<span>{{ formatMessage({ id: 'upload_image.take_picture.label' }) }}</span>
 			</Button>
 
 			<input
@@ -102,8 +104,7 @@ watchEffect(() => {
 			@click="triggerInputField(selectImageInput)"
 		>
 			<IconSVG name="mdiImage" variant="inverted" />
-			<!-- TODO: translations -->
-			<span>Choose image</span>
+			<span>{{ formatMessage({ id: 'upload_image.choose.label' }) }}</span>
 		</Button>
 		<input
 			ref="selectImageInput"
@@ -114,15 +115,9 @@ watchEffect(() => {
 		>
 	</div>
 
-	<UploadImagePreview
-		:question="question"
-		:is-disabled="isDisabled"
-		@clear="updateValue(null)"
-	/>
+	<UploadImagePreview :question="question" :is-disabled="isDisabled" @clear="updateValue(null)" />
 
-	<ValidationMessage
-		:message="question.validationState.violation?.message.formatted"
-	/>
+	<ValidationMessage :message="question.validationState.violation?.message.formatted" />
 </template>
 
 <style scoped lang="scss">

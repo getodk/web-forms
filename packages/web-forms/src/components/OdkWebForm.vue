@@ -178,7 +178,7 @@ const getLocation = async (): Promise<string> => {
 		// eslint-disable-next-line no-console -- Skip silently to match Collect behaviour.
 		console.warn('Error occurred while retrieving background location.', error);
 		geolocationErrorMessage.value = formatMessage({
-			id: 'odkWebForm.geolocation.error',
+			id: 'odk_web_forms.geolocation.error',
 		});
 	}
 
@@ -253,7 +253,7 @@ const validationErrorMessage = computed(() => {
 	const violationLength = state.value.root?.validationState.violations.length ?? 0;
 	if (violationLength === 0) return '';
 	return formatMessage(
-		{ id: 'odkWebForm.validation.error' },
+		{ id: 'odk_web_forms.validation.error' },
 		{ count: violationLength }
 	);
 });
@@ -333,7 +333,7 @@ onUnmounted(() => {
 			</Card>
 
 			<div class="footer flex justify-content-end flex-wrap gap-3">
-				<Button :label="formatMessage({ id: 'odkWebForm.submit.label' })" @click="handleSubmit(state)" />
+				<Button :label="formatMessage({ id: 'odk_web_forms.submit.label' })" @click="handleSubmit(state)" />
 			</div>
 		</div>
 

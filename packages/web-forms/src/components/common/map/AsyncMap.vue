@@ -9,7 +9,9 @@ import type { Mode, SingleFeatureType } from '@/components/common/map/getModeCon
 import type { SelectItem } from '@getodk/xforms-engine';
 import type { Feature } from 'geojson';
 import ProgressSpinner from 'primevue/progressspinner';
-import { computed, type DefineComponent, onMounted, shallowRef } from 'vue';
+import { FORMAT_MESSAGE } from '@/lib/constants/injection-keys.ts';
+import type { FormatMessage } from '@/lib/locale/useLocale.ts';
+import { computed, type DefineComponent, inject, onMounted, shallowRef } from 'vue';
 
 type MapBlockComponent = DefineComponent<{
 	featureCollection: { type: string; features: Feature[] };
@@ -30,6 +32,8 @@ interface AsyncMapProps {
 
 const props = defineProps<AsyncMapProps>();
 const emit = defineEmits(['save']);
+
+const formatMessage: FormatMessage = inject(FORMAT_MESSAGE)!;
 
 const STATES = {
 	READY: 'ready',
@@ -71,9 +75,8 @@ onMounted(loadMap);
 <template>
 	<div class="async-map-container">
 		<div v-if="currentState === STATES.ERROR" class="map-error">
-			<!-- TODO: translations -->
 			<p class="map-error-message">
-				Unable to load map
+				{{ formatMessage({ id: 'map_async.load_error.message' }) }}
 			</p>
 		</div>
 

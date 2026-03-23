@@ -3,8 +3,11 @@ import {
 	SINGLE_FEATURE_TYPES,
 	type SingleFeatureType,
 } from '@/components/common/map/getModeConfig.ts';
+import { FORMAT_MESSAGE } from '@/lib/constants/injection-keys.ts';
+import type { FormatMessage } from '@/lib/locale/useLocale.ts';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
+import { inject } from 'vue';
 
 defineProps<{
 	singleFeatureType: SingleFeatureType | undefined;
@@ -12,6 +15,8 @@ defineProps<{
 }>();
 
 const emit = defineEmits(['update:visible', 'deleteFeature']);
+
+const formatMessage: FormatMessage = inject(FORMAT_MESSAGE)!;
 </script>
 
 <template>
@@ -23,24 +28,21 @@ const emit = defineEmits(['update:visible', 'deleteFeature']);
 		@update:visible="emit('update:visible', $event)"
 	>
 		<template #header>
-			<!-- TODO: translations -->
-			<strong v-if="singleFeatureType === SINGLE_FEATURE_TYPES.SHAPE">Delete entire shape?</strong>
-			<strong v-else>Delete entire trace?</strong>
+			<strong v-if="singleFeatureType === SINGLE_FEATURE_TYPES.SHAPE">{{ formatMessage({ id: 'map_confirm_dialog.delete_shape.header' }) }}</strong>
+			<strong v-else>{{ formatMessage({ id: 'map_confirm_dialog.delete_trace.header' }) }}</strong>
 		</template>
 
 		<template #default>
-			<!-- TODO: translations -->
 			<p v-if="singleFeatureType === SINGLE_FEATURE_TYPES.SHAPE">
-				Are you sure you want to delete this entire shape and start over?
+				{{ formatMessage({ id: 'map_confirm_dialog.delete_shape.body' }) }}
 			</p>
 			<p v-else>
-				Are you sure you want to delete this entire trace and start over?
+				{{ formatMessage({ id: 'map_confirm_dialog.delete_trace.body' }) }}
 			</p>
 		</template>
 
 		<template #footer>
-			<!-- TODO: translations -->
-			<Button label="Delete" @click="emit('deleteFeature')" />
+			<Button :label="formatMessage({ id: 'map_confirm_dialog.delete.label' })" @click="emit('deleteFeature')" />
 		</template>
 	</Dialog>
 </template>

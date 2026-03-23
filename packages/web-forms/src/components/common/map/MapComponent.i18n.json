@@ -1,40 +1,9 @@
 {
-  "form_load_failure_dialog.header.title": {
-    "string": "An error occurred while loading this form",
-    "comment": "The title text shown in the header of the dialog."
-  },
-  "form_load_failure_dialog.details.label": {
-    "string": "Technical error details",
-    "comment": "The label for the clickable summary that reveals technical error information."
-  },
-  "odk_web_forms.submit.label": {
-    "string": "Send",
-    "comment": "Label for the primary form submission button."
-  },
-  "odk_web_forms.validation.error": {
-    "string": "{count, plural, one {# question with error} other {# questions with errors}}",
-    "comment": "Error banner message. {count} is the number of validation violations."
-  },
-  "odk_web_forms.geolocation.error": {
-    "string": "Location unavailable. Enable GPS and browser permissions, then restart the form to try again.",
-    "comment": "Error message shown when background geolocation fails."
-  },
-  "geolocation_formatted_value.accuracy.label": {
-    "string": "Accuracy: {accuracy} m,",
-    "comment": "Displays the GPS accuracy in metres. {accuracy} is the numeric accuracy value."
-  },
-  "geolocation_formatted_value.latitude.label": {
-    "string": "Latitude: {latitude},",
-    "comment": "Displays the GPS latitude coordinate. {latitude} is the numeric latitude value."
-  },
-  "geolocation_formatted_value.longitude.label": {
-    "string": "Longitude: {longitude}.",
-    "comment": "Displays the GPS longitude coordinate. {longitude} is the numeric longitude value."
-  },
   "map_async.load_error.message": {
     "string": "Unable to load map",
     "comment": "Error message shown when the map component fails to load."
   },
+
   "map_block.graphics_error.title": {
     "string": "Graphics issue detected",
     "comment": "Title of the error shown when the browser cannot render the map due to WebGL being unavailable."
@@ -51,6 +20,7 @@
     "string": "Grant location permission in the browser settings and make sure location is turned on.",
     "comment": "Description of what the user should do to resolve a geolocation access error in the map."
   },
+
   "map_block.get_location.label": {
     "string": "Get location",
     "comment": "Label for the button in the map overlay that starts watching the device's GPS location."
@@ -71,6 +41,7 @@
     "string": "Use the location button to center on your current location",
     "comment": "Instruction shown on the map before a point is placed, when the user can drag the feature."
   },
+
   "map_confirm_dialog.delete_shape.header": {
     "string": "Delete entire shape?",
     "comment": "Title of the confirmation dialog shown before deleting a shape."
@@ -91,6 +62,7 @@
     "string": "Delete",
     "comment": "Label for the button that confirms deletion of a shape or trace."
   },
+
   "map_advanced_panel.longitude.label": {
     "string": "Longitude",
     "comment": "Label for the longitude input field in the advanced panel."
@@ -119,6 +91,7 @@
     "string": "Import data to replace location",
     "comment": "Label for the link that opens the import/paste dialog from the advanced panel."
   },
+
   "map_controls.zoom_fit_all.description": {
     "string": "Show all features on the map",
     "comment": "Aria-label for the map control button that zooms to fit all features in view."
@@ -151,10 +124,12 @@
     "string": "Show information of map actions",
     "comment": "Aria-label for the map control button that opens the info dialog listing available map actions."
   },
+
   "map_info_dialog.header.title": {
     "string": "How to use the map?",
     "comment": "Title shown in the header of the dialog that explains available map actions."
   },
+
   "map_properties.remove_selection.label": {
     "string": "Remove selection",
     "comment": "Label for the button that removes the currently saved feature selection."
@@ -163,6 +138,7 @@
     "string": "Save selected",
     "comment": "Label for the button that saves the currently selected map feature."
   },
+
   "map_status_bar.no_trace_saved.label": {
     "string": "No trace saved",
     "comment": "Status bar message shown when no trace (linestring) has been saved yet."
@@ -231,6 +207,7 @@
     "string": "Accuracy: {accuracy}",
     "comment": "Accuracy component of the selected vertex info shown in the map status bar. {accuracy} is the pre-formatted accuracy value."
   },
+
   "map_update_coords_dialog.header.title": {
     "string": "Import data to replace location",
     "comment": "Title shown in the header of the dialog for importing coordinates via paste or file upload."
@@ -270,101 +247,5 @@
   "map_update_coords_dialog.incorrect_geometry.error": {
     "string": "Incorrect geometry type.",
     "comment": "Error shown when the imported data contains a geometry type incompatible with the current field."
-  },
-  "media_block.fetch.error": {
-    "string": "Cannot fetch media. Verify the URL and fetch settings.",
-    "comment": "Displayed when media (image, audio or video) fetching fails."
-  },
-  "media_block.not_found.error": {
-    "string": "Media not found. File: {file}",
-    "comment": "Displayed when the server returns a 404 or non-200 status."
-  },
-  "media_block.unknown.error": {
-    "string": "Cannot fetch media. Unknown error. File: {file}",
-    "comment": "Generic fallback for network failures or unexpected exceptions."
-  },
-  "rank_control.open.label": {
-    "string": "Rank items",
-    "comment": "The label for the button that opens the rank control."
-  },
-  "trigger_control.okay.label": {
-    "string": "Okay",
-    "comment": "The label for the 'Okay' button."
-  },
-  "input_geopoint.get_location.label": {
-    "string": "Get location",
-    "comment": "Label for the button to start capturing the device's current GPS location."
-  },
-  "input_geopoint.try_again.label": {
-    "string": "Try again",
-    "comment": "Label for the button to retry capturing the GPS location after one has already been saved."
-  },
-  "input_geopoint.location_error.title": {
-    "string": "Cannot access location",
-    "comment": "Title of the error message shown when the browser cannot access the device's location."
-  },
-  "input_geopoint.location_error.description": {
-    "string": "Grant location permission in the browser settings and make sure location is turned on.",
-    "comment": "Description of what the user should do to resolve a location access error."
-  },
-  "geolocation_dialog.header.title": {
-    "string": "Finding your location",
-    "comment": "Title shown in the header of the dialog while the device is searching for a GPS fix."
-  },
-  "geolocation_dialog.accuracy_threshold.info": {
-    "string": "Location will be saved at {accuracyThreshold} m",
-    "comment": "Informational message shown while waiting for a GPS fix. {accuracyThreshold} is the accuracy threshold in metres at which the location will be automatically saved."
-  },
-  "geolocation_dialog.elapsed_time.label": {
-    "string": "Time taken to capture location:",
-    "comment": "Label preceding the elapsed time counter shown while waiting for a GPS fix."
-  },
-  "geolocation_dialog.previous_accuracy.info": {
-    "string": "Previous saved location at {accuracy} m",
-    "comment": "Shows the accuracy of the previously saved location in metres. {accuracy} is the numeric accuracy value."
-  },
-  "geolocation_dialog.cancel.label": {
-    "string": "Cancel",
-    "comment": "Label for the button to cancel the location capture dialog without saving."
-  },
-  "geolocation_dialog.save.label": {
-    "string": "Save location",
-    "comment": "Label for the button to save the currently captured GPS location."
-  },
-  "geopoint_accuracy.good.label": {
-    "string": "Good accuracy",
-    "comment": "Label shown when the GPS accuracy is within the good threshold."
-  },
-  "geopoint_accuracy.acceptable.label": {
-    "string": "Good accuracy",
-    "comment": "Label shown when the GPS accuracy is within the acceptable threshold (between good and unacceptable)."
-  },
-  "geopoint_accuracy.poor.label": {
-    "string": "Poor accuracy",
-    "comment": "Label shown when the GPS accuracy exceeds the unacceptable threshold."
-  },
-  "geopoint_accuracy.unknown.label": {
-    "string": "Unknown accuracy",
-    "comment": "Label shown when no GPS accuracy value is available yet."
-  },
-  "upload_image.take_picture.label": {
-    "string": "Take picture",
-    "comment": "Label for the button to take a picture using the device's camera."
-  },
-  "upload_image.choose.label": {
-    "string": "Choose image",
-    "comment": "Label for the button to choose an image from the device's gallery or file system."
-  },
-  "repeat.add.label": {
-    "string": "Add",
-    "comment": "Label for the button to add a repeat instance."
-  },
-  "repeat.remove.label": {
-    "string": "Remove",
-    "comment": "Label for the button to remove a repeat instance."
-  },
-  "repeat.instance.placeholder": {
-    "string": "Repeat Item",
-    "comment": "Placeholder for the label of a repeat instance."
   }
 }

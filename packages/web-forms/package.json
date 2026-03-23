@@ -27,7 +27,7 @@
     "yarn": "4.11.0"
   },
   "scripts": {
-    "build": "npm-run-all -l build:clean build:translations build:js build:demo",
+    "build": "npm-run-all -l build:clean build:translations build:demo build:js",
     "build:clean": "rimraf dist/ dist-demo/",
     "build:demo": "vite build --mode demo --outDir dist-demo",
     "build:js": "vite build",

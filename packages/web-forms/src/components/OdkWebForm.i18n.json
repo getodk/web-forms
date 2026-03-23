@@ -1,13 +1,13 @@
 {
-  "odkWebForm.submit.label": {
+  "odk_web_forms.submit.label": {
     "string": "Send",
     "comment": "Label for the primary form submission button."
   },
-  "odkWebForm.validation.error": {
+  "odk_web_forms.validation.error": {
     "string": "{count, plural, one {# question with error} other {# questions with errors}}",
     "comment": "Error banner message. {count} is the number of validation violations."
   },
-  "odkWebForm.geolocation.error": {
+  "odk_web_forms.geolocation.error": {
     "string": "Location unavailable. Enable GPS and browser permissions, then restart the form to try again.",
     "comment": "Error message shown when background geolocation fails."
   }

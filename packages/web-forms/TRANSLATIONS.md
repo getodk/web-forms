@@ -25,19 +25,19 @@ An easy way to remember: **who → where → kind** (which component? which feat
 
 ### Examples
 
-| Key                           | Description             |
-| ----------------------------- | ----------------------- |
-| `odkWebForm.submit.label`     | Submit button label     |
-| `odkWebForm.validation.error` | Validation error banner |
+| Key (snake_case)                 | Description             |
+| -------------------------------- | ----------------------- |
+| `odk_web_forms.submit.label`     | Submit button label     |
+| `odk_web_forms.validation.error` | Validation error banner |
 
 ## Adding a string
 
 1. Create or open the `.i18n.json` file next to the component.
-2. Add an entry using the `component.feature.type` key convention:
+2. Add an entry using the `component.feature.type` key convention (snake_case):
 
 ```json
 {
-  "myComponent.someFeature.label": {
+  "my_component.some_feature.label": {
     "string": "English text here",
     "comment": "Context for translators: when and where this string appears."
   }
@@ -45,7 +45,7 @@ An easy way to remember: **who → where → kind** (which component? which feat
 ```
 
 3. Run `build:translations` to regenerate `locales/strings_en.json`. This also runs automatically as part of the build.
-4. Use the string in the component via `formatMessage({ id: 'myComponent.someFeature.label' })`.
+4. Use the string in the component via `formatMessage({ id: 'my_component.some_feature.label' })`.
 
 ## Developer comments
 

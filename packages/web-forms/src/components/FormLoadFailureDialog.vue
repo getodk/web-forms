@@ -36,7 +36,7 @@ const detail = computed((): FormLoadErrorDetail | null => {
 	<Dialog
 		class="form-load-failure-dialog"
 		:visible="detail != null"
-		:header="formatMessage({ id: 'formLoadFailureDialog.header.title' })"
+		:header="formatMessage({ id: 'form_load_failure_dialog.header.title' })"
 		:closable="false"
 		:draggable="false"
 		:keep-in-viewport="true"
@@ -47,7 +47,7 @@ const detail = computed((): FormLoadErrorDetail | null => {
 			</Message>
 
 			<details v-if="detail != null" class="initialize-form-failure-details">
-				<summary>{{ formatMessage({ id: 'formLoadFailureDialog.details.label' }) }}</summary>
+				<summary>{{ formatMessage({ id: 'form_load_failure_dialog.details.label' }) }}</summary>
 
 				<pre v-if="detail.unknownCauseDetail != null">{{ detail.unknownCauseDetail }}</pre>
 

@@ -1,0 +1,10 @@
+{
+  "upload_image.take_picture.label": {
+    "string": "Take picture",
+    "comment": "Label for the button to take a picture using the device's camera."
+  },
+  "upload_image.choose.label": {
+    "string": "Choose image",
+    "comment": "Label for the button to choose an image from the device's gallery or file system."
+  }
+}

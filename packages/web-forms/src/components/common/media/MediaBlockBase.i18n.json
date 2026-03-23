@@ -1,0 +1,14 @@
+{
+  "media_block.fetch.error": {
+    "string": "Cannot fetch media. Verify the URL and fetch settings.",
+    "comment": "Displayed when media (image, audio or video) fetching fails."
+  },
+  "media_block.not_found.error": {
+    "string": "Media not found. File: {file}",
+    "comment": "Displayed when the server returns a 404 or non-200 status."
+  },
+  "media_block.unknown.error": {
+    "string": "Cannot fetch media. Unknown error. File: {file}",
+    "comment": "Generic fallback for network failures or unexpected exceptions."
+  }
+}

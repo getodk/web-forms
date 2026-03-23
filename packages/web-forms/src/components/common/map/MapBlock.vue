@@ -13,7 +13,8 @@ import MapProperties from '@/components/common/map/MapProperties.vue';
 import MapStatusBar from '@/components/common/map/MapStatusBar.vue';
 import MapUpdateCoordsDialog from '@/components/common/map/MapUpdateCoordsDialog.vue';
 import { STATES, useMapBlock } from '@/components/common/map/useMapBlock.ts';
-import { QUESTION_HAS_ERROR } from '@/lib/constants/injection-keys.ts';
+import { FORMAT_MESSAGE, QUESTION_HAS_ERROR } from '@/lib/constants/injection-keys.ts';
+import type { FormatMessage } from '@/lib/locale/useLocale.ts';
 import type { Feature, FeatureCollection } from 'geojson';
 import type { Coordinate } from 'ol/coordinate';
 import { toLonLat } from 'ol/proj';
@@ -55,6 +56,7 @@ const showErrorStyle = inject<ComputedRef<boolean>>(
 	QUESTION_HAS_ERROR,
 	computed(() => false)
 );
+const formatMessage: FormatMessage = inject(FORMAT_MESSAGE)!;
 
 const mapHandler = useMapBlock(
 	{ mode: props.mode, singleFeatureType: props.singleFeatureType },
@@ -81,18 +83,16 @@ const instructionMessage = computed(() => {
 	}
 
 	if (mapHandler.canDragFeatureAndVertex()) {
-		// TODO: translations
 		return {
-			placed: 'Press and drag to move a point',
-			default: 'Tap to place a point',
+			placed: formatMessage({ id: 'map_block.drag_vertex_instruction.placed' }),
+			default: formatMessage({ id: 'map_block.drag_vertex_instruction.default' }),
 		};
 	}
 
 	if (mapHandler.canDragFeature()) {
-		// TODO: translations
 		return {
-			placed: 'Tap to move point',
-			default: 'Use the location button to center on your current location',
+			placed: formatMessage({ id: 'map_block.drag_instruction.placed' }),
+			default: formatMessage({ id: 'map_block.drag_instruction.default' }),
 		};
 	}
 
@@ -235,8 +235,7 @@ const toggleFullScreen = () => {
 					</Button>
 					<Button outlined severity="contrast" @click="mapHandler.watchCurrentLocation">
 						<IconSVG name="mdiCrosshairsGps" />
-						<!-- TODO: translations -->
-						<span>Get location</span>
+						<span>{{ formatMessage({ id: 'map_block.get_location.label' }) }}</span>
 					</Button>
 				</div>
 

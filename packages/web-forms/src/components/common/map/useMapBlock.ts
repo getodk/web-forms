@@ -52,7 +52,9 @@ import { fromLonLat, get as getProjection } from 'ol/proj';
 import { OSM } from 'ol/source';
 import VectorSource from 'ol/source/Vector';
 import { shared as iconImageCache } from 'ol/style/IconImageCache';
-import { shallowRef, watch } from 'vue';
+import { FORMAT_MESSAGE } from '@/lib/constants/injection-keys.ts';
+import type { FormatMessage } from '@/lib/locale/useLocale.ts';
+import { inject, shallowRef, watch } from 'vue';
 
 export const STATES = {
 	LOADING: 'loading',
@@ -76,6 +78,8 @@ interface MapBlockEvents {
 }
 
 export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
+	const formatMessage: FormatMessage = inject(FORMAT_MESSAGE)!;
+
 	let mapInstance: Map | undefined;
 	let mapInteractions: UseMapInteractions | undefined;
 	let mapViewControls: UseMapViewControls | undefined;
@@ -116,8 +120,8 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 		if (currentMode.capabilities.canLoadMultiFeatures && !isWebGLAvailable()) {
 			currentState.value = STATES.ERROR;
 			errorMessage.value = {
-				title: 'Graphics issue detected',
-				message: 'Your browser cannot display the map now. Enable graphics acceleration settings.',
+				title: formatMessage({ id: 'map_block.graphics_error.title' }),
+				message: formatMessage({ id: 'map_block.graphics_error.message' }),
 			};
 			return;
 		}
@@ -497,11 +501,9 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 			},
 			() => {
 				currentState.value = STATES.ERROR;
-				// TODO: translations
 				errorMessage.value = {
-					title: 'Cannot access location',
-					message:
-						'Grant location permission in the browser settings and make sure location is turned on.',
+					title: formatMessage({ id: 'map_block.location_error.title' }),
+					message: formatMessage({ id: 'map_block.location_error.message' }),
 				};
 			}
 		);

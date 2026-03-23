@@ -1,9 +1,9 @@
 {
-  "formLoadFailureDialog.header.title": {
+  "form_load_failure_dialog.header.title": {
     "string": "An error occurred while loading this form",
     "comment": "The title text shown in the header of the dialog."
   },
-  "formLoadFailureDialog.details.label": {
+  "form_load_failure_dialog.details.label": {
     "string": "Technical error details",
     "comment": "The label for the clickable summary that reveals technical error information."
   }
