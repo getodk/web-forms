@@ -39,7 +39,7 @@ An easy way to remember: **who → where → kind** (which component? which feat
 {
   "my_component.some_feature.label": {
     "string": "English text here",
-    "comment": "Context for translators: when and where this string appears."
+    "developer_comment": "Context for translators: when and where this string appears."
   }
 }
 ```
@@ -49,7 +49,7 @@ An easy way to remember: **who → where → kind** (which component? which feat
 
 ## Developer comments
 
-The `comment` optinal field is for translators. Explain:
+The `developer_comment` optinal field is for translators. Explain:
 
 - Where the string appears in the UI
 - Any placeholders (e.g. `{count}` is the number of violations)

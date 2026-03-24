@@ -1,14 +1,14 @@
 {
   "repeat.add.label": {
     "string": "Add",
-    "comment": "Label for the button to add a repeat instance."
+    "developer_comment": "Label for the button to add a repeat instance."
   },
   "repeat.remove.label": {
     "string": "Remove",
-    "comment": "Label for the button to remove a repeat instance."
+    "developer_comment": "Label for the button to remove a repeat instance."
   },
   "repeat.instance.placeholder": {
     "string": "Repeat Item",
-    "comment": "Placeholder for the label of a repeat instance."
+    "developer_comment": "Placeholder for the label of a repeat instance."
   }
 }
