@@ -56,7 +56,7 @@ const mountComponent = (selectNode: SelectNode, submitPressed = false) => {
 		},
 		global: {
 			...globalMountOptions,
-			provide: { [SUBMIT_PRESSED]: ref(submitPressed) },
+			provide: { ...globalMountOptions.provide, [SUBMIT_PRESSED]: ref(submitPressed) },
 		},
 		attachTo: document.body,
 	});
