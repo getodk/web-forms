@@ -14,7 +14,7 @@ Keys follow a 3-part dot-separated pattern:
 component.feature.type
 ```
 
-- **component**: camelCase name of the Vue component that owns the string (e.g. `odkWebForm`)
+- **component**: camelCase name of the Vue component that owns the string (e.g. `odk_web_forms`)
 - **feature**: the feature or section within that component (e.g. `submit`, `validation`)
 - **type**: what kind of string it is. Use one of:
   - `label`: button or field label

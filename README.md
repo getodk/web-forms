@@ -414,6 +414,12 @@ We will be adding color and more styling soon. We intend to expose a way to do b
 
 Thank you for contributing! Follow these guidelines for smooth collaboration.
 
+### Translations
+
+Translations are managed on Transifex. Translators can contribute at: https://app.transifex.com/getodk/odk-web-forms
+
+For developers, see [TRANSLATIONS.md](./packages/web-forms/TRANSLATIONS.md) for details on how UI strings are managed and how to add or update translations.
+
 ### Requirements
 
 - [Volta](https://volta.sh/) to ensure consistent `node` and `yarn` versions.

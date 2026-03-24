@@ -146,9 +146,3 @@ To add a new icon:
 - Use the icon by passing its name to the `name` prop.
 
 Material Icons are available under the Apache License Version 2.0. Copy of the license can be found at [`./src/assets/fonts/LICENSE-2.0.txt`](./src/assets/fonts/LICENSE-2.0.txt)
-
-### Translations
-
-Translations are managed on Transifex. Translators can contribute at: https://app.transifex.com/getodk/odk-web-forms
-
-For developers, see [TRANSLATIONS.md](./TRANSLATIONS.md) for details on how UI strings are managed and how to add or update translations.
