@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import IconSVG from '@/components/common/IconSVG.vue';
 import ControlText from '@/components/form-elements/ControlText.vue';
 import { FORM_OPTIONS } from '@/lib/constants/injection-keys.ts';
 import type { FormOptions } from '@/lib/init/load-form-state';
 import type { UploadNode } from '@getodk/xforms-engine';
+import Button from 'primevue/button';
 import Message from 'primevue/message';
 import Panel from 'primevue/panel';
 import { computed, inject, ref } from 'vue';
@@ -168,17 +170,20 @@ const onDrop = (event: DragEvent) => {
 			<div class="drag-and-drop" :class="{ 'disabled': isDisabled }" @drop.prevent.stop="onDrop" @dragover.prevent>
 				<div v-if="question.currentState.value" class="upload-content">
 					<template v-if="fileType === 'image'">
-						<UploadImagePreview :is-disabled="isDisabled" :image="objectURL" @clear="clearValue" />
+						<UploadImagePreview :image="objectURL" />
 					</template>
 					<template v-else-if="fileType === 'video'">
-						<UploadVideoPreview :is-disabled="isDisabled" :video="objectURL" @clear="clearValue" />
+						<UploadVideoPreview :video="objectURL" />
 					</template>
 					<template v-else-if="fileType === 'audio'">
-						<UploadAudioPreview :is-disabled="isDisabled" :audio="objectURL" @clear="clearValue" />
+						<UploadAudioPreview :audio="objectURL" />
 					</template>
 					<template v-else>
-						<UploadFilePreview :file-name="fileName" @clear="clearValue" />
+						<UploadFilePreview :file-name="fileName" />
 					</template>
+					<Button v-if="!isDisabled" severity="secondary" outlined class="clear-button" @click="clearValue">
+						<IconSVG name="mdiClose" variant="muted" size="sm" />
+					</Button>
 				</div>
 				<!-- TODO: translations -->
 				<Message
@@ -223,6 +228,16 @@ const onDrop = (event: DragEvent) => {
 		.upload-content.disabled {
 			color: var(--odk-muted-text-color);
 		}
+	}
+}
+
+.upload-content {
+	display: flex;
+	align-items: center;
+	gap: var(--odk-spacing-l);
+
+	button {
+		align-self: flex-start;
 	}
 }
 
