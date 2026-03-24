@@ -7,6 +7,8 @@ import Message from 'primevue/message';
 import Panel from 'primevue/panel';
 import { computed, inject, ref } from 'vue';
 import DeleteConfirmDialog from './DeleteConfirmDialog.vue';
+import UploadAudioHeader from './UploadAudioHeader.vue';
+import UploadAudioPreview from './UploadAudioPreview.vue';
 import UploadFileHeader from './UploadFileHeader.vue';
 import UploadFilePreview from './UploadFilePreview.vue';
 import UploadImageHeader from './UploadImageHeader.vue';
@@ -33,15 +35,15 @@ const maxFileSize = computed(() => formOptions?.attachmentMaxSize ?? MAX_FILE_SI
 const confirmDeleteAction = ref(false);
 const fileError = ref<string | null>(null);
 
+const SUPPORTED_MEDIA_TYPES = ['audio', 'image', 'video'];
+
 const getFileType = (type: string | undefined) => {
 	if (!type) {
 		return;
 	}
-	if (type.startsWith('image/')) {
-		return 'image';
-	}
-	if (type.startsWith('video/')) {
-		return 'video';
+	const primary = type.split('/')[0];
+	if (primary && SUPPORTED_MEDIA_TYPES.includes(primary)) {
+		return primary;
 	}
 	return '*';
 };
@@ -56,7 +58,7 @@ const objectURL = computed((previous: ObjectURL | null = null) => {
 	const file = props.question.currentState.value;
 	if (file) {
 		const type = getFileType(file.type);
-		if (type === 'image' || type === 'video') {
+		if (type && type !== '*') {
 			return URL.createObjectURL(file) satisfies string as ObjectURL;
 		}
 	}
@@ -96,9 +98,11 @@ const validateFile = (file: File) => {
 
 	// TODO translations
 	if (mediaType.value === 'image') {
-		fileError.value = 'Selected file must be an image';
+		fileError.value = 'Selected file must be an image file';
 	} else if (mediaType.value === 'video') {
-		fileError.value = 'Selected file must be a video';
+		fileError.value = 'Selected file must be a video file';
+	} else if (mediaType.value === 'audio') {
+		fileError.value = 'Selected file must be an audio file';
 	} else {
 		fileError.value = 'Selected file does not match expected type';
 	}
@@ -153,6 +157,9 @@ const onDrop = (event: DragEvent) => {
 			<template v-else-if="mediaType === 'video'">
 				<UploadVideoHeader :question="question" :accept="accept" :is-disabled="isDisabled" @change="onChange" />
 			</template>
+			<template v-else-if="mediaType === 'audio'">
+				<UploadAudioHeader :question="question" :accept="accept" :is-disabled="isDisabled" @change="onChange" />
+			</template>
 			<template v-else>
 				<UploadFileHeader :question="question" :accept="accept" :is-disabled="isDisabled" @change="onChange" />
 			</template>
@@ -165,6 +172,9 @@ const onDrop = (event: DragEvent) => {
 					</template>
 					<template v-else-if="fileType === 'video'">
 						<UploadVideoPreview :is-disabled="isDisabled" :video="objectURL" @clear="clearValue" />
+					</template>
+					<template v-else-if="fileType === 'audio'">
+						<UploadAudioPreview :is-disabled="isDisabled" :audio="objectURL" @clear="clearValue" />
 					</template>
 					<template v-else>
 						<UploadFilePreview :file-name="fileName" @clear="clearValue" />

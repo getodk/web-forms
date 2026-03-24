@@ -4,4 +4,4 @@
 '@getodk/common': minor
 ---
 
-Added support for the file and video upload types, and implemented drag and drop for uploads
+Added support for the file, audio, and video upload types, and implemented drag and drop for uploads
