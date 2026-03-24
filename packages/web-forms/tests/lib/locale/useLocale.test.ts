@@ -148,7 +148,9 @@ describe('useLocale', () => {
 
 		it('non-empty strings override English fallback when merged', () => {
 			const enMessages = { 'odk_web_forms.submit.label': 'Send' };
-			const frNormalized = normalizeMessages({ 'odk_web_forms.submit.label': { string: 'Envoyer' } });
+			const frNormalized = normalizeMessages({
+				'odk_web_forms.submit.label': { string: 'Envoyer' },
+			});
 			const merged = { ...enMessages, ...frNormalized };
 
 			expect(merged['odk_web_forms.submit.label']).toBe('Envoyer');
