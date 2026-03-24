@@ -35,23 +35,29 @@ watchEffect(() => {
 </template>
 
 <style scoped lang="scss">
-@use '../../../assets/styles/buttons' as btn;
+@use 'primeflex/core/_variables.scss' as pf;
 
+audio {
+	max-width: 100%;
+}
 .file-preview-content {
 	display: flex;
 	align-items: center;
-	flex-wrap: wrap;
+	flex-wrap: wrap-reverse;
 	gap: var(--odk-spacing-xxl);
 }
 .file-preview-content span {
-	text-align: right;
 	flex-grow: 1;
+}
+@media screen and (max-width: #{pf.$sm}) {
+	.file-preview-content span {
+		text-align: right;
+	}
 }
 
 /**
  * Below overrides PrimeVue style
  */
-
 .p-button.clear-button {
 	min-width: 0;
 	padding: 12px;

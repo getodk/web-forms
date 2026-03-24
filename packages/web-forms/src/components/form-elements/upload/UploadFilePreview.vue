@@ -25,7 +25,4 @@ defineEmits(['clear']);
 	align-items: center;
 	gap: var(--odk-spacing-xxl);
 }
-.file-preview-content span {
-	flex-grow: 1;
-}
 </style>
