@@ -2,7 +2,9 @@
 
 ## How it works
 
-Translation strings are defined in `.i18n.json` files co-located with their components. At build time, these files are merged into `locales/strings_en.json`, which serves as the English baseline and is eagerly loaded at runtime. Translations for other locales are fetch from Transifex and then loaded lazily when the user switches language.
+Translation strings are defined in `.i18n.json` files co-located with their components. At build time, these files are merged into `locales/strings_en.json`, which serves as the English baseline and is eagerly loaded at runtime. Translations for other locales are loaded lazily when the user switches language.
+
+Transifex automatically pulls the source strings from `locales/strings_en.json` daily. Translation files are synced back into the project just before each release.
 
 ## Key naming convention
 
