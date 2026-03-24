@@ -510,9 +510,10 @@ If you'd like to try the functionality available on `main`, see the preview [on 
 
 1. Run `yarn changeset version` to generate changelog files and version bumps from the changeset files.
 2. Run `yarn install` to update `yarn.lock` with the new versions.
-3. Verify that the changelogs look good, commit changes, open a PR, and merge the PR.
-4. Push tags for each package in the format `@getodk/<package>@x.x.x`. A GitHub action will publish the packages on NPM.
-5. Update dependencies to kick off the new release cycle.
+3. Update translations by running `tx pull -a -f --mode translator` in the root directory.
+4. Verify that the changelogs look good, commit changes, open a PR, and merge the PR.
+5. Push tags for each package in the format `@getodk/<package>@x.x.x`. A GitHub action will publish the packages on NPM.
+6. Update dependencies to kick off the new release cycle.
 
 ### Patch release process
 
