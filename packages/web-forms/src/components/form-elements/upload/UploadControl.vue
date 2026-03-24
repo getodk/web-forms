@@ -95,7 +95,14 @@ const validateFile = (file: File) => {
 	}
 
 	// TODO translations
-	fileError.value = 'Selected file type does not match expected ' + accept.value;
+	if (mediaType.value === 'image') {
+		fileError.value = 'Selected file must be an image';
+	} else if (mediaType.value === 'video') {
+		fileError.value = 'Selected file must be a video';
+	} else {
+		fileError.value = 'Selected file does not match expected type';
+	}
+
 	return false;
 };
 
