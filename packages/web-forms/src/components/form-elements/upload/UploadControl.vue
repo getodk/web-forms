@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import ControlText from '@/components/form-elements/ControlText.vue';
+import { FORM_OPTIONS } from '@/lib/constants/injection-keys.ts';
+import type { FormOptions } from '@/lib/init/load-form-state';
 import type { UploadNode } from '@getodk/xforms-engine';
 import Message from 'primevue/message';
 import Panel from 'primevue/panel';
-import { computed, ref } from 'vue';
+import { computed, inject, ref } from 'vue';
 import DeleteConfirmDialog from './DeleteConfirmDialog.vue';
 import UploadFileHeader from './UploadFileHeader.vue';
 import UploadFilePreview from './UploadFilePreview.vue';
@@ -21,11 +23,13 @@ export interface UploadControlProps {
 }
 
 const props = defineProps<UploadControlProps>();
+const formOptions = inject<FormOptions>(FORM_OPTIONS);
 
 const isDisabled = computed(() => props.question.currentState.readonly === true);
 const fileName = computed(() => props.question.currentState.value?.name ?? '');
 const accept = computed(() => props.question.nodeOptions.media.accept);
 const mediaType = computed(() => props.question.nodeOptions.media.type);
+const maxFileSize = computed(() => formOptions?.attachmentMaxSize ?? MAX_FILE_SIZE);
 const confirmDeleteAction = ref(false);
 const fileError = ref<string | null>(null);
 
@@ -60,9 +64,9 @@ const objectURL = computed((previous: ObjectURL | null = null) => {
 });
 
 const validateFile = (file: File) => {
-	if (file.size > MAX_FILE_SIZE) {
+	if (file.size > maxFileSize.value) {
 		// TODO translations
-		fileError.value = 'Selected file size exceeds the maximum allowed 100MB';
+		fileError.value = 'Selected file size exceeds the maximum allowed';
 		return false;
 	}
 
