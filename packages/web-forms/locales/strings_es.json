@@ -160,7 +160,7 @@
     "developer_comment": "Label for the button that removes the currently saved feature selection."
   },
   "map_properties.save_selected.label": {
-    "string": "Guardar seleccionado",
+    "string": "Guardar selección",
     "developer_comment": "Label for the button that saves the currently selected map feature."
   },
   "map_status_bar.no_trace_saved.label": {
