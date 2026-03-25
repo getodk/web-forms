@@ -21,12 +21,18 @@ watchEffect(() => {
 </script>
 
 <template>
-	<audio v-if="mediaUrl" controls :src="mediaUrl" />
+	<div>
+		<audio v-if="mediaUrl" controls :src="mediaUrl" />
+	</div>
 </template>
 
 <style scoped lang="scss">
-audio {
+div {
 	width: 100%;
 	max-width: 400px;
+
+	audio {
+		width: 100%;
+	}
 }
 </style>
