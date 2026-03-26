@@ -121,12 +121,12 @@ const updateValue = (file: File) => {
 
 const clearValueConfirmed = () => {
 	confirmDeleteAction.value = false;
-	fileError.value = null;
 	props.question.setValue(null);
 };
 
 const clearValue = () => {
-	if (isDisabled.value) {
+	fileError.value = null;
+	if (isDisabled.value || props.question.currentState.value == null) {
 		return;
 	}
 	confirmDeleteAction.value = true;
