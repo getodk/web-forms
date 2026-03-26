@@ -58,9 +58,8 @@ const getDeviceId = () => {
 	if (id) {
 		return id;
 	}
-	const domain = window.location.hostname;
 	const random = getRandomId();
-	const deviceId = `${domain}:wf:${random}`;
+	const deviceId = `wf:${random}`;
 	localStorage.setItem(DEVICE_ID_KEY, deviceId);
 	return deviceId;
 };
