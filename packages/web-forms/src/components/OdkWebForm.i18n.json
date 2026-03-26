@@ -10,5 +10,21 @@
   "odk_web_forms.geolocation.error": {
     "string": "Location unavailable. Enable GPS and browser permissions, then restart the form to try again.",
     "developer_comment": "Error message shown when background geolocation fails."
+  },
+  "odk_web_forms.delete.label": {
+    "string": "Delete",
+    "developer_comment": "Generic label for a delete action button."
+  },
+  "odk_web_forms.cancel.label": {
+    "string": "Cancel",
+    "developer_comment": "Generic label for a cancel action button."
+  },
+  "odk_web_forms.remove.label": {
+    "string": "Remove",
+    "developer_comment": "Generic label for a remove action button."
+  },
+  "odk_web_forms.save.label": {
+    "string": "Save",
+    "developer_comment": "Generic label for a save action button."
   }
 }

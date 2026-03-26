@@ -43,8 +43,4 @@
     "string": "Are you sure you want to delete this file?",
     "developer_comment": "Body text of the confirmation dialog shown before deleting an uploaded file."
   },
-  "upload_delete_dialog.delete.label": {
-    "string": "Delete",
-    "developer_comment": "Label for the button that confirms deletion of an uploaded file."
-  }
 }

@@ -31,10 +31,6 @@
     "string": "Previous saved location at {accuracy} m",
     "developer_comment": "Shows the accuracy of the previously saved location in metres. {accuracy} is the numeric accuracy value."
   },
-  "geolocation_dialog.cancel.label": {
-    "string": "Cancel",
-    "developer_comment": "Label for the button to cancel the location capture dialog without saving."
-  },
   "geolocation_dialog.save.label": {
     "string": "Save location",
     "developer_comment": "Label for the button to save the currently captured GPS location."

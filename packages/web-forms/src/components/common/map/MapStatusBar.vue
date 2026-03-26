@@ -167,7 +167,7 @@ const displayState = computed(() => {
 			<div v-if="savedStatus" class="map-status-buttons">
 				<Button v-if="canRemove" outlined severity="contrast" @click="emit('discard')">
 					<span>–</span>
-					<span class="mobile-only">{{ formatMessage({ id: 'map_status_bar.remove.label' }) }}</span>
+					<span class="mobile-only">{{ formatMessage({ id: 'odk_web_forms.remove.label' }) }}</span>
 					<span class="desktop-only">{{ formatMessage({ id: 'map_status_bar.remove_point.label' }) }}</span>
 				</Button>
 				<Button v-if="canViewDetails" outlined severity="contrast" @click="emit('view-details')">

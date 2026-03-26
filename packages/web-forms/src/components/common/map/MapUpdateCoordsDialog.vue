@@ -202,7 +202,7 @@ watch(pasteValue, (newVal) => {
 		</template>
 
 		<template #footer>
-			<Button :label="formatMessage({ id: 'map_update_coords_dialog.save.label' })" :disabled="!selectedFile && !pasteValue.length" @click="save" />
+			<Button :label="formatMessage({ id: 'odk_web_forms.save.label' })" :disabled="!selectedFile && !pasteValue.length" @click="save" />
 		</template>
 	</Dialog>
 </template>

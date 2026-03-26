@@ -160,7 +160,7 @@ onBeforeUnmount(cleanup);
 
 		<template #footer>
 			<div class="geo-dialog-footer">
-				<Button text severity="contrast" :label="formatMessage({ id: 'geolocation_dialog.cancel.label' })" @click="cancel()" />
+				<Button text severity="contrast" :label="formatMessage({ id: 'odk_web_forms.cancel.label' })" @click="cancel()" />
 
 				<Button :label="formatMessage({ id: 'geolocation_dialog.save.label' })" :disabled="accuracy.value == null" @click="save()" />
 			</div>

@@ -56,7 +56,7 @@ const menuItems = computed((): MenuItem[] | undefined => {
 
 	return [
 		{
-			label: formatMessage({ id: 'repeat.remove.label' }),
+			label: formatMessage({ id: 'odk_web_forms.remove.label' }),
 			icon: 'icon-delete',
 			command: () => {
 				return parent.removeInstances(props.instanceIndex);

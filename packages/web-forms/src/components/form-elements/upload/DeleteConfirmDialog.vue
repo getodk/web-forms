@@ -29,7 +29,7 @@ const emit = defineEmits(['update:visible', 'deleteFile']);
 		</template>
 
 		<template #footer>
-			<Button :label="formatMessage({ id: 'upload_delete_dialog.delete.label' })" @click="emit('deleteFile')" />
+			<Button :label="formatMessage({ id: 'odk_web_forms.delete.label' })" @click="emit('deleteFile')" />
 		</template>
 	</Dialog>
 </template>

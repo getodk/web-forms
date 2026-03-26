@@ -42,7 +42,7 @@ const formatMessage: FormatMessage = inject(FORMAT_MESSAGE)!;
 		</template>
 
 		<template #footer>
-			<Button :label="formatMessage({ id: 'map_confirm_dialog.delete.label' })" @click="emit('deleteFeature')" />
+			<Button :label="formatMessage({ id: 'odk_web_forms.delete.label' })" @click="emit('deleteFeature')" />
 		</template>
 	</Dialog>
 </template>
