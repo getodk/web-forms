@@ -2,8 +2,8 @@
 import IconSVG from '@/components/common/IconSVG.vue';
 import { ODK_VALUE_PROPERTY } from '@/components/common/map/useMapBlock.ts';
 import Button from 'primevue/button';
-import { FORMAT_MESSAGE } from '@/lib/constants/injection-keys.ts';
-import type { FormatMessage } from '@/lib/locale/useLocale.ts';
+import { TRANSLATE } from '@/lib/constants/injection-keys.ts';
+import type { Translate } from '@/lib/locale/useLocale.ts';
 import { computed, inject } from 'vue';
 
 const props = defineProps<{
@@ -16,7 +16,7 @@ const props = defineProps<{
 
 const emit = defineEmits(['close', 'save', 'discard']);
 
-const formatMessage: FormatMessage = inject(FORMAT_MESSAGE)!;
+const t: Translate = inject(TRANSLATE)!;
 
 const orderedProps = computed(() => {
 	const key = props.reservedProps?.[ODK_VALUE_PROPERTY];
@@ -46,11 +46,11 @@ const orderedProps = computed(() => {
 		<div class="map-properties-footer">
 			<Button v-if="isSavedFeatureSelected && canRemove" outlined severity="contrast" @click="emit('discard')">
 				<span>–</span>
-				<span>{{ formatMessage({ id: 'map_properties.remove_selection.label' }) }}</span>
+				<span>{{ t('map_properties.remove_selection.label') }}</span>
 			</Button>
 			<Button v-if="!isSavedFeatureSelected && canSave" @click="emit('save')">
 				<IconSVG name="mdiCheckboxMarkedCircleOutline" size="sm" variant="inverted" />
-				<span>{{ formatMessage({ id: 'map_properties.save_selected.label' }) }}</span>
+				<span>{{ t('map_properties.save_selected.label') }}</span>
 			</Button>
 		</div>
 	</div>

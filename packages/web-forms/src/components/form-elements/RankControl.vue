@@ -3,8 +3,8 @@ import IconSVG from '@/components/common/IconSVG.vue';
 import MarkdownBlock from '@/components/common/MarkdownBlock.vue';
 import ValidationMessage from '@/components/common/ValidationMessage.vue';
 import ControlText from '@/components/form-elements/ControlText.vue';
-import { FORMAT_MESSAGE } from '@/lib/constants/injection-keys.ts';
-import type { FormatMessage } from '@/lib/locale/useLocale.ts';
+import { TRANSLATE } from '@/lib/constants/injection-keys.ts';
+import type { Translate } from '@/lib/locale/useLocale.ts';
 import type { TimerID } from '@getodk/common/types/timers.ts';
 import type { RankNode } from '@getodk/xforms-engine';
 import { inject, type Ref } from 'vue';
@@ -20,7 +20,7 @@ interface HighlightOption {
 	timeoutID: TimerID | null;
 }
 
-const formatMessage: FormatMessage = inject(FORMAT_MESSAGE)!;
+const t: Translate = inject(TRANSLATE)!;
 const props = defineProps<RankControlProps>();
 const showOverlay = computed(() => !props.question.currentState.instanceValue.length);
 const disabled = computed(() => props.question.currentState.readonly === true);
@@ -120,7 +120,7 @@ const onDragEnd = (oldIndex: number | undefined, newIndex: number | undefined) =
 		<div v-if="showOverlay" class="rank-overlay">
 			<button :disabled="disabled" @click="selectDefaultOrder">
 				<IconSVG name="mdiUnfoldMoreHorizontal" size="sm" :variant="disabled ? 'muted' : 'base'" />
-				<span>{{ formatMessage({ id: 'rank_control.open.label' }) }}</span>
+				<span>{{ t('rank_control.open.label') }}</span>
 			</button>
 		</div>
 

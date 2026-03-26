@@ -11,8 +11,8 @@ import type { Coordinate } from 'ol/coordinate';
 import { toLonLat } from 'ol/proj';
 import Button from 'primevue/button';
 import ProgressSpinner from 'primevue/progressspinner';
-import { FORMAT_MESSAGE } from '@/lib/constants/injection-keys.ts';
-import type { FormatMessage } from '@/lib/locale/useLocale.ts';
+import { TRANSLATE } from '@/lib/constants/injection-keys.ts';
+import type { Translate } from '@/lib/locale/useLocale.ts';
 import { computed, inject } from 'vue';
 
 interface StatusDetails {
@@ -34,21 +34,21 @@ const props = defineProps<{
 
 const emit = defineEmits(['discard', 'toggle-advanced-panel', 'view-details']);
 
-const formatMessage: FormatMessage = inject(FORMAT_MESSAGE)!;
+const t: Translate = inject(TRANSLATE)!;
 
 const LINE_ICON = 'mdiVectorPolyline';
 const POLYGON_ICON = 'mdiVectorPolygon';
 
 const noSavedStatus = computed<StatusDetails>(() => {
 	if (props.singleFeatureType === SINGLE_FEATURE_TYPES.TRACE) {
-		return { message: formatMessage({ id: 'map_status_bar.no_trace_saved.label' }), icon: LINE_ICON };
+		return { message: t('map_status_bar.no_trace_saved.label'), icon: LINE_ICON };
 	}
 
 	if (props.singleFeatureType === SINGLE_FEATURE_TYPES.SHAPE) {
-		return { message: formatMessage({ id: 'map_status_bar.no_shape_saved.label' }), icon: POLYGON_ICON };
+		return { message: t('map_status_bar.no_shape_saved.label'), icon: POLYGON_ICON };
 	}
 
-	return { message: formatMessage({ id: 'map_status_bar.no_point_saved.label' }), icon: 'mdiMapMarkerOutline' };
+	return { message: t('map_status_bar.no_point_saved.label'), icon: 'mdiMapMarkerOutline' };
 });
 
 const selectedVertexInfo = computed(() => {
@@ -58,16 +58,16 @@ const selectedVertexInfo = computed(() => {
 
 	const [longitude, latitude, altitude, accuracy] = toLonLat(props.selectedVertex);
 	const parts = [
-		formatMessage({ id: 'map_status_bar.vertex_longitude.label' }, { longitude }),
-		formatMessage({ id: 'map_status_bar.vertex_latitude.label' }, { latitude }),
+		t('map_status_bar.vertex_longitude.label', { longitude }),
+		t('map_status_bar.vertex_latitude.label', { latitude }),
 	];
 
 	if (altitude != null) {
-		parts.push(formatMessage({ id: 'map_status_bar.vertex_altitude.label' }, { altitude }));
+		parts.push(t('map_status_bar.vertex_altitude.label', { altitude }));
 	}
 
 	if (accuracy != null) {
-		parts.push(formatMessage({ id: 'map_status_bar.vertex_accuracy.label' }, { accuracy: truncateDecimals(accuracy, { decimals: 3 }) }));
+		parts.push(t('map_status_bar.vertex_accuracy.label', { accuracy: truncateDecimals(accuracy, { decimals: 3 }) }));
 	}
 
 	return parts.join(', ');
@@ -97,18 +97,18 @@ const countPoints = (coords: Position | Position[] | Position[][] | undefined = 
 const getSavedMessageForMultiFeature = (type: string) => {
 	const geometryType = type?.toLowerCase();
 	if (geometryType === 'point') {
-		return formatMessage({ id: 'map_status_bar.point_saved.label' });
+		return t('map_status_bar.point_saved.label');
 	}
 
 	if (geometryType === 'linestring') {
-		return formatMessage({ id: 'map_status_bar.trace_saved.label' });
+		return t('map_status_bar.trace_saved.label');
 	}
 
 	if (geometryType === 'polygon') {
-		return formatMessage({ id: 'map_status_bar.shape_saved.label' });
+		return t('map_status_bar.shape_saved.label');
 	}
 
-	return formatMessage({ id: 'map_status_bar.feature_saved.label' });
+	return t('map_status_bar.feature_saved.label');
 };
 
 const savedStatus = computed<StatusDetails | null>(() => {
@@ -127,7 +127,7 @@ const savedStatus = computed<StatusDetails | null>(() => {
 		return null;
 	}
 
-	const message = formatMessage({ id: 'map_status_bar.points_saved.label' }, { count });
+	const message = t('map_status_bar.points_saved.label', { count });
 	if (props.singleFeatureType === SINGLE_FEATURE_TYPES.TRACE) {
 		return { message, icon: LINE_ICON };
 	}
@@ -136,7 +136,7 @@ const savedStatus = computed<StatusDetails | null>(() => {
 		return { message, icon: POLYGON_ICON };
 	}
 
-	return { message: formatMessage({ id: 'map_status_bar.point_saved.label' }), icon: 'mdiCheckCircle', highlight: true };
+	return { message: t('map_status_bar.point_saved.label'), icon: 'mdiCheckCircle', highlight: true };
 });
 
 const displayState = computed(() => {
@@ -153,7 +153,7 @@ const displayState = computed(() => {
 		<div class="map-status-container">
 			<div v-if="isCapturing" class="map-status">
 				<ProgressSpinner class="map-status-spinner" stroke-width="5px" />
-				<span>{{ formatMessage({ id: 'map_status_bar.capturing.label' }) }}</span>
+				<span>{{ t('map_status_bar.capturing.label') }}</span>
 			</div>
 
 			<div v-if="!isCapturing && displayState" class="map-status">
@@ -167,11 +167,11 @@ const displayState = computed(() => {
 			<div v-if="savedStatus" class="map-status-buttons">
 				<Button v-if="canRemove" outlined severity="contrast" @click="emit('discard')">
 					<span>–</span>
-					<span class="mobile-only">{{ formatMessage({ id: 'odk_web_forms.remove.label' }) }}</span>
-					<span class="desktop-only">{{ formatMessage({ id: 'map_status_bar.remove_point.label' }) }}</span>
+					<span class="mobile-only">{{ t('odk_web_forms.remove.label') }}</span>
+					<span class="desktop-only">{{ t('map_status_bar.remove_point.label') }}</span>
 				</Button>
 				<Button v-if="canViewDetails" outlined severity="contrast" @click="emit('view-details')">
-					<span>{{ formatMessage({ id: 'map_status_bar.view_details.label' }) }}</span>
+					<span>{{ t('map_status_bar.view_details.label') }}</span>
 				</Button>
 			</div>
 		</div>
@@ -184,7 +184,7 @@ const displayState = computed(() => {
 			@click="emit('toggle-advanced-panel')"
 		>
 			<IconSVG name="mdiCogOutline" />
-			<span>{{ formatMessage({ id: 'map_status_bar.advanced.label' }) }}</span>
+			<span>{{ t('map_status_bar.advanced.label') }}</span>
 		</Button>
 	</div>
 </template>

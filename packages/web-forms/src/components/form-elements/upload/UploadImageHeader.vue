@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import IconSVG from '@/components/common/IconSVG.vue';
+import { TRANSLATE } from '@/lib/constants/injection-keys.ts';
+import type { Translate } from '@/lib/locale/useLocale.ts';
 import { resize } from '@/lib/services/resizeImage';
 import type { UploadNode } from '@getodk/xforms-engine';
 import Button from 'primevue/button';
-import type { HTMLInputElementEvent, Ref, inject } from 'vue';
-import { ref, watchEffect } from 'vue';
-import { FORMAT_MESSAGE } from '@/lib/constants/injection-keys.ts';
-import type { FormatMessage } from '@/lib/locale/useLocale.ts';
+import type { HTMLInputElementEvent, Ref } from 'vue';
+import { inject, ref, watchEffect } from 'vue';
 
 const IS_CAPTURE_SUPPORTED = (() => {
 	const input = document.createElement('input');
@@ -17,7 +17,7 @@ const IS_CAPTURE_SUPPORTED = (() => {
 	return 'capture' in input;
 })();
 
-const formatMessage: FormatMessage = inject(FORMAT_MESSAGE)!;
+const t: Translate = inject(TRANSLATE)!;
 const selectImageInput = ref<HTMLInputElement | null>(null);
 const takePictureInput = ref<HTMLInputElement | null>(null);
 
@@ -83,7 +83,7 @@ const emit = defineEmits(['change']);
 			@click="triggerInputField(takePictureInput)"
 		>
 			<IconSVG name="mdiCamera" variant="inverted" />
-			<span>{{ formatMessage({ id: 'upload_image_header.take_picture.label' }) }}</span>
+			<span>{{ t('upload_image_header.take_picture.label') }}</span>
 		</Button>
 
 		<input
@@ -102,7 +102,7 @@ const emit = defineEmits(['change']);
 		@click="triggerInputField(selectImageInput)"
 	>
 		<IconSVG name="mdiImage" variant="inverted" />
-		<span>{{ formatMessage({ id: 'upload_image_header.choose_image.label' }) }}</span>
+		<span>{{ t('upload_image_header.choose_image.label') }}</span>
 	</Button>
 	<input
 		ref="selectImageInput"

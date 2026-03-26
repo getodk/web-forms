@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import IconSVG from '@/components/common/IconSVG.vue';
 import ControlText from '@/components/form-elements/ControlText.vue';
-import { FORM_OPTIONS, FORMAT_MESSAGE } from '@/lib/constants/injection-keys.ts';
+import { FORM_OPTIONS, TRANSLATE } from '@/lib/constants/injection-keys.ts';
 import type { FormOptions } from '@/lib/init/load-form-state';
-import type { FormatMessage } from '@/lib/locale/useLocale.ts';
+import type { Translate } from '@/lib/locale/useLocale.ts';
 import type { UploadNode } from '@getodk/xforms-engine';
 import Button from 'primevue/button';
 import Message from 'primevue/message';
@@ -29,7 +29,7 @@ export interface UploadControlProps {
 
 const props = defineProps<UploadControlProps>();
 const formOptions = inject<FormOptions>(FORM_OPTIONS);
-const formatMessage: FormatMessage = inject(FORMAT_MESSAGE)!;
+const t: Translate = inject(TRANSLATE)!;
 
 const isDisabled = computed(() => props.question.currentState.readonly === true);
 const fileName = computed(() => props.question.currentState.value?.name ?? '');
@@ -71,7 +71,7 @@ const objectURL = computed((previous: ObjectURL | null = null) => {
 
 const validateFile = (file: File) => {
 	if (file.size > maxFileSize.value) {
-		fileError.value = formatMessage({ id: 'upload_control.file_too_large.error' });
+		fileError.value = t('upload_control.file_too_large.error');
 		return false;
 	}
 
@@ -100,13 +100,13 @@ const validateFile = (file: File) => {
 	}
 
 	if (mediaType.value === 'image') {
-		fileError.value = formatMessage({ id: 'upload_control.must_be_image.error' });
+		fileError.value = t('upload_control.must_be_image.error');
 	} else if (mediaType.value === 'video') {
-		fileError.value = formatMessage({ id: 'upload_control.must_be_video.error' });
+		fileError.value = t('upload_control.must_be_video.error');
 	} else if (mediaType.value === 'audio') {
-		fileError.value = formatMessage({ id: 'upload_control.must_be_audio.error' });
+		fileError.value = t('upload_control.must_be_audio.error');
 	} else {
-		fileError.value = formatMessage({ id: 'upload_control.invalid_file_type.error' });
+		fileError.value = t('upload_control.invalid_file_type.error');
 	}
 
 	return false;
@@ -194,7 +194,7 @@ const onDrop = (event: DragEvent) => {
 					{{ fileError }}
 				</Message>
 				<div v-else class="placeholder">
-					{{ formatMessage({ id: 'upload_control.drag_and_drop.placeholder' }) }}
+					{{ t('upload_control.drag_and_drop.placeholder') }}
 				</div>
 			</div>
 		</template>

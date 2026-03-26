@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import MediaBlockBase from '@/components/common/media/MediaBlockBase.vue';
-import { FORMAT_MESSAGE } from '@/lib/constants/injection-keys.ts';
-import type { FormatMessage } from '@/lib/locale/useLocale.ts';
+import { TRANSLATE } from '@/lib/constants/injection-keys.ts';
+import type { Translate } from '@/lib/locale/useLocale.ts';
 import type { JRResourceURL } from '@getodk/common/jr-resources/JRResourceURL.ts';
 import { computed, inject, ref, triggerRef } from 'vue';
 
@@ -13,7 +13,7 @@ defineProps<{
 	readonly alt: string;
 }>();
 
-const formatMessage: FormatMessage = inject(FORMAT_MESSAGE)!;
+const t: Translate = inject(TRANSLATE)!;
 
 interface NaturalDimensions {
 	readonly naturalWidth: number;
@@ -49,7 +49,7 @@ const setDimensions = (event: Event) => {
 			:alt="alt"
 			class="image-block"
 			@load="setDimensions"
-			@error="reportError(formatMessage({ id: 'image_block.load.error' }, { file: resourceUrl?.href ?? '' }))"
+			@error="reportError(t('image_block.load.error', { file: resourceUrl?.href ?? '' }))"
 		>
 	</MediaBlockBase>
 </template>

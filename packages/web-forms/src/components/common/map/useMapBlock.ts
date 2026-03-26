@@ -52,8 +52,8 @@ import { fromLonLat, get as getProjection } from 'ol/proj';
 import { OSM } from 'ol/source';
 import VectorSource from 'ol/source/Vector';
 import { shared as iconImageCache } from 'ol/style/IconImageCache';
-import { FORMAT_MESSAGE } from '@/lib/constants/injection-keys.ts';
-import type { FormatMessage } from '@/lib/locale/useLocale.ts';
+import { TRANSLATE } from '@/lib/constants/injection-keys.ts';
+import type { Translate } from '@/lib/locale/useLocale.ts';
 import { inject, shallowRef, watch } from 'vue';
 
 export const STATES = {
@@ -78,7 +78,7 @@ interface MapBlockEvents {
 }
 
 export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
-	const formatMessage: FormatMessage = inject(FORMAT_MESSAGE)!;
+	const t: Translate = inject(TRANSLATE)!;
 
 	let mapInstance: Map | undefined;
 	let mapInteractions: UseMapInteractions | undefined;
@@ -120,8 +120,8 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 		if (currentMode.capabilities.canLoadMultiFeatures && !isWebGLAvailable()) {
 			currentState.value = STATES.ERROR;
 			errorMessage.value = {
-				title: formatMessage({ id: 'map_block.graphics_error.title' }),
-				message: formatMessage({ id: 'map_block.graphics_error.message' }),
+				title: t('map_block.graphics_error.title'),
+				message: t('map_block.graphics_error.message'),
 			};
 			return;
 		}
@@ -502,8 +502,8 @@ export function useMapBlock(config: MapBlockConfig, events: MapBlockEvents) {
 			() => {
 				currentState.value = STATES.ERROR;
 				errorMessage.value = {
-					title: formatMessage({ id: 'map_block.location_error.title' }),
-					message: formatMessage({ id: 'map_block.location_error.message' }),
+					title: t('map_block.location_error.title'),
+					message: t('map_block.location_error.message'),
 				};
 			}
 		);

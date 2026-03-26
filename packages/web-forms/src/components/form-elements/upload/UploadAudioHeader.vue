@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import IconSVG from '@/components/common/IconSVG.vue';
-import { FORMAT_MESSAGE } from '@/lib/constants/injection-keys.ts';
-import type { FormatMessage } from '@/lib/locale/useLocale.ts';
+import { TRANSLATE } from '@/lib/constants/injection-keys.ts';
+import type { Translate } from '@/lib/locale/useLocale.ts';
 import type { UploadNode } from '@getodk/xforms-engine';
 import Button from 'primevue/button';
 import type { HTMLInputElementEvent, Ref } from 'vue';
 import { inject, ref, watchEffect } from 'vue';
 
-const formatMessage: FormatMessage = inject(FORMAT_MESSAGE)!;
+const t: Translate = inject(TRANSLATE)!;
 
 const selectAudioInput = ref<HTMLInputElement | null>(null);
 
@@ -52,7 +52,7 @@ const emit = defineEmits(['change']);
 		@click="triggerInputField(selectAudioInput)"
 	>
 		<IconSVG name="mdiFileMusic" variant="inverted" />
-		<span>{{ formatMessage({ id: 'upload_control.choose_file.label' }) }}</span>
+		<span>{{ t('upload_control.choose_file.label') }}</span>
 	</Button>
 	<input
 		ref="selectAudioInput"

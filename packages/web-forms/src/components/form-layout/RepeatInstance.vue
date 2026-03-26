@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { FORMAT_MESSAGE } from '@/lib/constants/injection-keys.ts';
-import type { FormatMessage } from '@/lib/locale/useLocale.ts';
+import { TRANSLATE } from '@/lib/constants/injection-keys.ts';
+import type { Translate } from '@/lib/locale/useLocale.ts';
 import type { GeneralChildNode, GroupNode, RepeatInstanceNode } from '@getodk/xforms-engine';
 import { type MenuItem } from 'primevue/menuitem';
 import { computed, inject } from 'vue';
 import FormPanel from './FormPanel.vue';
 import QuestionList from './QuestionList.vue';
 
-const formatMessage: FormatMessage = inject(FORMAT_MESSAGE)!;
+const t: Translate = inject(TRANSLATE)!;
 const props = defineProps<{ instance: RepeatInstanceNode; instanceIndex: number }>();
 
 const isGroup = (child: GeneralChildNode | undefined) => {
@@ -31,7 +31,7 @@ const label = computed(() => {
 		return { formatted: parentLabel.formatted };
 	}
 
-	return { literal: formatMessage({ id: 'repeat.instance.placeholder' }), };
+	return { literal: t('repeat.instance.placeholder') };
 });
 
 const children = computed(() => {
@@ -56,7 +56,7 @@ const menuItems = computed((): MenuItem[] | undefined => {
 
 	return [
 		{
-			label: formatMessage({ id: 'odk_web_forms.remove.label' }),
+			label: t('odk_web_forms.remove.label'),
 			icon: 'icon-delete',
 			command: () => {
 				return parent.removeInstances(props.instanceIndex);

@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import IconSVG from '@/components/common/IconSVG.vue';
 import MarkdownBlock from '@/components/common/MarkdownBlock.vue';
-import { FORMAT_MESSAGE } from '@/lib/constants/injection-keys.ts';
-import type { FormatMessage } from '@/lib/locale/useLocale.ts';
+import { TRANSLATE } from '@/lib/constants/injection-keys.ts';
+import type { Translate } from '@/lib/locale/useLocale.ts';
 import type { RepeatRangeNode } from '@getodk/xforms-engine';
 import Button from 'primevue/button';
 import { computed, inject } from 'vue';
 import RepeatInstance from './RepeatInstance.vue';
 
-const formatMessage: FormatMessage = inject(FORMAT_MESSAGE)!;
+const t: Translate = inject(TRANSLATE)!;
 const props = defineProps<{ node: RepeatRangeNode }>();
 const label = computed(() => props.node.currentState.label?.formatted);
 </script>
@@ -30,7 +30,7 @@ const label = computed(() => props.node.currentState.label?.formatted);
 	>
 		<IconSVG name="mdiPlus" />
 		<span>
-			{{ formatMessage({ id: 'repeat.add.label' }) }}
+			{{ t('repeat.add.label') }}
 			<MarkdownBlock v-for="elem in label" :key="elem.id" :elem="elem" />
 		</span>
 	</Button>

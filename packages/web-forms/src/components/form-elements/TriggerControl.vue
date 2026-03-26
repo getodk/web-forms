@@ -1,12 +1,12 @@
 <script lang="ts" setup>
-import { FORMAT_MESSAGE } from '@/lib/constants/injection-keys.ts';
-import type { FormatMessage } from '@/lib/locale/useLocale.ts';
+import { TRANSLATE } from '@/lib/constants/injection-keys.ts';
+import type { Translate } from '@/lib/locale/useLocale.ts';
 import type { TriggerNode } from '@getodk/xforms-engine';
 import Checkbox from 'primevue/checkbox';
 import { inject } from 'vue';
 import ControlText from './ControlText.vue';
 
-const formatMessage: FormatMessage = inject(FORMAT_MESSAGE)!;
+const t: Translate = inject(TRANSLATE)!;
 const props = defineProps<{ question: TriggerNode; style?: string }>();
 defineEmits(['update:modelValue', 'change']);
 
@@ -38,7 +38,7 @@ const setValue = (value: boolean) => {
 				@change="$emit('change')"
 			/>
 			<span class="label-text">
-				{{ formatMessage({ id: 'trigger_control.okay.label' }) }}
+				{{ t('trigger_control.okay.label') }}
 			</span>
 		</label>
 	</p>

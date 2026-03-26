@@ -5,7 +5,7 @@ import FormHeader from '@/components/form-layout/FormHeader.vue';
 import QuestionList from '@/components/form-layout/QuestionList.vue';
 import { waitAllTasksToFinish } from '@/lib/async/event-loop.ts';
 import {
-	FORMAT_MESSAGE,
+	TRANSLATE,
 	FORM_MEDIA_CACHE,
 	FORM_OPTIONS,
 	IS_FORM_EDIT_MODE,
@@ -178,9 +178,7 @@ const getLocation = async (): Promise<string> => {
 	} catch (error) {
 		// eslint-disable-next-line no-console -- Skip silently to match Collect behaviour.
 		console.warn('Error occurred while retrieving background location.', error);
-		geolocationErrorMessage.value = formatMessage({
-			id: 'odk_web_forms.geolocation.error',
-		});
+		geolocationErrorMessage.value = t('odk_web_forms.geolocation.error');
 	}
 
 	floatingErrorActive.value = !!geolocationErrorMessage.value.length;
@@ -203,8 +201,8 @@ const showValidationError = ref(false);
 const geolocationErrorMessage = ref<string | null>(null);
 const isFormEditMode = ref(false);
 provide(IS_FORM_EDIT_MODE, readonly(isFormEditMode));
-const { setLanguage, formatMessage } = useLocale(computed(() => state.value.root));
-provide(FORMAT_MESSAGE, formatMessage);
+const { setLanguage, t } = useLocale(computed(() => state.value.root));
+provide(TRANSLATE, t);
 
 watch(
 	() => state.value,
@@ -254,10 +252,7 @@ provide(SUBMIT_PRESSED, submitPressed);
 const validationErrorMessage = computed(() => {
 	const violationLength = state.value.root?.validationState.violations.length ?? 0;
 	if (violationLength === 0) return '';
-	return formatMessage(
-		{ id: 'odk_web_forms.validation.error' },
-		{ count: violationLength }
-	);
+	return t('odk_web_forms.validation.error', { count: violationLength });
 });
 
 watchEffect(() => {
@@ -335,7 +330,7 @@ onUnmounted(() => {
 			</Card>
 
 			<div class="footer flex justify-content-end flex-wrap gap-3">
-				<Button :label="formatMessage({ id: 'odk_web_forms.submit.label' })" @click="handleSubmit(state)" />
+				<Button :label="t('odk_web_forms.submit.label')" @click="handleSubmit(state)" />
 			</div>
 		</div>
 

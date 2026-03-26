@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { FORM_MEDIA_CACHE, FORM_OPTIONS, FORMAT_MESSAGE } from '@/lib/constants/injection-keys.ts';
+import { FORM_MEDIA_CACHE, FORM_OPTIONS, TRANSLATE } from '@/lib/constants/injection-keys.ts';
 import type { FormOptions } from '@/lib/init/load-form-state.ts';
-import type { FormatMessage } from '@/lib/locale/useLocale.ts';
+import type { Translate } from '@/lib/locale/useLocale.ts';
 import type {
 	JRResourceURL,
 	JRResourceURLString,
@@ -18,7 +18,7 @@ const props = defineProps<{
 	readonly variant?: 'fit-content' | 'full-width' | 'small-fixed';
 }>();
 
-const formatMessage: FormatMessage = inject(FORMAT_MESSAGE)!;
+const t: Translate = inject(TRANSLATE)!;
 const formOptions = inject<FormOptions>(FORM_OPTIONS);
 const mediaCache = inject<Map<JRResourceURLString, ObjectURL>>(FORM_MEDIA_CACHE, new Map());
 const loading = ref<boolean>(true);
@@ -34,7 +34,7 @@ const brokenFileSrc = computed(() => {
 
 const loadMedia = async (src?: JRResourceURL): Promise<void> => {
 	if (src?.href == null || formOptions?.fetchFormAttachment == null) {
-		handleError(formatMessage({ id: 'media_block.fetch.error' }));
+		handleError(t('media_block.fetch.error'));
 		return;
 	}
 
@@ -47,7 +47,7 @@ const loadMedia = async (src?: JRResourceURL): Promise<void> => {
 
 		const response = await formOptions.fetchFormAttachment(src);
 		if (!response.ok || response.status !== 200) {
-			handleError(formatMessage({ id: 'media_block.not_found.error' }, { file: src.href } ));
+			handleError(t('media_block.not_found.error', { file: src.href }));
 			return;
 		}
 
@@ -56,7 +56,7 @@ const loadMedia = async (src?: JRResourceURL): Promise<void> => {
 		mediaCache.set(src.href, url);
 		setMedia(url);
 	} catch {
-		handleError(formatMessage({ id: 'media_block.unknown.error' }, { file: src.href }));
+		handleError(t('media_block.unknown.error', { file: src.href }));
 	}
 };
 

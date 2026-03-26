@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import IconSVG from '@/components/common/IconSVG.vue';
-import { FORMAT_MESSAGE } from '@/lib/constants/injection-keys.ts';
-import type { FormatMessage } from '@/lib/locale/useLocale.ts';
+import { TRANSLATE } from '@/lib/constants/injection-keys.ts';
+import type { Translate } from '@/lib/locale/useLocale.ts';
 import Dialog from 'primevue/dialog';
 import { inject } from 'vue';
 
@@ -16,7 +16,7 @@ defineProps<{
 
 const emit = defineEmits(['update:visible']);
 
-const formatMessage: FormatMessage = inject(FORMAT_MESSAGE)!;
+const t: Translate = inject(TRANSLATE)!;
 </script>
 
 <template>
@@ -28,7 +28,7 @@ const formatMessage: FormatMessage = inject(FORMAT_MESSAGE)!;
 		@update:visible="emit('update:visible', $event)"
 	>
 		<template #header>
-			<strong>{{ formatMessage({ id: 'map_info_dialog.header.title' }) }}</strong>
+			<strong>{{ t('map_info_dialog.header.title') }}</strong>
 		</template>
 
 		<template #default>

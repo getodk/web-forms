@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { FORMAT_MESSAGE } from '@/lib/constants/injection-keys.ts';
-import type { FormatMessage } from '@/lib/locale/useLocale.ts';
+import { TRANSLATE } from '@/lib/constants/injection-keys.ts';
+import type { Translate } from '@/lib/locale/useLocale.ts';
 import Dialog from 'primevue/dialog';
 import Message from 'primevue/message';
 import { computed, inject } from 'vue';
@@ -11,7 +11,7 @@ interface FormLoadErrorProps {
 }
 
 const props = defineProps<FormLoadErrorProps>();
-const formatMessage: FormatMessage = inject(FORMAT_MESSAGE)!;
+const t: Translate = inject(TRANSLATE)!;
 
 interface FormLoadErrorDetail {
 	readonly stack: string | null;
@@ -36,7 +36,7 @@ const detail = computed((): FormLoadErrorDetail | null => {
 	<Dialog
 		class="form-load-failure-dialog"
 		:visible="detail != null"
-		:header="formatMessage({ id: 'form_load_failure_dialog.header.title' })"
+		:header="t('form_load_failure_dialog.header.title')"
 		:closable="false"
 		:draggable="false"
 		:keep-in-viewport="true"
@@ -47,7 +47,7 @@ const detail = computed((): FormLoadErrorDetail | null => {
 			</Message>
 
 			<details v-if="detail != null" class="initialize-form-failure-details">
-				<summary>{{ formatMessage({ id: 'form_load_failure_dialog.details.label' }) }}</summary>
+				<summary>{{ t('form_load_failure_dialog.details.label') }}</summary>
 
 				<pre v-if="detail.unknownCauseDetail != null">{{ detail.unknownCauseDetail }}</pre>
 
