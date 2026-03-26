@@ -8,6 +8,7 @@ import type {
 import { reactive } from 'vue';
 
 const DEVICE_ID_KEY = 'odk-deviceid';
+const DEVICE_ID_PREFIX = 'wf';
 const DEVICE_ID_LENGTH = 16;
 const ALPHABET = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 
@@ -58,8 +59,7 @@ const getDeviceId = () => {
 	if (id) {
 		return id;
 	}
-	const random = getRandomId();
-	const deviceId = `wf:${random}`;
+	const deviceId = `${DEVICE_ID_PREFIX}:${getRandomId()}`;
 	localStorage.setItem(DEVICE_ID_KEY, deviceId);
 	return deviceId;
 };
