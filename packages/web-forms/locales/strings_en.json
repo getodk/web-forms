@@ -19,6 +19,22 @@
     "string": "Location unavailable. Enable GPS and browser permissions, then restart the form to try again.",
     "developer_comment": "Error message shown when background geolocation fails."
   },
+  "odk_web_forms.delete.label": {
+    "string": "Delete",
+    "developer_comment": "Generic label for a delete action button."
+  },
+  "odk_web_forms.cancel.label": {
+    "string": "Cancel",
+    "developer_comment": "Generic label for a cancel action button."
+  },
+  "odk_web_forms.remove.label": {
+    "string": "Remove",
+    "developer_comment": "Generic label for a remove action button."
+  },
+  "odk_web_forms.save.label": {
+    "string": "Save",
+    "developer_comment": "Generic label for a save action button."
+  },
   "geolocation_formatted_value.accuracy.label": {
     "string": "Accuracy: {accuracy} m,",
     "developer_comment": "Displays the GPS accuracy in metres. {accuracy} is the numeric accuracy value."
@@ -86,10 +102,6 @@
   "map_confirm_dialog.delete_trace.body": {
     "string": "Are you sure you want to delete this entire trace and start over?",
     "developer_comment": "Body text of the confirmation dialog shown before deleting a trace."
-  },
-  "map_confirm_dialog.delete.label": {
-    "string": "Delete",
-    "developer_comment": "Label for the button that confirms deletion of a shape or trace."
   },
   "map_advanced_panel.longitude.label": {
     "string": "Longitude",
@@ -199,10 +211,6 @@
     "string": "Capturing location...",
     "developer_comment": "Status bar message shown while the device is actively capturing a GPS location."
   },
-  "map_status_bar.remove.label": {
-    "string": "Remove",
-    "developer_comment": "Short label for the remove button shown on small screens in the map status bar."
-  },
   "map_status_bar.remove_point.label": {
     "string": "Remove point",
     "developer_comment": "Full label for the remove button shown on larger screens in the map status bar."
@@ -250,10 +258,6 @@
   "map_update_coords_dialog.upload_file.action": {
     "string": "Upload file",
     "developer_comment": "Label for the button that opens the file chooser to upload a GeoJSON file."
-  },
-  "map_update_coords_dialog.save.label": {
-    "string": "Save",
-    "developer_comment": "Label for the button that confirms and saves the imported coordinates."
   },
   "map_update_coords_dialog.file_empty.error": {
     "string": "File is empty.",
@@ -335,10 +339,6 @@
     "string": "Previous saved location at {accuracy} m",
     "developer_comment": "Shows the accuracy of the previously saved location in metres. {accuracy} is the numeric accuracy value."
   },
-  "geolocation_dialog.cancel.label": {
-    "string": "Cancel",
-    "developer_comment": "Label for the button to cancel the location capture dialog without saving."
-  },
   "geolocation_dialog.save.label": {
     "string": "Save location",
     "developer_comment": "Label for the button to save the currently captured GPS location."
@@ -353,27 +353,59 @@
   },
   "geopoint_accuracy.poor.label": {
     "string": "Poor accuracy",
-    "developer_comment": "Label shown when the GPS accuracy exceeds the unacceptable threshold."
+    "developer_comment": "Label shown when the GPS accuracy does not meet the acceptable threshold."
   },
   "geopoint_accuracy.unknown.label": {
     "string": "Unknown accuracy",
     "developer_comment": "Label shown when no GPS accuracy value is available yet."
   },
-  "upload_image.take_picture.label": {
+  "upload_image_header.take_picture.label": {
     "string": "Take picture",
     "developer_comment": "Label for the button to take a picture using the device's camera."
   },
-  "upload_image.choose.label": {
+  "upload_image_header.choose_image.label": {
     "string": "Choose image",
     "developer_comment": "Label for the button to choose an image from the device's gallery or file system."
+  },
+  "upload_control.choose_file.label": {
+    "string": "Choose file",
+    "developer_comment": "Label for the button to choose a file from the device. Used in the audio, video, and generic file upload headers."
+  },
+  "upload_control.drag_and_drop.placeholder": {
+    "string": "Drag and drop files here to upload",
+    "developer_comment": "Placeholder text shown in the upload area when no file has been selected."
+  },
+  "upload_control.file_too_large.error": {
+    "string": "Selected file size exceeds the maximum allowed",
+    "developer_comment": "Error message shown when the selected file exceeds the maximum allowed size."
+  },
+  "upload_control.must_be_image.error": {
+    "string": "Selected file must be an image file",
+    "developer_comment": "Error message shown when the selected file is not an image."
+  },
+  "upload_control.must_be_video.error": {
+    "string": "Selected file must be a video file",
+    "developer_comment": "Error message shown when the selected file is not a video."
+  },
+  "upload_control.must_be_audio.error": {
+    "string": "Selected file must be an audio file",
+    "developer_comment": "Error message shown when the selected file is not an audio file."
+  },
+  "upload_control.invalid_file_type.error": {
+    "string": "Selected file does not match expected type",
+    "developer_comment": "Error message shown when the selected file does not match the expected media type."
+  },
+  "upload_delete_dialog.header.title": {
+    "string": "Delete uploaded file?",
+    "developer_comment": "Title of the confirmation dialog shown before deleting an uploaded file."
+  },
+  "upload_delete_dialog.body.message": {
+    "string": "Are you sure you want to delete this file?",
+    "developer_comment": "Body text of the confirmation dialog shown before deleting an uploaded file."
   },
   "repeat.add.label": {
     "string": "Add",
     "developer_comment": "Label for the button to add a repeat instance."
-  },
-  "repeat.remove.label": {
-    "string": "Remove",
-    "developer_comment": "Label for the button to remove a repeat instance."
   },
   "repeat.instance.placeholder": {
     "string": "Repeat Item",

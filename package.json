@@ -31,7 +31,8 @@
     "format:readme-only": "prettier -w README.md",
     "format:checkonly": "prettier -c \"**/*\" --ignore-unknown",
     "lint": "eslint . --report-unused-disable-directives --cache",
-    "feature-matrix": "node scripts/feature-matrix/render.js"
+    "feature-matrix": "node scripts/feature-matrix/render.js",
+    "translations:pull": "tx pull -a -f --mode translator"
   },
   "dependencies": {
     "@changesets/changelog-github": "^0.5.1",
@@ -74,5 +75,8 @@
   "resolutions": {
     "tree-sitter": "0.22.1",
     "@asgerf/dts-tree-sitter/tree-sitter": "0.22.1"
+  },
+  "devDependencies": {
+    "@transifex/cli": "^7.1.5"
   }
 }

@@ -51,7 +51,7 @@ An easy way to remember: **who → where → kind** (which component? which feat
 
 ## Developer comments
 
-The `developer_comment` optinal field is for translators. Explain:
+The `developer_comment` optional field is for translators. Explain:
 
 - Where the string appears in the UI
 - Any placeholders (e.g. `{count}` is the number of violations)

@@ -42,5 +42,5 @@
   "upload_delete_dialog.body.message": {
     "string": "Are you sure you want to delete this file?",
     "developer_comment": "Body text of the confirmation dialog shown before deleting an uploaded file."
-  },
+  }
 }
