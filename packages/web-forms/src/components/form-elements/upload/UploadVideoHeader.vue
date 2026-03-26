@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import IconSVG from '@/components/common/IconSVG.vue';
+import { FORMAT_MESSAGE } from '@/lib/constants/injection-keys.ts';
+import type { FormatMessage } from '@/lib/locale/useLocale.ts';
 import type { UploadNode } from '@getodk/xforms-engine';
 import Button from 'primevue/button';
 import type { HTMLInputElementEvent, Ref } from 'vue';
-import { ref, watchEffect } from 'vue';
+import { inject, ref, watchEffect } from 'vue';
+
+const formatMessage: FormatMessage = inject(FORMAT_MESSAGE)!;
 
 const selectVideoInput = ref<HTMLInputElement | null>(null);
 
@@ -48,8 +52,7 @@ const emit = defineEmits(['change']);
 		@click="triggerInputField(selectVideoInput)"
 	>
 		<IconSVG name="mdiFileVideo" variant="inverted" />
-		<!-- TODO: translations -->
-		<span>Choose file</span>
+		<span>{{ formatMessage({ id: 'upload_control.choose_file.label' }) }}</span>
 	</Button>
 	<input
 		ref="selectVideoInput"

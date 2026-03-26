@@ -1,11 +1,15 @@
 <script setup lang="ts">
+import { FORMAT_MESSAGE } from '@/lib/constants/injection-keys.ts';
+import type { FormatMessage } from '@/lib/locale/useLocale.ts';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
+import { inject } from 'vue';
 
 defineProps<{
 	visible: boolean;
 }>();
 
+const formatMessage: FormatMessage = inject(FORMAT_MESSAGE)!;
 const emit = defineEmits(['update:visible', 'deleteFile']);
 </script>
 
@@ -17,18 +21,15 @@ const emit = defineEmits(['update:visible', 'deleteFile']);
 		@update:visible="emit('update:visible', $event)"
 	>
 		<template #header>
-			<!-- TODO: translations -->
-			<strong>Delete uploaded file?</strong>
+			<strong>{{ formatMessage({ id: 'upload_delete_dialog.header.title' }) }}</strong>
 		</template>
 
 		<template #default>
-			<!-- TODO: translations -->
-			<p>Are you sure you want to delete this file?</p>
+			<p>{{ formatMessage({ id: 'upload_delete_dialog.body.message' }) }}</p>
 		</template>
 
 		<template #footer>
-			<!-- TODO: translations -->
-			<Button label="Delete" @click="emit('deleteFile')" />
+			<Button :label="formatMessage({ id: 'upload_delete_dialog.delete.label' })" @click="emit('deleteFile')" />
 		</template>
 	</Dialog>
 </template>

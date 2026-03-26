@@ -24,6 +24,23 @@
             <value>What time is your first meal?</value>
           </text>
         </translation>
+        <translation lang="French (fr)">
+          <text id="/data/dates/survey_date:label">
+            <value>Quand allez-vous remplir ce questionnaire?</value>
+          </text>
+          <text id="/data/dates/date_of_birth:label">
+            <value>Quand êtes-vous né(e) ?</value>
+          </text>
+          <text id="/data/dates/fruits_date:label">
+            <value>Quand est-ce que vous avez mangé des fruits pour la dernière fois ?</value>
+          </text>
+          <text id="/data/dates/vegetables_date:label">
+            <value>Quand est-ce que vous avez mangé des légumes pour la dernière fois ?</value>
+          </text>
+          <text id="/data/dates/time:label">
+            <value>À quelle heure prends-tu ton premier repas ?</value>
+          </text>
+        </translation>
         <translation lang="Spanish (es)" default="true()">
           <text id="/data/dates/survey_date:label">
             <value>¿Cuando está completando este formulario?</value>

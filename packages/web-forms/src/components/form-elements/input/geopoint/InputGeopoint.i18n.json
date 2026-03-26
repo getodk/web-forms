@@ -49,7 +49,7 @@
   },
   "geopoint_accuracy.poor.label": {
     "string": "Poor accuracy",
-    "developer_comment": "Label shown when the GPS accuracy exceeds the unacceptable threshold."
+    "developer_comment": "Label shown when the GPS accuracy does not meet the acceptable threshold."
   },
   "geopoint_accuracy.unknown.label": {
     "string": "Unknown accuracy",

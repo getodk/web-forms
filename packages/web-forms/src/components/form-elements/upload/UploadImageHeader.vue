@@ -83,8 +83,7 @@ const emit = defineEmits(['change']);
 			@click="triggerInputField(takePictureInput)"
 		>
 			<IconSVG name="mdiCamera" variant="inverted" />
-			<!-- TODO: translations -->
-			<span>Take picture</span>
+			<span>{{ formatMessage({ id: 'upload_image_header.take_picture.label' }) }}</span>
 		</Button>
 
 		<input
@@ -103,8 +102,7 @@ const emit = defineEmits(['change']);
 		@click="triggerInputField(selectImageInput)"
 	>
 		<IconSVG name="mdiImage" variant="inverted" />
-		<!-- TODO: translations -->
-		<span>Choose image</span>
+		<span>{{ formatMessage({ id: 'upload_image_header.choose_image.label' }) }}</span>
 	</Button>
 	<input
 		ref="selectImageInput"
