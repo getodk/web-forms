@@ -48,7 +48,7 @@ describe('RepeatRange', () => {
 
 		await component.find('.button-menu').trigger('click');
 
-		await component.find('li[aria-label="repeat.remove.label"] a').trigger('click');
+		await component.find('li[aria-label="odk_web_forms.remove.label"] a').trigger('click');
 
 		expect(component.findAllComponents(RepeatInstance).length).toBe(0);
 	});

@@ -109,7 +109,7 @@ describe('useLocale', () => {
 
 			await flushPromises();
 
-			expect(getLocale().formatMessage({ id: 'odk_web_forms.submit.label' })).toBe('Send');
+			expect(getLocale().t('odk_web_forms.submit.label')).toBe('Send');
 			expect(document.documentElement.lang).toBe('en-ZZ');
 		});
 
@@ -119,7 +119,7 @@ describe('useLocale', () => {
 
 			await flushPromises();
 
-			expect(getLocale().formatMessage({ id: 'odk_web_forms.submit.label' })).toBe('Send');
+			expect(getLocale().t('odk_web_forms.submit.label')).toBe('Send');
 		});
 	});
 
