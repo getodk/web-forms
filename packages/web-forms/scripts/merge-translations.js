@@ -74,4 +74,9 @@ const run = async () => {
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
 	void run();
+} else {
+	console.warn(
+		`[Warning] The ${fileURLToPath(import.meta.url)} was imported as a module.\n` +
+		`This script is designed to run as a standalone CLI tool.`
+	);
 }
