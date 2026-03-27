@@ -47,7 +47,7 @@ An easy way to remember: **who → where → kind** (which component? which feat
 ```
 
 3. Run `build:translations` to regenerate `locales/strings_en.json`. This also runs automatically as part of the build.
-4. Use the string in the component via `formatMessage({ id: 'my_component.some_feature.label' })`.
+4. Use the string in the component via `t('my_component.some_feature.label')`.
 
 ## Developer comments
 
