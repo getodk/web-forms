@@ -56,24 +56,19 @@ const loadMessages = async (locale: string): Promise<ICUMessage> => {
 
 const baseLanguage = (code: string): string => code.split('-')[0] ?? code;
 
-/**
- * Resolves what is available for a requested locale: exact match → base language → English.
- * Preference/priority (which locale to request in the first place) is handled upstream by resolveUILocale.
- */
-const findAvailableLocale = (locale: string, isAvailable: (l: string) => boolean): string => {
-	if (locale === FALLBACK) {
-		return FALLBACK;
+const findBestLocale = (candidates: string[], isAvailable: (l: string) => boolean): string => {
+	for (const candidate of candidates) {
+		if (isAvailable(candidate)) {
+			return candidate;
+		}
 	}
-
-	if (isAvailable(locale)) {
-		return locale;
+	// Regional language falls back to base ("en") if no exact match was found.
+	for (const candidate of candidates) {
+		const base = baseLanguage(candidate);
+		if (base !== candidate && isAvailable(base)) {
+			return base;
+		}
 	}
-
-	const base = baseLanguage(locale);
-	if (base !== locale && isAvailable(base)) {
-		return base;
-	}
-
 	return FALLBACK;
 };
 
@@ -93,10 +88,22 @@ const findFormLanguage = (languages: FormLanguage[], localeCode: string | null |
 	});
 };
 
-const resolveUILocale = (formLanguage?: FormLanguage) => {
-	return (
-		formLanguage?.locale?.baseName ?? navigator.languages?.[0] ?? navigator.language ?? FALLBACK
-	);
+/**
+ * Returns an ordered list of locale candidates for the UI (PrimeVue, messages).
+ * When a form language is provided (e.g. "en"), browser languages that share the same base are prepended
+ * so regional date formats are preferred. If no form language is given, the full browser list is used.
+ */
+const resolveUILocaleCandidates = (formLanguage?: FormLanguage): string[] => {
+	const browserLanguages = Array.from(navigator.languages ?? [navigator.language]);
+	const formLocale = formLanguage?.locale?.baseName;
+
+	if (formLocale?.length) {
+		const formBase = baseLanguage(formLocale);
+		const sameBaseLocales = browserLanguages.filter((lang) => baseLanguage(lang) === formBase);
+		return [...new Set([...sameBaseLocales, formLocale])];
+	}
+
+	return [...new Set([...browserLanguages, FALLBACK])];
 };
 
 const findBrowserFormLanguage = (languages: FormLanguage[]) => {
@@ -150,11 +157,14 @@ export const useLocale = (formRef: Ref<RootNode | null>) => {
 			return;
 		}
 
-		applyLocale(resolveUILocale(formLanguage));
+		const candidateLocales = resolveUILocaleCandidates(formLanguage);
+		const formBaseLocale = formLanguage.locale?.baseName;
+		applyLocale(candidateLocales, formBaseLocale);
 		formRef.value?.setLanguage(formLanguage);
-		if (formLanguage.locale?.baseName?.length) {
+
+		if (formBaseLocale?.length) {
 			try {
-				localStorage.setItem(STORAGE_KEY, formLanguage.locale.baseName);
+				localStorage.setItem(STORAGE_KEY, formBaseLocale);
 			} catch (error) {
 				// eslint-disable-next-line no-console
 				console.warn("Failed to save the user's locale preference to localStorage:", error);
@@ -162,11 +172,11 @@ export const useLocale = (formRef: Ref<RootNode | null>) => {
 		}
 	};
 
-	const applyLocale = (newLocale: string) => {
-		latestRequestedLocale.locale = newLocale;
-		document.documentElement.lang = newLocale;
-
-		const primeLocaleKey = findAvailableLocale(newLocale, (lang) => {
+	const applyLocale = (candidates: string[], formBaseLocale?: string) => {
+		const newContentLocale = formBaseLocale ?? FALLBACK;
+		document.documentElement.lang = newContentLocale;
+		latestRequestedLocale.locale = newContentLocale;
+		const primeLocaleKey = findBestLocale(candidates, (lang) => {
 			return Object.hasOwn(primeLocales, lang);
 		});
 		const primeLocale = primeLocales[primeLocaleKey as keyof typeof primeLocales];
@@ -174,11 +184,11 @@ export const useLocale = (formRef: Ref<RootNode | null>) => {
 			primevue.config.locale = { ...primevue.config.locale, ...primeLocale };
 		}
 
-		const messagesLocale = findAvailableLocale(newLocale, (lang) => {
+		const messagesLocale = findBestLocale(candidates, (lang) => {
 			return Object.hasOwn(availableTranslations, `/locales/strings_${lang}.json`);
 		});
 		void loadMessages(messagesLocale).then((messages) => {
-			if (latestRequestedLocale.locale === newLocale) {
+			if (latestRequestedLocale.locale === newContentLocale) {
 				currentIntl.value = createIntl({
 					locale: messagesLocale,
 					messages,
@@ -195,7 +205,7 @@ export const useLocale = (formRef: Ref<RootNode | null>) => {
 				// No form languages found (loading error or empty form).
 				// Skipping persisted locale: without form context the user can't change language,
 				// the saved preference stays untouched for the next form load.
-				applyLocale(resolveUILocale());
+				applyLocale(resolveUILocaleCandidates());
 				return;
 			}
 			const formLanguage =
