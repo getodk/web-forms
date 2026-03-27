@@ -19,6 +19,22 @@
     "string": "Ubicación no disponible. Active el GPS y los permisos del navegador, luego reinicie el formulario para intentarlo de nuevo.",
     "developer_comment": "Error message shown when background geolocation fails."
   },
+  "odk_web_forms.delete.label": {
+    "string": "Eliminar",
+    "developer_comment": "Generic label for a delete action button."
+  },
+  "odk_web_forms.cancel.label": {
+    "string": "Cancelar",
+    "developer_comment": "Generic label for a cancel action button."
+  },
+  "odk_web_forms.remove.label": {
+    "string": "Quitar",
+    "developer_comment": "Generic label for a remove action button."
+  },
+  "odk_web_forms.save.label": {
+    "string": "Guardar",
+    "developer_comment": "Generic label for a save action button."
+  },
   "geolocation_formatted_value.accuracy.label": {
     "string": "Precisión: {accuracy} m,",
     "developer_comment": "Displays the GPS accuracy in metres. {accuracy} is the numeric accuracy value."
@@ -86,10 +102,6 @@
   "map_confirm_dialog.delete_trace.body": {
     "string": "¿Está seguro de que desea eliminar toda la linea y comenzar de nuevo?",
     "developer_comment": "Body text of the confirmation dialog shown before deleting a trace."
-  },
-  "map_confirm_dialog.delete.label": {
-    "string": "Eliminar",
-    "developer_comment": "Label for the button that confirms deletion of a shape or trace."
   },
   "map_advanced_panel.longitude.label": {
     "string": "Longitud",
@@ -199,10 +211,6 @@
     "string": "Obteniendo ubicación...",
     "developer_comment": "Status bar message shown while the device is actively capturing a GPS location."
   },
-  "map_status_bar.remove.label": {
-    "string": "Eliminar",
-    "developer_comment": "Short label for the remove button shown on small screens in the map status bar."
-  },
   "map_status_bar.remove_point.label": {
     "string": "Eliminar punto",
     "developer_comment": "Full label for the remove button shown on larger screens in the map status bar."
@@ -250,10 +258,6 @@
   "map_update_coords_dialog.upload_file.action": {
     "string": "Subir archivo",
     "developer_comment": "Label for the button that opens the file chooser to upload a GeoJSON file."
-  },
-  "map_update_coords_dialog.save.label": {
-    "string": "Guardar",
-    "developer_comment": "Label for the button that confirms and saves the imported coordinates."
   },
   "map_update_coords_dialog.file_empty.error": {
     "string": "El archivo está vacío.",
@@ -335,10 +339,6 @@
     "string": "Ubicación anterior guardada a los {accuracy} m",
     "developer_comment": "Shows the accuracy of the previously saved location in metres. {accuracy} is the numeric accuracy value."
   },
-  "geolocation_dialog.cancel.label": {
-    "string": "Cancelar",
-    "developer_comment": "Label for the button to cancel the location capture dialog without saving."
-  },
   "geolocation_dialog.save.label": {
     "string": "Guardar ubicación",
     "developer_comment": "Label for the button to save the currently captured GPS location."
@@ -353,27 +353,59 @@
   },
   "geopoint_accuracy.poor.label": {
     "string": "Precisión deficiente",
-    "developer_comment": "Label shown when the GPS accuracy exceeds the unacceptable threshold."
+    "developer_comment": "Label shown when the GPS accuracy does not meet the acceptable threshold."
   },
   "geopoint_accuracy.unknown.label": {
     "string": "Precisión desconocida",
     "developer_comment": "Label shown when no GPS accuracy value is available yet."
   },
-  "upload_image.take_picture.label": {
-    "string": "Tomar foto",
+  "upload_image_header.take_picture.label": {
+    "string": "Tomar una foto",
     "developer_comment": "Label for the button to take a picture using the device's camera."
   },
-  "upload_image.choose.label": {
+  "upload_image_header.choose_image.label": {
     "string": "Seleccionar imagen",
     "developer_comment": "Label for the button to choose an image from the device's gallery or file system."
+  },
+  "upload_control.choose_file.label": {
+    "string": "Seleccionar archivo",
+    "developer_comment": "Label for the button to choose a file from the device. Used in the audio, video, and generic file upload headers."
+  },
+  "upload_control.drag_and_drop.placeholder": {
+    "string": "Arrastre y suelte los archivos aquí para cargarlos",
+    "developer_comment": "Placeholder text shown in the upload area when no file has been selected."
+  },
+  "upload_control.file_too_large.error": {
+    "string": "El tamaño del archivo seleccionado excede el máximo permitido",
+    "developer_comment": "Error message shown when the selected file exceeds the maximum allowed size."
+  },
+  "upload_control.must_be_image.error": {
+    "string": "El archivo seleccionado debe ser una imagen",
+    "developer_comment": "Error message shown when the selected file is not an image."
+  },
+  "upload_control.must_be_video.error": {
+    "string": "El archivo seleccionado debe ser un video",
+    "developer_comment": "Error message shown when the selected file is not a video."
+  },
+  "upload_control.must_be_audio.error": {
+    "string": "El archivo seleccionado debe ser un audio",
+    "developer_comment": "Error message shown when the selected file is not an audio file."
+  },
+  "upload_control.invalid_file_type.error": {
+    "string": "El tipo de archivo no es válido",
+    "developer_comment": "Error message shown when the selected file does not match the expected media type."
+  },
+  "upload_delete_dialog.header.title": {
+    "string": "¿Eliminar el archivo cargado?",
+    "developer_comment": "Title of the confirmation dialog shown before deleting an uploaded file."
+  },
+  "upload_delete_dialog.body.message": {
+    "string": "¿Está seguro de que desea eliminar este archivo?",
+    "developer_comment": "Body text of the confirmation dialog shown before deleting an uploaded file."
   },
   "repeat.add.label": {
     "string": "Agregar",
     "developer_comment": "Label for the button to add a repeat instance."
-  },
-  "repeat.remove.label": {
-    "string": "Eliminar",
-    "developer_comment": "Label for the button to remove a repeat instance."
   },
   "repeat.instance.placeholder": {
     "string": "Elemento",
