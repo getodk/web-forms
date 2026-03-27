@@ -1,5 +1,6 @@
 import { UnreachableError } from '@getodk/common/lib/error/UnreachableError.ts';
 import { bestFitDecreasing } from 'bin-packer';
+import { AES, enc, mode, pad } from 'crypto-js'; // TODO clean up, only pull in what's needed
 import { INSTANCE_FILE_NAME, INSTANCE_FILE_TYPE } from '../../../client/constants.ts';
 import type { InstanceData as ClientInstanceData } from '../../../client/serialization/InstanceData.ts';
 import type { InstanceFile as ClientInstanceFile } from '../../../client/serialization/InstanceFile.ts';
@@ -15,7 +16,6 @@ import { ErrorProductionDesignPendingError } from '../../../error/ErrorProductio
 import type { InstanceAttachmentsState } from '../../../instance/attachments/InstanceAttachmentsState.ts';
 import type { ClientReactiveSerializableInstance } from '../../../instance/internal-api/serialization/ClientReactiveSerializableInstance.ts';
 import { SubmissionManifestDefinition } from '../../../parse/model/SubmissionManifestDefinition.ts';
-
 const SYMMETRIC_ALGORITHM = 'AES-CFB'; // JAVA: "AES/CFB/PKCS5Padding"
 const ASYMMETRIC_ALGORITHM = 'RSA-OAEP'; // JAVA: "RSA/NONE/OAEPWithSHA256AndMGF1Padding"
 
@@ -44,187 +44,104 @@ class InstanceFile extends File implements ClientInstanceFile {
 }
 
 const generateSymmetricKey = () => {
-	return crypto.getRandomValues(new Uint8Array(32))
+	return crypto.getRandomValues(new Uint8Array(32)); // too long? 16 might be right?
 };
 
 
-async function encryptContent(content, symmetricKey) {
-
-  const key = await crypto.subtle.generateKey(
-    {
-      name: SYMMETRIC_ALGORITHM,
-      length: 256, // Can be 128, 192, or 256
-    },
-    true, // extractable (can be exported)
-    ["encrypt", "decrypt"] // key usages
-  );
-
-	// TODO seed this
+async function encryptContent(content:string, symmetricKey:string) {
+	// const key = enc.Utf8.parse(symmetricKey);
+	// var key = enc.Hex.parse("000102030405060708090a0b0c0d0e0f");
 	const iv = crypto.getRandomValues(new Uint8Array(12)); // 96 bits is standard for AES-GCM
-  const ciphertextBuffer = await crypto.subtle.encrypt(
-    {
-      name: SYMMETRIC_ALGORITHM,
-      iv: iv,
-    },
-    key,
-    content
+	const iv2 = enc.Hex.parse(iv.toString());
+	const encrypted = AES.encrypt(content, symmetricKey, {
+    iv: iv2,
+    mode: mode.CFB, // test CBC in case it's magically handled by central and then we can use native crypto
+    padding: pad.Pkcs7 // should be PKCS#7
+	});
+  const encryptedBase64 = enc.Base64.stringify(
+    iv2.concat(encrypted.ciphertext)
   );
-	return ciphertextBuffer;
-	/*
-    const cipher = forge.cipher.createCipher(SYMMETRIC_ALGORITHM, symmetricKey);
-    const iv = seed.getIncrementedSeedByteString();
+	return encryptedBase64;
 
-    cipher.mode.pad = forge.cipher.modes.cbc.prototype.pad.bind(cipher.mode);
-    cipher.start({
-        iv,
-    });
+	// encrypted.ciphertext
+	// return encrypted.toString();
 
-    cipher.update(content);
-    const pass = cipher.finish();
-    const byteString = cipher.output.getBytes();
-
-    if (!pass) {
-        throw new Error('Encryption failed.');
-    }
-
-    // Write the bytes of the string to an ArrayBuffer
-    const buffer = new ArrayBuffer(byteString.length);
-    const array = new Uint8Array(buffer);
-
-    for (let i = 0; i < byteString.length; i++) {
-        array[i] = byteString.charCodeAt(i);
-    }
-
-    // Write the ArrayBuffer to a blob
-    return new Blob([array]);
-		*/
 }
 
 // prior art
 // https://github.com/enketo/enketo/blob/2aab5ce716effe038fcc66041e4f16dbb908f26d/packages/enketo-express/public/js/src/module/encryptor.js#L99
 // https://github.com/getodk/collect/blob/master/collect_app/src/main/java/org/odk/collect/android/utilities/EncryptionUtils.java
 
-const encrypt = async (encryptionKey: string, data: string) => {
-	// const array = new Uint32Array(32);
-	// crypto.getRandomValues(array);
-	// crypto.subtle.encrypt({
-  //     name: "RSA-OAEP",
-  //   }, encryptionKey, data);
+const encrypt = async (symmetricKey: Uint8Array<ArrayBuffer>, data: string) => {
+
 
 	try {
-		// const pem = `-----BEGIN PUBLIC KEY-----${encryptionKey}-----END PUBLIC KEY-----`;
-    // const algorithm = { name: "RSA-OAEP" };
-    /*const symmetricKey = await crypto.subtle.generateKey(
-      {
-        name: "RSA-OAEP",
-        modulusLength: 2048,
-        publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
-        hash: "SHA-256"
-      },
-      true,
-      ["encrypt", "decrypt"] // TODO encrypt only?
-		);*/
-		// const buff  = new TextEncoder().encode(encryptionKey);
-		// const buff = new TextEncoder().encode(atob(encryptionKey));
-
-		// const buff = pemToArrayBuffer(encryptionKey);
-
-		const binaryDer = atob(encryptionKey);
-		const buff = new Uint8Array(binaryDer.length);
-		for (let i = 0; i < binaryDer.length; i++) {
-			buff[i] = binaryDer.charCodeAt(i);
-		}
-		const encodedMessage = new TextEncoder().encode(data);
-
-	const publicKey = await crypto.subtle.importKey(
-    "spki",             // The format of the key to be imported (SubjectPublicKeyInfo)
-    buff,               // The public key data
-    {
-      name: ASYMMETRIC_ALGORITHM, // The algorithm the imported key will be used with
-      hash: "SHA-256",  // The hash function to be used with the algorithm
-    },
-    true,               // Whether the key is extractable
-    ["encrypt"]         // The intended use for the key (encryption in this case)
-  );
-		
-		// const key = await crypto.subtle.importKey(
-		// 	'pkcs8',
-		// 	Buffer.from(pem),
-		// 	algorithm,
-		// 	false,
-		// 	['encrypt', 'decrypt']
-		// );
-		
-		const symmetricKey = generateSymmetricKey();
-		
-		const base64EncryptedSymmetricKey = await crypto.subtle.encrypt(
-			{
-				name: ASYMMETRIC_ALGORITHM,
-			},
-			publicKey,
-			symmetricKey
-		);
-
     const submissionXmlEnc = await encryptContent(
-        encodedMessage,
-        symmetricKey,
+        data,
+        symmetricKey.toString(),
     );
 
 
-    // const encrypted = publicKey.encrypt(
-    //     symmetricKey,
-    //     ASYMMETRIC_ALGORITHM,
-    //     ASYMMETRIC_OPTIONS
-    // );
-
-    // const base64EncryptedSymmetricKey = forge.util.encode64(encrypted);
-
-    // const base64EncryptedSymmetricKey = _rsaEncrypt(
-    //     symmetricKey,
-    //     publicKey
-    // );
-
-    // const keyPair = await crypto.subtle.generateKey(
-    //   {
-    //     name: "RSA-OAEP",
-    //     modulusLength: 2048,
-    //     publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
-    //     hash: "SHA-256"
-    //   },
-    //   true,
-    //   ["encrypt", "decrypt"]
-    // );
-    // const iv = crypto.getRandomValues(new Uint8Array(12)); // Generate 12-byte IV
-    // // Encrypt the message using AES-GCM
-    // const encryptedMessage = await crypto.subtle.encrypt(
-    //   { name: "AES-GCM", iv },
-    //   symmetricKey.publicKey,
-    //   encodedMessage
-    // );
-    // // Export and encrypt the symmetric key
-    // const symmetricKeyBytes = await crypto.subtle.exportKey("raw", symmetricKey.publicKey);
-    // const encryptedSymmetricKey = await crypto.subtle.encrypt(
-    //   { name: "RSA-OAEP" },
-    //   key,
-    //   symmetricKeyBytes
-    // );
-
-		console.log({ base64EncryptedSymmetricKey, symmetricKey, submissionXmlEnc });
+		console.log({ symmetricKey, submissionXmlEnc });
+		return submissionXmlEnc;
 	} catch(e) {
 		console.log(e);
+		throw e;
 	}
 }
+
+// Equivalent to "RSA/NONE/OAEPWithSHA256AndMGF1Padding"
+const rsaEncrypt = async (symmetricKey:Uint8Array<ArrayBuffer>, publicKey:CryptoKey) => {
+
+	const encrypted = await crypto.subtle.encrypt(
+		{
+			name: ASYMMETRIC_ALGORITHM,
+		},
+		publicKey,
+		symmetricKey
+	);
+	return btoa(String.fromCharCode(...new Uint8Array(encrypted)));
+	// const decoder = new TextDecoder('utf-8');
+	// return decoder.decode(encrypted);
+}
+
+const generatePublicKey = async (encryptionKey: string) => {
+	const binaryDer = atob(encryptionKey);
+	const buff = new Uint8Array(binaryDer.length);
+	for (let i = 0; i < binaryDer.length; i++) {
+		buff[i] = binaryDer.charCodeAt(i);
+	}
+	return await crypto.subtle.importKey(
+		"spki",             // The format of the key to be imported (SubjectPublicKeyInfo)
+		buff,               // The public key data
+		{
+			name: ASYMMETRIC_ALGORITHM, // The algorithm the imported key will be used with
+			hash: "SHA-256",  // The hash function to be used with the algorithm
+		},
+		true,               // Whether the key is extractable
+		["encrypt"]         // The intended use for the key (encryption in this case)
+	);
+};
 
 const collectInstanceFiles = async (instanceRoot: ClientReactiveSerializableInstance, submissionMeta: SubmissionMeta) => {
 
 	if (submissionMeta.encryptionKey) {
-		await encrypt(submissionMeta.encryptionKey, instanceRoot.instanceState.instanceXML);
-		const payload = new File([instanceRoot.instanceState.instanceXML], 'submission.xml.enc');
-		const attachments = collectInstanceAttachmentFiles(instanceRoot.attachments);
-		const manifest = new SubmissionManifestDefinition(instanceRoot, submissionMeta, attachments);
-		const instanceFile = new InstanceFile(manifest.serialize());
-		// TODO need to encrypt payload and all the attachments
-		return { instanceFile, attachments: [ payload, ...attachments ] };
+		try {
+			const symmetricKey = generateSymmetricKey();
+			const publicKey = await generatePublicKey(submissionMeta.encryptionKey);
+			const base64EncryptedSymmetricKey = await rsaEncrypt(symmetricKey, publicKey);
+			const encrypted = await encrypt(symmetricKey, instanceRoot.instanceState.instanceXML);
+			const payload = new File([encrypted], 'submission.xml.enc');
+			const attachments = collectInstanceAttachmentFiles(instanceRoot.attachments);
+			const manifest = new SubmissionManifestDefinition(instanceRoot, base64EncryptedSymmetricKey, attachments);
+			const instanceFile = new InstanceFile(manifest.serialize());
+			// TODO need to encrypt payload and all the attachments
+			return { instanceFile, attachments: [ payload, ...attachments ] };
+		} catch(e) {
+			console.log(e);
+			throw e;
+		}
+
 	} else {
 		const instanceFile = new InstanceFile(instanceRoot.instanceState.instanceXML);
 		const attachments = collectInstanceAttachmentFiles(instanceRoot.attachments);
