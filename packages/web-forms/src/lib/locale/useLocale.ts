@@ -100,10 +100,16 @@ const resolveUILocaleCandidates = (formLanguage?: FormLanguage): string[] => {
 	if (formLocale?.length) {
 		const formBase = baseLanguage(formLocale);
 		const sameBaseLocales = browserLanguages.filter((lang) => baseLanguage(lang) === formBase);
-		return [...new Set([...sameBaseLocales, formLocale])];
+		if (!sameBaseLocales.includes(formLocale)) {
+			sameBaseLocales.push(formLocale);
+		}
+		return sameBaseLocales;
 	}
 
-	return [...new Set([...browserLanguages, FALLBACK])];
+	if (!browserLanguages.includes(FALLBACK)) {
+		browserLanguages.push(FALLBACK);
+	}
+	return browserLanguages;
 };
 
 const findBrowserFormLanguage = (languages: FormLanguage[]) => {
