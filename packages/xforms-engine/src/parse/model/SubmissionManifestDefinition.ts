@@ -50,6 +50,7 @@ export class SubmissionManifestDefinition {
 		}
 
 		/*
+		TODO optional but wanted - do this later
 		const el3 = document.createElementNS(ODK_SUBMISSIONS_NAMESPACE_URI, 'base64EncryptedElementSignature');
 		el3.textContent = 'something';
 		manifest.appendChild(el3);
