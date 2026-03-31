@@ -18,6 +18,12 @@ interface BaseFormLanguage {
 	// similar functionality, but we'll want to seriously consider how best to
 	// accomplish this if/as it becomes a priority.
 	readonly locale?: Intl.Locale | undefined;
+
+	/**
+	 * Indicates the language explicitly designated as default by the form designer via
+	 * the `default` attribute on an `<translation>` element.
+	 */
+	readonly isDefault: boolean;
 }
 
 /**

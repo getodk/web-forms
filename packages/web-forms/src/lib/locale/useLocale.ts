@@ -112,6 +112,10 @@ const resolveUILocaleCandidates = (formLanguage?: FormLanguage): string[] => {
 	return browserLanguages;
 };
 
+const findDefaultFormLanguage = (languages: FormLanguage[]) => {
+	return languages.find((lang) => lang.isDefault);
+};
+
 const findBrowserFormLanguage = (languages: FormLanguage[]) => {
 	const browserLanguages = navigator.languages ?? [navigator.language];
 	for (const lang of browserLanguages) {
@@ -215,7 +219,10 @@ export const useLocale = (formRef: Ref<RootNode | null>) => {
 				return;
 			}
 			const formLanguage =
-				findSavedFormLanguage(langs) ?? findBrowserFormLanguage(langs) ?? langs[0]!;
+				findSavedFormLanguage(langs) ??
+				findDefaultFormLanguage(langs) ??
+				findBrowserFormLanguage(langs) ??
+				langs[0]!;
 			setLanguage(formLanguage);
 		},
 		{ immediate: true }

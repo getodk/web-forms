@@ -57,23 +57,26 @@ export const createTranslationState = (
 ): TranslationState => {
 	const activeLanguageName = evaluator.getActiveLanguage();
 	const languageNames = evaluator.getLanguages();
+	const explicitDefaultLanguageName = evaluator.getExplicitDefaultLanguage();
 
-	let defaultLanguage: ActiveLanguage;
+	let initialActiveLanguage: ActiveLanguage;
 	let languages: FormLanguages;
 
 	if (activeLanguageName == null) {
-		defaultLanguage = { isSyntheticDefault: true, language: '' };
-		languages = [defaultLanguage];
+		initialActiveLanguage = { isSyntheticDefault: true, language: '', isDefault: false };
+		languages = [initialActiveLanguage];
 	} else {
-		const inactiveLanguages = languageNames
-			.filter((languageName) => languageName !== activeLanguageName)
-			.map((language) => ({ language, locale: extractLocale(language) }));
+		const formLanguages = languageNames.map((language) => ({
+			language,
+			locale: extractLocale(language),
+			isDefault: language === explicitDefaultLanguageName,
+		}));
 
-		defaultLanguage = { language: activeLanguageName, locale: extractLocale(activeLanguageName) };
-		languages = [defaultLanguage, ...inactiveLanguages];
+		initialActiveLanguage = formLanguages.find((l) => l.language === activeLanguageName)!;
+		languages = formLanguages as [FormLanguage, ...FormLanguage[]];
 	}
 
-	const [getActiveLanguage, baseSetActiveLanguage] = createSignal(defaultLanguage);
+	const [getActiveLanguage, baseSetActiveLanguage] = createSignal(initialActiveLanguage);
 
 	const setActiveLanguage: SimpleAtomicStateSetter<FormLanguage> = (value) => {
 		return baseSetActiveLanguage(value);

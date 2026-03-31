@@ -11,6 +11,7 @@ describe('useLocale', () => {
 	let wrappers: Array<ReturnType<typeof mount>> = [];
 
 	const makeLanguage = (language: string, localeCode: string): FormLanguage => ({
+		isDefault: false,
 		language,
 		locale: new Intl.Locale(localeCode),
 	});
