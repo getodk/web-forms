@@ -15,7 +15,11 @@ const mountComponent = async (questionNumber: number, submitPressed = false) => 
 		props: { question },
 		global: {
 			...globalMountOptions,
-			provide: { [SUBMIT_PRESSED]: ref(submitPressed), [IS_FORM_EDIT_MODE]: shallowRef(false) },
+			provide: {
+				...globalMountOptions.provide,
+				[SUBMIT_PRESSED]: ref(submitPressed),
+				[IS_FORM_EDIT_MODE]: shallowRef(false),
+			},
 		},
 		attachTo: document.body,
 	});
