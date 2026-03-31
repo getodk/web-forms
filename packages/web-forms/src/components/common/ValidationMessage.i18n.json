@@ -1,0 +1,10 @@
+{
+  "validation_message.required.error": {
+    "string": "Condition not satisfied: required",
+    "developer_comment": "Default error shown when a required field has no value and the form designer did not specify a custom message."
+  },
+  "validation_message.constraint.error": {
+    "string": "Condition not satisfied: constraint",
+    "developer_comment": "Default error shown when a field's value fails a constraint and the form designer did not specify a custom message."
+  }
+}

@@ -406,7 +406,7 @@ describe('SelectControl', () => {
 			const component = mountComponent(selectNode, true);
 
 			expect(component.get('.validation-message').isVisible()).toBe(true);
-			expect(component.get('.validation-message').text()).toBe('Condition not satisfied: required');
+			expect(component.get('.validation-message').text()).toBe('validation_message.required.error');
 		});
 	});
 });

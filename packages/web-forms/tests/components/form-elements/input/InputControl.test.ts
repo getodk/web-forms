@@ -34,7 +34,7 @@ describe('InputControl', () => {
 			await input.setValue('lorem ipsum');
 			await input.setValue('');
 			expect(component.get('.validation-message').isVisible()).toBe(true);
-			expect(component.get('.validation-message').text()).toBe('Condition not satisfied: required');
+			expect(component.get('.validation-message').text()).toBe('validation_message.required.error');
 		});
 
 		it('hides validation message when user enters a valid value', async () => {
@@ -47,7 +47,7 @@ describe('InputControl', () => {
 		it('shows validation message on submit pressed even when no interaction is made with the component', async () => {
 			const component = await mountComponent(0, true);
 			expect(component.get('.validation-message').isVisible()).toBe(true);
-			expect(component.get('.validation-message').text()).toBe('Condition not satisfied: required');
+			expect(component.get('.validation-message').text()).toBe('validation_message.required.error');
 		});
 	});
 });
