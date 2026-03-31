@@ -225,10 +225,57 @@ describe('PrimaryInstance engine representation of instance state', () => {
 			);
 
 			expect(lastObservedClientLanguage).toEqual({
-			isDefault: false,
-			language: 'Spanish',
-			locale: undefined,
+				isDefault: false,
+				language: 'Spanish',
+				locale: undefined,
+			});
 		});
+
+		it('marks the explicitly-designated default language with isDefault: true', () => {
+			// prettier-ignore
+			const xform = html(
+				head(
+					title('Form title'),
+					model(
+						t('itext',
+							t('translation lang="English"', t('text id="q1:label"', t('value', '1. Question one'))),
+							t('translation lang="Spanish" default="true()"', t('text id="q1:label"', t('value', '1. Pregunta uno')))
+						),
+						mainInstance(
+							t('data id="test-form"', t('q1'))
+						),
+						bind('/data/q1').type('string')
+					)
+				),
+				body(input('/data/first-question', label('First question')))
+			);
+
+			const xformDOM = XFormDOM.from(xform.asXml());
+			const def = new XFormDefinition(xformDOM);
+
+			const languages = reactiveTestScope(({ mutable }) => {
+				return scope.runTask(
+					() =>
+						new PrimaryInstance({
+							mode: 'create',
+							initialState: null,
+							scope,
+							model: def.model,
+							secondaryInstances: SecondaryInstancesDefinition.loadSync(xformDOM),
+							config: {
+								clientStateFactory: mutable,
+								computeAttachmentName: () => null,
+								preloadProperties: {},
+								geolocationProvider: { getLocation: () => Promise.resolve('') },
+							},
+						}).root.languages
+				);
+			});
+
+			expect(languages).toEqual([
+				{ isDefault: true, language: 'Spanish', locale: undefined },
+				{ isDefault: false, language: 'English', locale: undefined },
+			]);
 		});
 	});
 

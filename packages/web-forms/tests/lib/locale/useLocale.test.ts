@@ -10,8 +10,8 @@ describe('useLocale', () => {
 	// onUnmounted state pollution (document.documentElement.lang) across tests
 	let wrappers: Array<ReturnType<typeof mount>> = [];
 
-	const makeLanguage = (language: string, localeCode: string): FormLanguage => ({
-		isDefault: false,
+	const makeLanguage = (language: string, localeCode: string, isDefault = false): FormLanguage => ({
+		isDefault,
 		language,
 		locale: new Intl.Locale(localeCode),
 	});
@@ -49,7 +49,7 @@ describe('useLocale', () => {
 		wrappers = [];
 	});
 
-	describe('language priority order (saved > browser > first)', () => {
+	describe('language priority order (saved > designer default > browser > first)', () => {
 		it('prefers saved locale over browser language', () => {
 			localStorage.setItem(STORAGE_KEY as string, 'fr');
 			vi.spyOn(navigator, 'languages', 'get').mockReturnValue(['en']);
@@ -60,7 +60,19 @@ describe('useLocale', () => {
 			expect(document.documentElement.lang).toBe('fr');
 		});
 
-		it('uses browser language when no saved locale', () => {
+		it('prefers designer default over browser language when no saved locale', () => {
+			vi.spyOn(navigator, 'languages', 'get').mockReturnValue(['en']);
+
+			const formRef = makeFormRef([
+				makeLanguage('English', 'en'),
+				makeLanguage('French', 'fr', true),
+			]);
+			mountLocale(formRef);
+
+			expect(document.documentElement.lang).toBe('fr');
+		});
+
+		it('uses browser language when no saved locale and no designer default', () => {
 			vi.spyOn(navigator, 'languages', 'get').mockReturnValue(['jp']);
 
 			const formRef = makeFormRef([makeLanguage('English', 'en'), makeLanguage('Japanese', 'jp')]);
@@ -69,7 +81,7 @@ describe('useLocale', () => {
 			expect(document.documentElement.lang).toBe('jp');
 		});
 
-		it('falls back to first available language when no saved locale and no browser match', () => {
+		it('falls back to first available language when no saved locale, no designer default, and no browser match', () => {
 			vi.spyOn(navigator, 'languages', 'get').mockReturnValue(['de']);
 
 			const formRef = makeFormRef([makeLanguage('English', 'en'), makeLanguage('French', 'fr')]);
