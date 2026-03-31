@@ -1,7 +1,6 @@
 import { UnreachableError } from '@getodk/common/lib/error/UnreachableError.ts';
 import { bestFitDecreasing } from 'bin-packer';
 import * as CryptoJS from 'crypto-js';
-import { AES, enc, mode, pad } from 'crypto-js'; // TODO clean up, only pull in what's needed
 import { INSTANCE_FILE_NAME, INSTANCE_FILE_TYPE } from '../../../client/constants.ts';
 import type { InstanceData as ClientInstanceData } from '../../../client/serialization/InstanceData.ts';
 import type { InstanceFile as ClientInstanceFile } from '../../../client/serialization/InstanceFile.ts';
@@ -45,10 +44,28 @@ class InstanceFile extends File implements ClientInstanceFile {
 }
 
 const generateSymmetricKey = () => {
-	return crypto.getRandomValues(new Uint8Array(32)); // too long? 16 might be right?
+	return 'tÎ,2Z\x02¢à\x95\x16!íÒ|\x07ð«\x91yHRz1\x13µZï\x95³Iµ»';
+	// return crypto.getRandomValues(new Uint8Array(32)).toString();
 };
 
+async function encryptContent(content:string, symmetricKey:string, seed:any): Promise<Uint8Array<ArrayBuffer>> {
+	console.log('encrypted 7');
+	const ivString = seed.getIncrementedSeedByteString();
+	console.log('iv', ivString);
+	const key = CryptoJS.enc.Latin1.parse(symmetricKey);
+	const iv = CryptoJS.enc.Latin1.parse(ivString);
 
+	const encrypted = CryptoJS.AES.encrypt(content, key, {
+		iv: iv,
+		mode: CryptoJS.mode.CFB,
+		padding: CryptoJS.pad.Pkcs7
+	});
+
+	const uint8Array = fromWordArray(encrypted.ciphertext);
+	return uint8Array;
+}
+
+/*
 async function encryptContent(content:string, symmetricKey:Uint8Array<ArrayBuffer>, seed:any) {
 	// TODO generate a seed 
 	// const iv = crypto.getRandomValues(new Uint8Array(12)); // 96 bits is standard for AES-GCM
@@ -70,12 +87,12 @@ async function encryptContent(content:string, symmetricKey:Uint8Array<ArrayBuffe
 	// return encrypted.toString();
 
 }
-
+*/
 // prior art
 // https://github.com/enketo/enketo/blob/2aab5ce716effe038fcc66041e4f16dbb908f26d/packages/enketo-express/public/js/src/module/encryptor.js#L99
 // https://github.com/getodk/collect/blob/master/collect_app/src/main/java/org/odk/collect/android/utilities/EncryptionUtils.java
 
-const encrypt = async (symmetricKey: Uint8Array<ArrayBuffer>, data: string, seed:any) => {
+const encrypt = async (symmetricKey:string, data: string, seed:any) => {
 
 
 	try {
@@ -95,14 +112,14 @@ const encrypt = async (symmetricKey: Uint8Array<ArrayBuffer>, data: string, seed
 }
 
 // Equivalent to "RSA/NONE/OAEPWithSHA256AndMGF1Padding"
-const rsaEncrypt = async (symmetricKey:Uint8Array<ArrayBuffer>, publicKey:CryptoKey) => {
-
+const rsaEncrypt = async (symmetricKey:string, publicKey:CryptoKey) => {
+	var enc = new TextEncoder();
 	const encrypted = await crypto.subtle.encrypt(
 		{
 			name: ASYMMETRIC_ALGORITHM,
 		},
 		publicKey,
-		symmetricKey
+		enc.encode(symmetricKey)
 	);
 	return btoa(String.fromCharCode(...new Uint8Array(encrypted)));
 	// const decoder = new TextDecoder('utf-8');
@@ -136,11 +153,11 @@ function fromWordArray(wordArray: CryptoJS.lib.WordArray) {
 }
 
 // TODO type the seed!
-function createSeed(instanceId:string, symmetricKey: Uint8Array<ArrayBuffer>) {
+function createSeed(instanceId:string, symmetricKey: string) {
 	// iv is the 16-byte md5 hash of the instanceID and the symmetric key
   const md = CryptoJS.algo.MD5.create();
   md.update(instanceId)
-  md.update(CryptoJS.enc.Latin1.parse(symmetricKey.toString()));
+  md.update(CryptoJS.enc.Latin1.parse(symmetricKey));
   const ivSeedArray = fromWordArray(md.finalize());
 	let ivCounter = 0;
 
@@ -162,17 +179,23 @@ const collectInstanceFiles = async (instanceRoot: ClientReactiveSerializableInst
 			const symmetricKey = generateSymmetricKey();
 
 			// TODO share this with SubmissionManifestDefinition
-			const idAttribute = instanceRoot.root.getAttributes().find(a => a.definition.qualifiedName.localName === 'id');
-			const instanceId = idAttribute?.definition.value ?? '';
+			// const idAttribute = instanceRoot.root.getAttributes().find(a => a.definition.qualifiedName.localName === 'id');
+			// const instanceId = 'def';
+			// const instanceId = idAttribute?.definition.value ?? '';
 			 
-			const seed = createSeed(instanceId, symmetricKey);
 			const publicKey = await generatePublicKey(submissionMeta.encryptionKey);
 			const base64EncryptedSymmetricKey = await rsaEncrypt(symmetricKey, publicKey);
-			const encrypted = await encrypt(symmetricKey, instanceRoot.instanceState.instanceXML, seed);
-			const payload = new File([encrypted], 'submission.xml.enc');
 			const attachments = collectInstanceAttachmentFiles(instanceRoot.attachments);
 			const manifest = new SubmissionManifestDefinition(instanceRoot, base64EncryptedSymmetricKey, attachments);
+			const instanceId = manifest.instanceId;
+			const seed = createSeed(instanceId, symmetricKey);
+			const data = instanceRoot.instanceState.instanceXML;
+			const encrypted:Uint8Array<ArrayBuffer> = await encrypt(symmetricKey, data, seed);
+			const payload = new File([encrypted], 'submission.xml.enc', { type: 'application/octet-stream' });
 			const instanceFile = new InstanceFile(manifest.serialize());
+
+			console.log({instanceId, symmetricKey});
+
 			// TODO need to encrypt payload and all the attachments
 			return { instanceFile, attachments: [ payload, ...attachments ] };
 		} catch(e) {
@@ -329,8 +352,6 @@ const partitionInstanceData = (
 		...tail
 	] = bins.map((bin) => InstanceData.from(instanceFile, bin));
 
-	console.log('head', head);
-	console.log('tail', tail);
 	return [head, ...tail];
 };
 
