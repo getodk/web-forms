@@ -1254,7 +1254,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@getodk/scenario@workspace:packages/scenario"
   dependencies:
-    "@getodk/xforms-engine": "npm:0.21.0"
+    "@getodk/xforms-engine": "npm:0.21.1"
     "@js-joda/core": "npm:^5.6.5"
     jsdom: "npm:^27.2.0"
     npm-run-all2: "npm:^8.0.4"
@@ -1288,7 +1288,7 @@ __metadata:
     "@faker-js/faker": "npm:^10.1.0"
     "@fontsource/hanken-grotesk": "npm:^5.2.8"
     "@fontsource/roboto": "npm:^5.2.9"
-    "@getodk/xforms-engine": "npm:0.21.0"
+    "@getodk/xforms-engine": "npm:0.21.1"
     "@mdi/js": "npm:^7.4.47"
     "@playwright/test": "npm:^1.58.2"
     "@primeuix/themes": "npm:1.0.3"
@@ -1321,7 +1321,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@getodk/xforms-engine@npm:0.21.0, @getodk/xforms-engine@workspace:packages/xforms-engine":
+"@getodk/xforms-engine@npm:0.21.1, @getodk/xforms-engine@workspace:packages/xforms-engine":
   version: 0.0.0-use.local
   resolution: "@getodk/xforms-engine@workspace:packages/xforms-engine"
   dependencies:
