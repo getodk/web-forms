@@ -1,3 +1,4 @@
+import { getBlobText } from '@getodk/common/lib/web-compat/blob.ts';
 import {
 	bind,
 	body,
@@ -60,38 +61,21 @@ describe('Form submission encryption', () => {
 			encryptionKey: base64RsaPublicKey,
 		});
 
-		/*
-<data xmlns="http://opendatakit.org/submissions" id="mysurvey" encrypted="yes" version="2014083101">
-    <base64EncryptedKey>sHXUut13/res3S3uJkwgfhABOc74aXGnCTxTcRTplS9kflomxAzK35zcLc0BJu/Dro7FpPia4qU+f3yb3roJi/EUtRkTaHauAYDEX2OHZ4QThoSmbR0NJRw6kLjfkNS5bFaONWEbRn8eSbT7uyOGyvx5ddL3IKIxzu9vGzJX+cMpKKUQsORaXNEL7lRns7tVen93OSlYhSQak/CbAbkpsSpIW+Q13zrGv3n20YOHaun5yhSyZq6LeaHzPWKQv2POyl+N2j3NGbkz+RIvaVBLvTae4zB0iXlfTkYK9HwOKKDS6MI7z4g4L988WlQurkw5jlN5X9ahNhwZN2yLWTsnCQ==</base64EncryptedKey>
-    <encryptedXmlFile>submission.xml.enc</encryptedXmlFile>
-    <media>
-        <file>myimage.jpg.enc</file>
-    </media>
-    <media>
-        <file>myaudio.mp3.enc</file>
-    </media>
-    <base64EncryptedElementSignature>OU7rbZl0uFy7xv/HnSl1juVrdf2fQpzcfjwetgl+wseOx5yeD3NjoAg978GGclsy38mECEgTkMS1g8J1I/Xrn9uSQCRyaJXgPyFYPP+y24ka+vCNuNfg6SN1h8MYyUDdg7B7/M9oacMixbAtHo9qcesSBykJWJjFjBS7Nl/GnojRIc5ywLwnzKrdjjxeTjFw7kIG3LCt298WBHuj7azbi/DJYPp26Dbho47LlaRbQpi5Q4Oea71y1h7Wdbl4r7ILyRkTo86fvg6HUfWDLWSorgoFCqi1Af9qP2ziF+LLWQzDu3M8SCHX6uWdCRm/8GPaAyUpMAyfy2e8i7KPbMcVsQ==</base64EncryptedElementSignature>
-    <meta xmlns="http://openrosa.org/xforms">
-        <instanceID>uuid:5b9cf8d1-106f-4004-844f-c072d76762ed</instanceID>
-    </meta>
-</data>
-*/
-
-		const expected = t(
-			`data xmlns="http://opendatakit.org/submissions" id="encrypted" encrypted="yes"`,
-			t('base64EncryptedKey', base64RsaPublicKey),
-			t('encryptedXmlFile', 'submission.xml.enc'),
-			t('base64EncryptedElementSignature', 'something'),
-			t('meta xmlns="http://openrosa.org/xforms"', t('instanceID', DEFAULT_INSTANCE_ID))
-		).asXml();
-		await expect(submissionResult).toHavePreparedSubmissionXML(expected);
 		const entries = submissionResult.data[0].entries();
 		expect(submissionResult.data.length).to.equal(1);
-		expect(entries.next()?.value?.[0]).to.equal('xml_submission_file');
-		expect(entries.next()?.value?.[0]).to.equal('submission.xml.enc');
-	});
 
-	// TODO encrypts the payload
-	// TODO generate a new public/private pair and ensure decryption works
-	// TODO encrypts the media attachments
+		const [submissionFilename, file] = entries.next().value!;
+		expect(submissionFilename).to.equal('xml_submission_file');
+		const submission = await getBlobText(file);
+		expect(submission).to.contain(
+			'<data xmlns="http://opendatakit.org/submissions" encrypted="yes" id="encrypted">'
+		);
+		expect(submission).to.contain('<encryptedXmlFile>submission.xml.enc</encryptedXmlFile>');
+		expect(submission).to.contain(
+			'<meta xmlns="http://openrosa.org/xforms"><instanceID>uuid:TODO-mock-xpath-functions</instanceID></meta>'
+		);
+
+		const [encodedFilename] = entries.next().value!;
+		expect(encodedFilename).to.equal('submission.xml.enc');
+	});
 });
