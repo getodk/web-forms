@@ -20,7 +20,6 @@
     "packages/*"
   ],
   "scripts": {
-    "preinstall": "npx only-allow yarn",
     "test": "TZ=America/Phoenix npx turbo run test",
     "build": "turbo run build",
     "types": "turbo run types",
