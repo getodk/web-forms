@@ -44,17 +44,19 @@ class InstanceFile extends File implements ClientInstanceFile {
 }
 
 const generateSymmetricKey = () => {
-	return 'tÎ,2Z\x02¢à\x95\x16!íÒ|\x07ð«\x91yHRz1\x13µZï\x95³Iµ»';
-	// return crypto.getRandomValues(new Uint8Array(32)).toString();
+	// return 'tÎ,2Z\x02¢à\x95\x16!íÒ|\x07ð«\x91yHRz1\x13µZï\x95³Iµ»';
+	const bytes = new Uint8Array(32);
+	crypto.getRandomValues(bytes);
+	return bytes;
 };
 
-async function encryptContent(content:string, symmetricKey:string, seed:any): Promise<Uint8Array<ArrayBuffer>> {
-	console.log('encrypted 7');
+async function encryptContent(content:string, symmetricKey:Uint8Array<ArrayBuffer>, seed:any): Promise<Uint8Array<ArrayBuffer>> {
+	console.log('encrypted 8');
 	const ivString = seed.getIncrementedSeedByteString();
 	console.log('iv', ivString);
-	const key = CryptoJS.enc.Latin1.parse(symmetricKey);
+	// const key = CryptoJS.enc.Latin1.parse(symmetricKey);
 	const iv = CryptoJS.enc.Latin1.parse(ivString);
-
+  const key = CryptoJS.lib.WordArray.create(symmetricKey);
 	const encrypted = CryptoJS.AES.encrypt(content, key, {
 		iv: iv,
 		mode: CryptoJS.mode.CFB,
@@ -92,7 +94,7 @@ async function encryptContent(content:string, symmetricKey:Uint8Array<ArrayBuffe
 // https://github.com/enketo/enketo/blob/2aab5ce716effe038fcc66041e4f16dbb908f26d/packages/enketo-express/public/js/src/module/encryptor.js#L99
 // https://github.com/getodk/collect/blob/master/collect_app/src/main/java/org/odk/collect/android/utilities/EncryptionUtils.java
 
-const encrypt = async (symmetricKey:string, data: string, seed:any) => {
+const encrypt = async (symmetricKey:Uint8Array<ArrayBuffer>, data: string, seed:any) => {
 
 
 	try {
@@ -112,14 +114,13 @@ const encrypt = async (symmetricKey:string, data: string, seed:any) => {
 }
 
 // Equivalent to "RSA/NONE/OAEPWithSHA256AndMGF1Padding"
-const rsaEncrypt = async (symmetricKey:string, publicKey:CryptoKey) => {
-	var enc = new TextEncoder();
+const rsaEncrypt = async (symmetricKey:Uint8Array<ArrayBuffer>, publicKey:CryptoKey) => {
 	const encrypted = await crypto.subtle.encrypt(
 		{
 			name: ASYMMETRIC_ALGORITHM,
 		},
 		publicKey,
-		enc.encode(symmetricKey)
+		symmetricKey
 	);
 	return btoa(String.fromCharCode(...new Uint8Array(encrypted)));
 	// const decoder = new TextDecoder('utf-8');
@@ -153,11 +154,12 @@ function fromWordArray(wordArray: CryptoJS.lib.WordArray) {
 }
 
 // TODO type the seed!
-function createSeed(instanceId:string, symmetricKey: string) {
+function createSeed(instanceId:string, symmetricKey: Uint8Array<ArrayBuffer>) {
 	// iv is the 16-byte md5 hash of the instanceID and the symmetric key
+	const key = CryptoJS.lib.WordArray.create(symmetricKey);
   const md = CryptoJS.algo.MD5.create();
   md.update(instanceId)
-  md.update(CryptoJS.enc.Latin1.parse(symmetricKey));
+  md.update(key);
   const ivSeedArray = fromWordArray(md.finalize());
 	let ivCounter = 0;
 
