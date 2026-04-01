@@ -806,7 +806,6 @@ describe('Form submission', () => {
 					await expect(init).rejects.toThrow();
 				}
 			);
-
 		});
 
 		describe('for a single (monolithic) request', () => {
