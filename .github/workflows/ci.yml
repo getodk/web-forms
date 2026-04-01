@@ -50,7 +50,7 @@ jobs:
     steps:
       - uses: 'actions/checkout@v5'
 
-      - uses: 'volta-cli/action@v4'
+      - uses: 'volta-cli/action@v5'
         with:
           node-version: '${{ matrix.node-version }}'
 
@@ -90,7 +90,7 @@ jobs:
     steps:
       - uses: 'actions/checkout@v5'
 
-      - uses: 'volta-cli/action@v4'
+      - uses: 'volta-cli/action@v5'
         with:
           node-version: '${{ matrix.node-version }}'
 
@@ -141,7 +141,7 @@ jobs:
     steps:
       - uses: 'actions/checkout@v5'
 
-      - uses: 'volta-cli/action@v4'
+      - uses: 'volta-cli/action@v5'
         with:
           node-version: '${{ matrix.node-version }}'
 
@@ -200,7 +200,7 @@ jobs:
     steps:
       - uses: 'actions/checkout@v5'
 
-      - uses: 'volta-cli/action@v4'
+      - uses: 'volta-cli/action@v5'
         with:
           node-version: '${{ matrix.node-version }}'
 
@@ -259,7 +259,7 @@ jobs:
     steps:
       - uses: 'actions/checkout@v5'
 
-      - uses: 'volta-cli/action@v4'
+      - uses: 'volta-cli/action@v5'
         with:
           node-version: '${{ matrix.node-version }}'
 
@@ -318,7 +318,7 @@ jobs:
     steps:
       - uses: 'actions/checkout@v5'
 
-      - uses: 'volta-cli/action@v4'
+      - uses: 'volta-cli/action@v5'
         with:
           node-version: '${{ matrix.node-version }}'
 
@@ -366,7 +366,7 @@ jobs:
     steps:
       - uses: 'actions/checkout@v5'
 
-      - uses: 'volta-cli/action@v4'
+      - uses: 'volta-cli/action@v5'
         with:
           node-version: '${{ matrix.node-version }}'
 
@@ -415,7 +415,7 @@ jobs:
     steps:
       - uses: 'actions/checkout@v5'
 
-      - uses: 'volta-cli/action@v4'
+      - uses: 'volta-cli/action@v5'
         with:
           node-version: '${{ matrix.node-version }}'
 
