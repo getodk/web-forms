@@ -1,3 +1,4 @@
+import { getBlobData } from '@getodk/common/lib/web-compat/blob.ts';
 import * as CryptoJS from 'crypto-js';
 import type { InstanceAttachmentsState } from '../../../../instance/attachments/InstanceAttachmentsState';
 import type { ClientReactiveSerializableInstance } from '../../../../instance/internal-api/serialization/ClientReactiveSerializableInstance';
@@ -5,6 +6,8 @@ import { SubmissionManifestDefinition } from '../../../../parse/model/Submission
 import { InstanceFile } from '../prepareInstancePayload';
 
 const ASYMMETRIC_ALGORITHM = 'RSA-OAEP'; // JAVA: "RSA/NONE/OAEPWithSHA256AndMGF1Padding"
+const SUBMISSION_ATTACHMENT_NAME = 'submission.xml';
+const ENCRYPTED_SUFFIX = '.enc';
 
 class Seed {
 	readonly ivSeedArray;
@@ -18,7 +21,7 @@ class Seed {
 		const md = CryptoJS.algo.MD5.create();
 		md.update(instanceId);
 		md.update(key);
-		this.ivSeedArray = fromWordArray(md.finalize());
+		this.ivSeedArray = wordArrayFromArrayBuffer(md.finalize());
 		this.counter = 0;
 	}
 
@@ -29,7 +32,18 @@ class Seed {
 	}
 }
 
-const fromWordArray = function (wordArray: CryptoJS.lib.WordArray): Uint8Array<ArrayBuffer> {
+function arrayBufferToWordArray(ab: ArrayBuffer) {
+	const i8a = new Uint8Array(ab);
+	const a = [];
+	for (let i = 0; i < i8a.length; i += 4) {
+		a.push((i8a[i]! << 24) | (i8a[i + 1]! << 16) | (i8a[i + 2]! << 8) | i8a[i + 3]!);
+	}
+	return CryptoJS.lib.WordArray.create(a);
+}
+
+const wordArrayFromArrayBuffer = function (
+	wordArray: CryptoJS.lib.WordArray
+): Uint8Array<ArrayBuffer> {
 	const bytes = new Uint8Array(wordArray.sigBytes);
 	for (let j = 0; j < wordArray.sigBytes; j++) {
 		bytes[j] = (wordArray.words[j >>> 2]! >>> (24 - 8 * (j % 4))) & 0xff;
@@ -38,7 +52,7 @@ const fromWordArray = function (wordArray: CryptoJS.lib.WordArray): Uint8Array<A
 };
 
 const encryptContent = function (
-	content: string,
+	content: CryptoJS.lib.WordArray | string,
 	symmetricKey: Uint8Array<ArrayBuffer>,
 	seed: Seed
 ): Uint8Array<ArrayBuffer> {
@@ -50,7 +64,7 @@ const encryptContent = function (
 		mode: CryptoJS.mode.CFB,
 		padding: CryptoJS.pad.Pkcs7,
 	});
-	return fromWordArray(encrypted.ciphertext);
+	return wordArrayFromArrayBuffer(encrypted.ciphertext);
 };
 
 // Equivalent to "RSA/NONE/OAEPWithSHA256AndMGF1Padding"
@@ -100,6 +114,47 @@ const collectInstanceAttachmentFiles = (attachments: InstanceAttachmentsState): 
 	return files.filter((file) => file != null);
 };
 
+/*
+
+const generateFileSignature = (filename: string, content: string) => {
+  const hash = wordArrayFromArrayBuffer(CryptoJS.MD5(content)).toString();
+  return `${filename}::${hash}`;
+};
+
+
+const generateSignature = async (manifest: SubmissionManifestDefinition, xml: string, attachments: readonly File[], publicKey: CryptoKey) => {
+  const parts = [];
+  parts.push(manifest.formId);
+  if (manifest.formVersion) {
+    parts.push(manifest.formVersion);
+  }
+  parts.push(manifest.base64EncryptedKey);
+  parts.push(manifest.instanceId);
+
+  parts.push(generateFileSignature(SUBMISSION_ATTACHMENT_NAME, xml));
+  for (const attachment of attachments) {
+    throw new Error('unimplemented');
+    // parts.push(generateSignatureFile(attachment.name, attachment.bytes.toString())); // TODO
+  }
+  const result = parts.join('\n') + '\n';
+  const hash = wordArrayFromArrayBuffer(CryptoJS.MD5(result));
+  return await rsaEncrypt(hash, publicKey);
+};
+*/
+
+const encryptAttachment = async (
+	attachment: File,
+	symmetricKey: Uint8Array<ArrayBuffer>,
+	seed: Seed
+): Promise<File> => {
+	const content = await getBlobData(attachment);
+	const wa = arrayBufferToWordArray(content);
+	const encrypted = encryptContent(wa, symmetricKey, seed);
+	return new File([encrypted], attachment.name + ENCRYPTED_SUFFIX, {
+		type: 'application/octet-stream',
+	});
+};
+
 export const encryptInstanceFiles = async (
 	instanceRoot: ClientReactiveSerializableInstance,
 	encryptionKey: string
@@ -108,18 +163,31 @@ export const encryptInstanceFiles = async (
 	const publicKey = await generatePublicKey(encryptionKey);
 	const base64EncryptedSymmetricKey = await rsaEncrypt(symmetricKey, publicKey);
 	const attachments = collectInstanceAttachmentFiles(instanceRoot.attachments);
+
+	const data = instanceRoot.instanceState.instanceXML;
+	// TODO figure out a way to get all the properties I need without constructing an object!
 	const manifest = new SubmissionManifestDefinition(
 		instanceRoot,
 		base64EncryptedSymmetricKey,
 		attachments
 	);
+	// TODO this is never checked by central, so I suggest we don't bother implementing it. I can't test it's working anyway!
+	// manifest.signature = await generateSignature(manifest, data, attachments, publicKey);
+
 	const instanceId = manifest.instanceId;
 	const seed = new Seed(instanceId, symmetricKey);
-	const data = instanceRoot.instanceState.instanceXML;
+	const encryptedAttachments: File[] = [];
+	for (const attachment of attachments) {
+		const encrypted = await encryptAttachment(attachment, symmetricKey, seed);
+		encryptedAttachments.push(encrypted);
+	}
 	const encrypted: Uint8Array<ArrayBuffer> = encryptContent(data, symmetricKey, seed);
-	const payload = new File([encrypted], 'submission.xml.enc', { type: 'application/octet-stream' });
+	const submissionFile = new File([encrypted], SUBMISSION_ATTACHMENT_NAME + ENCRYPTED_SUFFIX, {
+		type: 'application/octet-stream',
+	});
+	encryptedAttachments.push(submissionFile);
+
 	const instanceFile = new InstanceFile(manifest.serialize());
 
-	// TODO need to encrypt all the attachments
-	return { instanceFile, attachments: [payload, ...attachments] };
+	return { instanceFile, attachments: encryptedAttachments };
 };

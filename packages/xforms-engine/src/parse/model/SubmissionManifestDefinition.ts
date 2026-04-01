@@ -5,11 +5,12 @@ import {
 import type { ClientReactiveSerializableInstance } from '../../instance/internal-api/serialization/ClientReactiveSerializableInstance';
 
 export class SubmissionManifestDefinition {
-	readonly id: string;
+	readonly formId: string;
 	readonly base64EncryptedKey: string;
 	readonly attachments: string[];
 	readonly formVersion?: string; // TODO this is required!
 	readonly instanceId: string;
+	signature: string | undefined;
 
 	// TODO throw errors when missing essential data, eg: encryption key?
 	constructor(
@@ -20,12 +21,12 @@ export class SubmissionManifestDefinition {
 		const idAttribute = instanceRoot.root
 			.getAttributes()
 			.find((a) => a.definition.qualifiedName.localName === 'id');
-		this.id = idAttribute?.definition.value ?? '';
+		this.formId = idAttribute?.definition.value ?? '';
 		const versionAttribute = instanceRoot.root
 			.getAttributes()
 			.find((a) => a.definition.qualifiedName.localName === 'version');
 		this.formVersion = versionAttribute?.definition.value ?? '';
-		this.attachments = attachments.map((a) => a.name + '.enc');
+		this.attachments = attachments.map((a) => a.name + '.enc'); // TODO duplication
 		const meta = instanceRoot.root
 			.getChildren()
 			.find((kid) => kid.definition.qualifiedName.localName === 'meta');
@@ -40,7 +41,7 @@ export class SubmissionManifestDefinition {
 	serialize(): string {
 		const manifest = document.createElementNS(ODK_SUBMISSIONS_NAMESPACE_URI, 'data');
 		manifest.setAttribute('encrypted', 'yes');
-		manifest.setAttribute('id', this.id);
+		manifest.setAttribute('id', this.formId);
 		if (this.formVersion) {
 			manifest.setAttribute('version', this.formVersion);
 		}
@@ -61,13 +62,15 @@ export class SubmissionManifestDefinition {
 			manifest.appendChild(mediaEl);
 		}
 
-		/*
-		TODO optional but wanted - do this later
-		const el3 = document.createElementNS(ODK_SUBMISSIONS_NAMESPACE_URI, 'base64EncryptedElementSignature');
-		el3.textContent = 'something';
-		manifest.appendChild(el3);
+		if (this.signature) {
+			const el3 = document.createElementNS(
+				ODK_SUBMISSIONS_NAMESPACE_URI,
+				'base64EncryptedElementSignature'
+			);
+			el3.textContent = this.signature;
+			manifest.appendChild(el3);
+		}
 
-		*/
 		const metaEl = document.createElementNS(OPENROSA_XFORMS_NAMESPACE_URI, 'meta');
 		const instanceIDEl = document.createElementNS(OPENROSA_XFORMS_NAMESPACE_URI, 'instanceID');
 		instanceIDEl.textContent = this.instanceId;
