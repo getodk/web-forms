@@ -32,6 +32,14 @@
     "lint": "eslint . --report-unused-disable-directives --cache",
     "feature-matrix": "node scripts/feature-matrix/render.js"
   },
+  "dependenciesMeta": {
+    "tree-sitter-cli": {
+      "built": true
+    },
+    "tree-sitter": {
+      "built": true
+    }
+  },
   "dependencies": {
     "@changesets/changelog-github": "^0.5.1",
     "@changesets/cli": "^2.29.7",
