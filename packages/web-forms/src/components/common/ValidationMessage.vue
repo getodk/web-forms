@@ -26,17 +26,22 @@ const defaultMessage = computed(() => {
 	if (!props.violation || props.violation.message) {
 		return null;
 	}
-	return t(`validation_message.${props.violation.condition}.error`);
+
+	if (props.violation.condition === 'required') {
+		return t('validation_message.required.error')
+	}
+
+	return t('validation_message.constraint.error');
 });
 </script>
 
 <template>
 	<div :class="{ 'validation-placeholder': addPlaceholder }">
 		<span v-show="showMessage" class="validation-message">
-			<template v-if="defaultMessage">{{ defaultMessage }}</template>
-			<template v-else-if="violation?.message">
+			<template v-if="violation?.message">
 				<MarkdownBlock v-for="elem in violation.message.formatted" :key="elem.id" :elem="elem" />
 			</template>
+			<template v-else-if="defaultMessage">{{ defaultMessage }}</template>
 		</span>
 	</div>
 </template>
