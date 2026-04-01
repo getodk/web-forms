@@ -1,10 +1,10 @@
-import { ODK_SUBMISSIONS_NAMESPACE_URI, OPENROSA_XFORMS_NAMESPACE_URI } from '@getodk/common/constants/xmlns.ts';
+import {
+	ODK_SUBMISSIONS_NAMESPACE_URI,
+	OPENROSA_XFORMS_NAMESPACE_URI,
+} from '@getodk/common/constants/xmlns.ts';
 import type { ClientReactiveSerializableInstance } from '../../instance/internal-api/serialization/ClientReactiveSerializableInstance';
 
-// TODO https://github.com/enketo/enketo/blob/ba2bec44acf561f278fd022aa361447674c1d9a8/packages/enketo-express/public/js/src/module/encryptor.js
-
 export class SubmissionManifestDefinition {
-
 	readonly id: string;
 	readonly base64EncryptedKey: string;
 	readonly attachments: string[];
@@ -12,14 +12,26 @@ export class SubmissionManifestDefinition {
 	readonly instanceId: string;
 
 	// TODO throw errors when missing essential data, eg: encryption key?
-	constructor(instanceRoot: ClientReactiveSerializableInstance, base64EncryptedSymmetricKey: string, attachments: readonly File[]) {
-		const idAttribute = instanceRoot.root.getAttributes().find(a => a.definition.qualifiedName.localName === 'id');
+	constructor(
+		instanceRoot: ClientReactiveSerializableInstance,
+		base64EncryptedSymmetricKey: string,
+		attachments: readonly File[]
+	) {
+		const idAttribute = instanceRoot.root
+			.getAttributes()
+			.find((a) => a.definition.qualifiedName.localName === 'id');
 		this.id = idAttribute?.definition.value ?? '';
-		const versionAttribute = instanceRoot.root.getAttributes().find(a => a.definition.qualifiedName.localName === 'version');
+		const versionAttribute = instanceRoot.root
+			.getAttributes()
+			.find((a) => a.definition.qualifiedName.localName === 'version');
 		this.formVersion = versionAttribute?.definition.value ?? '';
-		this.attachments = attachments.map(a => a.name + '.enc');
-		const meta = instanceRoot.root.getChildren().find(kid => kid.definition.qualifiedName.localName === 'meta');
-		const instanceID = meta?.getChildren().find(kid => kid.definition.qualifiedName.localName === 'instanceID');
+		this.attachments = attachments.map((a) => a.name + '.enc');
+		const meta = instanceRoot.root
+			.getChildren()
+			.find((kid) => kid.definition.qualifiedName.localName === 'meta');
+		const instanceID = meta
+			?.getChildren()
+			.find((kid) => kid.definition.qualifiedName.localName === 'instanceID');
 		this.instanceId = instanceID?.getXPathValue() ?? '';
 		this.base64EncryptedKey = base64EncryptedSymmetricKey;
 	}
