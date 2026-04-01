@@ -7125,6 +7125,11 @@ __metadata:
     vue: "npm:^3.5.29"
     vue-eslint-parser: "npm:^10.4.0"
     vue-tsc: "npm:^3.1.5"
+  dependenciesMeta:
+    tree-sitter:
+      built: true
+    tree-sitter-cli:
+      built: true
   languageName: unknown
   linkType: soft
 

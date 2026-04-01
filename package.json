@@ -33,10 +33,10 @@
     "feature-matrix": "node scripts/feature-matrix/render.js"
   },
   "dependenciesMeta": {
-    "tree-sitter-cli": {
+    "tree-sitter": {
       "built": true
     },
-    "tree-sitter": {
+    "tree-sitter-cli": {
       "built": true
     }
   },
