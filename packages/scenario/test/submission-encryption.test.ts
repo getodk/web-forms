@@ -87,8 +87,8 @@ describe('Form submission encryption', () => {
 		await expect(submissionResult).toHavePreparedSubmissionXML(expected);
 		const entries = submissionResult.data[0].entries();
 		expect(submissionResult.data.length).to.equal(1);
-		expect(entries.next().value[0]).to.equal('xml_submission_file');
-		expect(entries.next().value[0]).to.equal('submission.xml.enc');
+		expect(entries.next()?.value?.[0]).to.equal('xml_submission_file');
+		expect(entries.next()?.value?.[0]).to.equal('submission.xml.enc');
 	});
 
 	// TODO encrypts the payload
