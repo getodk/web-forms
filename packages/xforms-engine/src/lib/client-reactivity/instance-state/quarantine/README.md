@@ -1,11 +1,15 @@
-# Encryption implementation
+# Encryption
 
-DO NOT USE
+> [!CAUTION]
+> Custom encryption is a bad idea. Do not use this unless absolutely necessary.
 
-TODO
+> [!CAUTION]
+> Modification of this code requires great care as a bug in the encryption algorithm will make submissions unrecoverable.
 
-## Reference
+This code implements the [ODK Spec](https://getodk.github.io/xforms-spec/encryption) which is very particular about how it's done so as to be compatible with other implementations.
 
-- [ODK Spec](https://getodk.github.io/xforms-spec/encryption)
-- [Enketo's implementation](https://github.com/enketo/enketo/blob/2aab5ce716effe038fcc66041e4f16dbb908f26d/packages/enketo-express/public/js/src/module/encryptor.js#L99)
-- [Collect's implementation](https://github.com/getodk/collect/blob/master/collect_app/src/main/java/org/odk/collect/android/utilities/EncryptionUtils.java)
+## Implementation
+
+The symmetric encryption parts of the spec are implemnted using CryptoJS because the particularly algorithm required by the spec is not supported by Subtle Crypto, and we use CryptoJS elsewhere.
+
+The asymmetric components of the spec are implemented using the [Subtle Crypto web spec](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto) because CryptoJS doesn't implement asymmetric encryption.

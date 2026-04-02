@@ -14,7 +14,7 @@ import type { DescendantNodeViolationReference } from '../../../client/validatio
 import { ErrorProductionDesignPendingError } from '../../../error/ErrorProductionDesignPendingError.ts';
 import type { InstanceAttachmentsState } from '../../../instance/attachments/InstanceAttachmentsState.ts';
 import type { ClientReactiveSerializableInstance } from '../../../instance/internal-api/serialization/ClientReactiveSerializableInstance.ts';
-import { encryptInstanceFiles } from './quarantine/encryption.ts';
+import { encryptSubmission } from './quarantine/encryption.ts';
 
 const collectInstanceAttachmentFiles = (attachments: InstanceAttachmentsState): readonly File[] => {
 	const files = Array.from(attachments.entries()).map(([context, attachment]) => {
@@ -40,17 +40,21 @@ export class InstanceFile extends File implements ClientInstanceFile {
 	}
 }
 
+export interface Submission {
+	readonly instanceFile: InstanceFile;
+	readonly attachments: readonly File[];
+};
+
 const collectInstanceFiles = async (
 	instanceRoot: ClientReactiveSerializableInstance,
 	submissionMeta: SubmissionMeta
-) => {
+): Promise<Submission> => {
+	const attachments = collectInstanceAttachmentFiles(instanceRoot.attachments);
 	if (submissionMeta.encryptionKey) {
-		return encryptInstanceFiles(instanceRoot, submissionMeta.encryptionKey);
-	} else {
-		const instanceFile = new InstanceFile(instanceRoot.instanceState.instanceXML);
-		const attachments = collectInstanceAttachmentFiles(instanceRoot.attachments);
-		return { instanceFile, attachments };
+		return await encryptSubmission(instanceRoot, attachments, submissionMeta.encryptionKey);
 	}
+	const instanceFile = new InstanceFile(instanceRoot.instanceState.instanceXML);
+	return { instanceFile, attachments };
 };
 
 type AssertFile = (value: FormDataEntryValue) => asserts value is File;
