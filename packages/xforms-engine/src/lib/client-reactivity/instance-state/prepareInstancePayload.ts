@@ -43,7 +43,7 @@ export class InstanceFile extends File implements ClientInstanceFile {
 export interface Submission {
 	readonly instanceFile: InstanceFile;
 	readonly attachments: readonly File[];
-};
+}
 
 const collectInstanceFiles = async (
 	instanceRoot: ClientReactiveSerializableInstance,
