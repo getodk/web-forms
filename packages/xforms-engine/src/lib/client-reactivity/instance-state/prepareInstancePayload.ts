@@ -34,8 +34,7 @@ const collectInstanceAttachmentFiles = (attachments: InstanceAttachmentsState): 
 	return files.filter((file) => file != null);
 };
 
-export class InstanceFile extends File implements ClientInstanceFile {
-	// TODO see if I can not export this
+class InstanceFile extends File implements ClientInstanceFile {
 	override readonly name = INSTANCE_FILE_NAME;
 	override readonly type = INSTANCE_FILE_TYPE;
 
@@ -47,7 +46,7 @@ export class InstanceFile extends File implements ClientInstanceFile {
 }
 
 export interface Submission {
-	readonly instanceFile: InstanceFile;
+	readonly instanceXML: string;
 	readonly attachments: readonly File[];
 }
 
@@ -59,8 +58,7 @@ const collectInstanceFiles = async (
 	if (submissionMeta.encryptionKey) {
 		return await encryptSubmission(instanceRoot, attachments, submissionMeta.encryptionKey);
 	}
-	const instanceFile = new InstanceFile(instanceRoot.instanceState.instanceXML);
-	return { instanceFile, attachments };
+	return { instanceXML: instanceRoot.instanceState.instanceXML, attachments };
 };
 
 type AssertFile = (value: FormDataEntryValue) => asserts value is File;
@@ -235,7 +233,8 @@ export const prepareInstancePayload = async <PayloadType extends InstancePayload
 	const validation = validateInstance(instanceRoot);
 	const submissionMeta = instanceRoot.definition.submission;
 
-	const { instanceFile, attachments } = await collectInstanceFiles(instanceRoot, submissionMeta);
+	const { instanceXML, attachments } = await collectInstanceFiles(instanceRoot, submissionMeta);
+	const instanceFile = new InstanceFile(instanceXML);
 
 	switch (options.payloadType) {
 		case 'chunked':

@@ -6,7 +6,7 @@
 
 import type { ClientReactiveSerializableInstance } from '../../../../instance/internal-api/serialization/ClientReactiveSerializableInstance';
 import { SubmissionManifestDefinition } from '../../../../parse/model/SubmissionManifestDefinition';
-import { InstanceFile, type Submission } from '../prepareInstancePayload';
+import { type Submission } from '../prepareInstancePayload';
 import { getEncryptedSymmetricKey } from './asymmetric';
 import { encryptAttachments } from './symmetric';
 
@@ -55,7 +55,6 @@ export const encryptSubmission = async (
 	const symmetricKey = generateSymmetricKey();
 	const base64EncryptedSymmetricKey = await getEncryptedSymmetricKey(encryptionKey, symmetricKey);
 
-	// TODO figure out a way to get all the properties I need without constructing an object!
 	const manifest = new SubmissionManifestDefinition(
 		instanceRoot,
 		base64EncryptedSymmetricKey,
@@ -68,7 +67,7 @@ export const encryptSubmission = async (
 	const xml = instanceRoot.instanceState.instanceXML;
 	const encryptedAttachments = await encryptAttachments(xml, instanceId, symmetricKey, attachments);
 
-	const instanceFile = new InstanceFile(manifest.serialize());
+	const instanceXML = manifest.serialize();
 
-	return { instanceFile, attachments: encryptedAttachments };
+	return { instanceXML, attachments: encryptedAttachments };
 };
