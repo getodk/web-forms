@@ -14,7 +14,7 @@ const arrayBufferToWordArray = (buffer: Uint8Array<ArrayBuffer>) => {
 			(buffer[i]! << 24) | (buffer[i + 1]! << 16) | (buffer[i + 2]! << 8) | buffer[i + 3]!
 		);
 	}
-	return CryptoJS.lib.WordArray.create(bytes);
+	return CryptoJS.lib.WordArray.create(bytes, buffer.byteLength);
 };
 
 const wordArrayToArrayBuffer = (wordArray: CryptoJS.lib.WordArray): Uint8Array<ArrayBuffer> => {
