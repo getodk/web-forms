@@ -47,7 +47,7 @@ jobs:
 
       - name: 'Upload Playwright results'
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: playwright-results-functional-${{ matrix.browser }}
           path: packages/web-forms/test-results
@@ -98,7 +98,7 @@ jobs:
 
       - name: 'Upload Playwright results'
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: playwright-results-visual-${{ matrix.browser }}
           path: packages/web-forms/test-results
