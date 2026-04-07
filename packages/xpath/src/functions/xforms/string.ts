@@ -33,10 +33,12 @@ export const coalesce = new StringFunction(
 		{ arityType: 'required', typeHint: 'string' },
 	],
 	(context, [aExpression, bExpression]): string => {
-		const a = aExpression!.evaluate(context).toString();
+		const aEval = aExpression!.evaluate(context);
+		const aValue = aEval.toString();
 
-		if (a !== '') {
-			return a;
+		const isEmpty = aValue === '' || (aEval.type === 'NUMBER' && Number.isNaN(aEval.toNumber()));
+		if (!isEmpty) {
+			return aValue;
 		}
 
 		return bExpression!.evaluate(context).toString();

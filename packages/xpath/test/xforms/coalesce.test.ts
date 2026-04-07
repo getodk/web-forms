@@ -40,6 +40,14 @@ describe('#coalesce()', () => {
 		testContext.assertStringValue('coalesce(/simple/xpath/to/node, "SECOND")', 'SECOND');
 	});
 
+	it('should return second value if first value is NaN', () => {
+		testContext.assertStringValue('coalesce(1 * /simple/xpath/to/node, "0")', '0');
+		testContext.assertStringValue(
+			'coalesce(/simple/xpath/to/node * /simple/xpath/to/node, "0")',
+			'0'
+		);
+	});
+
 	it('coalesce(self::*)', () => {
 		testContext = createXFormsTestContext(`
       <div id="FunctionSelectedCase">
