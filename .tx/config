@@ -1,7 +1,7 @@
 [main]
 host = https://app.transifex.com
 
-[o:getodk:p:odk-web-forms:r:strings]
+[o:getodk:p:web_forms:r:strings]
 file_filter  = packages/web-forms/locales/strings_<lang>.json
 source_file  = packages/web-forms/locales/strings_en.json
 source_lang  = en
