@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: 'actions/checkout@v5'
 
-      - uses: 'volta-cli/action@v4'
+      - uses: 'volta-cli/action@v5'
         with:
           node-version: '${{ matrix.node-version }}'
 
@@ -27,7 +27,7 @@ jobs:
           path: |
             node_modules
             **/node_modules
-          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
+          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.yarnrc.yml', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
           fail-on-cache-miss: true
 
       - uses: 'actions/cache@v5'
@@ -47,7 +47,7 @@ jobs:
 
       - name: 'Upload Playwright results'
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: playwright-results-functional-${{ matrix.browser }}
           path: packages/web-forms/test-results
@@ -67,7 +67,7 @@ jobs:
     steps:
       - uses: 'actions/checkout@v5'
 
-      - uses: 'volta-cli/action@v4'
+      - uses: 'volta-cli/action@v5'
         with:
           node-version: '${{ matrix.node-version }}'
 
@@ -77,7 +77,7 @@ jobs:
           path: |
             node_modules
             **/node_modules
-          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
+          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.yarnrc.yml', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
           fail-on-cache-miss: true
 
       - uses: 'actions/cache@v5'
@@ -98,7 +98,7 @@ jobs:
 
       - name: 'Upload Playwright results'
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: playwright-results-visual-${{ matrix.browser }}
           path: packages/web-forms/test-results
