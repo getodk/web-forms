@@ -416,7 +416,7 @@ Thank you for contributing! Follow these guidelines for smooth collaboration.
 
 ### Translations
 
-Translations are managed on Transifex. Translators can contribute at: https://app.transifex.com/getodk/odk-web-forms
+Translations are managed on Transifex. Translators can contribute at: https://app.transifex.com/getodk/web_forms
 
 For developers, see [TRANSLATIONS.md](./packages/web-forms/TRANSLATIONS.md) for details on how UI strings are managed and how to add or update translations.
 
