@@ -2,4 +2,4 @@
 '@getodk/xpath': patch
 ---
 
-Fixes coalesce function to handle NaN
+Stringify NaN as an empty string according to the XForms specs.
