@@ -2,4 +2,4 @@
 '@getodk/web-forms': patch
 ---
 
-Adjust the display of small images and the placement of the clear button
+Adjust the position of the media preview clear button.
