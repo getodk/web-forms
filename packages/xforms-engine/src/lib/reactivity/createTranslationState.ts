@@ -57,20 +57,23 @@ export const createTranslationState = (
 ): TranslationState => {
 	const activeLanguageName = evaluator.getActiveLanguage();
 	const languageNames = evaluator.getLanguages();
+	const explicitDefaultLanguageName = evaluator.getExplicitDefaultLanguage();
 
 	let defaultLanguage: ActiveLanguage;
 	let languages: FormLanguages;
 
 	if (activeLanguageName == null) {
-		defaultLanguage = { isSyntheticDefault: true, language: '' };
+		defaultLanguage = { isSyntheticDefault: true, language: '', isDefault: false };
 		languages = [defaultLanguage];
 	} else {
-		const inactiveLanguages = languageNames
-			.filter((languageName) => languageName !== activeLanguageName)
-			.map((language) => ({ language, locale: extractLocale(language) }));
+		const formLanguages = languageNames.map((language) => ({
+			language,
+			locale: extractLocale(language),
+			isDefault: language === explicitDefaultLanguageName,
+		}));
 
-		defaultLanguage = { language: activeLanguageName, locale: extractLocale(activeLanguageName) };
-		languages = [defaultLanguage, ...inactiveLanguages];
+		defaultLanguage = formLanguages.find((l) => l.language === activeLanguageName)!;
+		languages = formLanguages as [FormLanguage, ...FormLanguage[]];
 	}
 
 	const [getActiveLanguage, baseSetActiveLanguage] = createSignal(defaultLanguage);

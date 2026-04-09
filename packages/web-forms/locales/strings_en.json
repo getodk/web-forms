@@ -47,6 +47,14 @@
     "string": "Longitude: {longitude}.",
     "developer_comment": "Displays the GPS longitude coordinate. {longitude} is the numeric longitude value."
   },
+  "validation_message.required.error": {
+    "string": "This field is required.",
+    "developer_comment": "Default error shown when a required field has no value and the form designer did not specify a custom message."
+  },
+  "validation_message.constraint.error": {
+    "string": "This value doesn't meet the constraint.",
+    "developer_comment": "Default error shown when a field's value fails a constraint and the form designer did not specify a custom message."
+  },
   "map_async.load_error.message": {
     "string": "Unable to load map",
     "developer_comment": "Error message shown when the map component fails to load."
