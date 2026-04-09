@@ -59,6 +59,7 @@ export default defineConfig(
 			'packages/tree-sitter-xpath/bindings/**/*',
 			'packages/tree-sitter-xpath/types/**/*',
 			'packages/web-forms/dist-demo/**/*',
+			'packages/web-forms/scripts/**/*',
 			'packages/xforms-engine/api-docs/**/*',
 			'**/vendor',
 		],
