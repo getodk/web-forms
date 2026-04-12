@@ -10,6 +10,6 @@ This code implements the [ODK Spec](https://getodk.github.io/xforms-spec/encrypt
 
 ## Implementation
 
-The symmetric encryption parts of the spec are implemnted using CryptoJS because the particularly algorithm required by the spec is not supported by Subtle Crypto, and we use CryptoJS elsewhere.
+The symmetric encryption parts of the spec are implemented using CryptoJS because the particular algorithm required by the spec is not supported by Subtle Crypto, and we use CryptoJS elsewhere.
 
 The asymmetric components of the spec are implemented using the [Subtle Crypto web spec](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto) because CryptoJS doesn't implement asymmetric encryption.
