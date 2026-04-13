@@ -4,7 +4,6 @@
  * More info: README.md
  */
 
-import type { ClientReactiveSerializableInstance } from '../../../../instance/internal-api/serialization/ClientReactiveSerializableInstance';
 import { SubmissionManifestDefinition } from '../../../../parse/model/SubmissionManifestDefinition';
 import { type Submission } from '../prepareInstancePayload';
 import { getEncryptedSymmetricKey } from './asymmetric';
@@ -19,36 +18,11 @@ const generateSymmetricKey = () => {
 	return bytes;
 };
 
-/*
-
-const generateFileSignature = (filename: string, content: string) => {
-  const hash = wordArrayFromArrayBuffer(CryptoJS.MD5(content)).toString();
-  return `${filename}::${hash}`;
-};
-
-
-const generateSignature = async (manifest: SubmissionManifestDefinition, xml: string, attachments: readonly File[], publicKey: CryptoKey) => {
-  const parts = [];
-  parts.push(manifest.formId);
-  if (manifest.formVersion) {
-    parts.push(manifest.formVersion);
-  }
-  parts.push(manifest.base64EncryptedKey);
-  parts.push(manifest.instanceId);
-
-  parts.push(generateFileSignature(SUBMISSION_ATTACHMENT_NAME, xml));
-  for (const attachment of attachments) {
-    throw new Error('unimplemented');
-    // parts.push(generateSignatureFile(attachment.name, attachment.bytes.toString())); // TODO
-  }
-  const result = parts.join('\n') + '\n';
-  const hash = wordArrayFromArrayBuffer(CryptoJS.MD5(result));
-  return await rsaEncrypt(hash, publicKey);
-};
-*/
-
 export const encryptSubmission = async (
-	instanceRoot: ClientReactiveSerializableInstance,
+	formId: string,
+	formVersion: string | undefined,
+	instanceId: string,
+	instanceXML: string,
 	attachments: readonly File[],
 	encryptionKey: string
 ): Promise<Submission> => {
@@ -56,18 +30,22 @@ export const encryptSubmission = async (
 	const base64EncryptedSymmetricKey = await getEncryptedSymmetricKey(encryptionKey, symmetricKey);
 
 	const manifest = new SubmissionManifestDefinition(
-		instanceRoot,
+		formId,
+		formVersion,
+		instanceId,
 		base64EncryptedSymmetricKey,
 		attachments
 	);
-	// TODO this is never checked by central, so I suggest we don't bother implementing it. I can't test it's working anyway!
-	// manifest.signature = await generateSignature(manifest, data, attachments, publicKey);
 
-	const instanceId = manifest.instanceId;
-	const xml = instanceRoot.instanceState.instanceXML;
-	const encryptedAttachments = await encryptAttachments(xml, instanceId, symmetricKey, attachments);
+	const encryptedAttachments = await encryptAttachments(
+		instanceXML,
+		instanceId,
+		symmetricKey,
+		attachments
+	);
 
-	const instanceXML = manifest.serialize();
-
-	return { instanceXML, attachments: encryptedAttachments };
+	return {
+		instanceXML: manifest.serialize(),
+		attachments: encryptedAttachments,
+	};
 };

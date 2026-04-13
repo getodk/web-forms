@@ -14,7 +14,21 @@ import type { DescendantNodeViolationReference } from '../../../client/validatio
 import { ErrorProductionDesignPendingError } from '../../../error/ErrorProductionDesignPendingError.ts';
 import type { InstanceAttachmentsState } from '../../../instance/attachments/InstanceAttachmentsState.ts';
 import type { ClientReactiveSerializableInstance } from '../../../instance/internal-api/serialization/ClientReactiveSerializableInstance.ts';
+import type { Root } from '../../../instance/Root.ts';
 import { encryptSubmission } from './quarantine/encryption.ts';
+
+const getAttribute = (root: Root, name: string) => {
+	const attribute = root.getAttributes().find((a) => a.definition.qualifiedName.localName === name);
+	return attribute?.definition.value;
+};
+
+const getInstanceID = (root: Root) => {
+	const meta = root.getChildren().find((c) => c.definition.qualifiedName.localName === 'meta');
+	const instanceID = meta
+		?.getChildren()
+		.find((c) => c.definition.qualifiedName.localName === 'instanceID');
+	return instanceID?.getXPathValue();
+};
 
 const collectInstanceAttachmentFiles = (attachments: InstanceAttachmentsState): readonly File[] => {
 	const files = Array.from(attachments.entries()).map(([context, attachment]) => {
@@ -48,11 +62,29 @@ const collectInstanceFiles = async (
 	instanceRoot: ClientReactiveSerializableInstance,
 	submissionMeta: SubmissionMeta
 ): Promise<Submission> => {
+	const instanceXML = instanceRoot.instanceState.instanceXML;
 	const attachments = collectInstanceAttachmentFiles(instanceRoot.attachments);
 	if (submissionMeta.encryptionKey) {
-		return await encryptSubmission(instanceRoot, attachments, submissionMeta.encryptionKey);
+		const root = instanceRoot.root;
+		const formId = getAttribute(root, 'id');
+		const instanceId = getInstanceID(root);
+		const formVersion = getAttribute(root, 'version');
+		if (!formId) {
+			throw new Error('Encrypted submissions are required to have a form ID');
+		}
+		if (!instanceId) {
+			throw new Error('Encrypted submissions are required to have an instance ID');
+		}
+		return await encryptSubmission(
+			formId,
+			formVersion,
+			instanceId,
+			instanceXML,
+			attachments,
+			submissionMeta.encryptionKey
+		);
 	}
-	return { instanceXML: instanceRoot.instanceState.instanceXML, attachments };
+	return { instanceXML, attachments };
 };
 
 type AssertFile = (value: FormDataEntryValue) => asserts value is File;
