@@ -48,6 +48,15 @@ describe('#coalesce()', () => {
 		);
 	});
 
+	it('should return second value when result is NaN', () => {
+		testContext.assertStringValue('coalesce(1 div "", 0)', '0');
+		testContext.assertStringValue('coalesce("" div 0, 0)', '0');
+	});
+
+	it('should return Infinity when dividing non-zero by zero', () => {
+		testContext.assertStringValue('coalesce(1 div 0, 0)', 'Infinity');
+	});
+
 	it('coalesce(self::*)', () => {
 		testContext = createXFormsTestContext(`
       <div id="FunctionSelectedCase">
