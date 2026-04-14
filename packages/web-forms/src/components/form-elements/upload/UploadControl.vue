@@ -187,7 +187,8 @@ const onDrop = (event: DragEvent) => {
 						severity="secondary"
 						outlined
 						class="clear-button"
-						@click="clearValue">
+						@click="clearValue"
+					>
 						<IconSVG name="mdiClose" variant="muted" size="sm" />
 					</Button>
 				</div>
