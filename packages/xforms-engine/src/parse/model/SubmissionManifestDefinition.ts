@@ -14,7 +14,7 @@ export class SubmissionManifestDefinition {
 		readonly formId: string,
 		readonly formVersion: string | undefined,
 		readonly instanceId: string,
-		readonly base64EncryptedSymmetricKey: string,
+		readonly encryptedSymmetricKey: string,
 		attachments: readonly File[]
 	) {
 		this.attachments = attachments.map((attachment) => attachment.name + ENCRYPTED_SUFFIX);
@@ -29,7 +29,7 @@ export class SubmissionManifestDefinition {
 		}
 
 		const keyEl = document.createElementNS(ODK_SUBMISSIONS_NAMESPACE_URI, 'base64EncryptedKey');
-		keyEl.textContent = this.base64EncryptedSymmetricKey;
+		keyEl.textContent = this.encryptedSymmetricKey;
 		manifest.appendChild(keyEl);
 
 		const xmlFileEl = document.createElementNS(ODK_SUBMISSIONS_NAMESPACE_URI, 'encryptedXmlFile');

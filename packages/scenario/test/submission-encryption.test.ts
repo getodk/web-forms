@@ -61,8 +61,8 @@ describe('Form submission encryption', () => {
 			encryptionKey: base64RsaPublicKey,
 		});
 
-		const entries = submissionResult.data[0].entries();
 		expect(submissionResult.data.length).to.equal(1);
+		const entries = submissionResult.data[0].entries();
 
 		const [submissionFilename, file] = entries.next().value!;
 		expect(submissionFilename).to.equal('xml_submission_file');

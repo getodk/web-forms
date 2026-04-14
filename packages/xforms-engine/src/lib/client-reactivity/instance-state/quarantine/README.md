@@ -6,7 +6,7 @@
 > [!CAUTION]
 > Modification of this code requires great care as a bug in the encryption algorithm will make submissions unrecoverable.
 
-This code implements the [ODK Spec](https://getodk.github.io/xforms-spec/encryption) which is very particular about how it's done so as to be compatible with other implementations.
+The code in this directory implements the [ODK Spec](https://getodk.github.io/xforms-spec/encryption) which is very particular about how it's done so as to be compatible with other implementations.
 
 ## Implementation
 
