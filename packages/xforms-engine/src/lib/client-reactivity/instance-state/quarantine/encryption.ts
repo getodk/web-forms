@@ -27,13 +27,13 @@ export const encryptSubmission = async (
 	encryptionKey: string
 ): Promise<Submission> => {
 	const symmetricKey = generateSymmetricKey();
-	const base64EncryptedSymmetricKey = await getEncryptedSymmetricKey(encryptionKey, symmetricKey);
+	const encryptedSymmetricKey = await getEncryptedSymmetricKey(encryptionKey, symmetricKey);
 
 	const manifest = new SubmissionManifestDefinition(
 		formId,
 		formVersion,
 		instanceId,
-		base64EncryptedSymmetricKey,
+		encryptedSymmetricKey,
 		attachments
 	);
 

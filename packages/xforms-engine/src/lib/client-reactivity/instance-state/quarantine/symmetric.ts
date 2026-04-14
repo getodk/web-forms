@@ -6,27 +6,7 @@
 import { getBlobData } from '@getodk/common/lib/web-compat/blob.ts';
 import * as CryptoJS from 'crypto-js';
 import { ENCRYPTED_SUBMISSION_ATTACHMENT_NAME, ENCRYPTED_SUFFIX } from './encryption';
-
-const arrayBufferToWordArray = (buffer: Uint8Array<ArrayBuffer>) => {
-	const bytes = [];
-	for (let i = 0; i < buffer.length; i += 4) {
-		bytes.push(
-			(buffer[i] ?? 0 << 24) |
-				(buffer[i + 1] ?? 0 << 16) |
-				(buffer[i + 2] ?? 0 << 8) |
-				(buffer[i + 3] ?? 0)
-		);
-	}
-	return CryptoJS.lib.WordArray.create(bytes, buffer.byteLength);
-};
-
-const wordArrayToArrayBuffer = (wordArray: CryptoJS.lib.WordArray): Uint8Array<ArrayBuffer> => {
-	const bytes = new Uint8Array(wordArray.sigBytes);
-	for (let j = 0; j < wordArray.sigBytes; j++) {
-		bytes[j] = (wordArray.words[j >>> 2]! >>> (24 - 8 * (j % 4))) & 0xff;
-	}
-	return bytes;
-};
+import { arrayBufferToWordArray, wordArrayToArrayBuffer } from './wordArrayUtils';
 
 class Seed {
 	readonly ivSeedArray;
@@ -72,8 +52,8 @@ const encryptAttachment = async (
 	seed: Seed
 ): Promise<File> => {
 	const content = await getBlobData(attachment);
-	const wa = arrayBufferToWordArray(new Uint8Array(content));
-	const encrypted = encryptContent(wa, symmetricKey, seed);
+	const wordArray = arrayBufferToWordArray(new Uint8Array(content));
+	const encrypted = encryptContent(wordArray, symmetricKey, seed);
 	return new File([encrypted], attachment.name + ENCRYPTED_SUFFIX, {
 		type: 'application/octet-stream',
 	});
@@ -97,6 +77,8 @@ export const encryptAttachments = async (
 		type: 'application/octet-stream',
 	});
 	encryptedAttachments.push(submissionFile);
+
+	console.log('LATEST CODE');
 
 	return encryptedAttachments;
 };
