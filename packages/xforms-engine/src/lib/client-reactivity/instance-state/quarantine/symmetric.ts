@@ -77,8 +77,5 @@ export const encryptAttachments = async (
 		type: 'application/octet-stream',
 	});
 	encryptedAttachments.push(submissionFile);
-
-	console.log('LATEST CODE');
-
 	return encryptedAttachments;
 };
