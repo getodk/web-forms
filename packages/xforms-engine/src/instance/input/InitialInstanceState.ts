@@ -1,5 +1,4 @@
 import { getBlobText } from '@getodk/common/lib/web-compat/blob.ts';
-import { INSTANCE_FILE_NAME } from '../../client/constants.ts';
 import type {
 	EditFormInstanceInput,
 	ResolvableFormInstanceInput,
@@ -75,23 +74,21 @@ export class InitialInstanceState {
 		input: EditFormInstanceInput
 	): Promise<InitialInstanceState> {
 		if (input.inputType === 'FORM_INSTANCE_INPUT_RESOLVED') {
-			const { data } = input;
-			const [instanceData] = data;
-			const instanceFile = instanceData.get(INSTANCE_FILE_NAME);
-			const instanceXML = await getBlobText(instanceFile);
-			const attachments = InstanceAttachmentMap.from(data);
+			throw new Error('not yet implemented');
+			// const { data } = input;
+			// const [instanceData] = data;
+			// const instanceFile = instanceData.get(INSTANCE_FILE_NAME);
+			// const instanceXML = await getBlobText(instanceFile);
+			// const attachments = InstanceAttachmentMap.from(data); // TODO wtaf
 
-			return new this(model, {
-				instanceXML,
-				attachments,
-			});
+			// return new this(model, {
+			// 	instanceXML,
+			// 	attachments,
+			// });
 		}
 
-		const [instanceXML, attachments] = await Promise.all([
-			resolveInstanceXML(input),
-			InstanceAttachmentMap.resolve(input.attachments),
-		]);
-
+		const instanceXML = await resolveInstanceXML(input);
+		const attachments = InstanceAttachmentMap.resolve(input.attachments);
 		return new this(model, {
 			instanceXML,
 			attachments,

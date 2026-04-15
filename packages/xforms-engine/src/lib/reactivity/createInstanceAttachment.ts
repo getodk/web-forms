@@ -137,14 +137,27 @@ export const createInstanceAttachment = (
 	return context.scope.runTask(() => {
 		const { rootDocument, nodeId } = context;
 		const { attachments } = rootDocument;
-		const file = attachments.getInitialFileValue(context.instanceNode);
+
+		// TODO THIS IS IT
+		const filePromise = attachments.getInitialFileValue(context.instanceNode);
 		const initialState = instanceAttachmentState(context, {
 			nodeId,
-			file,
+			file: null, // TODO add a loading concept to distinguish from empty value
 			writtenAt: null,
 		});
 
 		const [getState, setState] = createSignal<InstanceAttachmentState>(initialState);
+
+		if (filePromise) {
+			void filePromise.then((file: File) => {
+				const resolvedState = instanceAttachmentState(context, {
+					nodeId,
+					file,
+					writtenAt: null,
+				});
+				setState(resolvedState);
+			});
+		}
 
 		const decodeInstanceValue: DecodeInstanceValue = (value) => {
 			const { computedName, intrinsicName } = getState();

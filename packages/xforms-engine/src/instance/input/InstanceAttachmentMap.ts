@@ -5,16 +5,11 @@ import { MalformedInstanceDataError } from '../../error/MalformedInstanceDataErr
 import { getResponseContentType } from '../../lib/resource-helpers.ts';
 import type { FetchResourceResponse } from '../resource.ts';
 
-type InstanceAttachmentMapSourceEntry = readonly [key: string, value: FormDataEntryValue];
+type InstanceAttachmentMapSourceEntry = readonly [key: string, value: Promise<File>];
 
 interface InstanceAttachmentMapSource {
 	entries(): Iterable<InstanceAttachmentMapSourceEntry>;
 }
-
-type InstanceAttachmentMapSources = readonly [
-	InstanceAttachmentMapSource,
-	...InstanceAttachmentMapSource[],
-];
 
 const DEFAULT_ATTACHMENT_TYPE = 'application/octet-stream';
 
@@ -44,31 +39,15 @@ const resolveInstanceAttachmentFile = async (
 	});
 };
 
-/**
- * @todo Everything about this is incredibly naive! We should almost certainly
- * do _at least_ the following:
- *
- * - Limit how many attachments we attempt to resolve concurrently
- * - Lazy resolution of large attachments (i.e. probably streaming, maybe range
- *   requests, ?)
- *
- * @todo Once lazy resolution is a thing, we will **also** need a clear path
- * from there to eager resolution (i.e. for offline caching: it doesn't make
- * sense to cache a stream in progress, as it won't load the resource once the
- * user actually is offline/lacks network access). This may be something we can
- * evolve gradually!
- */
-const resolveInstanceAttachmentMapSource = async (
+const resolveInstanceAttachmentMapSource = (
 	input: ResolvableInstanceAttachmentsMap
-): Promise<InstanceAttachmentMapSource> => {
-	const entries = await Promise.all<InstanceAttachmentMapSourceEntry>(
-		Array.from(input.entries()).map(async ([fileName, resolveAttachment]) => {
-			const response = await resolveAttachment();
-			const value = await resolveInstanceAttachmentFile(response, fileName);
-
-			return [fileName, value] as const;
-		})
-	);
+): InstanceAttachmentMapSource => {
+	const entries = Array.from(input.entries()).map(([fileName, resolveAttachment]) => {
+		const value = resolveAttachment().then((response) =>
+			resolveInstanceAttachmentFile(response, fileName)
+		);
+		return [fileName, value] as const;
+	});
 
 	return { entries: () => entries };
 };
@@ -110,22 +89,18 @@ const assertInstanceDataEntry: AssertInstanceDataEntry = (entry) => {
 	assertKeyedInstanceDataFile(key, value);
 };
 
-export class InstanceAttachmentMap extends Map<string, File> {
-	static from(sources: InstanceAttachmentMapSources): InstanceAttachmentMap {
+export class InstanceAttachmentMap extends Map<string, Promise<File>> {
+	static from(sources: readonly InstanceAttachmentMapSource[]): InstanceAttachmentMap {
 		return new this(sources);
 	}
 
-	/**
-	 * @todo
-	 * @see {@link resolveInstanceAttachmentMapSource}
-	 */
-	static async resolve(input: ResolvableInstanceAttachmentsMap): Promise<InstanceAttachmentMap> {
-		const source = await resolveInstanceAttachmentMapSource(input);
+	static resolve(input: ResolvableInstanceAttachmentsMap): InstanceAttachmentMap {
+		const source = resolveInstanceAttachmentMapSource(input);
 
 		return new this([source]);
 	}
 
-	private constructor(sources: InstanceAttachmentMapSources) {
+	private constructor(sources: readonly InstanceAttachmentMapSource[]) {
 		super();
 
 		for (const source of sources) {
@@ -143,7 +118,7 @@ export class InstanceAttachmentMap extends Map<string, File> {
 					);
 				}
 
-				assertInstanceDataEntry(entry);
+				// assertInstanceDataEntry(entry);
 
 				const [, value] = entry;
 
