@@ -5,7 +5,7 @@ import { MalformedInstanceDataError } from '../../error/MalformedInstanceDataErr
 import { getResponseContentType } from '../../lib/resource-helpers.ts';
 import type { FetchResourceResponse } from '../resource.ts';
 
-type InstanceAttachmentMapSourceEntry = readonly [key: string, value: Promise<File>];
+type InstanceAttachmentMapSourceEntry = readonly [key: string, value: File | Promise<File>];
 
 interface InstanceAttachmentMapSource {
 	entries(): Iterable<InstanceAttachmentMapSourceEntry>;
@@ -52,44 +52,7 @@ const resolveInstanceAttachmentMapSource = (
 	return { entries: () => entries };
 };
 
-interface KeyedInstanceDataFile<Key extends string> extends File {
-	readonly name: Key;
-}
-
-type AssertKeyedInstanceDataFile = <Key extends string>(
-	key: Key,
-	file: File
-) => asserts file is KeyedInstanceDataFile<Key>;
-
-const assertKeyedInstanceDataFile: AssertKeyedInstanceDataFile = (key, file) => {
-	if (file.name !== key) {
-		throw new MalformedInstanceDataError(
-			`Unexpected InstanceData file. Expected file name to match key, got key: ${JSON.stringify(key)} and file name: ${JSON.stringify(file.name)}`
-		);
-	}
-};
-
-type UnknownInstanceDataEntry = readonly [key: string, value: FormDataEntryValue];
-
-type KeyedInstanceDataEntry<Key extends string> = readonly [key: Key, KeyedInstanceDataFile<Key>];
-
-type AssertInstanceDataEntry = <Key extends string>(
-	entry: UnknownInstanceDataEntry
-) => asserts entry is KeyedInstanceDataEntry<Key>;
-
-const assertInstanceDataEntry: AssertInstanceDataEntry = (entry) => {
-	const [key, value] = entry;
-
-	if (!(value instanceof File)) {
-		throw new MalformedInstanceDataError(
-			`Unexpected non-file attachment in InstanceData for key: ${key}`
-		);
-	}
-
-	assertKeyedInstanceDataFile(key, value);
-};
-
-export class InstanceAttachmentMap extends Map<string, Promise<File>> {
+export class InstanceAttachmentMap extends Map<string, File | Promise<File>> {
 	static from(sources: readonly InstanceAttachmentMapSource[]): InstanceAttachmentMap {
 		return new this(sources);
 	}

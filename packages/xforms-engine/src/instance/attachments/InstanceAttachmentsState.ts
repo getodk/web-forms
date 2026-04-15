@@ -8,7 +8,7 @@ export class InstanceAttachmentsState extends Map<InstanceAttachmentContext, Ins
 		super();
 	}
 
-	getInitialFileValue(instanceNode: StaticLeafElement | null): Promise<File> | null {
+	getInitialFileValue(instanceNode: StaticLeafElement | null): File | Promise<File> | null {
 		if (instanceNode == null) {
 			return null;
 		}

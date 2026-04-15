@@ -1,6 +1,5 @@
 import { createIntl, type IntlShape } from '@formatjs/intl';
 import type { FormLanguage, RootNode } from '@getodk/xforms-engine';
-import { all as primeLocales } from 'primelocale';
 import type { Ref } from 'vue';
 import { computed, onUnmounted, shallowRef, watch } from 'vue';
 // English strings always available as language fallback
@@ -185,9 +184,9 @@ export const useLocale = (formRef: Ref<RootNode | null>) => {
 		const newContentLocale = formBaseLocale ?? FALLBACK;
 		document.documentElement.lang = newContentLocale;
 		latestRequestedLocale.locale = newContentLocale;
-		const primeLocaleKey = findBestLocale(candidates, (lang) => {
-			return Object.hasOwn(primeLocales, lang);
-		});
+		// const primeLocaleKey = findBestLocale(candidates, (lang) => {
+		// 	return Object.hasOwn(primeLocales, lang);
+		// });
 		// const primeLocale = primeLocales[primeLocaleKey as keyof typeof primeLocales];
 		// if (primeLocale) {
 		// 	primevue.config.locale = { ...primevue.config.locale, ...primeLocale };

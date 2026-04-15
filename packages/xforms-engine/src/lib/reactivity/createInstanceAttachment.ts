@@ -138,7 +138,6 @@ export const createInstanceAttachment = (
 		const { rootDocument, nodeId } = context;
 		const { attachments } = rootDocument;
 
-		// TODO THIS IS IT
 		const filePromise = attachments.getInitialFileValue(context.instanceNode);
 		const initialState = instanceAttachmentState(context, {
 			nodeId,
@@ -149,7 +148,7 @@ export const createInstanceAttachment = (
 		const [getState, setState] = createSignal<InstanceAttachmentState>(initialState);
 
 		if (filePromise) {
-			void filePromise.then((file: File) => {
+			void Promise.resolve(filePromise).then((file: File) => {
 				const resolvedState = instanceAttachmentState(context, {
 					nodeId,
 					file,
