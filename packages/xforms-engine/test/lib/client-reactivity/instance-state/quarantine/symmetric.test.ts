@@ -6,9 +6,8 @@ import {
 } from '../../../../../src/lib/client-reactivity/instance-state/quarantine/wordArrayUtils';
 
 describe('symmetric encryption', () => {
-	describe('encryptAttachment()', () => {
-		// not unit tested, because it requires decryption so is better suited to an e2e test
-	});
+	// not unit tested, because it requires decryption so is better suited to an e2e test
+	// describe('encryptAttachment()', () => {});
 
 	describe('wordarray utils', () => {
 		describe('arrayBufferToWordArray', () => {
