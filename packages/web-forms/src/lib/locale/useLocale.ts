@@ -1,5 +1,7 @@
 import { createIntl, type IntlShape } from '@formatjs/intl';
 import type { FormLanguage, RootNode } from '@getodk/xforms-engine';
+import { all as primeLocales } from 'primelocale';
+import { usePrimeVue } from 'primevue/config';
 import type { Ref } from 'vue';
 import { computed, onUnmounted, shallowRef, watch } from 'vue';
 // English strings always available as language fallback
@@ -150,7 +152,7 @@ const isSupportedFormLanguage = (
 };
 
 export const useLocale = (formRef: Ref<RootNode | null>) => {
-	// const primevue = usePrimeVue();
+	const primevue = usePrimeVue();
 	const currentIntl = shallowRef(
 		createIntl({ locale: FALLBACK, messages: enMessages, defaultLocale: FALLBACK })
 	);
@@ -184,13 +186,13 @@ export const useLocale = (formRef: Ref<RootNode | null>) => {
 		const newContentLocale = formBaseLocale ?? FALLBACK;
 		document.documentElement.lang = newContentLocale;
 		latestRequestedLocale.locale = newContentLocale;
-		// const primeLocaleKey = findBestLocale(candidates, (lang) => {
-		// 	return Object.hasOwn(primeLocales, lang);
-		// });
-		// const primeLocale = primeLocales[primeLocaleKey as keyof typeof primeLocales];
-		// if (primeLocale) {
-		// 	primevue.config.locale = { ...primevue.config.locale, ...primeLocale };
-		// }
+		const primeLocaleKey = findBestLocale(candidates, (lang) => {
+			return Object.hasOwn(primeLocales, lang);
+		});
+		const primeLocale = primeLocales[primeLocaleKey as keyof typeof primeLocales];
+		if (primeLocale) {
+			primevue.config.locale = { ...primevue.config.locale, ...primeLocale };
+		}
 
 		const messagesLocale = findBestLocale(candidates, (lang) => {
 			return Object.hasOwn(availableTranslations, `/locales/strings_${lang}.json`);
