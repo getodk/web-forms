@@ -76,6 +76,8 @@ describe.each<InstanceRoundTripCase>([
 
 		const result = await scenarioFromCurrentInstanceState(scenario);
 
+		await new Promise((resolve) => setTimeout(resolve, 1));
+
 		await expect(result.answerOf('/data/file-upload')).toEqualUploadedAnswer(
 			binaryAnswer(uploadValue)
 		);
