@@ -6,6 +6,10 @@ import {
 } from '../../../../../src/lib/client-reactivity/instance-state/quarantine/wordArrayUtils';
 
 describe('symmetric encryption', () => {
+	describe('encryptAttachment()', () => {
+		// not unit tested, because it requires decryption so is better suited to an e2e test
+	});
+
 	describe('wordarray utils', () => {
 		describe('arrayBufferToWordArray', () => {
 			it('should correctly convert a Uint8Array to a WordArray', () => {
@@ -76,6 +80,18 @@ describe('symmetric encryption', () => {
 				expect(result.length).toBe(0);
 				expect(result).toBeInstanceOf(Uint8Array);
 			});
+		});
+
+		describe('functions are symmetrical', () => {
+			[[][0], [0, 1], [0, 1, 2], [0, 1, 2, 3], [0x80], [0xff, 0xff, 0xff, 0xff]].forEach(
+				(input, idx) => {
+					it(`should not mangle example #${idx}`, () => {
+						const given = new Uint8Array(input!);
+						const actual = wordArrayToArrayBuffer(arrayBufferToWordArray(given));
+						expect(actual).to.deep.equal(given);
+					});
+				}
+			);
 		});
 	});
 });

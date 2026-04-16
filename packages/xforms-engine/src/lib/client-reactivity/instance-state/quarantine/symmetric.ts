@@ -14,12 +14,11 @@ class Seed {
 
 	public constructor(
 		readonly instanceId: string,
-		readonly symmetricKey: Uint8Array<ArrayBuffer>
+		readonly symmetricKey: CryptoJS.lib.WordArray
 	) {
-		const key = CryptoJS.lib.WordArray.create(symmetricKey);
 		const md = CryptoJS.algo.MD5.create();
 		md.update(instanceId);
-		md.update(key);
+		md.update(symmetricKey);
 		this.ivSeedArray = wordArrayToArrayBuffer(md.finalize());
 	}
 
@@ -32,13 +31,12 @@ class Seed {
 
 const encryptContent = (
 	content: CryptoJS.lib.WordArray | string,
-	symmetricKey: Uint8Array<ArrayBuffer>,
+	symmetricKey: CryptoJS.lib.WordArray,
 	seed: Seed
 ): Uint8Array<ArrayBuffer> => {
 	const ivString = seed.next();
 	const iv = CryptoJS.enc.Latin1.parse(ivString);
-	const key = CryptoJS.lib.WordArray.create(symmetricKey);
-	const encrypted = CryptoJS.AES.encrypt(content, key, {
+	const encrypted = CryptoJS.AES.encrypt(content, symmetricKey, {
 		iv: iv,
 		mode: CryptoJS.mode.CFB,
 		padding: CryptoJS.pad.Pkcs7,
@@ -48,7 +46,7 @@ const encryptContent = (
 
 const encryptAttachment = async (
 	attachment: File,
-	symmetricKey: Uint8Array<ArrayBuffer>,
+	symmetricKey: CryptoJS.lib.WordArray,
 	seed: Seed
 ): Promise<File> => {
 	const content = await getBlobData(attachment);
@@ -65,14 +63,15 @@ export const encryptAttachments = async (
 	symmetricKey: Uint8Array<ArrayBuffer>,
 	attachments: readonly File[]
 ): Promise<readonly File[]> => {
-	const seed = new Seed(instanceId, symmetricKey);
+	const symmetricKeyWords = arrayBufferToWordArray(symmetricKey);
+	const seed = new Seed(instanceId, symmetricKeyWords);
 	const encryptedAttachments: File[] = [];
 	for (const attachment of attachments) {
-		const encrypted = await encryptAttachment(attachment, symmetricKey, seed);
+		const encrypted = await encryptAttachment(attachment, symmetricKeyWords, seed);
 		encryptedAttachments.push(encrypted);
 	}
 
-	const encrypted: Uint8Array<ArrayBuffer> = encryptContent(instanceXML, symmetricKey, seed);
+	const encrypted: Uint8Array<ArrayBuffer> = encryptContent(instanceXML, symmetricKeyWords, seed);
 	const submissionFile = new File([encrypted], ENCRYPTED_SUBMISSION_ATTACHMENT_NAME, {
 		type: 'application/octet-stream',
 	});
