@@ -64,17 +64,20 @@ interface InstanceAttachmentValueOptions {
 	readonly nodeId: FormNodeID;
 	readonly writtenAt: Date | null;
 	readonly file: InstanceAttachmentRuntimeValue;
+	readonly loading: boolean;
+	readonly existingName?: string | null;
 }
 
-interface BaseInstanceAttachmentState {
+export interface BaseInstanceAttachmentState {
 	readonly computedName: string | null;
 	readonly intrinsicName: string | null;
 	readonly file: InstanceAttachmentRuntimeValue;
+	readonly loading: boolean;
 }
 
 interface BlankInstanceAttachmentState extends BaseInstanceAttachmentState {
 	readonly computedName: null;
-	readonly intrinsicName: null;
+	readonly intrinsicName: string | null;
 	readonly file: null;
 }
 
@@ -93,25 +96,26 @@ const instanceAttachmentState = (
 	context: InstanceAttachmentContext,
 	options: InstanceAttachmentValueOptions
 ): InstanceAttachmentState => {
-	const { nodeId, file, writtenAt } = options;
+	const { nodeId, file, writtenAt, loading, existingName } = options;
 
 	// No file -> no intrinsic name, no name to compute
 	if (file == null) {
 		return {
 			computedName: null,
-			intrinsicName: null,
+			intrinsicName: existingName ?? null,
 			file: null,
+			loading,
 		};
 	}
 
-	const intrinsicName = file.name;
-
 	// File exists, not written by client -> preserve instance input name
+	const intrinsicName = file.name;
 	if (writtenAt == null) {
 		return {
 			computedName: null,
 			intrinsicName,
 			file,
+			loading,
 		};
 	}
 
@@ -128,6 +132,7 @@ const instanceAttachmentState = (
 		computedName,
 		intrinsicName,
 		file,
+		loading,
 	};
 };
 
@@ -139,23 +144,32 @@ export const createInstanceAttachment = (
 		const { attachments } = rootDocument;
 
 		const filePromise = attachments.getInitialFileValue(context.instanceNode);
+		const existingName = context.instanceNode?.value ?? null;
 		const initialState = instanceAttachmentState(context, {
 			nodeId,
-			file: null, // TODO add a loading concept to distinguish from empty value
+			file: null,
 			writtenAt: null,
+			loading: !!filePromise,
+			existingName,
 		});
 
 		const [getState, setState] = createSignal<InstanceAttachmentState>(initialState);
 
 		if (filePromise) {
-			void Promise.resolve(filePromise).then((file: File) => {
-				const resolvedState = instanceAttachmentState(context, {
-					nodeId,
-					file,
-					writtenAt: null,
+			void Promise.resolve(filePromise)
+				.then((file: File) => {
+					const resolvedState = instanceAttachmentState(context, {
+						nodeId,
+						file,
+						writtenAt: null,
+						loading: false,
+						existingName,
+					});
+					setState(resolvedState);
+				})
+				.catch((_) => {
+					// TODO set error state
 				});
-				setState(resolvedState);
-			});
 		}
 
 		const decodeInstanceValue: DecodeInstanceValue = (value) => {
@@ -198,6 +212,7 @@ export const createInstanceAttachment = (
 				nodeId,
 				file: value,
 				writtenAt: new Date(),
+				loading: false,
 			});
 
 			return setState(updatedState).file;
@@ -219,6 +234,8 @@ export const createInstanceAttachment = (
 			getValue,
 			setValue,
 			valueState,
+
+			getState,
 		});
 	});
 };

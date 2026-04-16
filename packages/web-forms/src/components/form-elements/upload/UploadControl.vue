@@ -36,6 +36,8 @@ const fileName = computed(() => props.question.currentState.value?.name ?? '');
 const accept = computed(() => props.question.nodeOptions.media.accept);
 const mediaType = computed(() => props.question.nodeOptions.media.type);
 const maxFileSize = computed(() => formOptions?.attachmentMaxSize ?? MAX_FILE_SIZE);
+const loading = computed(() => props.question.currentState.attachmentState.loading);
+const existingFileName = computed(() => props.question.currentState.attachmentState.intrinsicName ?? '');
 const confirmDeleteAction = ref(false);
 const fileError = ref<string | null>(null);
 
@@ -168,7 +170,10 @@ const onDrop = (event: DragEvent) => {
 		</template>
 		<template #default>
 			<div class="drag-and-drop" :class="{ 'disabled': isDisabled }" @drop.prevent.stop="onDrop" @dragover.prevent>
-				<div v-if="question.currentState.value" class="upload-content">
+				<div v-if="loading" class="skeleton-loading">
+					{{ existingFileName }}
+				</div>
+				<div v-else-if="question.currentState.value" class="upload-content">
 					<template v-if="fileType === 'image'">
 						<UploadImagePreview :image="objectURL" />
 					</template>
@@ -259,6 +264,14 @@ const onDrop = (event: DragEvent) => {
 
 .drag-and-drop {
 	padding: var(--odk-spacing-xxl);
+
+	.skeleton-loading {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width: 300px;
+		height: 100px;
+	}
 
 	&.disabled {
 		color: var(--odk-muted-text-color);
