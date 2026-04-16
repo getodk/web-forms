@@ -37,6 +37,7 @@ const accept = computed(() => props.question.nodeOptions.media.accept);
 const mediaType = computed(() => props.question.nodeOptions.media.type);
 const maxFileSize = computed(() => formOptions?.attachmentMaxSize ?? MAX_FILE_SIZE);
 const loading = computed(() => props.question.currentState.attachmentState.loading);
+const loadingError = computed(() => props.question.currentState.attachmentState.loadingError);
 const existingFileName = computed(() => props.question.currentState.attachmentState.intrinsicName ?? '');
 const confirmDeleteAction = ref(false);
 const fileError = ref<string | null>(null);
@@ -204,6 +205,13 @@ const onDrop = (event: DragEvent) => {
 					@close="fileError = null"
 				>
 					{{ fileError }}
+				</Message>
+				<Message
+					v-else-if="loadingError"
+					severity="error"
+					:closable="false"
+				>
+					{{ t('upload_control.downloading.error') }}
 				</Message>
 				<div v-else class="placeholder">
 					{{ t('upload_control.drag_and_drop.placeholder') }}

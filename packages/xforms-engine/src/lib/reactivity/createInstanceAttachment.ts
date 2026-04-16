@@ -66,6 +66,7 @@ interface InstanceAttachmentValueOptions {
 	readonly file: InstanceAttachmentRuntimeValue;
 	readonly loading: boolean;
 	readonly existingName?: string | null;
+	readonly error?: boolean;
 }
 
 export interface BaseInstanceAttachmentState {
@@ -73,6 +74,7 @@ export interface BaseInstanceAttachmentState {
 	readonly intrinsicName: string | null;
 	readonly file: InstanceAttachmentRuntimeValue;
 	readonly loading: boolean;
+	readonly loadingError: boolean;
 }
 
 interface BlankInstanceAttachmentState extends BaseInstanceAttachmentState {
@@ -96,7 +98,7 @@ const instanceAttachmentState = (
 	context: InstanceAttachmentContext,
 	options: InstanceAttachmentValueOptions
 ): InstanceAttachmentState => {
-	const { nodeId, file, writtenAt, loading, existingName } = options;
+	const { nodeId, file, writtenAt, loading, existingName, error } = options;
 
 	// No file -> no intrinsic name, no name to compute
 	if (file == null) {
@@ -105,6 +107,7 @@ const instanceAttachmentState = (
 			intrinsicName: existingName ?? null,
 			file: null,
 			loading,
+			loadingError: error ?? false,
 		};
 	}
 
@@ -116,6 +119,7 @@ const instanceAttachmentState = (
 			intrinsicName,
 			file,
 			loading,
+			loadingError: false,
 		};
 	}
 
@@ -133,6 +137,7 @@ const instanceAttachmentState = (
 		intrinsicName,
 		file,
 		loading,
+		loadingError: false,
 	};
 };
 
@@ -158,17 +163,26 @@ export const createInstanceAttachment = (
 		if (filePromise) {
 			void Promise.resolve(filePromise)
 				.then((file: File) => {
-					const resolvedState = instanceAttachmentState(context, {
+					return instanceAttachmentState(context, {
 						nodeId,
 						file,
 						writtenAt: null,
 						loading: false,
 						existingName,
 					});
-					setState(resolvedState);
 				})
 				.catch((_) => {
-					// TODO set error state
+					return instanceAttachmentState(context, {
+						nodeId,
+						file: null,
+						writtenAt: null,
+						loading: false,
+						existingName,
+						error: true,
+					});
+				})
+				.then((state) => {
+					setState(state);
 				});
 		}
 

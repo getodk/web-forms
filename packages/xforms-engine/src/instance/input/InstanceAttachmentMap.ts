@@ -31,6 +31,9 @@ const resolveInstanceAttachmentFile = async (
 	response: FetchResourceResponse,
 	fileName: string
 ): Promise<File> => {
+	if (!response.ok) {
+		return Promise.reject(new Error(`Error fetching instance attachment, code ${response.status}`));
+	}
 	const blob = await response.blob();
 	const blobData = await getBlobData(blob);
 
