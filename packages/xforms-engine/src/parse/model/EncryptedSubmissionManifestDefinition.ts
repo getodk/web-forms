@@ -7,7 +7,7 @@ import {
 	ENCRYPTED_SUFFIX,
 } from '../../lib/client-reactivity/instance-state/quarantine/encryption';
 
-export class SubmissionManifestDefinition {
+export class EncryptedSubmissionManifestDefinition {
 	readonly attachments: string[];
 
 	constructor(

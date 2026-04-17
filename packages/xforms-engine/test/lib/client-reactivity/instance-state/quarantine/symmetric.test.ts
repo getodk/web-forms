@@ -82,10 +82,10 @@ describe('symmetric encryption', () => {
 		});
 
 		describe('functions are symmetrical', () => {
-			[[][0], [0, 1], [0, 1, 2], [0, 1, 2, 3], [0x80], [0xff, 0xff, 0xff, 0xff]].forEach(
+			[[], [0], [0, 1], [0, 1, 2], [0, 1, 2, 3], [0x80], [0xff, 0xff, 0xff, 0xff]].forEach(
 				(input, idx) => {
 					it(`should not mangle example #${idx}`, () => {
-						const given = new Uint8Array(input!);
+						const given = new Uint8Array(input);
 						const actual = wordArrayToArrayBuffer(arrayBufferToWordArray(given));
 						expect(actual).to.deep.equal(given);
 					});

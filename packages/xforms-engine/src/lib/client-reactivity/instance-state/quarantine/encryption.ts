@@ -4,7 +4,7 @@
  * More info: README.md
  */
 
-import { SubmissionManifestDefinition } from '../../../../parse/model/SubmissionManifestDefinition';
+import { EncryptedSubmissionManifestDefinition } from '../../../../parse/model/EncryptedSubmissionManifestDefinition';
 import { type Submission } from '../prepareInstancePayload';
 import { getEncryptedSymmetricKey } from './asymmetric';
 import { encryptAttachments } from './symmetric';
@@ -29,7 +29,7 @@ export const encryptSubmission = async (
 	const symmetricKey = generateSymmetricKey();
 	const encryptedSymmetricKey = await getEncryptedSymmetricKey(encryptionKey, symmetricKey);
 
-	const manifest = new SubmissionManifestDefinition(
+	const manifest = new EncryptedSubmissionManifestDefinition(
 		formId,
 		formVersion,
 		instanceId,
