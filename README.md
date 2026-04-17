@@ -334,7 +334,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  ##### Misc<br/>⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 0\%
+  ##### Misc<br/>🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 11\%
 
   </summary>
   <br/>
@@ -349,7 +349,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | save as draft                                                                    |          |
 | offline entities                                                                 |          |
 | MBtiles / offline map layers                                                     |          |
-| [submission encryption](https://github.com/getodk/web-forms/issues/448)          |          |
+| [submission encryption](https://github.com/getodk/web-forms/issues/448)          |    ✅    |
 
 </details>
 

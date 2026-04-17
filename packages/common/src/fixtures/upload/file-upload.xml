@@ -26,6 +26,7 @@
       <bind nodeset="/data/doc" type="binary" />
       <bind nodeset="/data/anything" type="binary" required="true()" />
       <bind nodeset="/data/disabled" type="binary" readonly="true()" />
+      <bind jr:preload="uid" nodeset="/data/meta/instanceID" readonly="true()" type="string"/>
     </model>
   </h:head>
   <h:body>
