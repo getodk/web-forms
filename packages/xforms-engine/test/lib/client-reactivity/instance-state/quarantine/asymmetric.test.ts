@@ -32,8 +32,11 @@ describe('asymmetric encryption', () => {
 		expect(() => atob(actual)).not.toThrow();
 	});
 
+	// ensures attacker cannot figure out what the plaintext is by looking up known encrypted submissions
+	// See:
+	// - https://en.wikipedia.org/wiki/Optimal_asymmetric_encryption_padding
+	// - https://en.wikipedia.org/wiki/Probabilistic_encryption
 	it('should produce different ciphertexts for the same input', async () => {
-		// ensures attacker cannot figure out what the plaintext is by looking up known encrypted submissions
 		const result1 = await getEncryptedSymmetricKey(publicKeyBase64, symmetricKey);
 		const result2 = await getEncryptedSymmetricKey(publicKeyBase64, symmetricKey);
 		expect(result1).not.toBe(result2);
