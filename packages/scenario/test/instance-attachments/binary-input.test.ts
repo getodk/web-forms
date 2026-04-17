@@ -78,7 +78,7 @@ describe.each<InstanceRoundTripCase>([
 
 		// wait for file resolution to complete
 		await flushPromises();
-		await new Promise(resolve => setTimeout(resolve, 100));
+		await new Promise((resolve) => setTimeout(resolve, 100));
 
 		await expect(result.answerOf('/data/file-upload')).toEqualUploadedAnswer(
 			binaryAnswer(uploadValue)
