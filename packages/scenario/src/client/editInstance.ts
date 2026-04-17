@@ -4,7 +4,7 @@ import type {
 	EditedFormInstance,
 	InstancePayload,
 	ResolvableFormInstanceInput,
-	RootNode
+	RootNode,
 } from '@getodk/xforms-engine';
 import { constants as ENGINE_CONSTANTS } from '@getodk/xforms-engine';
 import { assert, expect } from 'vitest';
@@ -42,7 +42,9 @@ const assertSubmittable: AssertSubmittable = (payload) => {
 	expect(payload).toBeReadyForSubmission();
 };
 
-const mockSubmissionIO = async (payload: SubmittableInstancePayload): Promise<ResolvableFormInstanceInput> => {
+const mockSubmissionIO = async (
+	payload: SubmittableInstancePayload
+): Promise<ResolvableFormInstanceInput> => {
 	const instanceFile = payload.data[0].get(ENGINE_CONSTANTS.INSTANCE_FILE_NAME);
 	const resolveInstance = () => getBlobText(instanceFile);
 	const attachmentFiles = Array.from(payload.data)
