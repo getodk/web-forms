@@ -15,12 +15,16 @@ import { ErrorProductionDesignPendingError } from '../../../error/ErrorProductio
 import type { InstanceAttachmentsState } from '../../../instance/attachments/InstanceAttachmentsState.ts';
 import type { ClientReactiveSerializableInstance } from '../../../instance/internal-api/serialization/ClientReactiveSerializableInstance.ts';
 
-// TODO only collect files that have changed (based on filename) otherwise we're uploading files unnecessarily
-// TODO make sure this ^ works when async files haven't yet loaded or loading has failed
-// TODO this will also impact validation - required files that have not yet loaded are valid!
 const collectInstanceAttachmentFiles = (attachments: InstanceAttachmentsState): readonly File[] => {
 	const files = Array.from(attachments.entries()).map(([context, attachment]) => {
 		if (!context.isAttached() || !context.isRelevant()) {
+			return null;
+		}
+
+		// TODO add testing for this specific case
+		const state = attachment.getState();
+		if (!state.computedName) {
+			// File not set by client. During editing this means it's unchanged and we don't need to upload it again.
 			return null;
 		}
 
