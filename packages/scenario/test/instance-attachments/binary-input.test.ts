@@ -14,7 +14,6 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { binaryAnswer } from '../../src/answer/ExpectedBinaryAnswer.ts';
 import { Scenario } from '../../src/jr/Scenario.ts';
 
-import { flushPromises } from '@vue/test-utils';
 type InstanceRoundTripInitializationMode = 'edit' | 'restore';
 
 interface InstanceRoundTripCase {
@@ -75,13 +74,11 @@ describe.each<InstanceRoundTripCase>([
 
 		scenario.answer('/data/file-upload', uploadValue);
 		const result = await scenarioFromCurrentInstanceState(scenario);
+		const expected = binaryAnswer(uploadValue);
 
-		// wait for file resolution to complete
-		await flushPromises();
-		await new Promise((resolve) => setTimeout(resolve, 100));
-
-		await expect(result.answerOf('/data/file-upload')).toEqualUploadedAnswer(
-			binaryAnswer(uploadValue)
-		);
+		// we need to poll because serializing the file is async
+		await expect
+			.poll(() => result.answerOf('/data/file-upload'), { timeout: 1000 })
+			.toEqualUploadedAnswer(expected);
 	});
 });
