@@ -84,8 +84,6 @@ export class InstanceAttachmentMap extends Map<string, File | Promise<File>> {
 					);
 				}
 
-				// assertInstanceDataEntry(entry);
-
 				const [, value] = entry;
 
 				this.set(key, value);

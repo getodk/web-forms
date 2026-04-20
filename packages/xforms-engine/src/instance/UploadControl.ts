@@ -69,7 +69,7 @@ interface UploadControlStateSpec extends DescendantNodeStateSpec<InstanceAttachm
 	readonly attributes: Accessor<readonly Attribute[]>;
 	readonly valueOptions: null;
 	readonly value: SimpleAtomicState<InstanceAttachmentRuntimeValue>;
-	readonly instanceValue: Accessor<InstanceAttachmentFileName>; // TODO merge this with state below?
+	readonly instanceValue: Accessor<InstanceAttachmentFileName>;
 	readonly attachmentState: Accessor<BaseInstanceAttachmentState>;
 }
 

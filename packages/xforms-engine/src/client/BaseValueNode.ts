@@ -26,8 +26,6 @@ export interface BaseValueNodeState<Value> extends BaseNodeState {
 	 * @todo Consider moving into {@link InstanceState}
 	 */
 	get instanceValue(): string;
-
-	// TODO add loading?
 }
 
 export interface BaseValueNode<V extends ValueType = ValueType, Value = string> extends BaseNode {
