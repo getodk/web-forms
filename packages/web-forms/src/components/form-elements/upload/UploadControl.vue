@@ -171,7 +171,7 @@ const onDrop = (event: DragEvent) => {
 		</template>
 		<template #default>
 			<div class="drag-and-drop" :class="{ 'disabled': isDisabled }" @drop.prevent.stop="onDrop" @dragover.prevent>
-				<div v-if="loading" class="skeleton-loading">
+				<div v-if="loading" class="skeleton-loading" :class="{ 'loading-image': mediaType === 'image', 'loading-video': mediaType === 'video', 'loading-audio': mediaType === 'audio' }">
 					{{ existingFileName }}
 				</div>
 				<div v-else-if="question.currentState.value" class="upload-content">
@@ -278,7 +278,16 @@ const onDrop = (event: DragEvent) => {
 		justify-content: center;
 		align-items: center;
 		width: 300px;
-		height: 100px;
+		min-height: 40px;
+
+		&.loading-image,
+		&.loading-video {
+			height: var(--odk-max-image-height);
+		}
+
+		&.loading-audio {
+			height: var(--odk-audio-height);
+		}
 	}
 
 	&.disabled {
