@@ -75,6 +75,7 @@ export interface BaseInstanceAttachmentState {
 	readonly file: InstanceAttachmentRuntimeValue;
 	readonly loading: boolean;
 	readonly loadingError: boolean;
+	readonly dirty: boolean;
 }
 
 interface BlankInstanceAttachmentState extends BaseInstanceAttachmentState {
@@ -108,6 +109,7 @@ const instanceAttachmentState = (
 			file: null,
 			loading,
 			loadingError: error ?? false,
+			dirty: false,
 		};
 	}
 
@@ -120,6 +122,7 @@ const instanceAttachmentState = (
 			file,
 			loading,
 			loadingError: false,
+			dirty: false,
 		};
 	}
 
@@ -138,6 +141,7 @@ const instanceAttachmentState = (
 		file,
 		loading,
 		loadingError: false,
+		dirty: true,
 	};
 };
 
