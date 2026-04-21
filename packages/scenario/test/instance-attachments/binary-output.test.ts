@@ -800,7 +800,9 @@ describe('Instance attachments: binary output', () => {
 									t('file-upload-2'),
 									t('meta',
 										t('instanceID', FAKE_INSTANCE_ID)))),
-							bind('/data/file-upload').type('binary'))),
+							bind('/data/file-upload-1').type('binary'),
+							bind('/data/file-upload-2').type('binary'),
+						)),
 					body(
 						upload('/data/file-upload-1'),
 						upload('/data/file-upload-2')

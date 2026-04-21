@@ -135,8 +135,8 @@ const clearValue = () => {
 	confirmDeleteAction.value = true;
 };
 
-const retryDownload = () => {
-	props.question.retryDownload();
+const retryFetch = () => {
+	props.question.retryFetch();
 };
 
 const onChange = (file: File | null) => {
@@ -214,7 +214,7 @@ const onDrop = (event: DragEvent) => {
 					v-else-if="loadingError"
 					severity="error"
 					:closable="true"
-					@close="retryDownload()"
+					@close="retryFetch()"
 				>
 					<template #closeicon>
 						<IconSVG name="mdiRefresh" variant="muted" size="sm" />

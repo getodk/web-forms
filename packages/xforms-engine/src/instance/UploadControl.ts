@@ -205,7 +205,7 @@ export class UploadControl
 		return this.root;
 	}
 
-	retryDownload() {
+	retryFetch() {
 		this.instanceAttachment.retry();
 	}
 }

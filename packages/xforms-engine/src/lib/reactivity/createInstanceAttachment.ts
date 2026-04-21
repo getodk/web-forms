@@ -1,8 +1,8 @@
-import { createMemo, createSignal } from 'solid-js';
-import type { FormNodeID } from '../../client/identity.ts';
+import { createMemo, createSignal, type Setter } from 'solid-js';
 import { ErrorProductionDesignPendingError } from '../../error/ErrorProductionDesignPendingError.ts';
 import type { InstanceAttachmentFileName } from '../../instance/attachments/InstanceAttachment.ts';
 import { InstanceAttachment } from '../../instance/attachments/InstanceAttachment.ts';
+import type { InstanceAttachmentsState } from '../../instance/attachments/InstanceAttachmentsState.ts';
 import type { InstanceAttachmentContext } from '../../instance/internal-api/InstanceAttachmentContext.ts';
 import type { DecodeInstanceValue } from '../../instance/internal-api/InstanceValueContext.ts';
 import type { SimpleAtomicStateSetter } from './types.ts';
@@ -61,11 +61,9 @@ export type InstanceAttachmentFormDataEntry = readonly [
 ];
 
 interface InstanceAttachmentValueOptions {
-	readonly nodeId: FormNodeID;
-	readonly writtenAt: Date | null;
-	readonly file: InstanceAttachmentRuntimeValue;
-	readonly loading: boolean;
-	readonly existingName?: string | null;
+	readonly writtenAt?: Date;
+	readonly file?: InstanceAttachmentRuntimeValue;
+	readonly loading?: boolean;
 	readonly error?: boolean;
 }
 
@@ -99,15 +97,17 @@ const instanceAttachmentState = (
 	context: InstanceAttachmentContext,
 	options: InstanceAttachmentValueOptions
 ): InstanceAttachmentState => {
-	const { nodeId, file, writtenAt, loading, existingName, error } = options;
+	const { nodeId } = context;
+	const existingName = context.instanceNode?.value ?? null;
+	const { file, writtenAt, loading, error } = options;
 
 	// No file -> no intrinsic name, no name to compute
 	if (file == null) {
 		return {
 			computedName: null,
-			intrinsicName: existingName ?? null,
+			intrinsicName: existingName,
 			file: null,
-			loading,
+			loading: !!loading,
 			loadingError: error ?? false,
 			dirty: false,
 		};
@@ -120,7 +120,7 @@ const instanceAttachmentState = (
 			computedName: null,
 			intrinsicName,
 			file,
-			loading,
+			loading: !!loading,
 			loadingError: false,
 			dirty: false,
 		};
@@ -139,78 +139,61 @@ const instanceAttachmentState = (
 		computedName,
 		intrinsicName,
 		file,
-		loading,
+		loading: !!loading,
 		loadingError: false,
 		dirty: true,
 	};
+};
+
+const resolveFile = (
+	context: InstanceAttachmentContext,
+	setState: Setter<InstanceAttachmentState>,
+	filePromise: Promise<File>
+) => {
+	filePromise
+		.then((file: File) => {
+			setState(instanceAttachmentState(context, { file }));
+		})
+		.catch((_) => {
+			setState(instanceAttachmentState(context, { error: true }));
+		});
+};
+
+const retryFetch = (
+	context: InstanceAttachmentContext,
+	attachments: InstanceAttachmentsState,
+	setState: Setter<InstanceAttachmentState>
+) => {
+	setState(instanceAttachmentState(context, { loading: true }));
+	attachments.retryFileValue(context.instanceNode);
+	const filePromise = attachments.getInitialFileValue(context.instanceNode);
+	if (filePromise) {
+		resolveFile(context, setState, filePromise);
+	}
 };
 
 export const createInstanceAttachment = (
 	context: InstanceAttachmentContext
 ): InstanceAttachment => {
 	return context.scope.runTask(() => {
-		const { rootDocument, nodeId } = context;
+		const { rootDocument } = context;
 		const { attachments } = rootDocument;
 
-		const existingName = context.instanceNode?.value ?? null;
 		const initialValue = attachments.getInitialFileValue(context.instanceNode);
-
-		const createInitialState = () => {
-			return instanceAttachmentState(context, {
-				nodeId,
-				file: null,
-				writtenAt: null,
-				loading: !!initialValue,
-				existingName,
-			});
-		};
-
-		const createSuccessState = (file: File) => {
-			return instanceAttachmentState(context, {
-				nodeId,
-				file,
-				writtenAt: null,
-				loading: false,
-				existingName,
-			});
-		};
-
-		const createErrorState = () => {
-			return instanceAttachmentState(context, {
-				nodeId,
-				file: null,
-				writtenAt: null,
-				loading: false,
-				existingName,
-				error: true,
-			});
-		};
-
-		const initialState = createInitialState();
+		const initialState = instanceAttachmentState(context, { loading: !!initialValue });
 
 		const [getState, setState] = createSignal<InstanceAttachmentState>(initialState);
 
-		const resolveFile = (filePromise: Promise<File>) => {
-			filePromise
-				.then((file: File) => {
-					setState(createSuccessState(file));
-				})
-				.catch((_) => {
-					setState(createErrorState());
-				});
-		};
-
 		const retry = () => {
-			setState(createInitialState());
-			attachments.retryFileValue(context.instanceNode);
-			const filePromise = attachments.getInitialFileValue(context.instanceNode);
-			if (filePromise) {
-				resolveFile(filePromise);
+			if (getState().loading) {
+				// already loading - debounce the retry
+				return;
 			}
+			retryFetch(context, attachments, setState);
 		};
 
 		if (initialValue) {
-			resolveFile(initialValue);
+			resolveFile(context, setState, initialValue);
 		}
 
 		const decodeInstanceValue: DecodeInstanceValue = (value) => {
@@ -249,13 +232,7 @@ export const createInstanceAttachment = (
 			});
 		});
 		const setValue: SimpleAtomicStateSetter<InstanceAttachmentRuntimeValue> = (value) => {
-			const updatedState = instanceAttachmentState(context, {
-				nodeId,
-				file: value,
-				writtenAt: new Date(),
-				loading: false,
-			});
-
+			const updatedState = instanceAttachmentState(context, { file: value, writtenAt: new Date() });
 			return setState(updatedState).file;
 		};
 		const valueState = [getValue, setValue] as const;
