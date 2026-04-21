@@ -152,42 +152,65 @@ export const createInstanceAttachment = (
 		const { rootDocument, nodeId } = context;
 		const { attachments } = rootDocument;
 
-		const filePromise = attachments.getInitialFileValue(context.instanceNode);
 		const existingName = context.instanceNode?.value ?? null;
-		const initialState = instanceAttachmentState(context, {
-			nodeId,
-			file: null,
-			writtenAt: null,
-			loading: !!filePromise,
-			existingName,
-		});
+		const initialValue = attachments.getInitialFileValue(context.instanceNode);
+
+		const createInitialState = () => {
+			return instanceAttachmentState(context, {
+				nodeId,
+				file: null,
+				writtenAt: null,
+				loading: !!initialValue,
+				existingName,
+			});
+		};
+
+		const createSuccessState = (file: File) => {
+			return instanceAttachmentState(context, {
+				nodeId,
+				file,
+				writtenAt: null,
+				loading: false,
+				existingName,
+			});
+		};
+
+		const createErrorState = () => {
+			return instanceAttachmentState(context, {
+				nodeId,
+				file: null,
+				writtenAt: null,
+				loading: false,
+				existingName,
+				error: true,
+			});
+		};
+
+		const initialState = createInitialState();
 
 		const [getState, setState] = createSignal<InstanceAttachmentState>(initialState);
 
-		if (filePromise) {
-			void Promise.resolve(filePromise)
+		const resolveFile = (filePromise: Promise<File>) => {
+			filePromise
 				.then((file: File) => {
-					return instanceAttachmentState(context, {
-						nodeId,
-						file,
-						writtenAt: null,
-						loading: false,
-						existingName,
-					});
+					setState(createSuccessState(file));
 				})
 				.catch((_) => {
-					return instanceAttachmentState(context, {
-						nodeId,
-						file: null,
-						writtenAt: null,
-						loading: false,
-						existingName,
-						error: true,
-					});
-				})
-				.then((state) => {
-					setState(state);
+					setState(createErrorState());
 				});
+		};
+
+		const retry = () => {
+			setState(createInitialState());
+			attachments.retryFileValue(context.instanceNode);
+			const filePromise = attachments.getInitialFileValue(context.instanceNode);
+			if (filePromise) {
+				resolveFile(filePromise);
+			}
+		};
+
+		if (initialValue) {
+			resolveFile(initialValue);
 		}
 
 		const decodeInstanceValue: DecodeInstanceValue = (value) => {
@@ -254,6 +277,8 @@ export const createInstanceAttachment = (
 			valueState,
 
 			getState,
+
+			retry,
 		});
 	});
 };

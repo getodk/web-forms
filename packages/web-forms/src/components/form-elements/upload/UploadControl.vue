@@ -135,6 +135,10 @@ const clearValue = () => {
 	confirmDeleteAction.value = true;
 };
 
+const retryDownload = () => {
+	props.question.retryDownload();
+};
+
 const onChange = (file: File | null) => {
 	if (file) {
 		updateValue(file);
@@ -209,8 +213,12 @@ const onDrop = (event: DragEvent) => {
 				<Message
 					v-else-if="loadingError"
 					severity="error"
-					:closable="false"
+					:closable="true"
+					@close="retryDownload()"
 				>
+					<template #closeicon>
+						<IconSVG name="mdiRefresh" variant="muted" size="sm" />
+					</template>
 					{{ t('upload_control.downloading.error') }}
 				</Message>
 				<div v-else class="placeholder">

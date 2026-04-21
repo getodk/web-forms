@@ -204,4 +204,8 @@ export class UploadControl
 
 		return this.root;
 	}
+
+	retryDownload() {
+		this.instanceAttachment.retry();
+	}
 }

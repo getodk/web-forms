@@ -19,6 +19,8 @@ export interface InstanceAttachmentOptions {
 	readonly valueState: SimpleAtomicState<InstanceAttachmentRuntimeValue>;
 
 	readonly getState: Accessor<BaseInstanceAttachmentState>;
+
+	readonly retry: () => void;
 }
 
 export class InstanceAttachment {
@@ -63,6 +65,8 @@ export class InstanceAttachment {
 
 	readonly getState: Accessor<BaseInstanceAttachmentState>;
 
+	readonly retry: () => void;
+
 	private constructor(options: InstanceAttachmentOptions) {
 		this.getFileName = options.getFileName;
 		this.getInstanceValue = options.getInstanceValue;
@@ -71,5 +75,6 @@ export class InstanceAttachment {
 		this.setValue = options.setValue;
 		this.valueState = options.valueState;
 		this.getState = options.getState;
+		this.retry = options.retry;
 	}
 }

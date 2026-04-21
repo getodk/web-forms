@@ -78,4 +78,5 @@ export interface UploadNode extends BaseValueNode<'binary', UploadValue> {
 	readonly maxPixels: number | null;
 
 	setValue(value: UploadValue): RootNode;
+	retryDownload(): void;
 }
