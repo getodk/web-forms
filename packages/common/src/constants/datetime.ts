@@ -1,5 +1,7 @@
 export const DAY_MILLISECONDS = 1000 * 60 * 60 * 24;
 
+export const FRACTIONAL_SECOND_DIGITS = 3;
+
 export const MILLISECOND_NANOSECONDS = BigInt(1_000_000);
 
 const ISO_DATE_LIKE_SUBPATTERN = '\\d{4}-\\d{2}-\\d{2}';
@@ -50,6 +52,17 @@ export const ISO_DATE_OR_DATE_TIME_LIKE_PATTERN = new RegExp(
 
 export const ISO_DATE_OR_DATE_TIME_NO_OFFSET_PATTERN = new RegExp(
 	['^', ISO_DATE_LIKE_SUBPATTERN, `(T${ISO_TIME_LIKE_SUBPATTERN})?`, '$'].join('')
+);
+
+export const ISO_DATE_TIME_WITH_OPTIONAL_OFFSET_PATTERN = new RegExp(
+	[
+		'^',
+		ISO_DATE_LIKE_SUBPATTERN,
+		'T',
+		STRICT_ISO_TIME_SUBPATTERN,
+		`(${ISO_OFFSET_SUBPATTERN})?`,
+		'$',
+	].join('')
 );
 
 export const ISO_TIME_WITH_OPTIONAL_OFFSET_PATTERN = new RegExp(
