@@ -33,14 +33,6 @@
     "feature-matrix": "node scripts/feature-matrix/render.js",
     "translations:pull": "tx pull -a -f --mode translator"
   },
-  "dependenciesMeta": {
-    "tree-sitter": {
-      "built": true
-    },
-    "tree-sitter-cli": {
-      "built": true
-    }
-  },
   "dependencies": {
     "@changesets/changelog-github": "^0.5.1",
     "@changesets/cli": "^2.29.7",

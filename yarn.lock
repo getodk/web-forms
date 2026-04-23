@@ -45,17 +45,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@asgerf/dts-tree-sitter@npm:0.21.0":
-  version: 0.21.0
-  resolution: "@asgerf/dts-tree-sitter@npm:0.21.0"
-  dependencies:
-    tree-sitter: "npm:^0.21.1"
-  bin:
-    dts-tree-sitter: build/src/index.js
-  checksum: 10c0/c3b19ffcb29f0c7803f25da3b13a58d587b6473fc5c9f5153b583b9b02ed23c7c07d91274effe16fe7472d3aec94016960368dcd7d0a3a3453150638c31aa26d
-  languageName: node
-  linkType: hard
-
 "@babel/code-frame@npm:^7.27.1":
   version: 7.27.1
   resolution: "@babel/code-frame@npm:7.27.1"
@@ -1404,21 +1393,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@getodk/tree-sitter-xpath@npm:0.2.2, @getodk/tree-sitter-xpath@workspace:packages/tree-sitter-xpath":
-  version: 0.0.0-use.local
-  resolution: "@getodk/tree-sitter-xpath@workspace:packages/tree-sitter-xpath"
-  dependencies:
-    "@asgerf/dts-tree-sitter": "npm:0.21.0"
-    npm-run-all2: "npm:^8.0.4"
-    tree-sitter: "npm:0.22.1"
-    tree-sitter-cli: "npm:0.24.5"
-    vite: "npm:^7.3.1"
-    vite-plugin-static-copy: "npm:^3.2.0"
-    web-tree-sitter: "npm:0.24.5"
+"@getodk/tree-sitter-xpath@npm:0.2.2, @getodk/tree-sitter-xpath@npm:^0.2.2":
+  version: 0.2.2
+  resolution: "@getodk/tree-sitter-xpath@npm:0.2.2"
   peerDependencies:
     web-tree-sitter: 0.24.5
-  languageName: unknown
-  linkType: soft
+  checksum: 10c0/83d00471508cf0d0cd6695cda9f5e8e6d834edb4922750693b28ef950227be0111f285db8c02aaeb059a1ae9c25758e2af1a37833e07087ae6943525d822fc40
+  languageName: node
+  linkType: hard
 
 "@getodk/web-forms@workspace:packages/web-forms":
   version: 0.0.0-use.local
@@ -1502,7 +1484,7 @@ __metadata:
   dependencies:
     "@babel/core": "npm:^7.28.5"
     "@getodk/common": "npm:0.14.0"
-    "@getodk/tree-sitter-xpath": "npm:0.2.2"
+    "@getodk/tree-sitter-xpath": "npm:^0.2.2"
     "@playwright/test": "npm:^1.58.2"
     "@types/crypto-js": "npm:^4.2.2"
     babel-plugin-transform-jsbi-to-bigint: "npm:^1.4.2"
@@ -6873,15 +6855,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-addon-api@npm:^8.2.1":
-  version: 8.3.0
-  resolution: "node-addon-api@npm:8.3.0"
-  dependencies:
-    node-gyp: "npm:latest"
-  checksum: 10c0/0ed4206cb68921b33fc637c6f7ffcb91fcde85aea88ea60fadb7b0537bf177226a5600584eac9db2aff93600041d42796fb20576b3299b9be6ff7539592b2180
-  languageName: node
-  linkType: hard
-
 "node-fetch@npm:^2.5.0, node-fetch@npm:^2.7.0":
   version: 2.7.0
   resolution: "node-fetch@npm:2.7.0"
@@ -6893,17 +6866,6 @@ __metadata:
     encoding:
       optional: true
   checksum: 10c0/b55786b6028208e6fbe594ccccc213cab67a72899c9234eb59dba51062a299ea853210fcf526998eaa2867b0963ad72338824450905679ff0fa304b8c5093ae8
-  languageName: node
-  linkType: hard
-
-"node-gyp-build@npm:^4.8.2":
-  version: 4.8.4
-  resolution: "node-gyp-build@npm:4.8.4"
-  bin:
-    node-gyp-build: bin.js
-    node-gyp-build-optional: optional.js
-    node-gyp-build-test: build-test.js
-  checksum: 10c0/444e189907ece2081fe60e75368784f7782cfddb554b60123743dfb89509df89f1f29c03bbfa16b3a3e0be3f48799a4783f487da6203245fa5bed239ba7407e1
   languageName: node
   linkType: hard
 
@@ -8116,11 +8078,6 @@ __metadata:
     vue: "npm:^3.5.29"
     vue-eslint-parser: "npm:^10.4.0"
     vue-tsc: "npm:^3.1.5"
-  dependenciesMeta:
-    tree-sitter:
-      built: true
-    tree-sitter-cli:
-      built: true
   languageName: unknown
   linkType: soft
 
@@ -8748,26 +8705,6 @@ __metadata:
   version: 0.0.3
   resolution: "tr46@npm:0.0.3"
   checksum: 10c0/047cb209a6b60c742f05c9d3ace8fa510bff609995c129a37ace03476a9b12db4dbf975e74600830ef0796e18882b2381fb5fb1f6b4f96b832c374de3ab91a11
-  languageName: node
-  linkType: hard
-
-"tree-sitter-cli@npm:0.24.5":
-  version: 0.24.5
-  resolution: "tree-sitter-cli@npm:0.24.5"
-  bin:
-    tree-sitter: cli.js
-  checksum: 10c0/60bcc1797b640dbf245df5e35cbe52c0a33395ef330a8c7a04c0a6c2977ea2f6ecb4d0afa2053da0f2622c34b3b8d771b6b27b600eb24371e4a845cdec09b515
-  languageName: node
-  linkType: hard
-
-"tree-sitter@npm:0.22.1":
-  version: 0.22.1
-  resolution: "tree-sitter@npm:0.22.1"
-  dependencies:
-    node-addon-api: "npm:^8.2.1"
-    node-gyp: "npm:latest"
-    node-gyp-build: "npm:^4.8.2"
-  checksum: 10c0/9cc7a09915a70a7588d802a080a13df0365dc9159092b3abb3fe65d24f1053eb61ea18f934ad15676cfc532b151c0c54fb2e0c8dbf2a68a98fcaa223cf448965
   languageName: node
   linkType: hard
 
