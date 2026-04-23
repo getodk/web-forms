@@ -11,18 +11,6 @@ const { localeDateFormat, getTemporalString } = useDateTimeInput();
 const isMonthYear = computed(() => props.question.appearances['month-year']);
 const isYearOnly = computed(() => props.question.appearances.year);
 
-const view = computed(() => {
-	if (isMonthYear.value) {
-		return 'month';
-	}
-
-	if (isYearOnly.value) {
-		return 'year';
-	}
-
-	return 'date';
-});
-
 const value = computed({
 	get: () => {
 		const temporalValue = getTemporalString(props.question.currentState.value, ISO_DATE_LIKE_PATTERN);
@@ -31,7 +19,6 @@ const value = computed({
 	},
 	set: (newDate) => {
 		if (newDate != null) {
-			// Normalize to first day of month or first day of year
 			if (isMonthYear.value || isYearOnly.value) {
 				newDate.setDate(1);
 			}
@@ -44,17 +31,35 @@ const value = computed({
 	},
 });
 
+// PrimeVue has its date format convention, for example, 'yy' = 4-digit year
+const pickerConfig = computed(() => {
+	if (isMonthYear.value) {
+		return { view: 'month', dateFormat: 'MM yy', placeholder: '' };
+	}
+
+	if (isYearOnly.value) {
+		return { view: 'year', dateFormat: 'yy', placeholder: 'yyyy' };
+	}
+
+	return {
+		view: 'date',
+		dateFormat: undefined, // Fallback to PrimeVue locale default
+		placeholder: localeDateFormat.value,
+	};
+});
+
 const isDisabled = computed(() => props.question.currentState.readonly === true);
 </script>
 
 <template>
 	<DatePicker
 		v-model="value"
-		:view="view"
+		:view="pickerConfig.view"
+		:date-format="pickerConfig.dateFormat"
 		show-icon
 		icon-display="input"
 		:panel-class="isMonthYear || isYearOnly ? 'hide-today-button' : undefined"
-		:placeholder="localeDateFormat"
+		:placeholder="pickerConfig.placeholder"
 		show-button-bar
 		:disabled="isDisabled"
 	/>
