@@ -6,4 +6,4 @@
 '@getodk/xpath': patch
 ---
 
-Add support to datetime question type
+Add support to datetime question type.
