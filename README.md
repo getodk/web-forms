@@ -62,8 +62,8 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | background-audio                                           |          |
 | video                                                      |    ✅    |
 | [file](https://github.com/getodk/web-forms/issues/370)     |    ✅    |
-| date                                                       |    ✅    |
-| time                                                       |    ✅    |
+| [date](https://github.com/getodk/web-forms/issues/311)     |    ✅    |
+| [time](https://github.com/getodk/web-forms/issues/590)     |    ✅    |
 | [datetime](https://github.com/getodk/web-forms/issues/697) |    ✅    |
 | rank                                                       |    ✅    |
 | csv-external                                               |    ✅    |
