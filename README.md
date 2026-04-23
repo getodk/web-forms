@@ -35,47 +35,47 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  ##### Question types (basic functionality)<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜ 88\%
+  ##### Question types (basic functionality)<br/>🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜ 91\%
 
   </summary>
   <br/>
 
-| Feature <img width=250px/>                             | Progress |
-| ------------------------------------------------------ | :------: |
-| text                                                   |    ✅    |
-| integer                                                |    ✅    |
-| decimal                                                |    ✅    |
-| note                                                   |    ✅    |
-| select_one                                             |    ✅    |
-| select_multiple                                        |    ✅    |
-| select\_\*\_from_file                                  |    ✅    |
-| repeat                                                 |    ✅    |
-| group                                                  |    ✅    |
-| geopoint                                               |    ✅    |
-| geotrace                                               |    ✅    |
-| geoshape                                               |    ✅    |
-| start-geopoint                                         |    ✅    |
-| range                                                  |    ✅    |
-| image                                                  |    ✅    |
-| barcode                                                |          |
-| audio                                                  |    ✅    |
-| background-audio                                       |          |
-| video                                                  |    ✅    |
-| [file](https://github.com/getodk/web-forms/issues/370) |    ✅    |
-| date                                                   |    ✅    |
-| time                                                   |    ✅    |
-| datetime                                               |          |
-| rank                                                   |    ✅    |
-| csv-external                                           |    ✅    |
-| acknowledge                                            |    ✅    |
-| start                                                  |    ✅    |
-| end                                                    |    ✅    |
-| today                                                  |    ✅    |
-| deviceid                                               |    ✅    |
-| username                                               |    ✅    |
-| phonenumber                                            |    ✅    |
-| email                                                  |    ✅    |
-| audit                                                  |          |
+| Feature <img width=250px/>                                 | Progress |
+| ---------------------------------------------------------- | :------: |
+| text                                                       |    ✅    |
+| integer                                                    |    ✅    |
+| decimal                                                    |    ✅    |
+| note                                                       |    ✅    |
+| select_one                                                 |    ✅    |
+| select_multiple                                            |    ✅    |
+| select\_\*\_from_file                                      |    ✅    |
+| repeat                                                     |    ✅    |
+| group                                                      |    ✅    |
+| geopoint                                                   |    ✅    |
+| geotrace                                                   |    ✅    |
+| geoshape                                                   |    ✅    |
+| start-geopoint                                             |    ✅    |
+| range                                                      |    ✅    |
+| image                                                      |    ✅    |
+| barcode                                                    |          |
+| audio                                                      |    ✅    |
+| background-audio                                           |          |
+| video                                                      |    ✅    |
+| [file](https://github.com/getodk/web-forms/issues/370)     |    ✅    |
+| date                                                       |    ✅    |
+| time                                                       |    ✅    |
+| [datetime](https://github.com/getodk/web-forms/issues/697) |    ✅    |
+| rank                                                       |    ✅    |
+| csv-external                                               |    ✅    |
+| acknowledge                                                |    ✅    |
+| start                                                      |    ✅    |
+| end                                                        |    ✅    |
+| today                                                      |    ✅    |
+| deviceid                                                   |    ✅    |
+| username                                                   |    ✅    |
+| phonenumber                                                |    ✅    |
+| email                                                      |    ✅    |
+| audit                                                      |          |
 
 </details>
 
@@ -83,7 +83,7 @@ This section is auto generated. Please update `feature-matrix.json` and then run
   <summary>
 
 <!-- prettier-ignore -->
-  ##### Appearances<br/>🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜ 43\%
+  ##### Appearances<br/>🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜ 47\%
 
   </summary>
   <br/>
@@ -105,9 +105,9 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 | draw                                                            |          |
 | [annotate](https://github.com/getodk/web-forms/issues/15)       |          |
 | signature                                                       |          |
-| [no-calendar](https://github.com/getodk/web-forms/issues/304)   |          |
-| [month-year](https://github.com/getodk/web-forms/issues/304)    |          |
-| [year](https://github.com/getodk/web-forms/issues/304)          |          |
+| [no-calendar](https://github.com/getodk/web-forms/issues/781)   |          |
+| [month-year](https://github.com/getodk/web-forms/issues/782)    |    ✅    |
+| [year](https://github.com/getodk/web-forms/issues/782)          |    ✅    |
 | [ethiopian](https://github.com/getodk/web-forms/issues/315)     |          |
 | [coptic](https://github.com/getodk/web-forms/issues/315)        |          |
 | [islamic](https://github.com/getodk/web-forms/issues/315)       |          |
