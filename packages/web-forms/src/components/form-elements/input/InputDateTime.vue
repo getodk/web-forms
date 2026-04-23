@@ -6,20 +6,17 @@ import { computed } from 'vue';
 import { useDateTimeInput } from './useDateTimeInput.ts';
 
 const props = defineProps<{ readonly question: DateTimeInputNode }>();
-const { localeDateFormat: baseDateFormat, hourFormat, clearSubMinute } = useDateTimeInput();
+const { localeDateFormat: baseDateFormat, hourFormat, clearSubMinute, getTemporalString } = useDateTimeInput();
+
+const isDisabled = computed(() => props.question.currentState.readonly === true);
 
 const value = computed({
 	get: () => {
-		if (props.question.currentState.value == null) {
-			return null;
-		}
-
-		const temporalValue = props.question.currentState.value.toString();
-		if (!ISO_DATE_TIME_WITH_OPTIONAL_OFFSET_PATTERN.test(temporalValue)) {
-			return null;
-		}
-
-		return new Date(temporalValue);
+		const temporalValue = getTemporalString(
+			props.question.currentState.value,
+			ISO_DATE_TIME_WITH_OPTIONAL_OFFSET_PATTERN
+		);
+		return temporalValue === null ? null : new Date(temporalValue);
 	},
 	set: (newDateTime) => {
 		if (newDateTime) {
@@ -33,8 +30,6 @@ const placeholderText = computed(() => {
 	const timeFormat = hourFormat.value === '12' ? 'hh:mm AM' : 'HH:mm';
 	return `${baseDateFormat.value} ${timeFormat}`;
 });
-
-const isDisabled = computed(() => props.question.currentState.readonly === true);
 </script>
 
 <template>

@@ -7,22 +7,14 @@ import { computed } from 'vue';
 import { useDateTimeInput } from './useDateTimeInput.ts';
 
 const props = defineProps<{ readonly question: TimeInputNode }>();
+const { hourFormat, clearSubMinute, timeStringToDate, getTemporalString } = useDateTimeInput();
 
 const isDisabled = computed(() => props.question.currentState.readonly === true);
-const { hourFormat, clearSubMinute, timeStringToDate } = useDateTimeInput();
 
 const value = computed({
 	get: () => {
-		if (props.question.currentState.value == null) {
-			return null;
-		}
-
-		const temporalValue = props.question.currentState.value.toString();
-		if (!ISO_TIME_WITH_OPTIONAL_OFFSET_PATTERN.test(temporalValue)) {
-			return null;
-		}
-
-		return timeStringToDate(temporalValue);
+		const temporalValue = getTemporalString(props.question.currentState.value, ISO_TIME_WITH_OPTIONAL_OFFSET_PATTERN);
+		return temporalValue === null ? null : timeStringToDate(temporalValue);
 	},
 	set: (newTime) => {
 		if (newTime) {

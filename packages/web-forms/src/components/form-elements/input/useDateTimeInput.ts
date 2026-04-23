@@ -6,7 +6,19 @@ interface DateTimeInputComposable {
 	readonly hourFormat: ComputedRef<'12' | '24'>;
 	readonly clearSubMinute: (date: Date) => void;
 	readonly timeStringToDate: (timeValue: string) => Date;
+	readonly getTemporalString: (
+		value: { toString(): string } | null,
+		pattern: RegExp
+	) => string | null;
 }
+
+const getTemporalString = (value: { toString(): string } | null, pattern: RegExp) => {
+	if (value == null) {
+		return null;
+	}
+	const str = value.toString();
+	return pattern.test(str) ? str : null;
+};
 
 const clearSubMinute = (date: Date): void => {
 	date.setMilliseconds(0);
@@ -34,5 +46,6 @@ export const useDateTimeInput = (): DateTimeInputComposable => {
 		hourFormat,
 		clearSubMinute,
 		timeStringToDate,
+		getTemporalString,
 	};
 };
