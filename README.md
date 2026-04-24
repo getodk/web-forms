@@ -423,7 +423,6 @@ For developers, see [TRANSLATIONS.md](./packages/web-forms/TRANSLATIONS.md) for 
 ### Requirements
 
 - [Volta](https://volta.sh/) to ensure consistent `node` and `yarn` versions.
-- [docker](https://www.docker.com/) to build the `tree-sitter-xpath` package.
 
 ### Running locally
 

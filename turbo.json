@@ -5,11 +5,7 @@
       "dependsOn": ["^build"],
       "outputLogs": "new-only"
     },
-    "@getodk/tree-sitter-xpath#build": {
-      "outputLogs": "new-only"
-    },
     "@getodk/xpath#build": {
-      "dependsOn": ["@getodk/tree-sitter-xpath#build"],
       "outputLogs": "new-only"
     },
     "@getodk/xforms-engine#build": {

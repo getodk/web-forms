@@ -65,10 +65,6 @@ jobs:
       - uses: 'actions/cache@v5'
         id: cache-build
         with:
-          # Note: the tree-sitter-xpath .js and .wasm paths are standard for
-          # tree-sitter's build output. They also litter a bunch of other files
-          # in various build phases, several under `src` (which is why the
-          # grammar's TypeScript source is not there).
           path: |
             examples/*/dist
             packages/*/dist
@@ -352,44 +348,6 @@ jobs:
 
       - if: ${{ matrix.target == 'Web' }}
         run: 'yarn workspace @getodk/xpath test-browser:${{ matrix.browser }}'
-
-  tree-sitter-xpath:
-    name: '@getodk/tree-sitter-xpath'
-    needs: ['install-and-build']
-    runs-on: 'ubuntu-latest'
-
-    strategy:
-      fail-fast: false
-      matrix:
-        node-version: ['20.19.3', '22.12.0', '24.11.0']
-
-    steps:
-      - uses: 'actions/checkout@v5'
-
-      - uses: 'volta-cli/action@v5'
-        with:
-          node-version: '${{ matrix.node-version }}'
-
-      - uses: 'actions/cache@v5'
-        id: cache-install
-        with:
-          path: |
-            node_modules
-            **/node_modules
-          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.yarnrc.yml', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
-          fail-on-cache-miss: true
-
-      - uses: 'actions/cache@v5'
-        id: cache-build
-        with:
-          path: |
-            examples/*/dist
-            packages/*/dist
-            packages/web-forms/dist-demo
-          key: build-${{ matrix.node-version }}-${{ github.sha }}
-          fail-on-cache-miss: true
-
-      - run: 'yarn workspace @getodk/tree-sitter-xpath test'
 
   web-forms:
     name: '@getodk/web-forms'
