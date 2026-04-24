@@ -33,12 +33,18 @@ const value = computed({
 
 // PrimeVue has its date format convention, for example, 'yy' = 4-digit year
 const pickerConfig = computed(() => {
+	const hideTodayClass = 'hide-today-button';
 	if (isMonthYear.value) {
-		return { view: 'month', dateFormat: 'MM yy', placeholder: '' };
+		return {
+			view: 'month',
+			dateFormat: 'MM yy',
+			placeholder: 'mmm yyyy',
+			panelClass: hideTodayClass
+		};
 	}
 
 	if (isYearOnly.value) {
-		return { view: 'year', dateFormat: 'yy', placeholder: 'yyyy' };
+		return { view: 'year', dateFormat: 'yy', placeholder: 'yyyy', panelClass: hideTodayClass };
 	}
 
 	return {
@@ -58,7 +64,7 @@ const isDisabled = computed(() => props.question.currentState.readonly === true)
 		:date-format="pickerConfig.dateFormat"
 		show-icon
 		icon-display="input"
-		:panel-class="isMonthYear || isYearOnly ? 'hide-today-button' : undefined"
+		:panel-class="pickerConfig.panelClass"
 		:placeholder="pickerConfig.placeholder"
 		show-button-bar
 		:disabled="isDisabled"
