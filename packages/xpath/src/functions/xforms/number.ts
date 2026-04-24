@@ -60,13 +60,13 @@ export const number = new FunctionImplementation(
 			const dateTime = dateTimeFromString(context.timeZone, stringValue);
 
 			if (dateTime != null) {
-				const resultStringValue = stringValue.includes('T')
+				const dayCount = stringValue.includes('T')
 					? String(Math.floor(dateTime.epochMilliseconds / DAY_MILLISECONDS))
 					: stringValue;
 
 				return new DateTimeLikeEvaluation(context, dateTime, {
 					booleanValue: true,
-					stringValue: resultStringValue,
+					stringValue: dayCount,
 				});
 			}
 		}
