@@ -77,6 +77,20 @@ describe('#number()', () => {
 		});
 	});
 
+	describe('called on a datetime string', () => {
+		[
+			{ expression: 'number("1970-01-01T00:00:00Z")', expected: '0' },
+			{ expression: 'number("1970-01-02T00:00:00Z")', expected: '1' },
+			{ expression: 'number("1969-12-31T00:00:00Z")', expected: '-1' },
+			{ expression: 'number("2026-08-27T08:27:00.000+07:00")', expected: '20692' },
+			{ expression: 'number("2026-10-28T19:23:00.000+07:00")', expected: '20754' },
+		].forEach(({ expression, expected }) => {
+			it(`${expression} should be ${expected} days since the epoch`, () => {
+				testContext.assertStringValue(expression, expected);
+			});
+		});
+	});
+
 	describe('number() conversions returns NaN if not convertible', () => {
 		it('number() conversions returns NaN if not convertible', () => {
 			[

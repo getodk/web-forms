@@ -1,3 +1,4 @@
+import { DAY_MILLISECONDS } from '@getodk/common/constants/datetime.ts';
 import { DateTimeLikeEvaluation } from '../../evaluations/DateTimeLikeEvaluation.ts';
 import { NumberEvaluation } from '../../evaluations/NumberEvaluation.ts';
 import { FunctionImplementation } from '../../evaluator/functions/FunctionImplementation.ts';
@@ -59,9 +60,13 @@ export const number = new FunctionImplementation(
 			const dateTime = dateTimeFromString(context.timeZone, stringValue);
 
 			if (dateTime != null) {
+				const resultStringValue = stringValue.includes('T')
+					? String(Math.floor(dateTime.epochMilliseconds / DAY_MILLISECONDS))
+					: stringValue;
+
 				return new DateTimeLikeEvaluation(context, dateTime, {
 					booleanValue: true,
-					stringValue,
+					stringValue: resultStringValue,
 				});
 			}
 		}
