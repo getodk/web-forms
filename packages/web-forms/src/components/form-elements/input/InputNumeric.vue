@@ -84,7 +84,6 @@ const modelValue = computed<number | null>({
 				renderKey.value++;
 			}
 		} catch {
-			props.setNumericValue(currentValue);
 			// Re-render to restore previous value if something fails
 			renderKey.value++;
 		}
