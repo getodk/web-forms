@@ -734,6 +734,34 @@ describe('setvalue action', () => {
 			scenario.answer('/data/source', 12);
 			expect(scenario.answerOf('/data/destination')).not.toEqualAnswer(stringAnswer(originalDate));
 		});
+
+		it('is triggered when target is made relevant', async () => {
+			const scenario = await Scenario.init(
+				'xforms-value-changed-event',
+				html(
+					head(
+						title('Value changed event'),
+						model(
+							mainInstance(
+								t('data id="xforms-value-changed-event"', t('source'), t('destination'))
+							),
+							bind('/data/source').type('string'),
+							bind('/data/destination').type('string').relevant("/data/source != ''")
+						)
+					),
+					body(
+						input(
+							'/data/source',
+							setvalue('xforms-value-changed', '/data/destination', '/data/source')
+						)
+					)
+				)
+			);
+
+			scenario.answer('/data/source', 'myvalue');
+
+			expect(scenario.answerOf('/data/destination')).toEqualAnswer(stringAnswer('myvalue'));
+		});
 	});
 
 	describe('`setvalue`', () => {
