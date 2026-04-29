@@ -88,11 +88,11 @@ export default defineConfig(({ mode }) => {
 	const extraPlugins: PluginOption[] = [];
 
 	if (isVueBundled) {
-		external = ['@getodk/tree-sitter-xpath/dist/tree-sitter-xpath.wasm?url'];
+		external = [];
 		globals = {};
 		extraPlugins.push(copyConfigFile);
 	} else {
-		external = ['vue', '@getodk/tree-sitter-xpath/dist/tree-sitter-xpath.wasm?url'];
+		external = ['vue'];
 		globals = { vue: 'Vue' };
 
 		if (isDev) {

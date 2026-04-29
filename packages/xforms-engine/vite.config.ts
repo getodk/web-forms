@@ -41,7 +41,7 @@ export default defineConfig(({ mode }) => {
 
 	const entries = Object.values(libEntry);
 
-	const external = ['@getodk/common', '@getodk/tree-sitter-xpath/dist/tree-sitter-xpath.wasm?url'];
+	const external = ['@getodk/common'];
 
 	if (IS_SOLID_BUILD_TARGET) {
 		external.push('solid-js', 'solid-js/store');

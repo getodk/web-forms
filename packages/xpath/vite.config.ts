@@ -89,12 +89,7 @@ export default defineConfig(({ mode }) => {
 				formats: ['es'],
 			},
 			rollupOptions: {
-				external: [
-					'fs',
-					'path',
-					'temporal-polyfill',
-					'@getodk/tree-sitter-xpath/dist/tree-sitter-xpath.wasm?url',
-				],
+				external: ['fs', 'path', 'temporal-polyfill'],
 			},
 		},
 		define: {
