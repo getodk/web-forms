@@ -33,7 +33,7 @@
     "build:js": "vite build",
     "build:translations": "node scripts/merge-translations.js",
     "dev": "vite",
-    "dist-demo": "npm run build && npm run vite serve dist-demo --port 5174",
+    "dist-demo": "npm run build && vite serve dist-demo --port 5174",
     "test": "npm-run-all -nl 'test:*'",
     "test:e2e:functional:all": "playwright test --project=functional-*",
     "test:e2e:functional:chromium": "playwright test --project=functional-chromium",

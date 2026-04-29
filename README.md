@@ -437,7 +437,7 @@ npm run dev -w packages/web-forms
 This repository uses npm workspaces, so to run an npm script in any of the packages:
 
 ```sh
-npm run <script-name> -w packages/<package-name> 
+npm run <script-name> -w packages/<package-name>
 ```
 
 So instead of `cd packages/web-forms && npm test`, run `npm run test -w packages/web-forms`.

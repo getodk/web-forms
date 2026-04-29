@@ -41,7 +41,7 @@ e2e/
    Execute all functional E2E tests:
 
    ```bash
-    npm run test:e2e:functional:all -w=packages/web-forms 
+    npm run test:e2e:functional:all -w=packages/web-forms
    ```
 
    Or run specific tests:

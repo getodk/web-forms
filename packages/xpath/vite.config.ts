@@ -93,7 +93,7 @@ export default defineConfig(({ mode }) => {
 					'fs',
 					'path',
 					'temporal-polyfill',
-					'@getodk/tree-sitter-xpath/dist/tree-sitter-xpath.wasm?url'
+					'@getodk/tree-sitter-xpath/dist/tree-sitter-xpath.wasm?url',
 				],
 			},
 		},
