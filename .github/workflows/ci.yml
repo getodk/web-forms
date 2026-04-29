@@ -122,7 +122,7 @@ jobs:
       fail-fast: false
       matrix:
         target: ['Node']
-        node-version: ['24.13.0']
+        node-version: ['20.19.3', '22.12.0', '24.13.0']
         include:
           - target: 'Web'
             node-version: '24.13.0'
@@ -181,7 +181,7 @@ jobs:
       fail-fast: false
       matrix:
         target: ['Node']
-        node-version: ['24.13.0']
+        node-version: ['20.19.3', '22.12.0', '24.13.0']
         include:
           - target: 'Web'
             node-version: '24.13.0'
@@ -240,7 +240,7 @@ jobs:
       fail-fast: false
       matrix:
         target: ['Node']
-        node-version: ['24.13.0']
+        node-version: ['20.19.3', '22.12.0', '24.13.0']
         include:
           - target: 'Web'
             node-version: '24.13.0'
@@ -299,7 +299,7 @@ jobs:
       fail-fast: false
       matrix:
         target: ['Node']
-        node-version: ['24.13.0']
+        node-version: ['20.19.3', '22.12.0', '24.13.0']
         include:
           - target: 'Web'
             node-version: '24.13.0'
@@ -358,7 +358,7 @@ jobs:
       fail-fast: false
       matrix:
         target: ['Node']
-        node-version: ['24.13.0']
+        node-version: ['20.19.3', '22.12.0', '24.13.0']
         include:
           - target: 'Web'
             node-version: '24.13.0'
