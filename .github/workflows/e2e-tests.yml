@@ -40,7 +40,7 @@ jobs:
           key: build-${{ matrix.node-version }}-${{ github.sha }}
           fail-on-cache-miss: true
 
-      - run: 'npm run playwright install ${{ matrix.browser }} --with-deps'
+      - run: 'npx playwright install ${{ matrix.browser }} --with-deps'
 
       - name: 'Run functional e2e tests'
         run: 'npm run test:e2e:functional:${{ matrix.browser }} -w=packages/web-forms'
@@ -90,7 +90,7 @@ jobs:
           key: build-${{ matrix.node-version }}-${{ github.sha }}
           fail-on-cache-miss: true
 
-      - run: 'npm run playwright install ${{ matrix.browser }} --with-deps'
+      - run: 'npx playwright install ${{ matrix.browser }} --with-deps'
 
       # xvfb-run is used for visual tests to compare snapshots more accurately.
       - name: 'Run visual e2e tests'
