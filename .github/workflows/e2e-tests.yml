@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: ['22.12.0']
+        node-version: ['24.13.0']
         browser: [chromium, firefox, webkit]
 
     steps:
@@ -61,7 +61,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: ['22.12.0']
+        node-version: ['24.13.0']
         browser: [chromium, firefox, webkit]
 
     steps:
