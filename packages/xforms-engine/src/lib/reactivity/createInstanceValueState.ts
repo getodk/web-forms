@@ -242,15 +242,15 @@ const createValueChangedCalculation = (
 	}
 	const sourceElementExpression = new ActionComputationExpression('string', source);
 	const calculateValueSource = createComputedExpression(context, sourceElementExpression); // Registers listener
-	let previous = calculateValueSource();
+	let previous: string;
 	createComputed(() => {
-		if (isEditInitialLoad(context)) {
-			// reset the initial value now that the edit instance is bound
-			previous = calculateValueSource();
-		}
-		if (context.isAttached() && context.isRelevant()) {
+		if (context.isAttached()) {
 			const valueSource = calculateValueSource();
-			if (previous !== valueSource && referencesCurrentNode(context, ref)) {
+			if (
+				previous !== undefined &&
+				previous !== valueSource &&
+				referencesCurrentNode(context, ref)
+			) {
 				// Only update if value has changed
 				if (action.element.nodeName === SET_GEOPOINT_LOCAL_NAME) {
 					getGeopointValue(context, (point) => {
