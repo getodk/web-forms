@@ -513,7 +513,7 @@ If you'd like to try the functionality available on `main`, see the preview [on 
 
 ### Standard release process
 
-1. Run `npm run changeset version` to generate changelog files and version bumps from the changeset files.
+1. Run `npm run release` to generate changelog files and version bumps from the changeset files.
 2. Run `npm ci` to update `package-lock.json` with the new versions.
 3. Update translations by running `npm run translations:pull` in the root directory.
 4. Verify that the changelogs look good, commit changes, open a PR, and merge the PR.
@@ -529,7 +529,7 @@ Use this process to release critical bug fixes from a dedicated release branch w
 3. Cherry-pick the specific bug-fix commits from `main` into your patch branch (`patch-release-0.18.2`), for example: `git cherry-pick <hash1> <hash2> ... <hash6>`
    1. Resolve any conflicts caused by diverging codebases
 4. Generate the version bump and commit the changes
-   1. Run `npm run changeset version` to generate changelogs and version bump in the packages. If the cherry-picked commits don't have the necessary patch changesets, create one now by running `npm run changeset` and selecting `patch`.
+   1. Run `npm run release` to generate changelogs and version bump in the packages. If the cherry-picked commits don't have the necessary patch changesets, create one now by running `npm run changeset` and selecting `patch`.
    2. Run `npm ci` to refresh `package-lock.json`
    3. Commit these changes (e.g., `chore: release v0.18.2`)
 5. Open a PR that targets the release branch (e.g., `0.18.x`) and merge it after approval
