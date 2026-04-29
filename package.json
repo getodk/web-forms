@@ -8,11 +8,11 @@
   "type": "module",
   "version": "0.1.0",
   "engines": {
-    "node": "^20.19.3 || ^22.12.0 || ^24.11.0",
-    "npm": "11.6.1"
+    "node": "^20.19.3 || ^22.12.0 || ^24.13.0",
+    "npm": "11"
   },
   "volta": {
-    "node": "24.11.0"
+    "node": "24.13.0"
   },
   "packageManager": "npm@11.6.1",
   "workspaces": [
