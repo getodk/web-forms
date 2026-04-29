@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: ['22.12.0']
+        node-version: ['24.13.0']
         browser: [chromium, firefox, webkit]
 
     steps:
@@ -27,7 +27,7 @@ jobs:
           path: |
             node_modules
             **/node_modules
-          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.yarnrc.yml', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
+          key: install-${{ matrix.node-version }}-${{ hashFiles('package-lock.json', '.npmrc', '.github/workflows/ci.yml', 'examples/*/package-lock.json', 'packages/*/package.json', 'packages/*/package-lock.json') }}
           fail-on-cache-miss: true
 
       - uses: 'actions/cache@v5'
@@ -40,10 +40,10 @@ jobs:
           key: build-${{ matrix.node-version }}-${{ github.sha }}
           fail-on-cache-miss: true
 
-      - run: 'yarn playwright install ${{ matrix.browser }} --with-deps'
+      - run: 'npx playwright install ${{ matrix.browser }} --with-deps'
 
       - name: 'Run functional e2e tests'
-        run: 'yarn workspace @getodk/web-forms test:e2e:functional:${{ matrix.browser }}'
+        run: 'npm run test:e2e:functional:${{ matrix.browser }} -w=packages/web-forms'
 
       - name: 'Upload Playwright results'
         if: always()
@@ -61,7 +61,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: ['22.12.0']
+        node-version: ['24.13.0']
         browser: [chromium, firefox, webkit]
 
     steps:
@@ -77,7 +77,7 @@ jobs:
           path: |
             node_modules
             **/node_modules
-          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.yarnrc.yml', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
+          key: install-${{ matrix.node-version }}-${{ hashFiles('package-lock.json', '.npmrc', '.github/workflows/ci.yml', 'examples/*/package-lock.json', 'packages/*/package.json', 'packages/*/package-lock.json') }}
           fail-on-cache-miss: true
 
       - uses: 'actions/cache@v5'
@@ -90,11 +90,11 @@ jobs:
           key: build-${{ matrix.node-version }}-${{ github.sha }}
           fail-on-cache-miss: true
 
-      - run: 'yarn playwright install ${{ matrix.browser }} --with-deps'
+      - run: 'npx playwright install ${{ matrix.browser }} --with-deps'
 
       # xvfb-run is used for visual tests to compare snapshots more accurately.
       - name: 'Run visual e2e tests'
-        run: 'xvfb-run --auto-servernum yarn workspace @getodk/web-forms test:e2e:visual:${{ matrix.browser }}'
+        run: 'xvfb-run --auto-servernum npm run test:e2e:visual:${{ matrix.browser }} -w=packages/web-forms'
 
       - name: 'Upload Playwright results'
         if: always()

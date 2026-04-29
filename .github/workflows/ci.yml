@@ -45,7 +45,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: ['20.19.3', '22.12.0', '24.11.0']
+        node-version: ['20.19.3', '22.12.0', '24.13.0']
 
     steps:
       - uses: 'actions/checkout@v5'
@@ -60,7 +60,7 @@ jobs:
           path: |
             node_modules
             **/node_modules
-          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.yarnrc.yml', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
+          key: install-${{ matrix.node-version }}-${{ hashFiles('package-lock.json', '.npmrc', '.github/workflows/ci.yml', 'examples/*/package-lock.json', 'packages/*/package.json', 'packages/*/package-lock.json') }}
 
       - uses: 'actions/cache@v5'
         id: cache-build
@@ -71,8 +71,8 @@ jobs:
             packages/web-forms/dist-demo
           key: build-${{ matrix.node-version }}-${{ github.sha }}
 
-      - run: 'yarn install --immutable'
-      - run: 'yarn build --force'
+      - run: 'npm ci'
+      - run: 'npm run build'
 
   lint:
     name: 'Lint (global)'
@@ -81,7 +81,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ['24.11.0']
+        node-version: ['24.13.0']
 
     steps:
       - uses: 'actions/checkout@v5'
@@ -96,7 +96,7 @@ jobs:
           path: |
             node_modules
             **/node_modules
-          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.yarnrc.yml', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
+          key: install-${{ matrix.node-version }}-${{ hashFiles('package-lock.json', '.npmrc', '.github/workflows/ci.yml', 'examples/*/package-lock.json', 'packages/*/package.json', 'packages/*/package-lock.json') }}
           fail-on-cache-miss: true
 
       - uses: 'actions/cache@v5'
@@ -109,9 +109,9 @@ jobs:
           key: build-${{ matrix.node-version }}-${{ github.sha }}
           fail-on-cache-miss: true
 
-      - run: 'yarn lint'
+      - run: 'npm run lint'
 
-      - run: 'yarn format:checkonly'
+      - run: 'npm run format:checkonly'
 
   odk-common:
     name: '@getodk/common'
@@ -122,16 +122,16 @@ jobs:
       fail-fast: false
       matrix:
         target: ['Node']
-        node-version: ['20.19.3', '22.12.0', '24.11.0']
+        node-version: ['20.19.3', '22.12.0', '24.13.0']
         include:
           - target: 'Web'
-            node-version: '24.11.0'
+            node-version: '24.13.0'
             browser: chromium
           - target: 'Web'
-            node-version: '24.11.0'
+            node-version: '24.13.0'
             browser: firefox
           - target: 'Web'
-            node-version: '24.11.0'
+            node-version: '24.13.0'
             browser: webkit
 
     steps:
@@ -147,7 +147,7 @@ jobs:
           path: |
             node_modules
             **/node_modules
-          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.yarnrc.yml', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
+          key: install-${{ matrix.node-version }}-${{ hashFiles('package-lock.json', '.npmrc', '.github/workflows/ci.yml', 'examples/*/package-lock.json', 'packages/*/package.json', 'packages/*/package-lock.json') }}
           fail-on-cache-miss: true
 
       - uses: 'actions/cache@v5'
@@ -161,16 +161,16 @@ jobs:
           fail-on-cache-miss: true
 
       - if: ${{ matrix.target == 'Node' }}
-        run: 'yarn workspace @getodk/common test:types'
+        run: 'npm run test:types -w packages/common'
 
       - if: ${{ matrix.target == 'Node' }}
-        run: 'yarn workspace @getodk/common test-node:jsdom'
+        run: 'npm run test-node:jsdom -w packages/common'
 
       - if: ${{ matrix.target == 'Web' }}
-        run: 'yarn playwright install ${{ matrix.browser }} --with-deps'
+        run: 'npx playwright install ${{ matrix.browser }} --with-deps'
 
       - if: ${{ matrix.target == 'Web' }}
-        run: 'yarn workspace @getodk/common test-browser:${{ matrix.browser }}'
+        run: 'npm run test-browser:${{ matrix.browser }} -w packages/common'
 
   xforms-engine:
     name: '@getodk/xforms-engine'
@@ -181,16 +181,16 @@ jobs:
       fail-fast: false
       matrix:
         target: ['Node']
-        node-version: ['20.19.3', '22.12.0', '24.11.0']
+        node-version: ['20.19.3', '22.12.0', '24.13.0']
         include:
           - target: 'Web'
-            node-version: '24.11.0'
+            node-version: '24.13.0'
             browser: chromium
           - target: 'Web'
-            node-version: '24.11.0'
+            node-version: '24.13.0'
             browser: firefox
           - target: 'Web'
-            node-version: '24.11.0'
+            node-version: '24.13.0'
             browser: webkit
 
     steps:
@@ -206,7 +206,7 @@ jobs:
           path: |
             node_modules
             **/node_modules
-          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.yarnrc.yml', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
+          key: install-${{ matrix.node-version }}-${{ hashFiles('package-lock.json', '.npmrc', '.github/workflows/ci.yml', 'examples/*/package-lock.json', 'packages/*/package.json', 'packages/*/package-lock.json') }}
           fail-on-cache-miss: true
 
       - uses: 'actions/cache@v5'
@@ -220,16 +220,16 @@ jobs:
           fail-on-cache-miss: true
 
       - if: ${{ matrix.target == 'Node' }}
-        run: 'yarn workspace @getodk/xforms-engine test:types'
+        run: 'npm run test:types -w=packages/xforms-engine'
 
       - if: ${{ matrix.target == 'Node' }}
-        run: 'yarn workspace @getodk/xforms-engine test-node:jsdom'
+        run: 'npm run test-node:jsdom -w=packages/xforms-engine'
 
       - if: ${{ matrix.target == 'Web' }}
-        run: 'yarn playwright install ${{ matrix.browser }} --with-deps'
+        run: 'npx playwright install ${{ matrix.browser }} --with-deps'
 
       - if: ${{ matrix.target == 'Web' }}
-        run: 'yarn workspace @getodk/xforms-engine test-browser:${{ matrix.browser }}'
+        run: 'npm run test-browser:${{ matrix.browser }} -w=packages/xforms-engine'
 
   scenario:
     name: '@getodk/scenario'
@@ -240,16 +240,16 @@ jobs:
       fail-fast: false
       matrix:
         target: ['Node']
-        node-version: ['20.19.3', '22.12.0', '24.11.0']
+        node-version: ['20.19.3', '22.12.0', '24.13.0']
         include:
           - target: 'Web'
-            node-version: '24.11.0'
+            node-version: '24.13.0'
             browser: chromium
           - target: 'Web'
-            node-version: '24.11.0'
+            node-version: '24.13.0'
             browser: firefox
           - target: 'Web'
-            node-version: '24.11.0'
+            node-version: '24.13.0'
             browser: webkit
 
     steps:
@@ -265,7 +265,7 @@ jobs:
           path: |
             node_modules
             **/node_modules
-          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.yarnrc.yml', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
+          key: install-${{ matrix.node-version }}-${{ hashFiles('package-lock.json', '.npmrc', '.github/workflows/ci.yml', 'examples/*/package-lock.json', 'packages/*/package.json', 'packages/*/package-lock.json') }}
           fail-on-cache-miss: true
 
       - uses: 'actions/cache@v5'
@@ -279,16 +279,16 @@ jobs:
           fail-on-cache-miss: true
 
       - if: ${{ matrix.target == 'Node' }}
-        run: 'yarn workspace @getodk/scenario test:types'
+        run: 'npm run test:types -w=packages/scenario'
 
       - if: ${{ matrix.target == 'Node' }}
-        run: 'yarn workspace @getodk/scenario test-node:jsdom'
+        run: 'npm run test-node:jsdom -w=packages/scenario'
 
       - if: ${{ matrix.target == 'Web' }}
-        run: 'yarn playwright install ${{ matrix.browser }} --with-deps'
+        run: 'npx playwright install ${{ matrix.browser }} --with-deps'
 
       - if: ${{ matrix.target == 'Web' }}
-        run: 'yarn workspace @getodk/scenario test-browser:${{ matrix.browser }}'
+        run: 'npm run test-browser:${{ matrix.browser }} -w=packages/scenario'
 
   xpath:
     name: '@getodk/xpath'
@@ -299,16 +299,16 @@ jobs:
       fail-fast: false
       matrix:
         target: ['Node']
-        node-version: ['20.19.3', '22.12.0', '24.11.0']
+        node-version: ['20.19.3', '22.12.0', '24.13.0']
         include:
           - target: 'Web'
-            node-version: '24.11.0'
+            node-version: '24.13.0'
             browser: chromium
           - target: 'Web'
-            node-version: '24.11.0'
+            node-version: '24.13.0'
             browser: firefox
           - target: 'Web'
-            node-version: '24.11.0'
+            node-version: '24.13.0'
             browser: webkit
 
     steps:
@@ -324,7 +324,7 @@ jobs:
           path: |
             node_modules
             **/node_modules
-          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.yarnrc.yml', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
+          key: install-${{ matrix.node-version }}-${{ hashFiles('package-lock.json', '.npmrc', '.github/workflows/ci.yml', 'examples/*/package-lock.json', 'packages/*/package.json', 'packages/*/package-lock.json') }}
           fail-on-cache-miss: true
 
       - uses: 'actions/cache@v5'
@@ -338,16 +338,16 @@ jobs:
           fail-on-cache-miss: true
 
       - if: ${{ matrix.target == 'Node' }}
-        run: 'yarn workspace @getodk/xpath test:types'
+        run: 'npm run test:types -w=packages/xpath'
 
       - if: ${{ matrix.target == 'Node' }}
-        run: 'yarn workspace @getodk/xpath test-node:jsdom'
+        run: 'npm run test-node:jsdom -w=packages/xpath'
 
       - if: ${{ matrix.target == 'Web' }}
-        run: 'yarn playwright install ${{ matrix.browser }} --with-deps'
+        run: 'npx playwright install ${{ matrix.browser }} --with-deps'
 
       - if: ${{ matrix.target == 'Web' }}
-        run: 'yarn workspace @getodk/xpath test-browser:${{ matrix.browser }}'
+        run: 'npm run test-browser:${{ matrix.browser }} -w=packages/xpath'
 
   web-forms:
     name: '@getodk/web-forms'
@@ -358,16 +358,16 @@ jobs:
       fail-fast: false
       matrix:
         target: ['Node']
-        node-version: ['20.19.3', '22.12.0', '24.11.0']
+        node-version: ['20.19.3', '22.12.0', '24.13.0']
         include:
           - target: 'Web'
-            node-version: '24.11.0'
+            node-version: '24.13.0'
             browser: chromium
           - target: 'Web'
-            node-version: '24.11.0'
+            node-version: '24.13.0'
             browser: firefox
           - target: 'Web'
-            node-version: '24.11.0'
+            node-version: '24.13.0'
             browser: webkit
 
     steps:
@@ -383,7 +383,7 @@ jobs:
           path: |
             node_modules
             **/node_modules
-          key: install-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', '.yarnrc.yml', '.github/workflows/ci.yml', 'examples/*/yarn.lock', 'packages/*/package.json', 'packages/*/yarn.lock') }}
+          key: install-${{ matrix.node-version }}-${{ hashFiles('package-lock.json', '.npmrc', '.github/workflows/ci.yml', 'examples/*/package-lock.json', 'packages/*/package.json', 'packages/*/package-lock.json') }}
           fail-on-cache-miss: true
 
       - uses: 'actions/cache@v5'
@@ -397,24 +397,24 @@ jobs:
           fail-on-cache-miss: true
 
       - if: ${{ matrix.target == 'Node' }}
-        run: 'yarn workspace @getodk/web-forms test:types'
+        run: 'npm run test:types -w=packages/web-forms'
 
       - if: ${{ matrix.target == 'Node' }}
-        run: 'yarn workspace @getodk/web-forms test-node:jsdom'
+        run: 'npm run test-node:jsdom -w=packages/web-forms'
 
       - if: ${{ matrix.target == 'Web' }}
-        run: 'yarn playwright install ${{ matrix.browser }} --with-deps'
+        run: 'npx playwright install ${{ matrix.browser }} --with-deps'
 
       # TODO: hopefully temporary! Attempt to mitigate flakiness in webkit by
       # running twice when first run fails. At least in local testing, this has
       # been near (if not at) 100% success.
       - if: ${{ matrix.target == 'Web' && matrix.browser == 'webkit' }}
-        run: 'yarn workspace @getodk/web-forms test-browser:${{ matrix.browser }} || yarn workspace @getodk/web-forms test-browser:${{ matrix.browser }}'
+        run: 'npm run test-browser:${{ matrix.browser }} -w=packages/web-forms || npm run test-browser:${{ matrix.browser }} -w=packages/web-forms'
 
       - if: ${{ matrix.target == 'Web' && matrix.browser != 'webkit' }}
-        run: 'yarn workspace @getodk/web-forms test-browser:${{ matrix.browser }}'
+        run: 'npm run test-browser:${{ matrix.browser }} -w=packages/web-forms'
 
-      - if: ${{ matrix.node-version == '24.11.0' && matrix.target == 'Node' }}
+      - if: ${{ matrix.node-version == '24.13.0' && matrix.target == 'Node' }}
         uses: actions/upload-artifact@v7
         with:
           name: dist-demo

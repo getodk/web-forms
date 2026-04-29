@@ -25,25 +25,20 @@ jobs:
       - name: Enable Corepack
         run: corepack enable
 
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-
-      - name: Cache Yarn dependencies
+      - name: Cache dependencies
         uses: actions/cache@v5
         with:
           path: |
-            ${{ steps.yarn-cache-dir-path.outputs.dir }}
             **/node_modules
-          key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+          key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
           restore-keys: |
-            yarn-${{ runner.os }}-
+            npm-${{ runner.os }}-
 
       - name: Install dependencies
-        run: yarn install --immutable
+        run: npm ci
 
       - name: Build packages
-        run: yarn build
+        run: npm run build
 
       - name: Publish packages
-        run: yarn changeset publish
+        run: npm run changeset publish
