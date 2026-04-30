@@ -430,7 +430,7 @@ To run ODK Web Forms from this repository:
 
 ```sh
 npm ci
-npm build
+npm run build
 npm run dev -w packages/web-forms
 ```
 
