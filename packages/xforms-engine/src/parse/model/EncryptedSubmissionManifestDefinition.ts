@@ -1,5 +1,5 @@
 import {
-	ODK_SUBMISSIONS_NAMESPACE_URI,
+	ODK_ENCRYPTED_NAMESPACE_URI,
 	OPENROSA_XFORMS_NAMESPACE_URI,
 } from '@getodk/common/constants/xmlns.ts';
 import {
@@ -21,24 +21,24 @@ export class EncryptedSubmissionManifestDefinition {
 	}
 
 	serialize(): string {
-		const manifest = document.createElementNS(ODK_SUBMISSIONS_NAMESPACE_URI, 'data');
+		const manifest = document.createElementNS(ODK_ENCRYPTED_NAMESPACE_URI, 'data');
 		manifest.setAttribute('encrypted', 'yes');
 		manifest.setAttribute('id', this.formId);
 		if (this.formVersion) {
 			manifest.setAttribute('version', this.formVersion);
 		}
 
-		const keyEl = document.createElementNS(ODK_SUBMISSIONS_NAMESPACE_URI, 'base64EncryptedKey');
+		const keyEl = document.createElementNS(ODK_ENCRYPTED_NAMESPACE_URI, 'base64EncryptedKey');
 		keyEl.textContent = this.encryptedSymmetricKey;
 		manifest.appendChild(keyEl);
 
-		const xmlFileEl = document.createElementNS(ODK_SUBMISSIONS_NAMESPACE_URI, 'encryptedXmlFile');
+		const xmlFileEl = document.createElementNS(ODK_ENCRYPTED_NAMESPACE_URI, 'encryptedXmlFile');
 		xmlFileEl.textContent = ENCRYPTED_SUBMISSION_ATTACHMENT_NAME;
 		manifest.appendChild(xmlFileEl);
 
 		for (const attachment of this.attachments) {
-			const mediaEl = document.createElementNS(ODK_SUBMISSIONS_NAMESPACE_URI, 'media');
-			const fileEl = document.createElementNS(ODK_SUBMISSIONS_NAMESPACE_URI, 'file');
+			const mediaEl = document.createElementNS(ODK_ENCRYPTED_NAMESPACE_URI, 'media');
+			const fileEl = document.createElementNS(ODK_ENCRYPTED_NAMESPACE_URI, 'file');
 			fileEl.textContent = attachment;
 			mediaEl.appendChild(fileEl);
 			manifest.appendChild(mediaEl);

@@ -68,7 +68,7 @@ describe('Form submission encryption', () => {
 		expect(submissionFilename).to.equal('xml_submission_file');
 		const submission = await getBlobText(file);
 		expect(submission).to.contain(
-			'<data xmlns="http://opendatakit.org/submissions" encrypted="yes" id="encrypted">'
+			'<data xmlns="http://www.opendatakit.org/xforms/encrypted" encrypted="yes" id="encrypted">'
 		);
 		expect(submission).to.contain('<encryptedXmlFile>submission.xml.enc</encryptedXmlFile>');
 		expect(submission).to.contain(
