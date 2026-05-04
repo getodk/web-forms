@@ -161,7 +161,7 @@ const orientation = props.node.appearances.vertical ? 'vertical' : 'horizontal';
 .p-slider {
 	background-color: var(--odk-primary-light-background-color);
 
-	&::before { // Increasing range hit target. 
+	&::before { // Increasing range hit target.
 		content: "";
 		position: absolute;
 		top: -10px;
