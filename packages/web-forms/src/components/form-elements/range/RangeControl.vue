@@ -56,11 +56,11 @@ const orientation = props.node.appearances.vertical ? 'vertical' : 'horizontal';
 
 	<template v-else>
 		<div :class="['range-control-container', orientation]">
+			<div class="range-value">
+				<span>{{ numberValue }}</span>
+			</div>
 			<div class="range-bound range-min">
 				{{ start }}
-			</div>
-			<div class="range-value">
-				{{ numberValue }}
 			</div>
 			<RangeSlider
 				:id="node.nodeId"
@@ -109,49 +109,50 @@ const orientation = props.node.appearances.vertical ? 'vertical' : 'horizontal';
 	--track-value-emphasis: 0.125rem;
 	--thumb-size: 1.25rem;
 	--tick-size: 0.125rem;
+	--gutter-width: 2lh;
 
 	position: relative;
 
 	.range-bound {
 		position: absolute;
 		line-height: 1;
-	}
-
-	:deep(.p-slider-handle) {
-		anchor-name: --current-value;
+		font-size: var(--odk-hint-font-size);
+		color: var(--odk-muted-text-color);
 	}
 
 	.range-value {
-		position: absolute;
-		position-anchor: --current-value;
+		font-weight: bold;
 	}
 
 	&.horizontal {
 		height: var(--track-size);
-		padding: 2lh 0.5rem 2lh 0.5rem;
+		padding: var(--gutter-width) var(--odk-spacing-m);
 
 		.range-bound {
 			bottom: 0;
 		}
 
 		.range-min {
-			left: 1px;
+			left: 0;
 		}
 
 		.range-max {
-			right: 4px;
+			right: 0;
 		}
 
 		.range-value {
-			justify-self: anchor-center;
-			bottom: anchor(top);
-			margin-bottom: 0.25rem;
+			text-align: center;
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
 		}
 	}
 
 	&.vertical {
+
 		width: var(--track-size);
-		padding: 0.5lh 2lh 0.5lh;
+		padding: var(--odk-spacing-m) var(--gutter-width);
 
 		// Vertical appearance is centered. Consistent with
 		// https://docs.getodk.org/form-question-types/#vertical-range-widget
@@ -163,17 +164,27 @@ const orientation = props.node.appearances.vertical ? 'vertical' : 'horizontal';
 		}
 
 		.range-min {
-			top: 1px;
+			top: 0;
 		}
 
 		.range-max {
-			bottom: 1px;
+			bottom: 0;
 		}
 
 		.range-value {
-			align-self: anchor-center;
-			right: anchor(left);
-			margin-right: 0.5rem;
+			display: flex;
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			align-items: center;
+			right: var(--gutter-width);
+			padding-right: var(--odk-spacing-l);
+
+			span {
+				display: inline-block;
+				width: var(--gutter-width);
+				text-align: right;
+			}
 		}
 	}
 }
