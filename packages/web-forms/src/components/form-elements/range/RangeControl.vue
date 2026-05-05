@@ -178,8 +178,6 @@ const orientation = props.node.appearances.vertical ? 'vertical' : 'horizontal';
 	}
 }
 
-
-
 // = track (full-width; full-height in vertical orientation)
 .p-slider {
 	background-color: var(--odk-primary-light-background-color);
