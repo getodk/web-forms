@@ -59,6 +59,9 @@ const orientation = props.node.appearances.vertical ? 'vertical' : 'horizontal';
 			<div class="range-bound range-min">
 				{{ start }}
 			</div>
+			<div class="range-value">
+				{{ numberValue }}
+			</div>
 			<RangeSlider
 				:id="node.nodeId"
 				:disabled="node.currentState.readonly"
@@ -88,10 +91,6 @@ const orientation = props.node.appearances.vertical ? 'vertical' : 'horizontal';
 //   non-trivial to integrate with PrimeVue's styling. I backed out due to the
 //   complexity.
 //
-// - There is no way to indicate the present value. The official MUI (React)
-//   component does this with a tooltip which shows when hovering the "thumb"
-//   control.
-//
 // - Should we flip either of the following in RTL languages?
 //
 //    - Horizontal direction of the control
@@ -118,26 +117,41 @@ const orientation = props.node.appearances.vertical ? 'vertical' : 'horizontal';
 		line-height: 1;
 	}
 
+	:deep(.p-slider-handle) {
+		anchor-name: --current-value;
+	}
+
+	.range-value {
+		position: absolute;
+		position-anchor: --current-value;
+	}
+
 	&.horizontal {
 		height: var(--track-size);
-		padding: 0 0.5rem 2lh 0.5rem;
+		padding: 2lh 0.5rem 2lh 0.5rem;
 
 		.range-bound {
 			bottom: 0;
 		}
 
 		.range-min {
-			left: 0;
+			left: 1px;
 		}
 
 		.range-max {
-			right: 0;
+			right: 4px;
+		}
+
+		.range-value {
+			justify-self: anchor-center;
+			bottom: anchor(top);
+			margin-bottom: 0.25rem;
 		}
 	}
 
 	&.vertical {
 		width: var(--track-size);
-		padding: 0.5lh 3rem 0.5lh;
+		padding: 0.5lh 2lh 0.5lh;
 
 		// Vertical appearance is centered. Consistent with
 		// https://docs.getodk.org/form-question-types/#vertical-range-widget
@@ -145,17 +159,26 @@ const orientation = props.node.appearances.vertical ? 'vertical' : 'horizontal';
 
 		.range-bound {
 			right: 0;
+			width: 1rem;
 		}
 
 		.range-min {
-			top: 0;
+			top: 1px;
 		}
 
 		.range-max {
-			bottom: 0;
+			bottom: 1px;
+		}
+
+		.range-value {
+			align-self: anchor-center;
+			right: anchor(left);
+			margin-right: 0.5rem;
 		}
 	}
 }
+
+
 
 // = track (full-width; full-height in vertical orientation)
 .p-slider {
