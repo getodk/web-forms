@@ -127,9 +127,9 @@ export const select1 = (ref: string, ...children: XFormsElement[]): XFormsElemen
 };
 
 interface RangeAttributes {
-	start: string;
-	end: string;
-	step: string;
+	start: number;
+	end: number;
+	step: number;
 }
 export const range = (
 	ref: string,

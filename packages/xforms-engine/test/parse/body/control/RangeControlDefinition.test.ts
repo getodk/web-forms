@@ -15,7 +15,7 @@ import { XFormDefinition } from '../../../../src/parse/XFormDefinition.ts';
 import { XFormDOM } from '../../../../src/parse/XFormDOM.ts';
 
 describe('RangeControlDefinition', () => {
-	const create = (type: string, start: string, end: string, step: string) => {
+	const create = (type: string, start: number, end: number, step: number) => {
 		const xform = html(
 			head(
 				title('Range definition'),
@@ -37,14 +37,14 @@ describe('RangeControlDefinition', () => {
 	describe('bounds', () => {
 		describe('int', () => {
 			it('parses', () => {
-				const definition = create('int', '-2', '10', '2');
+				const definition = create('int', -2, 10, 2);
 				expect(definition.bounds.start).to.equal('-2');
 				expect(definition.bounds.step).to.equal('2');
 				expect(definition.bounds.end).to.equal('10');
 			});
 
 			it('takes the absolute value of step', () => {
-				const definition = create('int', '0', '10', '-2');
+				const definition = create('int', 0, 10, -2);
 				expect(definition.bounds.start).to.equal('0');
 				expect(definition.bounds.step).to.equal('2');
 				expect(definition.bounds.end).to.equal('10');
@@ -53,14 +53,14 @@ describe('RangeControlDefinition', () => {
 
 		describe('decimal', () => {
 			it('parses', () => {
-				const definition = create('decimal', '-2.5', '10.5', '2.5');
+				const definition = create('decimal', -2.5, 10.5, 2.5);
 				expect(definition.bounds.start).to.equal('-2.5');
 				expect(definition.bounds.step).to.equal('2.5');
 				expect(definition.bounds.end).to.equal('10.5');
 			});
 
 			it('takes the absolute value of step', () => {
-				const definition = create('decimal', '0', '10', '-2.5');
+				const definition = create('decimal', 0, 10, -2.5);
 				expect(definition.bounds.start).to.equal('0');
 				expect(definition.bounds.step).to.equal('2.5');
 				expect(definition.bounds.end).to.equal('10');
