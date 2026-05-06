@@ -46,18 +46,21 @@ const assertNumericStringAttribute: AssertNumericStringAttribute = (localName, v
 	}
 };
 
-const parseNumericStringAttribute = (
-	element: Element,
-	localName: string,
-	unsign?: boolean
-): NumericString => {
-	let value = element.getAttribute(localName);
-
-	if (unsign === true && value?.length && value.startsWith('-')) {
-		value = value.substring(1);
-	}
+const parseNumericStringAttribute = (element: Element, localName: string): NumericString => {
+	const value = element.getAttribute(localName);
 
 	assertNumericStringAttribute(localName, value);
+
+	return value;
+};
+
+const abs = (value: string | null) => (value?.startsWith('-') ? value.substring(1) : value);
+
+const parseNumericStringAttributeAbs = (element: Element, localName: string): NumericString => {
+	const value = abs(element.getAttribute(localName));
+
+	assertNumericStringAttribute(localName, value);
+
 	return value;
 };
 
@@ -76,15 +79,13 @@ const parseNumericStringAttribute = (
  * checking only that they appear to be numeric values. We also preserve the
  * attributes' names here, for consistency with the spec.
  *
- * Downstream, we parse these to their appropriate numeric runtime types, and
- * alias them to their more conventional names (i.e. "start" -> "min", "end" ->
- * "max").
+ * Downstream, we parse these to their appropriate numeric runtime types.
  */
 export class RangeControlBoundsDefinition {
 	static from(element: Element) {
 		const start = parseNumericStringAttribute(element, 'start');
 		const end = parseNumericStringAttribute(element, 'end');
-		const step = parseNumericStringAttribute(element, 'step', true);
+		const step = parseNumericStringAttributeAbs(element, 'step');
 
 		return new this(start, end, step);
 	}
