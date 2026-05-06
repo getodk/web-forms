@@ -46,11 +46,18 @@ const assertNumericStringAttribute: AssertNumericStringAttribute = (localName, v
 	}
 };
 
-const parseNumericStringAttribute = (element: Element, localName: string): NumericString => {
-	const value = element.getAttribute(localName);
+const parseNumericStringAttribute = (
+	element: Element,
+	localName: string,
+	unsign?: boolean
+): NumericString => {
+	let value = element.getAttribute(localName);
+
+	if (unsign === true && value?.length && value.startsWith('-')) {
+		value = value.substring(1);
+	}
 
 	assertNumericStringAttribute(localName, value);
-
 	return value;
 };
 
@@ -77,7 +84,7 @@ export class RangeControlBoundsDefinition {
 	static from(element: Element) {
 		const start = parseNumericStringAttribute(element, 'start');
 		const end = parseNumericStringAttribute(element, 'end');
-		const step = parseNumericStringAttribute(element, 'step');
+		const step = parseNumericStringAttribute(element, 'step', true);
 
 		return new this(start, end, step);
 	}
