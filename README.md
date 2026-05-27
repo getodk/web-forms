@@ -4,7 +4,8 @@ With ODK Web Forms, you can define forms with powerful logic using the spreadshe
 
 The packages are available [on npm](https://www.npmjs.com/search?q=getodk).
 
-## This repository is archived
+> [!WARNING]
+> This repository is archived
 
 Development of ODK Web Forms has moved to the [ODK Central Frontend](https://github.com/getodk/central-frontend) repository. This allows us to write end-to-end tests that cover the full form-filling experience, which speeds up development and helps us catch regressions early. We timed this change to coincide with Web Forms becoming the default for new forms in ODK Central.
 
@@ -13,6 +14,7 @@ We continue to publish the following packages to npm:
 - [`@getodk/web-forms`](https://www.npmjs.com/package/@getodk/web-forms) — Vue component for form filling
 - [`@getodk/xforms-engine`](https://www.npmjs.com/package/@getodk/xforms-engine) — XForms engine
 - [`@getodk/xpath`](https://www.npmjs.com/package/@getodk/xpath) — XPath evaluator with ODK XForms extensions
+- [`@getodk/tree-sitter-xpath`](https://www.npmjs.com/package/@getodk/tree-sitter-xpath) — XPath grammar for tree-sitter
 
 **For fork maintainers:** if you maintain a fork of this repository or of Central Frontend with local changes, you should be able to migrate those changes without manually recreating moved files. We recommend planning your update after the Central v2026.2 release in June 2026. For more details and guidance, see the [announcement on the ODK forum](https://forum.getodk.org/t/migrating-web-forms-code-to-central-frontend-repository/58177).
 
@@ -378,4 +380,4 @@ While XLSForm is a powerful form authoring format, it doesn't have clearly defin
 
 ### Why move development to Central Frontend?
 
-Developing Web Forms inside Central Frontend allows us to write end-to-end tests covering the full form-filling experience in its primary distribution environment. This speeds up development and helps us catch regressions early. See the [announcement on the ODK forum](https://forum.getodk.org/) for more details.
+Developing Web Forms inside Central Frontend allows us to write end-to-end tests covering the full form-filling experience in its primary distribution environment. This speeds up development and helps us catch regressions early. See the [announcement on the ODK forum](https://forum.getodk.org/t/migrating-web-forms-code-to-central-frontend-repository/58177) for more details.
