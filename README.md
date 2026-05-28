@@ -2,28 +2,21 @@
 
 With ODK Web Forms, you can define forms with powerful logic using the spreadsheet-based [XLSForm standard](https://docs.getodk.org/xlsform/). Use [our Vue-based frontend](/packages/web-forms/) or build your own user experience around [the engine](/packages/xforms-engine/)!
 
-You can try a preview [on the ODK website](https://getodk.org/web-forms-preview/), which is updated nightly to reflect `main`. The packages are also available [on npm](https://www.npmjs.com/search?q=getodk).
+The packages are available [on npm](https://www.npmjs.com/search?q=getodk).
 
-> [!IMPORTANT]
-> ODK Web Forms is currently pre-release. We don't yet guarantee that its interfaces are stable and it is missing many features that are available in XLSForm form definitions.
+> [!WARNING]
+> This repository is archived
 
-https://github.com/getodk/web-forms/assets/447837/9b25e1bc-d209-462c-8e9e-3259bd8c5aa6
+Development of ODK Web Forms has moved to the [ODK Central Frontend](https://github.com/getodk/central-frontend) repository. This allows us to write end-to-end tests that cover the full form-filling experience, which speeds up development and helps us catch regressions early. We timed this change to coincide with Web Forms becoming the default for new forms in ODK Central.
 
-## Project status
+We continue to publish the following packages to npm:
 
-ODK Web Forms is developed by the [ODK team](https://getodk.org/).
+- [`@getodk/web-forms`](https://www.npmjs.com/package/@getodk/web-forms) — Vue component for form filling
+- [`@getodk/xforms-engine`](https://www.npmjs.com/package/@getodk/xforms-engine) — XForms engine
+- [`@getodk/xpath`](https://www.npmjs.com/package/@getodk/xpath) — XPath evaluator with ODK XForms extensions
+- [`@getodk/tree-sitter-xpath`](https://www.npmjs.com/package/@getodk/tree-sitter-xpath) — XPath grammar for tree-sitter
 
-The ODK Web Forms frontend is designed to provide a similar user experience to the [ODK Collect](https://play.google.com/store/apps/details?id=org.odk.collect.android) mobile data collection app. Our short-term goal is to use it to replace [Enketo](https://github.com/enketo/enketo/) in the [ODK Central form server](https://github.com/getodk/central) for web-based form filling and editing existing submissions.
-
-Longer-term, we hope to use the engine to replace [JavaRosa](https://github.com/getodk/javarosa) to power ODK Collect, so that we can maintain a single correct and extensible form engine.
-
-Here are some of our high-level priorities to get to a production-ready state:
-
-- Adapt tests from JavaRosa and Enketo and get them passing to ensure alignment with the [ODK XForms spec](https://getodk.github.io/xforms-spec/)
-- Implement all types and appearances defined in [XLSForm](https://xlsform.org/en/ref-table/)
-- Define a thoughtful interface for host applications that balances ease of use and flexibility
-
-We welcome discussion about the project [on the ODK forum](https://forum.getodk.org/)! The forum is generally the preferred place for questions, issue reports, and feature requests unless you have information to add to an existing issue.
+**For fork maintainers:** if you maintain a fork of this repository or of Central Frontend with local changes, you should be able to migrate those changes without manually recreating moved files. We recommend planning your update after the Central v2026.2 release in June 2026. For more details and guidance, see the [announcement on the ODK forum](https://forum.getodk.org/t/migrating-web-forms-code-to-central-frontend-repository/58177).
 
 ### Feature matrix
 
@@ -361,10 +354,6 @@ This section is auto generated. Please update `feature-matrix.json` and then run
 
 Enketo is critical infrastructure for a number of organizations and used in many different ways. As its maintainer, we found deeper changes to be challenging because they often led to regressions, many times in functionality that we don't use ourselves. We hope that the narrower scope of ODK Web Forms (in particular, no transformation step and no standalone service) will allow us to iterate quickly and align more closely with Collect while allowing organizations that have built infrastructure around Enketo to continue using it as they prefer.
 
-### What will happen to [Enketo](https://github.com/enketo/enketo/)?
-
-We are committed to continuing its maintenance through the end of 2024. We are actively seeking new maintainers and will offer some transitional support.
-
 ### Why not build a web frontend around [JavaRosa](https://github.com/getodk/javarosa/)?
 
 After many years of maintaining JavaRosa and a few maintaining Enketo, we have learned a lot about how we'd like to structure an ODK XForms engine to isolate concerns and reduce the risk of regressions. We believe a fresh start will give us an opportunity to build strong patterns that will allow for a faster development pace with fewer bugs and performance issues.
@@ -389,156 +378,6 @@ We want to be able to use this code in browsers but also in backends and eventua
 
 While XLSForm is a powerful form authoring format, it doesn't have clearly defined engine semantics or a formal specification. An XLSForm engine would have to refer to the underlying ODK XForms specification for much of its behavior and represent the form in a way that's appropriate for XPath querying.
 
-### When are you going to add XYZ?
+### Why move development to Central Frontend?
 
-If there's specific functionality you're eager to see, please let us know [on the ODK forum](https://forum.getodk.org/). You can see what we're currently prioritizing on [the project board](https://github.com/orgs/getodk/projects/10/views/1) and the [ODK roadmap](https://getodk.org/roadmap).
-
-### The default theme looks very... gray. Will I be able to customize it?
-
-We will be adding color and more styling soon. We intend to expose a way to do basic theming as well as a no-styles option to let advanced users define their own styling.
-
-## Related projects
-
-### In the ODK ecosystem
-
-- [JavaRosa](https://github.com/getodk/javarosa) is the reference implementation for [ODK XForms](https://getodk.github.io/xforms-spec/). It powers the [Collect mobile application](https://github.com/getodk/collect/).
-- [Enketo](https://github.com/enketo/enketo) is an ODK XForms web form application that was maintained by the ODK team from 2021 to 2024.
-- [XLSForm](https://github.com/xlsform/pyxform) is a standard for developing ODK XForms using spreadsheets.
-
-### Outside the ODK ecosystem
-
-- [Orbeon forms](https://www.orbeon.com/) is a web form system that uses the W3C XForms standard.
-- [Fore](https://github.com/Jinntec/Fore) is an XForms-inspired framework for defining frontend applications.
-
-## Contributing to the Project
-
-Thank you for contributing! Follow these guidelines for smooth collaboration.
-
-### Translations
-
-Translations are managed on Transifex. Translators can contribute at: https://app.transifex.com/getodk/web_forms
-
-For developers, see [TRANSLATIONS.md](./packages/web-forms/TRANSLATIONS.md) for details on how UI strings are managed and how to add or update translations.
-
-### Requirements
-
-- [Volta](https://volta.sh/) to ensure consistent `node` and `npm` versions.
-
-### Running locally
-
-To run ODK Web Forms from this repository:
-
-```sh
-npm ci
-npm run build
-npm run dev -w packages/web-forms
-```
-
-This repository uses npm workspaces, so to run an npm script in any of the packages:
-
-```sh
-npm run <script-name> -w packages/<package-name>
-```
-
-So instead of `cd packages/web-forms && npm test`, run `npm run test -w packages/web-forms`.
-
-### Running tests
-
-```sh
-npm ci
-npm run build
-npm run test
-```
-
-### Packages
-
-- [web-forms](/packages/web-forms): form-filling frontend built with Vue
-- [xforms-engine](/packages/xforms-engine): implementation of the [ODK XForms specification](https://getodk.github.io/xforms-spec/)
-- [xpath](/packages/xpath): XPath evaluator with ODK XForms extensions
-- [scenario](/packages/scenario): engine client used to express tests on forms
-
-### Naming convention
-
-- Use `kebab-case` for folders, stylesheets, images, and JSON files.
-- Use `PascalCase` for TypeScript or JavaScript files that primarily export a class or type.
-  - For files with multiple exports use `kebab-case`.
-- Use the same name as the component or file being tested for test files, with a `.test.ts` suffix.
-  - Example: `InputText.test.ts`, `InitializeFormState.test.ts`
-
-### Commit message
-
-Use [Conventional Commits](https://www.conventionalcommits.org/):
-
-```
-<type>(<issue>): <description>
-
-<optional body>
-
-<optional footer>
-```
-
-- **Type**: `feat`, `fix`, `docs`, `test`, `chore`, `perf`.
-- **Issue**: Reference ticket (e.g., `#33`).
-- **Description**: ≤50 chars, lowercase, present tense (e.g., `add geopoint input`).
-- **Body**: List changes (e.g., `- add geopoint.xml`).
-- **Footer**: Use `Co-authored-by: @<username>` for credits to another contributor.
-
-**Example**:
-
-```
-feat(#33): add input components
-
-- Add geopoint input in Vue
-- Add XPath evaluator
-
-Co-authored-by: @jane_doe
-```
-
-## Pull Requests
-
-- **Squash and Merge:** After approval, and when possible "squash and merge" your PR to maintain a clean commit history.
-- **Keep PRs Focused:** Break large changes into smaller, focused PRs to simplify review and reduce merge conflicts.
-- **Code Style:** Adhere to the project's linting and formatting rules (e.g., ESLint, Prettier). Avoid skipping lint rules.
-- **Testing:** Include unit and/or integration tests for new features or bug fixes.
-- **PR Description:**
-  - Reference related issues (e.g., Fixes #123).
-  - Clearly describe the changes, their purpose, and any impact on existing functionality.
-  - If applicable, include screenshot and videos of your testing.
-
-Contact maintainers with questions. Happy contributing!
-
-## Releases
-
-If you'd like to try the functionality available on `main`, see the preview [on the ODK website](https://getodk.org/web-forms-preview/), which is updated daily. We try to release frequently; if there's functionality on `main` that you need but isn't released yet, please file an issue to request a release!
-
-### Standard release process
-
-1. Run `npm run release` to generate changelog files and version bumps from the changeset files.
-2. Run `npm install` to update `package-lock.json` with the new versions.
-3. Update translations by running `npm run translations:pull` in the root directory.
-4. Verify that the changelogs look good, commit changes, open a PR, and merge the PR.
-5. Push tags for each package in the format `@getodk/<package>@x.x.x`. A GitHub action will publish the packages on NPM.
-6. Update dependencies to kick off the new release cycle.
-
-### Patch release process
-
-Use this process to release critical bug fixes from a dedicated release branch when the `main` branch contains unreleased features (or regressions) that should not be published yet.
-
-1. Create a branch from the latest production tag or checkout the existing version branch (e.g., `git checkout 0.18.x`)
-2. Create a patch branch from the branch created in step 1 (e.g., `git checkout -b patch-release-0.18.2`)
-3. Cherry-pick the specific bug-fix commits from `main` into your patch branch (`patch-release-0.18.2`), for example: `git cherry-pick <hash1> <hash2> ... <hash6>`
-   1. Resolve any conflicts caused by diverging codebases
-4. Generate the version bump and commit the changes
-   1. Run `npm run release` to generate changelogs and version bump in the packages. If the cherry-picked commits don't have the necessary patch changesets, create one now by running `npm run changeset` and selecting `patch`.
-   2. Run `npm install` to refresh `package-lock.json`
-   3. Commit these changes (e.g., `chore: release v0.18.2`)
-5. Open a PR that targets the release branch (e.g., `0.18.x`) and merge it after approval
-6. Push tags for each package in the format `@getodk/<package>@x.x.x`. A GitHub action will publish the packages on NPM
-7. Sync changelog and package versions back to `main`. To avoid regressions, do **not** merge the patch branch back to `main`. Instead, do this:
-   1. Switch to `main` branch
-   2. Pull package.json and CHANGELOG.md files from the patch branch: `git checkout patch-release-0.18.2 -- 'packages/*/package.json' 'packages/*/CHANGELOG.md'`
-   3. Delete the **specific** `.md` files in the `.changeset/` folder that were just released to prevent "double-bumping" in the next standard release.
-   4. Run `npm ci` to refresh `package-lock.json`
-   5. Commit these changes (e.g., `chore: sync patch-release-0.18.2`)
-
-> **WARNING:** If `package.json` on `main` has diverged significantly (e.g., new dependencies added that aren't in the patch), manually update the version numbers in `package.json` instead of using the `git checkout` command to avoid overwriting new changes.
+Developing Web Forms inside Central Frontend allows us to write end-to-end tests covering the full form-filling experience in its primary distribution environment. This speeds up development and helps us catch regressions early. See the [announcement on the ODK forum](https://forum.getodk.org/t/migrating-web-forms-code-to-central-frontend-repository/58177) for more details.
